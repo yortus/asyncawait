@@ -33,7 +33,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="typings\async-await.d.ts" />
+    <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />
     <TypeScriptCompile Include="typings\node-fibers.d.ts" />
     <TypeScriptCompile Include="_refs.d.ts" />
@@ -88,6 +88,6 @@
   </ProjectExtensions>
   <Target Name="AfterBuild">
     <Exec Command="xcopy.exe /Y $(ProjectDir)*.js $(ProjectDir)..\dist\" />
-    <Exec Command="xcopy.exe /Y $(ProjectDir)typings\async-await.d.ts $(ProjectDir)..\dist\" />
+    <Exec Command="xcopy.exe /Y $(ProjectDir)typings\asyncawait.d.ts $(ProjectDir)..\dist\" />
   </Target>
 </Project>

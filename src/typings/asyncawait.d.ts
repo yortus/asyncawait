@@ -44,18 +44,18 @@ declare module AsyncAwaitStatic {
     export var awaitable: AsyncAwait.IAwaitable;
 }
 
-declare module "async-await" {
+declare module "asyncawait" {
     export = AsyncAwaitStatic
 }
-declare module "async-await/async" {
+declare module "asyncawait/async" {
     var _: AsyncAwait.IAsync;
     export = _;
 }
-declare module "async-await/await" {
+declare module "asyncawait/await" {
     var _: AsyncAwait.IAwait
     export = _;
 }
-declare module "async-await/awaitable" {
+declare module "asyncawait/awaitable" {
     var _: AsyncAwait.IAwaitable;
     export = _;
 }
