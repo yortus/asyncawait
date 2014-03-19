@@ -1,0 +1,10 @@
+*.suo
+*.user
+obj/
+*.js
+!/*.js
+/README.html
+
+/src/
+*.njsproj
+*.sln

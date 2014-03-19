@@ -1,0 +1,7 @@
+*.suo
+*.user
+obj/
+node_modules/
+*.js
+!/*.js
+/README.html
