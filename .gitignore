@@ -3,5 +3,5 @@
 obj/
 node_modules/
 *.js
-!/*.js
+!/dist/*.js
 /README.html

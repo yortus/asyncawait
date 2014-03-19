@@ -8,7 +8,7 @@
     "fibers",
     "yield"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
   "homepage": "https://github.com/yortus/node-async-await",
   "repository": {
     "type": "git",

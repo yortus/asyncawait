@@ -2,7 +2,7 @@
 *.user
 obj/
 *.js
-!/*.js
+!/dist/*.js
 /README.html
 
 /src/

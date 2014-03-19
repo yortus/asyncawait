@@ -45,6 +45,7 @@
     <TypeScriptCompile Include="src\index.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="dist\" />
     <Folder Include="src\" />
     <Folder Include="src\typings\" />
   </ItemGroup>
@@ -88,7 +89,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <Target Name="AfterBuild">
-    <Exec Command="xcopy.exe /Y $(ProjectDir)src\*.js $(ProjectDir)" />
-    <Exec Command="xcopy.exe /Y $(ProjectDir)src\typings\async-await.d.ts $(ProjectDir)" />
+    <Exec Command="xcopy.exe /Y $(ProjectDir)src\*.js $(ProjectDir)dist\" />
+    <Exec Command="xcopy.exe /Y $(ProjectDir)src\typings\async-await.d.ts $(ProjectDir)dist\" />
   </Target>
 </Project>
