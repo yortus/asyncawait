@@ -28,14 +28,14 @@ Note that 'pausing' an async function does not block node's event loop at all.
 
 # Installation
 ### via npm
-`npm install asyncawait`
+- `npm install asyncawait`
 
 ### from source
-`git clone git://github.com/yortus/node-async-await.git asyncawait`
-`cd asyncawait`
-`npm install`
+- `git clone git://github.com/yortus/node-async-await.git asyncawait`
+- `cd asyncawait`
+- `npm install`
 
-# Usage Example 1
+# Example 1: General Usage
 ```javascript
 var fs = require('fs');
 var Promise = require('bluebird');
@@ -96,7 +96,7 @@ Caught an error
 Finished!
 ```
 
-# Usage Example 2: It looks synchronous but it isn't (it doesn't block)
+# Example 2: Interleaved/Non-blocking Demo
 ```javascript
 var fs = require('fs');
 var Promise = require('bluebird');
