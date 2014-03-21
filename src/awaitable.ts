@@ -21,7 +21,7 @@ var awaitable: AsyncAwait.IAwaitable = function(fn: Function) {
             // Add the callback to the arguments array cloned above.
             args.push(callback);
 
-            // Call fn, which will eventually resolve or reject the promise.
+            // Call fn, which will eventually call callback() and resolve/reject the promise.
             var ret = fn.apply(this, args);
         });
     };
