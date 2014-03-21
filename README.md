@@ -1,17 +1,17 @@
 # Introduction
 This node.js module brings the coding benefits of [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) to JavaScript. With async/await, you can eliminate the "Pyramid of Doom" and "Callback Hell" from your node.js code.
 
-You can write any function in async/await style using the ```async``` API method. Async functions:
+You can write any function in async/await style using the ```async``` API function. Async functions:
 - may be written in a synchronous style, despite containing asynchronous operations
 - always return a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) representing their final return value
 
-Within the body of an async function, use the ```await``` API method to:
+Within the body of an async function, use the ```await``` API function to:
 - pause execution at any asynchronous expression until it returns a result
 - use the return value of an asynchronous expression as if it was returned synchronously
 - handle asynchronous errors using normal ```try/catch``` blocks, as if they occured synchronously
 - in short, write the entire function as if it was synchronous
 
-The ```await``` API method works out-of the box with expressions that return a promise. Also, an ```await```-friendly version of any of node.js' callback-style async functions (such as ```fs.readFile```) can be produced with the ```awaitable``` API method.
+The ```await``` API function works out-of the box with expressions that return a promise. Also, an ```await```-friendly version of any of node.js' callback-style async functions (such as ```fs.readFile```) can be produced with the ```awaitable``` API function.
 
 Note that 'pausing' an async function does not block node's event loop at all.
 
@@ -27,11 +27,15 @@ Note that 'pausing' an async function does not block node's event loop at all.
 * Works only on node.js, not in browsers (since it uses node-fibers)
 
 # Installation
-```
-npm install asyncawait
-```
+### via npm
+`npm install asyncawait`
 
-# Usage Example
+### from source
+`git clone git://github.com/yortus/node-async-await.git asyncawait`
+`cd asyncawait`
+`npm install`
+
+# Usage Example 1
 ```javascript
 var fs = require('fs');
 var Promise = require('bluebird');
@@ -92,6 +96,56 @@ Caught an error
 Finished!
 ```
 
+# Usage Example 2: It looks synchronous but it isn't (it doesn't block)
+```javascript
+var fs = require('fs');
+var Promise = require('bluebird');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+var awaitable = require('asyncawait/awaitable');
+
+// A slow asynchronous function, written in async/await style
+var longCalculation = async (function(seconds, result) {
+    await(Promise.delay(seconds * 1000));
+    return result;
+});
+
+// A pair of synchronous-looking compound operations, written in async/await style
+var compoundOperationA = async (function() {
+    console.log('A: zero');
+    console.log(await (longCalculation(1, 'A: one')));
+    console.log(await (longCalculation(1, 'A: two')));
+    console.log(await (longCalculation(1, 'A: three')));
+    return 'A: Finished!';
+});
+var compoundOperationB = async (function() {
+    await (longCalculation(0.5)); // Fall half a second behind A
+    console.log('B: zero');
+    console.log(await (longCalculation(1, 'B: one')));
+    console.log(await (longCalculation(1, 'B: two')));
+    console.log(await (longCalculation(1, 'B: three')));
+    return 'B: Finished!';
+});
+
+// Start both compound operations
+compoundOperationA().then(function(result) { console.log(result); });
+compoundOperationB().then(function(result) { console.log(result); });
+```
+
+Outputs (with half second delays between lines):
+```
+A: zero
+B: zero
+A: one
+B: one
+A: two
+B: two
+A: three
+A: Finished!
+B: three
+B: Finished!
+```
+
 # API Reference
 
 ### ```function async(fn) {...}```
@@ -138,5 +192,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-
