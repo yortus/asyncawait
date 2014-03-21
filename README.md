@@ -19,6 +19,7 @@ Note that 'pausing' an async function does not block node's event loop at all.
 * Completely [non-blocking](http://stackoverflow.com/a/14797359)
 * Does not require [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
 * Syntax is plain JavaScript, and very close to that of C#'s async/await
+* Seamless interoperation with libraries that consume and/or produce promises
 * No code preprocessing or special tools, simply write and execute your code normally
 * Built with [node-fibers](https://github.com/laverdet/node-fibers)
 * [TypeScript](http://www.typescriptlang.org/)-friendly (since ES6 generators are not required)
