@@ -1,7 +1,7 @@
 # Introduction
-asyncawait makes asynchronous Node.js JavaScript code simpler to read and write, by allowing you to code with semantics like [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx). Callback spaghetti code (a.k.a. "Pyradim of Doom" a.k.a. "Callback Hell") can be rewritten into a linear sequences with normal try/catch handling. However such code remains fully non-blocking, and in fact runs equivalently to its spaghetti cousins.
+asyncawait makes asynchronous Node.js JavaScript code simpler to read and write, by allowing you to code using syntax very similar to [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx). Callback spaghetti code (a.k.a. "Pyradim of Doom" a.k.a. "Callback Hell") can be rewritten into a linear sequences with normal try/catch handling. However, the code remains fully non-blocking, and in fact is semantically the same as its spaghetti cousins.
 
-As well as saving your eyes from bleeding, simpler code means easier testing and less mistakes.
+As well as saving your eyes from bleeding, simpler code hopefully means easier reviewing and testing, and just generally less mistakes.
 
 
 # Simple Example
