@@ -1,4 +1,58 @@
 # Introduction
+asyncawait makes asynchronous Node.js JavaScript code simpler to read and write, by allowing you to code with semantics like [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx). Callback spaghetti code (a.k.a. "Pyradim of Doom" a.k.a. "Callback Hell") can be rewritten into a linear sequences with normal try/catch handling. However such code remains fully non-blocking, and in fact runs equivalently to its spaghetti cousins.
+
+As well as saving your eyes from bleeding, simpler code means easier testing and less mistakes.
+
+
+# Simple Example
+async vs asyncawait
+
+
+# Compared with Spaghetti Code
+
+
+
+# Awaitables
+
+
+# Features
+
+
+
+# Limitations
+
+
+
+# Installation
+
+
+# Further Examples
+
+
+
+
+# API reference
+
+
+# License
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Introduction
 This node.js module brings the coding benefits of [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) to JavaScript. With async/await, you can eliminate the "Pyramid of Doom" and "Callback Hell" from your node.js code.
 
 You can write any function in async/await style using the ```async``` API function. Async functions:
