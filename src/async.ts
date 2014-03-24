@@ -1,10 +1,11 @@
 ﻿import _refs = require('_refs');
+var deep = require('deep');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
 export = async;
 
 
-// This interface describes the single argument passed to the wrapper function (defined below).
+// This interface describes the single argument passed to the wrapper() function (defined below).
 interface Context {
     wrapped: Function;
     thisArg: any;
@@ -31,11 +32,6 @@ function wrapper(context: Context) {
 // This is the async() API function (see docs).
 var async: AsyncAwait.IAsync = function(fn: Function) {
 
-    // Create a fiber whose body is the wrapper() function defined above.
-    // Thus, one fiber is created per async function. Fibers are eligible for garbage
-    // collection when there are no more references to the function returned by async().
-    var fnAsFiber = Fiber(wrapper);
-
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function () {
 
@@ -45,7 +41,7 @@ var async: AsyncAwait.IAsync = function(fn: Function) {
         // Create a new promise.
         return new Promise((resolve, reject) => {
 
-            // Build the context argument expected by wrapper().
+            // Construct the context argument to be passed into the wrapper() function.
             var context: Context = {
                 wrapped: fn,
                 thisArg: this,
@@ -54,17 +50,8 @@ var async: AsyncAwait.IAsync = function(fn: Function) {
                 reject: reject
             };
 
-            // Execute the wrapper function in a fiber
-            if (Fiber.current) {
-
-                // There's already a current fiber, so we can call wrapper() directly.
-                // This saves the overhead of switching execution to a different fiber.
-                wrapper(context);
-            } else {
-
-                // There's no current fiber, so use the fnAsFiber created above.
-                fnAsFiber.run(context);
-            }
+            // Execute the wrapper() function in a new fiber.
+            Fiber(wrapper).run(context);
         });
     };
 };

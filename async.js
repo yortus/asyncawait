@@ -1,4 +1,5 @@
-﻿var Fiber = require('fibers');
+﻿var deep = require('deep');
+var Fiber = require('fibers');
 var Promise = require('bluebird');
 
 
@@ -18,11 +19,6 @@ function wrapper(context) {
 
 // This is the async() API function (see docs).
 var async = function (fn) {
-    // Create a fiber whose body is the wrapper() function defined above.
-    // Thus, one fiber is created per async function. Fibers are eligible for garbage
-    // collection when there are no more references to the function returned by async().
-    var fnAsFiber = Fiber(wrapper);
-
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function () {
         var _this = this;
@@ -31,7 +27,7 @@ var async = function (fn) {
 
         // Create a new promise.
         return new Promise(function (resolve, reject) {
-            // Build the context argument expected by wrapper().
+            // Construct the context argument to be passed into the wrapper() function.
             var context = {
                 wrapped: fn,
                 thisArg: _this,
@@ -40,15 +36,8 @@ var async = function (fn) {
                 reject: reject
             };
 
-            // Execute the wrapper function in a fiber
-            if (Fiber.current) {
-                // There's already a current fiber, so we can call wrapper() directly.
-                // This saves the overhead of switching execution to a different fiber.
-                wrapper(context);
-            } else {
-                // There's no current fiber, so use the fnAsFiber created above.
-                fnAsFiber.run(context);
-            }
+            // Execute the wrapper() function in a new fiber.
+            Fiber(wrapper).run(context);
         });
     };
 };

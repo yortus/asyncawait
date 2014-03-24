@@ -1,7 +1,7 @@
 {
   "name": "asyncawait",
   "description": "async/await for node.js",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "keywords": [
     "async",
     "await",
@@ -26,6 +26,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "bluebird": "~1.1.1",
+    "deep": "~0.0.2",
     "fibers": "~1.0.1"
   }
 }

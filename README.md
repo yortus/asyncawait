@@ -36,7 +36,7 @@ Note that 'pausing' an async function does not block node's event loop at all.
 - `cd asyncawait`
 - `npm install`
 
-# Example 1: General Usage
+# Example 1: Basics
 ```javascript
 var fs = require('fs');
 var Promise = require('bluebird');
@@ -97,13 +97,12 @@ Caught an error
 Finished!
 ```
 
-# Example 2: Interleaved/Non-blocking Demo
+# Example 2: Interleaved/Non-blocking
 ```javascript
 var fs = require('fs');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-var awaitable = require('asyncawait/awaitable');
 
 // A slow asynchronous function, written in async/await style
 var longCalculation = async (function(seconds, result) {

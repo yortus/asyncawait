@@ -5,6 +5,12 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>node-async-await</Name>
     <RootNamespace>node-async-await</RootNamespace>
+    <NodeExePath>
+    </NodeExePath>
+    <NodeExeArguments />
+    <ScriptArguments />
+    <NodejsPort />
+    <LaunchUrl />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -12,8 +18,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>examples\parallel.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -33,18 +38,23 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="examples\basic.ts" />
+    <TypeScriptCompile Include="examples\interleaved.ts" />
+    <TypeScriptCompile Include="examples\parallel.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />
+    <TypeScriptCompile Include="typings\deep.d.ts" />
     <TypeScriptCompile Include="typings\node-fibers.d.ts" />
+    <TypeScriptCompile Include="typings\node.d.ts" />
     <TypeScriptCompile Include="_refs.d.ts" />
     <Content Include="..\package.json" />
     <Content Include="..\README.md" />
     <TypeScriptCompile Include="async.ts" />
     <TypeScriptCompile Include="await.ts" />
-    <TypeScriptCompile Include="awaitable.ts" />
     <TypeScriptCompile Include="index.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="examples\" />
     <Folder Include="typings\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
