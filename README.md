@@ -5,14 +5,18 @@ As well as saving your eyes from bleeding, simpler code means easier testing and
 
 
 # Simple Example
-async vs asyncawait
 
 
 # Compared with Spaghetti Code
+async vs asyncawait
 
 
 
 # Awaitables
+- Promises
+- Thunks
+- Object/Array graphs
+- Simple values
 
 
 # Features
