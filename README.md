@@ -1,19 +1,25 @@
 # Introduction
-asyncawait makes asynchronous Node.js JavaScript code simpler to read and write, by allowing you to code using syntax very similar to [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx). Callback spaghetti code (a.k.a. "Pyradim of Doom" a.k.a. "Callback Hell") can be rewritten into a linear sequences with normal try/catch handling. However, the code remains fully non-blocking, and in fact is semantically the same as its spaghetti cousins.
+Asyncawait makes asynchronous Node.js JavaScript code simpler to read and write, by allowing syntax similar to [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx). Callback spaghetti code (a.k.a. "Pyradim of Doom" a.k.a. "Callback Hell") can be rewritten into a linear sequences with normal try/catch handling. However, the code remains fully non-blocking, and in fact is semantically equivalent to its spaghetti cousins.
 
 As well as saving your eyes from bleeding, simpler code hopefully means easier reviewing and testing, and just generally less mistakes.
 
+Asyncawait uses plain JavaScript. It does not require ES6 generators. Your code is not preprocessed. The suspension/resumption of async functions is made possible by [node-fibers](https://github.com/laverdet/node-fibers).
 
-# Simple Example
+
+# Example
 
 
-# Compared with Spaghetti Code
-async vs asyncawait
+# Why? Motivation
+
+# Comparisons
+- with callbacks
+- with async
+- with co
 
 
 
 # Awaitables
-- Promises
+- Promises (incl calls to other async functions - compoosable)
 - Thunks
 - Object/Array graphs
 - Simple values
@@ -36,9 +42,10 @@ async vs asyncawait
 
 
 # API reference
-
+- no more awaitable()! Use promisify/thunkify/denodeify
 
 # License
+MIT
 
 
 
