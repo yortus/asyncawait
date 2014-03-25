@@ -1,8 +1,7 @@
 *.suo
 *.user
 obj/
-*.js
-!/*.js
+node_modules/
 /README.html
 
 /src/

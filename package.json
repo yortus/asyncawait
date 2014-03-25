@@ -6,7 +6,9 @@
     "async",
     "await",
     "fibers",
-    "yield"
+    "yield",
+    "generators",
+    "coroutines"
   ],
   "main": "index.js",
   "homepage": "https://github.com/yortus/node-async-await",

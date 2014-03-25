@@ -1,0 +1,11 @@
+{
+  "name": "benchmarks",
+  "version": "0.0.0",
+  "description": "",
+  "main": "benchmarks.js",
+  "dependencies": {
+    "async": "*",
+    "co": "*",
+    "lodash": "*"
+  }
+}
