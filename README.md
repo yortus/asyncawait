@@ -5,6 +5,8 @@ As well as saving your eyes from bleeding, simpler code hopefully means easier r
 
 Asyncawait uses plain JavaScript. It does not require ES6 generators. Your code is not preprocessed. The suspension/resumption of async functions is made possible by [node-fibers](https://github.com/laverdet/node-fibers).
 
+TODO: update link on node-fibers on rename
+
 
 # Example
 
