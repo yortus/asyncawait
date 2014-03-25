@@ -24,6 +24,8 @@ Asyncawait uses plain JavaScript. It does not require ES6 generators. Your code 
 - Object/Array graphs
 - Simple values
 
+How to await node functions...
+
 
 # Features
 
