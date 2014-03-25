@@ -54,6 +54,20 @@ How to await node functions...
 # API reference
 - no more awaitable()! Use promisify/thunkify/denodeify
 
+- options:
+```
+async.options(default: 'promise');
+var fn = async.thunk (function() {
+    ...
+    ...
+});
+var fn = async.node (function() {
+    ...
+    ...
+});
+```
+
+
 # License
 MIT
 
