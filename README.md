@@ -36,15 +36,19 @@ How to await node functions...
 # Limitations
 
 
+# Performance
+
 
 # Installation
 
 
-# Further Examples
 
 
 # TypeScript
 - also, fix Thunk interface in .d.ts (both params optional)
+
+
+# Further Examples
 
 
 # API reference
