@@ -30,11 +30,11 @@ var largest = function (dir, options, internal, callback) {
             // Build up a list of possible candidates, recursing into subfolders if requested.
             var candidates = [];
             fs.readdir(dir, function (err, files) { // Get list of files/subdirs in dir.
-                if (err) callback(err);
+                if (err) { callback(err); return; }
                 async.each(files, function(file, next) { // Process each file/subdir in parallel.
                     var path = pathJoin(dir, file);
                     fs.stat(path, function (err, stat) { // stat() the file/subdir.
-                        if (err) next(err);
+                        if (err) { next(err); return; }
                         if (stat.isFile()) {
                             candidates.push({ path: path, size: stat.size, searched: 1 });
                             next();
@@ -42,7 +42,7 @@ var largest = function (dir, options, internal, callback) {
                             next();
                         } else {
                             largest(path, options, true, function (err, cand) { // recurse
-                                if (err) next(err);
+                                if (err) { next(err); return; }
                                 if (cand) candidates.push(cand);
                                 next();
                             });
@@ -50,7 +50,7 @@ var largest = function (dir, options, internal, callback) {
                     });
                 }, function (err) {
                     if (err) callback(err);
-                    callback(null, candidates);
+                    else callback(null, candidates);
                 });
             });
         },

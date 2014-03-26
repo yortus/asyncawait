@@ -53,6 +53,7 @@ var largest = function (dir, options, internal) {
     }
     return result;
 }
+largest.options = {};
 
 
 function nodeified(dir, options, callback) {

@@ -28,7 +28,7 @@ var largest = function (dir, options, internal, callback) {
     function listCandidates(callback) {
         var candidates = [];
         fs.readdir(dir, function (err, files) {
-            if (err) callback(err);
+            if (err) { callback(err); return; }
             var remaining = files.length;
             if (remaining > 0) {
 
@@ -48,7 +48,7 @@ var largest = function (dir, options, internal, callback) {
                 files.forEach(function (file) {
                     var path = pathJoin(dir, file);
                     fs.stat(path, function (err, stat) {
-                        if (err) next(err);
+                        if (err) { next(err); return; }
                         if (stat.isFile()) {
                             candidates.push({ path: path, size: stat.size, searched: 1 });
                             next();
@@ -56,7 +56,7 @@ var largest = function (dir, options, internal, callback) {
                             next();
                         } else {
                             largest(path, options, true, function (err, cand) { // recurse
-                                if (err) next(err);
+                                if (err) { next(err); return; }
                                 if (cand) candidates.push(cand);
                                 next();
                             });
@@ -84,13 +84,14 @@ var largest = function (dir, options, internal, callback) {
     function addPreviewIfAppropriate(result, callback) {
         if (result && options.preview && !internal) {
             fs.open(result.path, 'r', function (err, fd) {
-                if (err) callback(err);
+                if (err) { callback(err); return; }
                 var buffer = new Buffer(40);
                 fs.read(fd, buffer, 0, 40, 0, function (err, bytesRead, buffer) {
-                    if (err) callback(err);
+                    if (err) { callback(err); return; }
                     result.preview = buffer.toString('utf-8', 0, bytesRead);
                     fs.close(fd, function (err) {
-                        if (err) callback(err); else callback(null, result);
+                        if (err) callback(err);
+                        else callback(null, result);
                     });
                 });
             });
@@ -101,9 +102,9 @@ var largest = function (dir, options, internal, callback) {
 
     // Put it all together.
     listCandidates(function (err, candidates) {
-        if (err) callback(err);
+        if (err) { callback(err); return; }
         selectBestCandidate(candidates, function (err, result) {
-            if (err) callback(err);
+            if (err) { callback(err); return; }
             addPreviewIfAppropriate(result, callback);
         });
     });
