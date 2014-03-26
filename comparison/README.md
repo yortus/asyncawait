@@ -1,5 +1,17 @@
 
 
+# Description of `function largest(dir, options)`
+
+1. Find the largest file in the given directory (recursively searching subdirectories if the option is selected)
+2. Keep track of how many files/directories have been processed
+3. Get a preview of the file contents (first several characters) if the option is selected
+4. Return the details about the largest file and the search size
+
+
+
+
+
+
 # TODO
 - Describe benchmark / comparison code - what is being compared and why?
 - Factor out common bestCandidate code to improve comparison (in largest.js)
