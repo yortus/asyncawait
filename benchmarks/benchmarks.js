@@ -4,9 +4,10 @@ var async = require('async');
 //==================================================
 // Uncomment only the one you want to benchmark.
 //var largest = require('./largest-async');
-//var largest = require('./largest-asyncawait');
+var largest = require('./largest-asyncawait');
 //var largest = require('./largest-callbacks');
-var largest = require('./largest-co');
+//var largest = require('./largest-co');
+//var largest = require('./largest-synchronous');
 //==================================================
 
 

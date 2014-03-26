@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "asyncawait", "asyncawait.njsproj", "{330C5F49-70CC-42B2-B036-7E7C0C4E604D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{3C36D442-A9D7-489A-871B-1DBE313B3310}"
@@ -19,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", 
 		..\benchmarks\largest-asyncawait.js = ..\benchmarks\largest-asyncawait.js
 		..\benchmarks\largest-callbacks.js = ..\benchmarks\largest-callbacks.js
 		..\benchmarks\largest-co.js = ..\benchmarks\largest-co.js
+		..\benchmarks\largest-synchronous.js = ..\benchmarks\largest-synchronous.js
 		..\benchmarks\README.md = ..\benchmarks\README.md
 	EndProjectSection
 EndProject
