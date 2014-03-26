@@ -49,6 +49,7 @@ var largest = function (dir, options, internal) {
         var buffer = new Buffer(40);
         var bytesRead = fs.readSync(fd, buffer, 0, 40, 0);
         result.preview = buffer.toString('utf-8', 0, bytesRead);
+        fs.closeSync(fd);
     }
     return result;
 }
@@ -64,9 +65,3 @@ function nodeified(dir, options, callback) {
     }
 }
 module.exports = nodeified;
-
-
-//TODO: remove...
-//nodeified(path.join(__dirname, '.'), { recurse: true, preview: true }, function (err, result) {
-//    console.log(err || result);
-//});

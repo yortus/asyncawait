@@ -69,17 +69,22 @@ var largest = function (dir, options, internal, callback) {
 
             // Add a preview if requested (but skip if this is an internal step in a recursive search).
             if (result && options.preview && !internal) {
+                var fd_;
                 async.waterfall([
                     function(callback) {
                         fs.open(result.path, 'r', callback);
                     },
                     function(fd, callback) {
+                        fd_ = fd;
                         var buffer = new Buffer(40);
                         fs.read(fd, buffer, 0, 40, 0, callback);
                     },
                     function(bytesRead, buffer, callback) {
                         result.preview = buffer.toString('utf-8', 0, bytesRead);
-                        callback(null, result);
+                        callback();
+                    },
+                    function() {
+                        fs.close(fd_, callback);
                     }
                 ], callback);
             } else {
@@ -92,9 +97,3 @@ largest.options = {};
 
 
 module.exports = largest;
-
-
-////TODO: remove...
-//largest(pathJoin(__dirname, '.'), { recurse: true, preview: true }, function (err, result) {
-//    console.log(err || result);
-//});

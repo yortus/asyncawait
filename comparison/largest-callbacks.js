@@ -89,7 +89,9 @@ var largest = function (dir, options, internal, callback) {
                 fs.read(fd, buffer, 0, 40, 0, function (err, bytesRead, buffer) {
                     if (err) callback(err);
                     result.preview = buffer.toString('utf-8', 0, bytesRead);
-                    callback(null, result);
+                    fs.close(fd, function (err) {
+                        if (err) callback(err); else callback(null, result);
+                    });
                 });
             });
         } else {
@@ -109,9 +111,3 @@ var largest = function (dir, options, internal, callback) {
 
 
 module.exports = largest;
-
-
-////TODO: remove...
-//largest(pathJoin(__dirname, '.'), { recurse: true, preview: true }, function (err, result) {
-//    console.log(err || result);
-//});
