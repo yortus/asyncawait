@@ -1,5 +1,9 @@
 
 
+# TODO
+- Describe benchmark / comparison code - what is being compared and why?
+- Factor out common bestCandidate code to improve comparison (in largest.js)
+
 
 
 # Results (on mine)
