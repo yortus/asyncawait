@@ -46,7 +46,7 @@ function reduceToPromise(expr) {
         var clone = deep.transform(expr, obj => typeof obj === 'function', thunkToPromise);
 
         // Select all the promises in the object graph.
-        var proms = [], paths = deep.select(clone, obj => typeof obj.then === 'function');
+        var proms = [], paths = deep.select(clone, obj => obj && typeof obj.then === 'function');
         for (var i = 0; i < paths.length; ++i) proms.push(paths[i].value);
 
         // Create a new promise that resolves when all the above promises are resolved.

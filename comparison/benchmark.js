@@ -4,8 +4,8 @@ var async = require('async');
 //==================================================
 // Uncomment only the one you want to benchmark.
 //var largest = require('./largest-async');
-var largest = require('./largest-asyncawait');
-//var largest = require('./largest-callbacks');
+//var largest = require('./largest-asyncawait');
+var largest = require('./largest-callbacks');
 //var largest = require('./largest-co');
 //var largest = require('./largest-synchronous');
 //==================================================
@@ -15,7 +15,7 @@ var SAMPLES_PER_RUN = 1000;
 
 
 function sample(callback) {
-    largest(path.join(__dirname, '.'), callback);
+    largest(path.join(__dirname, '.'), { recurse: true, preview: true }, callback);
 }
 
 

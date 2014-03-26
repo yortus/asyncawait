@@ -14,8 +14,10 @@ var await = function (expr) {
     }
 
     // Reduce expr to a single promise.
+    //console.log('==> in:  ' + JSON.stringify(expr, null, 2));
     expr = reduceToPromise(expr);
 
+    //console.log('==> out: ' + JSON.stringify(expr, null, 2));
     // Install the above promise handlers.
     expr.then(onResolved, onRejected);
 
@@ -50,7 +52,7 @@ function reduceToPromise(expr) {
 
         // Select all the promises in the object graph.
         var proms = [], paths = deep.select(clone, function (obj) {
-            return typeof obj.then === 'function';
+            return obj && typeof obj.then === 'function';
         });
         for (var i = 0; i < paths.length; ++i)
             proms.push(paths[i].value);
