@@ -14,10 +14,8 @@ var await = function (expr) {
     }
 
     // Reduce expr to a single promise.
-    //console.log('==> in:  ' + JSON.stringify(expr, null, 2));
     expr = reduceToPromise(expr);
 
-    //console.log('==> out: ' + JSON.stringify(expr, null, 2));
     // Install the above promise handlers.
     expr.then(onResolved, onRejected);
 
