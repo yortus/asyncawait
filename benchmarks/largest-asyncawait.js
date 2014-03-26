@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
+var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('../async');
 var await = require('../await');
@@ -12,22 +13,39 @@ var largest = async (function (dir) {
     var files = await (fs.readdirAsync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
     var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
+    var sizes = _.map(stats, function (stat) { return stat.size; });
 
     // Find the largest file, recursing into subfolders.
-    var result = { path: undefined, size: 0, searched: 0 };
-    await (_.map(stats, async (function (stat, i) { //NB: new async func here so we can do them in parallel but get blocking semantics inside the func
+    var best = undefined; // index into paths/sizes arrays of largest file considered so far.
+    var searched = 0; // number of files/folders considered so far.
+    var previews = []; // preview of the contents of the largest files considered so far.
+    await (_.map(stats, async (function (stat, i) { // NB: use an async func here so _.map runs in parallel,
+                                                    // but we get blocking semantics inside the func
         if (stat.isDirectory()) {
-            var cand = await (largest(paths[i])); // recurse
-        } else {
-            var cand = { path: paths[i], size: stat.size, searched: 1 };
+            var subdirLargest = await (largest(paths[i])); // recurse into subfolder and await result.
+            if (subdirLargest) { // will return nothing if subdir was empty.
+                paths[i] = subdirLargest.path;
+                sizes[i] = subdirLargest.size;
+                previews[i] = subdirLargest.preview;
+            }
         }
-        if (cand.size > result.size) {
-            result.path = cand.path;
-            result.size = cand.size;
-        }
-        result.searched += cand.searched;
+        searched += (subdirLargest ? subdirLargest.searched : 1);
+        if (best === undefined || sizes[i] > sizes[best]) best = i;
     })));
-    return result;
+
+    // If there were no files, return undefined now.
+    if (best === undefined) return undefined;
+
+    // Get a preview of the file contents, if we don't already have one.
+    if (previews[best] === undefined) {
+        var fd = await (fs.openAsync(paths[best], 'r'));
+        var buffer = new Buffer(40);
+        var bytesRead = await (fs.readAsync(fd, buffer, 0, 40, 0));
+        previews[best] = buffer.toString('utf-8', 0, bytesRead);
+    }
+
+    // Return the path, size, preview, and searched in a single result.
+    return { path: paths[best], size: sizes[best], preview: previews[best], searched: searched };
 });
 
 
@@ -36,6 +54,8 @@ module.exports = nodeified;
 
 
 //TODO: remove...
-nodeified(__dirname, function (err, result) {
+nodeified(path.join(__dirname, '../..'), function (err, result) {
     console.log(err || result);
 });
+
+//TODO: not working for ../..
