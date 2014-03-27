@@ -43,7 +43,7 @@ The above function does not block node's event loop, despite its synchronous app
 1. your application involves complex operations but must exploit maximum parallelism;
 2. your tooling does not support [ES6](http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts), for example because you use a compile-to-JavaScript language like [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/);
 3. you prefer your code to be as short and simple as it's synchronous/blocking equivalent; and
-4. your application runs in Node.js (eg your are writing a web server or some other server-side program).
+4. your application runs in Node.js (eg a web server or some other server-side program).
 
 **#1** rules out simple synchronous code (eg `fs.readFileSync()` and the like). **#2** rules out `co`. **#3** rules out plain callbacks and `async`. If **#4** is a deal-breaker, your best option might be `async`. `asyncawait` will not work in browsers due to its reliance on [`node-fibers`](https://github.com/laverdet/node-fibers). `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*), making it unsuitable for general browser-based apps for some time to come.
 
@@ -55,7 +55,7 @@ The above function does not block node's event loop, despite its synchronous app
 
 
 # How is the Performance?
-It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
+It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
 
 
 
@@ -90,17 +90,19 @@ var countFiles = async (function(dir) {
 });
 
 
-countFiles(__dirname).then(function (n) {
-    console.log('There are ' + n + ' files in ' + __dirname);
-});
+countFiles(__dirname)
+    .then (function (num) { console.log('There are ' + num + ' files in ' + __dirname); })
+    .catch(function (err) { console.log('Something went wrong: ' + err); });
 ```
 
 Note the spacing after `async` and `await`. They are just plain functions, but the space makes them look more like operators. Alternatively if you really want them to stand out, you could define them like `__await__` or `AWAIT` or use whatever style works for you.
 
-# What Works with `await`?
-`await` takes a single argument, which can be any of the following (the so-called 'awaitables'):
 
-- A `then`-able object or promise. The function will suspend until the promise is settled. The promise's resolution value will become `await`'s return value. If the promise is rejected, `await` will raise an exception inside the function with the rejection value.
+
+# What Works with `await`?
+`await` takes a single argument, which can be any of the following (the so-called **awaitables**):
+
+- A [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (or any `then`-able object). The function will suspend until the promise is settled. The promise's resolution value will become `await`'s return value. If the promise is rejected, `await` will raise an exception inside the function with the rejection value.
 - A [thunk](https://github.com/visionmedia/co#thunks-vs-promises). The thunk's result will become `await`'s return value. If the thunk returns an error, `await` will raise an exception inside the function with the error value.
 - A simple value, such as a number, string or null. `await` will return immediately with the value.
 - An array or [plain object](https://github.com/jeffomatic/deep#isplainobjectobject), whose elements are all awaitables. Note this definition is recursive and allows nested object graphs. The function will suspend until all nested awaitables have produced their value, at which time `await` will return with a clone of the object graph with all promises and thunks replaced by their results. If any promise is rejected or any thunk returns an error, then `await` will raise an exception inside the function with the rejection or error value.
@@ -118,257 +120,40 @@ Within `async`-wrapped functions, errors may be handled using ordinary `try/catc
 `async`-wrapped functions may be used as `await` expressions, since they return promises and are therefore [awaitable](#what-works-with-await). It follows that calls to `async`-wrapped functions may be arbitrarily nested and composed, and may be recursive.
 
 ### Obtaining Promises and Thunks
-In conventional Node.js code, asynchronous functions accept a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be easily obtained using something like [`bluebird`'s](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [thunkify](https://github.com/visionmedia/node-thunkify).
+In conventional Node.js code, asynchronous functions take a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be easily obtained using something like [`bluebird's`](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [`thunkify`](https://github.com/visionmedia/node-thunkify).
 
-### Using with TypeScript
+### Developing in TypeScript
 `asyncawait` is written in TypeScript (look in the [src folder](./src)), and includes a [type definition file](./asyncawait.d.ts). Go nuts!
 
 
 
-
 # Feature/Gotcha Summary
-- Reduces length and complexity of asynchronous code
-- Does not block
-- Uses plain ES3/ES5 JavaScript. ES6 generators not required
-- No preprocessing
-- TypeScript-friendly and X-to-JavaScript-friendly
-- Uses node-fibers
-- Performant
-- .d.ts provided
-
-
-
-
-# Awaitables
-- Promises (incl calls to other async functions - compoosable)
-- Thunks
-- Object/Array graphs
-- Simple values
-
-How to await node functions...
-
-
-
-
-
-# TypeScript
-- also, fix Thunk interface in .d.ts (both params optional)
-
-
-# Further Examples
-
-
-# API reference
-- no more awaitable()! Use promisify/thunkify/denodeify
-
-- options:
-```
-async.options(default: 'promise');
-var fn = async.thunk (function() {
-    ...
-    ...
-});
-var fn = async.node (function() {
-    ...
-    ...
-});
-```
-
-
-# License
-MIT
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Introduction
-This node.js module brings the coding benefits of [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) to JavaScript. With async/await, you can eliminate the "Pyramid of Doom" and "Callback Hell" from your node.js code.
-
-You can write any function in async/await style using the ```async``` API function. Async functions:
-- may be written in a synchronous style, despite containing asynchronous operations
-- always return a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) representing their final return value
-
-Within the body of an async function, use the ```await``` API function to:
-- pause execution at any asynchronous expression until it returns a result
-- use the return value of an asynchronous expression as if it was returned synchronously
-- handle asynchronous errors using normal ```try/catch``` blocks, as if they occured synchronously
-- in short, write the entire function as if it was synchronous
-
-The ```await``` API function works out-of the box with expressions that return a promise. Also, an ```await```-friendly version of any of node.js' callback-style async functions (such as ```fs.readFile```) can be produced with the ```awaitable``` API function.
-
-Note that 'pausing' an async function does not block node's event loop at all.
-
-# Features and Limitations
+* Reduces length and complexity of asynchronous code
 * Completely [non-blocking](http://stackoverflow.com/a/14797359)
 * Does not require [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
-* Syntax is plain JavaScript, and very close to that of C#'s async/await
+* Syntax is plain JavaScript, and behaves much like C#'s async/await
 * Seamless interoperation with libraries that consume and/or produce promises
 * No code preprocessing or special tools, simply write and execute your code normally
+* Has decent [performance](./comparison)
 * Built with [node-fibers](https://github.com/laverdet/node-fibers)
 * [TypeScript](http://www.typescriptlang.org/)-friendly (since ES6 generators are not required)
 * TypeScript .d.ts included
-* Very tiny
 * Works only on node.js, not in browsers (since it uses node-fibers)
 
-# Installation
-### via npm
-- `npm install asyncawait`
 
-### from source
-- `git clone git://github.com/yortus/node-async-await.git asyncawait`
-- `cd asyncawait`
-- `npm install`
-
-# Example 1: Basics
-```javascript
-var fs = require('fs');
-var Promise = require('bluebird');
-var async = require('asyncawait/async');
-var await = require('asyncawait/await');
-var awaitable = require('asyncawait/awaitable');
-
-// A function that returns a promise
-function delay(milliseconds) {
-    return Promise.delay(milliseconds);
-}
-
-// An await-friendly version of fs.readFile
-var readFile = awaitable(fs.readFile);
-
-// A slow asynchronous function, written in async/await style
-var longCalculation = async (function(seconds, result) {
-    await (delay(seconds * 1000));
-    return result;
-});
-
-// Another synchronous-looking function written in async/await style...
-var program = async (function() {
-    try  {
-        console.log('zero...');
-
-        var msg = await (longCalculation(1, 'one...'));
-        console.log(msg);
-
-        msg = await (longCalculation(1, 'two...'));
-        console.log(msg);
-
-        msg = await (longCalculation(1, 'three...'));
-        console.log(msg);
-
-        var file = await (readFile('NonExistingFilename'));
-
-        msg = await (longCalculation(1, 'four...'));
-        console.log(msg);
-    } catch (ex) {
-        console.log('Caught an error');
-    }
-    return 'Finished!';
-});
-
-program().then(function(result) {
-    console.log(result);
-});
-```
-
-Outputs (with one second delays between the numbers):
-```
-zero...
-one...
-two...
-three...
-Caught an error
-Finished!
-```
-
-# Example 2: Interleaved/Non-blocking
-```javascript
-var fs = require('fs');
-var Promise = require('bluebird');
-var async = require('asyncawait/async');
-var await = require('asyncawait/await');
-
-// A slow asynchronous function, written in async/await style
-var longCalculation = async (function(seconds, result) {
-    await(Promise.delay(seconds * 1000));
-    return result;
-});
-
-// A pair of synchronous-looking compound operations, written in async/await style
-var compoundOperationA = async (function() {
-    console.log('A: zero');
-    console.log(await (longCalculation(1, 'A: one')));
-    console.log(await (longCalculation(1, 'A: two')));
-    console.log(await (longCalculation(1, 'A: three')));
-    return 'A: Finished!';
-});
-var compoundOperationB = async (function() {
-    await (longCalculation(0.5)); // Fall half a second behind A
-    console.log('B: zero');
-    console.log(await (longCalculation(1, 'B: one')));
-    console.log(await (longCalculation(1, 'B: two')));
-    console.log(await (longCalculation(1, 'B: three')));
-    return 'B: Finished!';
-});
-
-// Start both compound operations
-compoundOperationA().then(function(result) { console.log(result); });
-compoundOperationB().then(function(result) { console.log(result); });
-```
-
-Outputs (with half second delays between lines):
-```
-A: zero
-B: zero
-A: one
-B: one
-A: two
-B: two
-A: three
-A: Finished!
-B: three
-B: Finished!
-```
 
 # API Reference
+### `function async(fn: Function) --> (...args) --> Promise`
+Creates a function that can be suspended at each asynchronous operation. `fn` contains the body of the suspendable function. `async` returns a function of the form `(...args) --> Promise`. Any arguments passed to this function are passed through to `fn`. The promise is resolved when `fn` returns, or rejected if `fn` throws.
 
-### ```function async(fn) {...}```
+### `function await(expr: Awaitable) --> Any`
+Suspends an `async`-wrapped function until the [awaitable](#what-works-with-await) expression `expr` produces a result. The result becomes the return value of the `await` call. Alternatively, if `expr` produces an error, then an exception is raised in the `async`-wrapped function.
 
-**```fn```**: a function written in async/await style (ie using the ```await``` API method)
 
-**returns**: a function that executes ```fn``` and return a promise of ```fn```'s results
-
-**remarks**: any arguments are passed through to fn
-
-### ```function await(expr) {...}```
-
-**```expr```**: any 'thenable' expression (ie a promise)
-
-**returns**: the eventual value of ```expr```'s promise (or throws if the promise is rejected)
-
-**remarks**: suspends execution of the function in which ```await``` appears, until ```expr```'s promise is resolved
-
-### ```function awaitable(fn) {...}```
-
-**```fn```**: a node-style asynchronous function (ie a function which takes a ```callback(err,val){...}``` as final argument)
-
-**returns**: a function that executes ```fn``` and return a promise of ```fn```'s results
-
-**remarks**: this is essentially the same as the ```denodeify```/```promisify``` helper functions of promise libraries
 
 # License
+Copyright (c) 2014 Troy Gerwien
+
 The MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
