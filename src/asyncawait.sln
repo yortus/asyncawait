@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{3C36D442-A9D7-489A-871B-1DBE313B3310}"
 	ProjectSection(SolutionItems) = preProject
 		..\examples\basic.js = ..\examples\basic.js
+		..\examples\countFiles.js = ..\examples\countFiles.js
 		..\examples\interleaved.js = ..\examples\interleaved.js
 		..\examples\parallel.js = ..\examples\parallel.js
 	EndProjectSection

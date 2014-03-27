@@ -29,3 +29,15 @@ var compoundOperationB = async (function () {
 // Start both compound operations.
 compoundOperationA().then(function (result) { console.log(result); });
 compoundOperationB().then(function (result) { console.log(result); });
+
+// Outputs (with half second delays between lines):
+// A: zero
+// B: zero
+// A: one
+// B: one
+// A: two
+// B: two
+// A: three
+// A: Finished!
+// B: three
+// B: Finished!

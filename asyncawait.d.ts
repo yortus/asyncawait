@@ -28,7 +28,7 @@ declare module AsyncAwait {
     }
 
     export interface Thunk<TResult> {
-        (err: any, result: TResult): void;
+        (err?: any, result?: TResult): void;
     }
 }
 
