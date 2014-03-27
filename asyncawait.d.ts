@@ -1,5 +1,5 @@
 ﻿// Type definitions for async-await
-// Project: https://github.com/yortus/node-async-await
+// Project: https://github.com/yortus/asyncawait
 // Definitions by: Troy Gerwien <https://github.com/yortus>
 
 declare module AsyncAwait {

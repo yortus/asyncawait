@@ -11,13 +11,13 @@
     "coroutines"
   ],
   "main": "index.js",
-  "homepage": "https://github.com/yortus/node-async-await",
+  "homepage": "https://github.com/yortus/asyncawait",
   "repository": {
     "type": "git",
-    "url": "git://github.com/yortus/node-async-await.git"
+    "url": "git://github.com/yortus/asyncawait.git"
   },
   "bugs": {
-    "url": "http://github.com/yortus/node-async-await/issues"
+    "url": "http://github.com/yortus/asyncawait/issues"
   },
   "license": "MIT",
   "author": {
