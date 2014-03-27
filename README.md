@@ -49,7 +49,7 @@ The above function does not block node's event loop, despite its synchronous app
 `asyncawait`, like `co`, can suspend a running function without blocking the thread. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
 
 # How is the Performance?
-It depends what you care about most when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
+It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
 
 # Installation
 `npm install asyncawait`
@@ -61,17 +61,49 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 ```
 
-To write a function that can be suspended async/await-style, wrap the definition inside `async(...)`. The call to async returns a function (`fn` in the exmaple below). When `fn` is called, any arguments are passed through to the function wrapped by `async(...)`, and `fn` immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Here is the example:
+To write a function that can be suspended async/await-style, wrap the definition inside `async(...)`. The call to `async` returns a function (`countFiles` in the example below). When `countFiles` is called, any arguments are passed through to the function wrapped by `async(...)` (in this case a path string), and `countFiles` immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Here is the example:
 
 ```javascript
-var fn = async (function(dir) {
+var async = require('../async');
+var await = require('../await');
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs'));
+var path = require('path');
+var _ = require('lodash');
 
+
+var countFiles = async (function(dir) {
+    var files = await (fs.readdirSync(dir));
+    var paths = _.map(files, function (file) { return path.join(dir, file); });
+    var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
+    return _.filter(stats, function (stat) { return stat.isFile(); }).length;
+});
+
+
+countFiles(__dirname).then(function (n) {
+    console.log('There are ' + n + ' files in ' + __dirname);
 });
 ```
 
-Note the spacing after `async` and `await`. They are just plain functions but the space makes them look more like operators. Alternatively if you really want them to stand out, you could define them like `__await__` or `AWAIT` or use whatever style works for you.
+Note the spacing after `async` and `await`. They are just plain functions, but the space makes them look more like operators. Alternatively if you really want them to stand out, you could define them like `__await__` or `AWAIT` or use whatever style works for you.
 
 # What Works with `await`?
+`await` takes a single argument, which can be any of the following (the so-called 'awaitables'):
+
+- A `then`-able object or promise. The function will suspend until the promise is settled. The promise's resolution value will become `await`'s return value. If the promise is rejected, `await` will raise an exception inside the function with the rejection value.
+- A [thunk](https://github.com/visionmedia/co#thunks-vs-promises). The thunk's result will become `await`'s return value. If the thunk returns an error, `await` will raise an exception inside the function with the error value.
+- A simple value, such as a number, string or null. `await` will return immediately with the value.
+- An array or [plain object](https://github.com/jeffomatic/deep#isplainobjectobject), whose elements are all awaitables. Note this definition allows deep object graphs. The function will suspend until all awaitables have produced their value, at which time `await` will return with a clone of the object graph with all promises and thunks replaced by their results. If any promise is rejected or any thunk returns an error, then `await` will raise an exception inside the function with the rejection or error value.
+
+
+# Additional Considerations
+### Handling Errors and Exceptions
+
+
+### Nesting and Composing Asynchronous Functions
+
+
+### Obtaining Promises and Thunks
 
 
 
