@@ -10,7 +10,7 @@ var foo = async (function() {
 });
 ```
 
-which, with one [proviso](./README.md#what-works-with-await), is semantically equivalent to:
+which, with one [proviso](#obtaining-promises-and-thunks), is semantically equivalent to:
 
 ```javascript
 function foo(callback) {
@@ -33,6 +33,8 @@ function foo(callback) {
 
 The above function does not block node's event loop, despite its synchronous appearance. Execution within the function is suspended during each asynchronous operation, but node's event loop is free to do other things with that time. You could write code like the above example in a HTTP request handler, and achieve high throughput with many simultaneous connections, just like with callback-based asynchronous handlers.
 
+
+
 # What about the Alternatives?
 `asyncawait` represents one of several viable approaches to taming callback-heavy code in Node.js, with its own particular trade-offs. Notable alternatives are [`async`](https://github.com/caolan/async) and [`co`](https://github.com/visionmedia/co), which have their own trade-offs. For more information about how the alternatives compare, take a look in the [comparison](./comparison) folder.
 
@@ -45,14 +47,22 @@ The above function does not block node's event loop, despite its synchronous app
 
 **#1** rules out simple synchronous code (eg `fs.readFileSync()` and the like). **#2** rules out `co`. **#3** rules out plain callbacks and `async`. If **#4** is a deal-breaker, your best option might be `async`. `asyncawait` will not work in browsers due to its reliance on [`node-fibers`](https://github.com/laverdet/node-fibers). `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*), making it unsuitable for general browser-based apps for some time to come.
 
+
+
 # How does `asyncawait` work?
 `asyncawait`, like `co`, can suspend a running function without blocking the thread. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
+
+
 
 # How is the Performance?
 It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
 
+
+
 # Installation
 `npm install asyncawait`
+
+
 
 # How to Use
 `asyncawait` provides just two functions: `async()` and `await()`. You can reference these functions with the code:
@@ -61,7 +71,7 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 ```
 
-To write a function that can be suspended async/await-style, wrap the definition inside `async(...)`. The call to `async` returns a function (`countFiles` in the example below). When `countFiles` is called, any arguments are passed through to the function wrapped by `async(...)` (in this case a path string), and `countFiles` immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Here is the example:
+To write a function that can be suspended async/await-style, wrap the definition inside `async(...)`. The call to `async` returns a function -- called `countFiles` in the example below. When `countFiles` is called, any arguments are passed through to the function wrapped by `async(...)` (in this case a path string), and `countFiles` immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Here is the example:
 
 ```javascript
 var async = require('../async');
@@ -93,18 +103,25 @@ Note the spacing after `async` and `await`. They are just plain functions, but t
 - A `then`-able object or promise. The function will suspend until the promise is settled. The promise's resolution value will become `await`'s return value. If the promise is rejected, `await` will raise an exception inside the function with the rejection value.
 - A [thunk](https://github.com/visionmedia/co#thunks-vs-promises). The thunk's result will become `await`'s return value. If the thunk returns an error, `await` will raise an exception inside the function with the error value.
 - A simple value, such as a number, string or null. `await` will return immediately with the value.
-- An array or [plain object](https://github.com/jeffomatic/deep#isplainobjectobject), whose elements are all awaitables. Note this definition allows deep object graphs. The function will suspend until all awaitables have produced their value, at which time `await` will return with a clone of the object graph with all promises and thunks replaced by their results. If any promise is rejected or any thunk returns an error, then `await` will raise an exception inside the function with the rejection or error value.
+- An array or [plain object](https://github.com/jeffomatic/deep#isplainobjectobject), whose elements are all awaitables. Note this definition is recursive and allows nested object graphs. The function will suspend until all nested awaitables have produced their value, at which time `await` will return with a clone of the object graph with all promises and thunks replaced by their results. If any promise is rejected or any thunk returns an error, then `await` will raise an exception inside the function with the rejection or error value.
 
 
-# Additional Considerations
+
+# Additional Coding Considerations
+### Parameters and Return values
+`async`-wrapped functions may accept arguments, return with or without a value, and throw exceptions just like ordinary functions. When a `return` statement is executed, the function's promise is resolved with the return value (which will be `undefined` if it is an expression-less `return`).
+
 ### Handling Errors and Exceptions
-
+Within `async`-wrapped functions, errors may be handled using ordinary `try/catch` blocks. This includes asynchronous errors that originate from any of the `await` operations. The exception object should also contain a useable stack trace. If an `async`-wrapped function has no error-handling logic, and an error occurs during execution (or an exception is explicitly thrown by the function), then the function's promise will be rejected with the exception value.
 
 ### Nesting and Composing Asynchronous Functions
-
+`async`-wrapped functions may be used as `await` expressions, since they return promises and are therefore [awaitable](#what-works-with-await). It follows that calls to `async`-wrapped functions may be arbitrarily nested and composed, and may be recursive.
 
 ### Obtaining Promises and Thunks
+In conventional Node.js code, asynchronous functions accept a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be easily obtained using something like [`bluebird`'s](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [thunkify](https://github.com/visionmedia/node-thunkify).
 
+### Using with TypeScript
+`asyncawait` is written in TypeScript (look in the [src folder](./src)), and includes a [type definition file](./asyncawait.d.ts). Go nuts!
 
 
 
