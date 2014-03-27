@@ -1,4 +1,4 @@
-# Comparing Asynchorous Approaches
+# Comparing Alternative Approaches
 
 
 
@@ -18,10 +18,10 @@ The example function is called `largest()` and is designed to be of moderate com
 
 `largest(dir, options)` finds the largest file in the given directory, optionally performing a recursive search. `dir` is the path of the directory to search. `options`, if provided, is a hash with the following two keys, both optional:
 
-* `recurse` (`boolean`, defaults to `false`): if true, largest will recursively search all subdirectories.
-* `preview` (`boolean`, defaults to `false`): if true, largest will include a small amount of the largest file's content in it's results.
+* `recurse` (`boolean`, defaults to `false`): if true, `largest()` will recursively search all subdirectories.
+* `preview` (`boolean`, defaults to `false`): if true, `largest()` will include a small amount of the largest file's content in it's results.
 
-The requirements of `largest` may be summarised as:
+The requirements of `largest()` may be summarised as:
 
 1. Find the largest file in the given directory (recursively searching subdirectories if the option is selected)
 2. Keep track of how many files/directories have been processed
@@ -33,7 +33,7 @@ The requirements of `largest` may be summarised as:
 
 
 ### Metrics for Comparison
-Some interesting metrics with which to compare the five examples are:
+Some interesting metrics with which to compare the five alternatives are:
 
 * **Lines of code (SLOC)**: Shorter code that does the same thing is usually a good thing
 * **Levels of Indenting**: Each indent represents a context-switch and therefore higher complexity
@@ -53,9 +53,26 @@ Some interesting metrics with which to compare the five examples are:
 
 ###### Footnotes:
 
-[1] body of largest() only
-[2] max indents from outermost statements in body
-[3] +1 whenever visual order of statements differs from execution order - in body of largest(), excludes control-flow stmts eg return, if, for
-[4] on my machine... all v0.10.25 except for [5]
-[5] using v0.11.12 --harmony
+[1] Includes only the body of `largest()`; excludes blank lines and comment lines.
+
+[2] Maximum indentation from the outermost statements in the body of `largest()`.
+
+[3] Count of times in body of `largest()` when visually lower statements execute before visually higher statements due to asynchronous callbacks.
+
+[4] Results on my old laptop. All running node v0.10.25 except for `co` - see [5] below
+
+[5] `co` benchmark run with node v0.11.12 `--harmony`
+
 [6] Benchmark throws stack overflow after a few runs. Also, not really comparable because it's blocking.
+
+
+
+# Observations
+The following observations are based on the above results and obviously may differ substantially with other code and/or on other machines. YMMV. Having said that, at least in this case:
+
+* Plain callbacks are the speed king.
+* The synchronous approach is actually the slowest, which perhaps makes sense since it can't exploit parallellism.
+* The source code of `co`, `asyncawait`, and `synchronous` are virtually identical, with purely mechanical syntax differences.
+* `co` and `asyncawait`, each using different coroutine technology, are virtually identical on all metrics. In a choice between these two, the biggest deciding factor may be whether you can use ES6.
+* `co` and `asyncawait` achieve about 70% of the performance of plain callbacks.
+* `async` is somewhat faster than `co` and `asyncawait`, but compares less favourably on other metrics.
