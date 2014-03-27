@@ -1,4 +1,4 @@
-﻿// Type definitions for async-await
+﻿// Type definitions for asyncawait
 // Project: https://github.com/yortus/asyncawait
 // Definitions by: Troy Gerwien <https://github.com/yortus>
 
