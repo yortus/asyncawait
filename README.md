@@ -55,7 +55,7 @@ The above function does not block node's event loop, despite its synchronous app
 
 
 # How is the Performance?
-It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
+It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison](./comparison) folder, and do run your own [benchmarks](./comparison/benchmark.js).
 
 
 
@@ -99,6 +99,11 @@ Note the spacing after `async` and `await`. They are just plain functions, but t
 
 
 
+# More Examples
+The [examples](./examples) folder contains several more examples. The [comparison](./comparison) folder is also instructive because it contains a moderately complex algorithm coded in five styles (using plain callbacks, using synchronous-only code, using the `async` library, using the `co` library, and using this `asyncawait` library). 
+
+
+
 # What Works with `await`?
 `await` takes a single argument, which can be any of the following (the so-called **awaitables**):
 
@@ -120,7 +125,7 @@ Within `async`-wrapped functions, errors may be handled using ordinary `try/catc
 `async`-wrapped functions may be used as `await` expressions, since they return promises and are therefore [awaitable](#what-works-with-await). It follows that calls to `async`-wrapped functions may be arbitrarily nested and composed, and may be recursive.
 
 ### Obtaining Promises and Thunks
-In conventional Node.js code, asynchronous functions take a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be easily obtained using something like [`bluebird's`](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [`thunkify`](https://github.com/visionmedia/node-thunkify).
+In conventional Node.js code, asynchronous functions take a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be obtained with relative ease using something like [`bluebird's`](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [`thunkify`](https://github.com/visionmedia/node-thunkify).
 
 ### Developing in TypeScript
 `asyncawait` is written in TypeScript (look in the [src folder](./src)), and includes a [type definition file](./asyncawait.d.ts). Go nuts!
@@ -136,7 +141,7 @@ In conventional Node.js code, asynchronous functions take a callback as their la
 * No code preprocessing or special tools, simply write and execute your code normally
 * Has decent [performance](./comparison)
 * Built with [node-fibers](https://github.com/laverdet/node-fibers)
-* [TypeScript](http://www.typescriptlang.org/)-friendly (since ES6 generators are not required)
+* [TypeScript](http://www.typescriptlang.org/) and X-to-JavaScript friendly (since ES6 generators are not required)
 * TypeScript .d.ts included
 * Works only on node.js, not in browsers (since it uses node-fibers)
 
@@ -144,10 +149,10 @@ In conventional Node.js code, asynchronous functions take a callback as their la
 
 # API Reference
 ### `function async(fn: Function) --> (...args) --> Promise`
-Creates a function that can be suspended at each asynchronous operation. `fn` contains the body of the suspendable function. `async` returns a function of the form `(...args) --> Promise`. Any arguments passed to this function are passed through to `fn`. The promise is resolved when `fn` returns, or rejected if `fn` throws.
+Creates a function that can be suspended at each asynchronous operation. `fn` contains the body of the suspendable function. `async` returns a function of the form `(...args) --> Promise`. Any arguments passed to this function are passed through to `fn`. The returned promise is resolved when `fn` returns, or rejected if `fn` throws.
 
 ### `function await(expr: Awaitable) --> Any`
-Suspends an `async`-wrapped function until the [awaitable](#what-works-with-await) expression `expr` produces a result. The result becomes the return value of the `await` call. Alternatively, if `expr` produces an error, then an exception is raised in the `async`-wrapped function.
+Suspends an `async`-wrapped function until the [awaitable](#what-works-with-await) expression `expr` produces a result. The result becomes the return value of the `await` call. If `expr` produces an error, then an exception is raised in the `async`-wrapped function.
 
 
 
