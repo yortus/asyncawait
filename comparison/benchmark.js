@@ -17,7 +17,7 @@ var variants = {
 var LARGEST_DIR = path.join(__dirname, '.');
 var SAMPLES_PER_RUN = 1000;
 var RUNS_PER_BENCHMARK = 10;
-var SELECTED_VARIANT = variants.synchronous;
+var SELECTED_VARIANT = variants.asyncawait;
 
 
 // Run the benchmark.
