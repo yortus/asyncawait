@@ -59,9 +59,9 @@ Some interesting metrics with which to compare the five alternatives are:
 
 [3] Count of times in body of `largest()` when visually lower statements execute before visually higher statements due to asynchronous callbacks.
 
-[4] Results on my old laptop. All running node v0.10.25 except for `co` - see [5] below
+[4] Using [benchmark.js](./benchmark.js) on my old laptop. All running node v0.10.25 except for `co` - see [5] below.
 
-[5] `co` benchmark run with node v0.11.12 `--harmony`
+[5] `co` benchmark run with node v0.11.12 `--harmony`.
 
 [6] Benchmark throws stack overflow after a few runs. Also, not really comparable because it's blocking.
 
