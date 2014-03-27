@@ -1,28 +1,92 @@
 # Introduction
-Asyncawait makes asynchronous Node.js JavaScript code simpler to read and write, by supporting
+`asyncawait` provides Yet Another Way™ to tame [callback hell](http://callbackhell.com/) in Node.js applications. Inspired by [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) feature, `asyncawait` enables you to write functions that **appear** to block at each asynchronous operation, waiting for the results before continuing with the following statement. For example, you can write the following in plain JavaScript:
 
-[blocking semantics](http://en.wikipedia.org/wiki/Futures_and_promises#Blocking_vs_non-blocking_semantics)
+```javascript
+var foo = async (function() {
+    var resultA = await (firstAsyncCall());
+    var resultB = await (secondAsyncCallUsing(resultA));
+    var resultC = await (thirdAsyncCallUsing(resultB));
+    return (doSomethingWith(resultC));
+});
+```
 
-withing specially marked functions. BUT WITHOUT ACTUALLY BLOCKING (thanks to coroutines)
+which, with one [proviso](./README.md#what-works-with-await), is semantically equivalent to:
 
- syntax similar to [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx). Callback spaghetti code (a.k.a. "Pyradim of Doom" a.k.a. "Callback Hell") can be rewritten as linear sequences with normal try/catch handling. However, the code remains fully non-blocking, and in fact is semantically equivalent to its spaghetti cousins.
+```javascript
+function foo(callback) {
+    firstAsyncCall(function (err, resultA) {
+        if (err) { callback(err); return; }
+        secondAsyncCallUsing(resultA, function (err, resultB) {
+            if (err) { callback(err); return; }
+            thirdAsyncCallUsing(resultB, function (err, resultC) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, doSomethingWith(resultC));
+                }
+            });
 
-As well as saving your eyes from bleeding, simpler code hopefully means easier reviewing and testing, and just generally less mistakes.
+        });
+    });
+}
+```
 
-Asyncawait uses plain JavaScript. It does not require ES6 generators. Your code is not preprocessed. The suspension/resumption of async functions is made possible by [node-fibers](https://github.com/laverdet/node-fibers).
+The above function does not block node's event loop, despite its synchronous appearance. Execution within the function is suspended during each asynchronous operation, but node's event loop is free to do other things with that time. You could write code like the above example in a HTTP request handler, and achieve high throughput with many simultaneous connections, just like with callback-based asynchronous handlers.
 
-TODO: update link on node-fibers on rename
+# What about the Alternatives?
+`asyncawait` represents one of several viable approaches to taming callback-heavy code in Node.js, with its own particular trade-offs. Notable alternatives are [`async`](https://github.com/caolan/async) and [`co`](https://github.com/visionmedia/co), which have their own trade-offs. For more information about how the alternatives compare, take a look in the [comparison](./comparison) folder.
+
+`asyncawait` may suit you if:
+
+1. your application involves complex operations but must exploit maximum parallelism;
+2. your tooling does not support [ES6](http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts), for example because you use a compile-to-JavaScript language like [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/);
+3. you prefer your code to be as short and simple as it's synchronous/blocking equivalent; and
+4. your application runs in Node.js (eg your are writing a web server or some other server-side program).
+
+**#1** rules out simple synchronous code (eg `fs.readFileSync()` and the like). **#2** rules out `co`. **#3** rules out plain callbacks and `async`. If **#4** is a deal-breaker, your best option might be `async`. `asyncawait` will not work in browsers due to its reliance on [`node-fibers`](https://github.com/laverdet/node-fibers). `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*), making it unsuitable for general browser-based apps for some time to come.
+
+# How does `asyncawait` work?
+`asyncawait`, like `co`, can suspend a running function without blocking the thread. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
+
+# How is the Performance?
+It depends what you care about most when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers but do check out the code in the [comparison folder](./comparison), and do run your own [benchmarks](./comparison/benchmark.js).
+
+# Installation
+`npm install asyncawait`
+
+# How to Use
+`asyncawait` provides just two functions: `async()` and `await()`. You can reference these functions with the code:
+```javascript
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+```
+
+To write a function that can be suspended async/await-style, wrap the definition inside `async(...)`. The call to async returns a function (`fn` in the exmaple below). When `fn` is called, any arguments are passed through to the function wrapped by `async(...)`, and `fn` immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Here is the example:
+
+```javascript
+var fn = async (function(dir) {
+
+});
+```
+
+Note the spacing after `async` and `await`. They are just plain functions but the space makes them look more like operators. Alternatively if you really want them to stand out, you could define them like `__await__` or `AWAIT` or use whatever style works for you.
+
+# What Works with `await`?
 
 
-# Example
 
 
-# Why? Motivation
 
-# Comparisons
-- with callbacks
-- with async
-- with co
+# Feature/Gotcha Summary
+- Reduces length and complexity of asynchronous code
+- Does not block
+- Uses plain ES3/ES5 JavaScript. ES6 generators not required
+- No preprocessing
+- TypeScript-friendly and X-to-JavaScript-friendly
+- Uses node-fibers
+- Performant
+- .d.ts provided
+
 
 
 
@@ -34,18 +98,6 @@ TODO: update link on node-fibers on rename
 
 How to await node functions...
 
-
-# Features
-
-
-
-# Limitations
-
-
-# Performance
-
-
-# Installation
 
 
 
