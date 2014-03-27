@@ -78,7 +78,7 @@ function run(callback) {
         },
         function(err) {
             process.stdout.write('\n');
-            if (err) callback(err);
+            if (err) { callback(err); return; }
             var elapsed = new Date().getTime() - start;
             callback(null, elapsed);
         });
