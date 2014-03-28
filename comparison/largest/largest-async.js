@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var fs = require('fs');
-var pathJoin = require('path').join;
+var path = require('path');
 var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('async');
@@ -27,37 +27,44 @@ var largest = function (dir, options, internal, callback) {
     async.waterfall([
         function (callback) {
 
+            // Get all directory entries.
+            fs.readdir(dir, callback);
+        },
+        function (files, callback) {
+
+            // Get all file stats in parallel.
+            var paths = _.map(files, function (file) { return path.join(dir, file); });
+            async.parallel(
+                _.map(paths, function (path) { return fs.stat.bind(fs, path); }),
+                function (err, stats) { callback(err, paths, stats); }
+            );
+        },
+        function (paths, stats, callback) {
+
             // Build up a list of possible candidates, recursing into subfolders if requested.
-            var candidates = [];
-            fs.readdir(dir, function (err, files) { // Get list of files/subdirs in dir.
-                if (err) { callback(err); return; }
-                async.each(files, function(file, next) { // Process each file/subdir in parallel.
-                    var path = pathJoin(dir, file);
-                    fs.stat(path, function (err, stat) { // stat() the file/subdir.
-                        if (err) { next(err); return; }
+            async.parallel(
+                _.map(stats, function (stat, i) {
+                    return (function (path, stat, i, callback) {
                         if (stat.isFile()) {
-                            candidates.push({ path: path, size: stat.size, searched: 1 });
-                            next();
+                            callback(null, { path: path, size: stat.size, searched: 1 });
                         } else if (!options.recurse) {
-                            next();
+                            callback();
                         } else {
                             largest(path, options, true, function (err, cand) { // recurse
-                                if (err) { next(err); return; }
-                                if (cand) candidates.push(cand);
-                                next();
+                                if (err) { callback(err); return; }
+                                callback(null, cand);
                             });
                         }
-                    });
-                }, function (err) {
-                    if (err) callback(err);
-                    else callback(null, candidates);
-                });
-            });
+                    }).bind(null, paths[i], stat, i);
+                }),
+                callback
+            );
         },
         function (candidates, callback) {
 
             // Choose the best candidate.
             var result = _(candidates)
+                .filter(function (cand) { return cand; })
                 .reduce(function (best, cand) {
                     if (cand.size > best.size) var temp = cand, cand = best, best = temp;
                     best.searched += cand.searched;
@@ -83,8 +90,11 @@ var largest = function (dir, options, internal, callback) {
                         result.preview = buffer.toString('utf-8', 0, bytesRead);
                         callback();
                     },
-                    function() {
+                    function(callback) {
                         fs.close(fd_, callback);
+                    },
+                    function(callback) {
+                        callback(null, result);
                     }
                 ], callback);
             } else {

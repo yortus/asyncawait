@@ -1,9 +1,16 @@
 var path = require('path');
-var async = require('async'); // Use async in case co or asyncawait won't run on the version of node being benchmarked.
+var async = require('async'); // NB: async is used here in the benchmarking code, in case co or
+                              // asyncawait won't run on the version of node being benchmarked.
 var _ = require('lodash');
 
 
-// Available variants of largest() for benchmarking.
+// Functions available for benchmarking
+var functions = {
+    countFiles: 'countFiles',
+    largest: 'largest'
+};
+
+// Veriants available for benchmarking.
 var variants = {
     async: 'async',
     asyncawait: 'asyncawait',
@@ -13,26 +20,45 @@ var variants = {
 };
 
 
-// Benchmark configuration - please adjust to suit.
-var LARGEST_DIR = path.join(__dirname, '.');
-var SAMPLES_PER_RUN = 1000;
-var RUNS_PER_BENCHMARK = 10;
+// ================================================================================
+// Benchmark configuration - adjust to suit.
+
+var SELECTED_FUNCTION = functions.largest;
+
 var SELECTED_VARIANT = variants.asyncawait;
 
+var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run
 
-// Run the benchmark.
-var largest = require('./largest-' + SELECTED_VARIANT);
-benchmark();
+var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark
+
+var JUST_CHECK_THE_FUNCTION = false; // If true, just call the function once and display its results
+
+// ================================================================================
+
+
+// Run the benchmark (or just check the function).
+if (JUST_CHECK_THE_FUNCTION) {
+    var name = SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
+    var sample = createSampleFunction();
+    console.log("========== CHECKING '" + name + "': ==========");
+    sample(function(err, result) {
+        console.log(err || result);
+    });
+} else {
+    benchmark();
+}
 
 
 function benchmark() {
-    console.log('========== PERFORMING ' + RUNS_PER_BENCHMARK + " RUNS ON '" + SELECTED_VARIANT + "': ==========");
+    var name = SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
+    var sample = createSampleFunction();
+    console.log('========== PERFORMING ' + RUNS_PER_BENCHMARK + " RUNS ON '" + name + "': ==========");
     var times = [];
     async.timesSeries(
         RUNS_PER_BENCHMARK,
         function(n, next) {
             process.stdout.write('RUN ' + (n + 1));
-            run(function(err, elapsed) {
+            run(sample, function(err, elapsed) {
                 if (err) {
                     next(err);
                 } else {
@@ -68,7 +94,7 @@ function benchmark() {
 
 
 
-function run(callback) {
+function run(sample, callback) {
     var start = new Date().getTime();
     async.timesSeries(
         SAMPLES_PER_RUN,
@@ -85,6 +111,18 @@ function run(callback) {
 };
 
 
-function sample(callback) {
-    largest(LARGEST_DIR, { recurse: true, preview: true }, callback);
+function createSampleFunction() {
+    var selectedFunction = require('./' + SELECTED_FUNCTION + '/' + SELECTED_FUNCTION + '-' + SELECTED_VARIANT);
+    switch (SELECTED_FUNCTION) {
+        case functions.largest:
+            var dirToCheck = path.join(__dirname, '.');
+            var options = { recurse: true, preview: true };
+            var sample = function (callback) { selectedFunction(dirToCheck, options, callback); };
+            break;
+
+        case functions.countFiles:
+            var dirToCheck = path.join(__dirname, '.');
+            var sample = function (callback) { selectedFunction(dirToCheck, callback); };
+    }
+    return sample;
 }

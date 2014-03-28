@@ -24,12 +24,25 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "comparison", "comparison", "{8D67E128-CC93-4198-BFE5-E452167C2063}"
 	ProjectSection(SolutionItems) = preProject
 		..\comparison\benchmark.js = ..\comparison\benchmark.js
-		..\comparison\largest-async.js = ..\comparison\largest-async.js
-		..\comparison\largest-asyncawait.js = ..\comparison\largest-asyncawait.js
-		..\comparison\largest-callbacks.js = ..\comparison\largest-callbacks.js
-		..\comparison\largest-co.js = ..\comparison\largest-co.js
-		..\comparison\largest-synchronous.js = ..\comparison\largest-synchronous.js
 		..\comparison\README.md = ..\comparison\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "largest", "largest", "{F4389DA4-0734-46E1-8BBD-7E9A1D7C1299}"
+	ProjectSection(SolutionItems) = preProject
+		..\comparison\largest\largest-async.js = ..\comparison\largest\largest-async.js
+		..\comparison\largest\largest-asyncawait.js = ..\comparison\largest\largest-asyncawait.js
+		..\comparison\largest\largest-callbacks.js = ..\comparison\largest\largest-callbacks.js
+		..\comparison\largest\largest-co.js = ..\comparison\largest\largest-co.js
+		..\comparison\largest\largest-synchronous.js = ..\comparison\largest\largest-synchronous.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "countFiles", "countFiles", "{BF00CF3C-81DA-408D-95CD-2FDD861B9785}"
+	ProjectSection(SolutionItems) = preProject
+		..\comparison\countFiles\countFiles-async.js = ..\comparison\countFiles\countFiles-async.js
+		..\comparison\countFiles\countFiles-asyncawait.js = ..\comparison\countFiles\countFiles-asyncawait.js
+		..\comparison\countFiles\countFiles-callbacks.js = ..\comparison\countFiles\countFiles-callbacks.js
+		..\comparison\countFiles\countFiles-co.js = ..\comparison\countFiles\countFiles-co.js
+		..\comparison\countFiles\countFiles-synchronous.js = ..\comparison\countFiles\countFiles-synchronous.js
 	EndProjectSection
 EndProject
 Global
@@ -45,5 +58,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4389DA4-0734-46E1-8BBD-7E9A1D7C1299} = {8D67E128-CC93-4198-BFE5-E452167C2063}
+		{BF00CF3C-81DA-408D-95CD-2FDD861B9785} = {8D67E128-CC93-4198-BFE5-E452167C2063}
 	EndGlobalSection
 EndGlobal
