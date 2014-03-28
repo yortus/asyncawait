@@ -83,7 +83,7 @@ var _ = require('lodash');
 
 
 var countFiles = async (function(dir) {
-    var files = await (fs.readdirSync(dir));
+    var files = await (fs.readdirAsync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
     var stats = await (_.map(paths, function (path) { return fs.statAsync(path); })); // parallel!
     return _.filter(stats, function (stat) { return stat.isFile(); }).length;
