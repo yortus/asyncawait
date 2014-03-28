@@ -1,4 +1,4 @@
-# Comparing Alternative Approaches
+# Comparing Node.js Asynchronous Alternatives
 
 
 
@@ -70,7 +70,7 @@ The following metrics are for the `largest()` example function:
 
 
 # Observations
-The following observations are based on the above results and obviously may differ substantially with other code and/or on other machines. YMMV. Having said that, at least in this case:
+The following observations are based on the above results and obviously may differ substantially with other code and/or on other machines. **YMMV**. Having said that, at least in this case:
 
 * Plain callbacks are the speed king.
 * `asyncawait` is second-fastest in this benchmark, achieving about 75% of the performance of plain callbacks.
