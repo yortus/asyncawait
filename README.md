@@ -1,5 +1,5 @@
 # Introduction
-`asyncawait` provides Yet Another Way™ to tame [callback hell](http://callbackhell.com/) in Node.js applications. Inspired by [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) feature, `asyncawait` enables you to write functions that **appear** to block at each asynchronous operation, waiting for the results before continuing with the following statement. For example, you can write the following in plain JavaScript:
+`asyncawait` provides Yet Another Solution™ to the problem of [callback hell](http://callbackhell.com/) in Node.js JavaScript code. Inspired by [C#'s async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) feature, `asyncawait` enables you to write functions that **appear** to block at each asynchronous operation, waiting for the results before continuing with the following statement. For example, you can write the following in plain JavaScript:
 
 ```javascript
 var foo = async (function() {
@@ -40,8 +40,8 @@ The above function does not block node's event loop, despite its synchronous app
 
 `asyncawait` may suit you if:
 
-1. your application involves complex operations but must exploit maximum parallelism;
-2. your tooling does not support [ES6](http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts), for example because you use a compile-to-JavaScript language like [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/);
+1. you need to exploit maximum parallelism on node's event loop;
+2. you use [compile-to-javascript](https://github.com/jashkenas/coffee-script/wiki/List-of-languages-that-compile-to-JS) languages or other tools that don't support [ES6](http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts), such as [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/);
 3. you prefer your code to be as short and simple as it's synchronous/blocking equivalent; and
 4. your application runs in Node.js (eg a web server or some other server-side program).
 
@@ -50,12 +50,12 @@ The above function does not block node's event loop, despite its synchronous app
 
 
 # How does `asyncawait` work?
-`asyncawait`, like `co`, can suspend a running function without blocking the thread. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
+`asyncawait`, like `co`, can suspend a running function without blocking the thread. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but use different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
 
 
 
 # How is the Performance?
-It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 68.92% shorter with 70% less indents and run at 73% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison](./comparison) folder, and do run your own [benchmarks](./comparison/benchmark.js).
+It depends what you care about when you say performance. As a rough guide, compared with bare callbacks, expect your code to be 70% shorter with 66% less indents and run at 75.4% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison](./comparison) folder, and do run your own [benchmarks](./comparison/benchmark.js).
 
 
 
@@ -85,7 +85,7 @@ var _ = require('lodash');
 var countFiles = async (function(dir) {
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
-    var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
+    var stats = await (_.map(paths, function (path) { return fs.statAsync(path); })); // parallel!
     return _.filter(stats, function (stat) { return stat.isFile(); }).length;
 });
 
@@ -95,12 +95,12 @@ countFiles(__dirname)
     .catch(function (err) { console.log('Something went wrong: ' + err); });
 ```
 
-Note the spacing after `async` and `await`. They are just plain functions, but the space makes them look more like operators. Alternatively if you really want them to stand out, you could define them like `__await__` or `AWAIT` or use whatever style works for you.
+Note the spacing after `async` and `await`. They are just plain functions, but the space makes them look more like keywords. Alternatively if you really want them to stand out, you could define them like `__await__` or `AWAIT` or use whatever style works for you.
 
 
 
 # More Examples
-The [examples](./examples) folder contains several more examples. The [comparison](./comparison) folder is also instructive because it contains a moderately complex algorithm coded in five styles (using plain callbacks, using synchronous-only code, using the `async` library, using the `co` library, and using this `asyncawait` library). 
+The [examples](./examples) folder contains more examples. The [comparison](./comparison) folder also contains several examples, each coded in five different styles (using plain callbacks, using synchronous-only code, using the `async` library, using the `co` library, and using this `asyncawait` library). 
 
 
 
@@ -119,10 +119,13 @@ The [examples](./examples) folder contains several more examples. The [compariso
 `async`-wrapped functions may accept arguments, return with or without a value, and throw exceptions just like ordinary functions. When a `return` statement is executed, the function's promise is resolved with the return value (which will be `undefined` if it is an expression-less `return`).
 
 ### Handling Errors and Exceptions
-Within `async`-wrapped functions, errors may be handled using ordinary `try/catch` blocks. This includes asynchronous errors that originate from any of the `await` operations. The exception object should also contain a useable stack trace. If an `async`-wrapped function has no error-handling logic, and an error occurs during execution (or an exception is explicitly thrown by the function), then the function's promise will be rejected with the exception value.
+Within `async`-wrapped functions, errors may be handled using ordinary `try/catch` blocks. This includes asynchronous errors that originate from any of the `await` operations. The exception object will also contain a useable stack trace. If an `async`-wrapped function has no error-handling logic, and an error occurs during execution (or an exception is explicitly thrown by the function), then the function's promise will be rejected with the exception value.
 
 ### Nesting and Composing Asynchronous Functions
-`async`-wrapped functions may be used as `await` expressions, since they return promises and are therefore [awaitable](#what-works-with-await). It follows that calls to `async`-wrapped functions may be arbitrarily nested and composed, and may be recursive.
+`async`-wrapped functions may be used in `await` expressions, since they return promises and are therefore [awaitable](#what-works-with-await). It follows that calls to `async`-wrapped functions may be arbitrarily nested and composed, and may be recursive.
+
+### Expoliting Parallelism
+You can execute any number of asynchronous operations in parallel by applying `await` to an array of awaitable expressions. `await` will return the array of results when all the parallel operations are complete, or throw if any of them fail. Libraries like [lodash](http://lodash.com) and [underscore](http://underscorejs.org/) make this very succinct.
 
 ### Obtaining Promises and Thunks
 In conventional Node.js code, asynchronous functions take a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be obtained with relative ease using something like [`bluebird's`](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [`thunkify`](https://github.com/visionmedia/node-thunkify).
@@ -134,12 +137,12 @@ In conventional Node.js code, asynchronous functions take a callback as their la
 
 # Feature/Gotcha Summary
 * Reduces length and complexity of asynchronous code
+* [Fast](./comparison) and lightweight
 * Completely [non-blocking](http://stackoverflow.com/a/14797359)
 * Does not require [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
 * Syntax is plain JavaScript, and behaves much like C#'s async/await
 * Seamless interoperation with libraries that consume and/or produce promises
 * No code preprocessing or special tools, simply write and execute your code normally
-* Has decent [performance](./comparison)
 * Built with [node-fibers](https://github.com/laverdet/node-fibers)
 * [TypeScript](http://www.typescriptlang.org/) and X-to-JavaScript friendly (since ES6 generators are not required)
 * TypeScript .d.ts included
