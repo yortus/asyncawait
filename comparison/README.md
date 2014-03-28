@@ -2,19 +2,20 @@
 
 
 
-### The Setup
-In this folder are five files called `largest-*.js`. They each contain fairly equivalent code to implement the function described below. The five alternative approaches considered are:
+### The Example Functions
+The `largest` and `countFiles` folders each contain a sample function implemented in five different ways:
+* **callbacks**: using plain old callbacks;
+* **async**: using the [`async`](https://github.com/caolan/async) library;
+* **co**: using the [`co`](https://github.com/visionmedia/co) library (requires node >= 0.11.2 with the `--harmony` flag);
+* **asyncawait**: using this `asyncawait` library; and
+* **synchronous**: using purely blocking code (just for comparison).
 
-* ['largest-callbacks.js'](./largest-callbacks.js) uses plain old callbacks
-* ['largest-async.js'](./largest-async.js): uses the [`async`](https://github.com/caolan/async) library
-* ['largest-co.js'](./largest-co.js): uses the [`co`](https://github.com/visionmedia/co) library (requires node >= 0.11.2 with the `--harmony` flag)
-* ['largest-asyncawait.js'](./largest-asyncawait.js): uses `asyncawait`
-* ['largest-synchronous.js'](./largest-synchronous.js): uses purely blocking code (just for comparison)
+This gives a good indication of the trade-offs between the different coding styles. For the remainer of this document, we'll focus on the more complex of the two exmaples, the `largest()` function.
 
 
 
-### The Example Function
-The example function is called `largest()` and is designed to be of moderate complexity, like a real-world problem.
+### The `largest()` Function
+The `largest()` example function is designed to be of moderate complexity, like a real-world problem.
 
 `largest(dir, options)` finds the largest file in the given directory, optionally performing a recursive search. `dir` is the path of the directory to search. `options`, if provided, is a hash with the following two keys, both optional:
 
@@ -36,30 +37,31 @@ The requirements of `largest()` may be summarised as:
 Some interesting metrics with which to compare the five alternatives are:
 
 * **Lines of code (SLOC)**: Shorter code that does the same thing is usually a good thing
-* **Levels of Indenting**: Each indent represents a context-switch and therefore higher complexity
+* **Levels of Indenting**: Each indent represents a context-shift and therefore higher complexity
 * **Anachrony**: Asynchronous code may execute in an order very different from its visual representation, which may make it harder to read and reason about in some cases
 * **Speed**: Node.js is built for speed and throughput, so any loss of speed imposed by an approach may count against it 
 
 
 # Comparison Summary
+The following metrics are for the `largest()` example function:
 
 | Approach      | SLOC [1] | Indents [2] | Anachrony [3] | Ops/sec [4] |
 | ------------- | -------- | ----------- | ------------- | ----------- |
-| callbacks     |       74 |           7 |             8 |    ~304     |
-| async         |       64 |           7 |             6 |    ~256     |
-| co            |       23 |           2 |             - |    ~215 [5] |
-| asyncawait    |       23 |           2 |             - |    ~221     |
-| synchronous   |       23 |           2 |             - |    ~189 [6] |
+| callbacks     |       85 |           6 |             9 |    ~248     |
+| async         |       70 |           7 |             5 |    ~147     |
+| co            |       23 |           2 |             - |    ~182 [5] |
+| asyncawait    |       23 |           2 |             - |    ~187     |
+| synchronous   |       23 |           2 |             - |    ~157 [6] |
 
 ###### Footnotes:
 
-[1] Includes only the body of `largest()`; excludes blank lines and comment lines.
+[1] Includes only lines in the function body; excludes blank lines and comment lines.
 
-[2] Maximum indentation from the outermost statements in the body of `largest()`.
+[2] Maximum indentation from the outermost statements in the function body.
 
-[3] Count of times in body of `largest()` when visually lower statements execute before visually higher statements due to asynchronous callbacks.
+[3] Count of times in the function body when visually lower statements execute before visually higher statements due to asynchronous callbacks.
 
-[4] Using [benchmark.js](./benchmark.js) on my old laptop. All running node v0.10.25 except for `co` - see [5] below.
+[4] Using [benchmark.js](./benchmark.js) on my laptop. All running node v0.10.25 except for `co` - see [5] below.
 
 [5] `co` benchmark run with node v0.11.12 `--harmony`.
 
@@ -71,8 +73,8 @@ Some interesting metrics with which to compare the five alternatives are:
 The following observations are based on the above results and obviously may differ substantially with other code and/or on other machines. YMMV. Having said that, at least in this case:
 
 * Plain callbacks are the speed king.
-* The synchronous approach is actually the slowest, which perhaps makes sense since it can't exploit parallellism.
+* `asyncawait` is second-fastest in this benchmark, achieving about 75% of the performance of plain callbacks.
 * The source code of `co`, `asyncawait`, and `synchronous` are virtually identical, with purely mechanical syntax differences.
 * `co` and `asyncawait`, each using different coroutine technology, are virtually identical on all metrics. In a choice between these two, the biggest deciding factor may be whether you can use ES6.
-* `co` and `asyncawait` achieve about 70% of the performance of plain callbacks.
-* `async` is somewhat faster than `co` and `asyncawait`, but compares less favourably on other metrics.
+* The synchronous approach is actually one of the slowest, which perhaps makes sense since it can't exploit parallellism.
+* `async` is slowest in this benchmark, and also looks relatively unfavourable on the other metrics.
