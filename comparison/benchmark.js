@@ -10,7 +10,7 @@ var functions = {
     largest: 'largest'
 };
 
-// Veriants available for benchmarking.
+// Variants available for benchmarking.
 var variants = {
     async: 'async',
     asyncawait: 'asyncawait',
