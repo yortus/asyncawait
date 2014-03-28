@@ -4,7 +4,7 @@ var async = require('async'); // NB: async is used here in the benchmarking code
 var _ = require('lodash');
 
 
-// Functions available for benchmarking
+// Functions available for benchmarking.
 var functions = {
     countFiles: 'countFiles',
     largest: 'largest'
