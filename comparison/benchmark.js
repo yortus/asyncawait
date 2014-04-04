@@ -2,6 +2,16 @@ var path = require('path');
 var async = require('async'); // NB: async is used here in the benchmarking code, in case co or
                               // asyncawait won't run on the version of node being benchmarked.
 var _ = require('lodash');
+var memwatch = require('memwatch');
+
+
+memwatch.on('leak', function(info) {
+    console.log(info);
+});
+memwatch.on('stats', function(stats) {
+    process.stdout.write('#');
+});
+
 
 
 // Functions available for benchmarking.
@@ -43,8 +53,11 @@ if (JUST_CHECK_THE_FUNCTION) {
     var name = SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
     var sample = createSampleFunction();
     console.log("========== CHECKING '" + name + "': ==========");
+    var hd = new memwatch.HeapDiff();
     sample(function(err, result) {
         console.log(err || result);
+        var diff = hd.end();
+        console.log(JSON.stringify(diff, null, 4));
     });
 } else {
     benchmark();
@@ -137,7 +150,7 @@ function createSampleFunction() {
     switch (SELECTED_FUNCTION) {
         case functions.largest:
             var dirToCheck = path.join(__dirname, '.');
-            var options = { recurse: true, preview: true };
+            var options = { recurse: false, preview: true };
             var sample = function (callback) { selectedFunction(dirToCheck, options, callback); };
             break;
 
