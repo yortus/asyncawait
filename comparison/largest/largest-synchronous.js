@@ -52,7 +52,7 @@ var largest = function (dir, options, internal) {
         fs.closeSync(fd);
     }
     return result;
-}
+};
 largest.options = {};
 
 

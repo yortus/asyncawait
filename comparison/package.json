@@ -5,6 +5,7 @@
   "dependencies": {
     "async": "*",
     "co": "*",
-    "lodash": "*"
+    "lodash": "*",
+    "memwatch": "*"
   }
 }

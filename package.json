@@ -8,10 +8,12 @@
     "blocking",
     "callback",
     "control flow",
-    "fibers",
+    "fiber",
     "yield",
     "generator",
-    "coroutine"
+    "coroutine",
+    "typescript",
+    "coffeescript"
   ],
   "main": "index.js",
   "homepage": "https://github.com/yortus/asyncawait",

@@ -1,49 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "asyncawait", "asyncawait.njsproj", "{330C5F49-70CC-42B2-B036-7E7C0C4E604D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{3C36D442-A9D7-489A-871B-1DBE313B3310}"
-	ProjectSection(SolutionItems) = preProject
-		..\examples\basic.js = ..\examples\basic.js
-		..\examples\countFiles.js = ..\examples\countFiles.js
-		..\examples\interleaved.js = ..\examples\interleaved.js
-		..\examples\parallel.js = ..\examples\parallel.js
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{07D6E85E-F15E-438B-8293-313B50927A8E}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\.npmignore = ..\.npmignore
+		..\LICENSE = ..\LICENSE
 		..\package.json = ..\package.json
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "comparison", "comparison", "{8D67E128-CC93-4198-BFE5-E452167C2063}"
-	ProjectSection(SolutionItems) = preProject
-		..\comparison\benchmark.js = ..\comparison\benchmark.js
-		..\comparison\README.md = ..\comparison\README.md
-	EndProjectSection
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "comparison", "..\comparison\comparison.njsproj", "{F9EA2D49-E01E-4F17-A09C-6D020CF622F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "largest", "largest", "{F4389DA4-0734-46E1-8BBD-7E9A1D7C1299}"
-	ProjectSection(SolutionItems) = preProject
-		..\comparison\largest\largest-async.js = ..\comparison\largest\largest-async.js
-		..\comparison\largest\largest-asyncawait.js = ..\comparison\largest\largest-asyncawait.js
-		..\comparison\largest\largest-callbacks.js = ..\comparison\largest\largest-callbacks.js
-		..\comparison\largest\largest-co.js = ..\comparison\largest\largest-co.js
-		..\comparison\largest\largest-synchronous.js = ..\comparison\largest\largest-synchronous.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "countFiles", "countFiles", "{BF00CF3C-81DA-408D-95CD-2FDD861B9785}"
-	ProjectSection(SolutionItems) = preProject
-		..\comparison\countFiles\countFiles-async.js = ..\comparison\countFiles\countFiles-async.js
-		..\comparison\countFiles\countFiles-asyncawait.js = ..\comparison\countFiles\countFiles-asyncawait.js
-		..\comparison\countFiles\countFiles-callbacks.js = ..\comparison\countFiles\countFiles-callbacks.js
-		..\comparison\countFiles\countFiles-co.js = ..\comparison\countFiles\countFiles-co.js
-		..\comparison\countFiles\countFiles-synchronous.js = ..\comparison\countFiles\countFiles-synchronous.js
-	EndProjectSection
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "examples", "..\examples\examples.njsproj", "{B2439C8A-CC41-4409-A07A-173BA0B6094B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,12 +28,16 @@ Global
 		{330C5F49-70CC-42B2-B036-7E7C0C4E604D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{330C5F49-70CC-42B2-B036-7E7C0C4E604D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{330C5F49-70CC-42B2-B036-7E7C0C4E604D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9EA2D49-E01E-4F17-A09C-6D020CF622F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9EA2D49-E01E-4F17-A09C-6D020CF622F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9EA2D49-E01E-4F17-A09C-6D020CF622F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9EA2D49-E01E-4F17-A09C-6D020CF622F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2439C8A-CC41-4409-A07A-173BA0B6094B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2439C8A-CC41-4409-A07A-173BA0B6094B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2439C8A-CC41-4409-A07A-173BA0B6094B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2439C8A-CC41-4409-A07A-173BA0B6094B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{F4389DA4-0734-46E1-8BBD-7E9A1D7C1299} = {8D67E128-CC93-4198-BFE5-E452167C2063}
-		{BF00CF3C-81DA-408D-95CD-2FDD861B9785} = {8D67E128-CC93-4198-BFE5-E452167C2063}
 	EndGlobalSection
 EndGlobal

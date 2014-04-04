@@ -1,3 +1,6 @@
+// TODO: BUG: this co implementation does not recurse properly - cause yet to be determined
+
+
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');

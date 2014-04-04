@@ -1,6 +1,7 @@
 ﻿var deep = require('deep');
 var Fiber = require('fibers');
 var Promise = require('bluebird');
+var Semaphore = require('./Semaphore');
 
 
 // This function accepts a context hash, and makes a function call as descibed in the context.
@@ -14,11 +15,17 @@ function wrapper(context) {
         context.resolve(result);
     } catch (err) {
         context.reject(err);
+    } finally {
+        // Exit the semaphore.
+        context.leave();
     }
 }
 
 // This is the async() API function (see docs).
 var async = function (fn) {
+    //TODO: temp testing... Create a semaphore.
+    var semaphore = new Semaphore(10);
+
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function () {
         var _this = this;
@@ -33,11 +40,25 @@ var async = function (fn) {
                 thisArg: _this,
                 argsAsArray: argsAsArray,
                 resolve: resolve,
-                reject: reject
+                reject: reject,
+                leave: function () {
+                    return semaphore.leave();
+                }
             };
 
-            // Execute the wrapper() function in a new fiber.
-            Fiber(wrapper).run(context);
+            // run() executes the wrapper() function in a new fiber.
+            var run = function () {
+                return Fiber(wrapper).run(context);
+            };
+
+            // Limit top-level call concurrency for better performance (TODO: in which situations? doc this).
+            if (!Fiber.current) {
+                semaphore.enter(run);
+            } else {
+                context.leave = function () {
+                };
+                run();
+            }
         });
     };
 };
