@@ -5,19 +5,12 @@ var _ = require('lodash');
 var memwatch = require('memwatch');
 
 
-memwatch.on('leak', function(info) {
-    console.log(info);
-});
-memwatch.on('stats', function(stats) {
-    process.stdout.write('#');
-});
-
-
-
 // Functions available for benchmarking.
 var functions = {
     countFiles: 'countFiles',
+    fibonacci: 'fibonacci',
     largest: 'largest'
+
 };
 
 // Variants available for benchmarking.
@@ -33,7 +26,7 @@ var variants = {
 // ================================================================================
 // Benchmark configuration - adjust to suit.
 
-var SELECTED_FUNCTION = functions.largest;
+var SELECTED_FUNCTION = functions.fibonacci;
 
 var SELECTED_VARIANT = variants.asyncawait;
 
@@ -48,16 +41,30 @@ var JUST_CHECK_THE_FUNCTION = false; // If true, just call the function once and
 // ================================================================================
 
 
+// Set up memory diagnostics
+var fullGCs = 0;
+var incrGCs = 0;
+var leaked = 0;
+memwatch.on('leak', function(info) {
+    leaked += info.growth;
+    process.stdout.write(' [LEAK+' + info.growth +'] ');
+});
+memwatch.on('stats', function(stats) {
+    fullGCs += stats.num_full_gc;
+    incrGCs += stats.num_inc_gc;
+    process.stdout.write(' [GC] ');
+});
+
+
 // Run the benchmark (or just check the function).
 if (JUST_CHECK_THE_FUNCTION) {
     var name = SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
     var sample = createSampleFunction();
     console.log("========== CHECKING '" + name + "': ==========");
-    var hd = new memwatch.HeapDiff();
     sample(function(err, result) {
         console.log(err || result);
-        var diff = hd.end();
-        console.log(JSON.stringify(diff, null, 4));
+        console.log("========== GCs: " + fullGCs + 'full/' + incrGCs + "incr ==========");
+        console.log("========== Leaked: " + leaked + " ==========");
     });
 } else {
     benchmark();
@@ -84,7 +91,14 @@ function benchmark() {
                         + ' seconds ('
                         + (SAMPLES_PER_RUN * 1000.0 / timing.totalElapsed)
                         + ' samples/sec), average latency per sample: '
-                        + timing.perSample + 'ms\n';
+                        + timing.perSample
+                        + 'ms, GCs: '
+                        + timing.fullGCs
+                        + 'full/'
+                        + timing.incrGCs
+                        + 'incr, leaked: '
+                        + timing.leaked
+                        + '\n';
                     console.log(msg);
                     next();
                 }
@@ -103,6 +117,8 @@ function benchmark() {
                         + (SAMPLES_PER_RUN * 1000.0 / averageTime)
                         + ' samples/sec)';
                 console.log('========== ' + msg + ' ==========');
+                console.log("========== GCs: " + fullGCs + 'full/' + incrGCs + "incr ==========");
+                console.log("========== Leaked: " + leaked + " ==========");
             }
         });
 
@@ -113,6 +129,9 @@ function benchmark() {
 function run(sample, callback) {
     var chars = './#$@%^&*+!=-?~`|()[]ABCDEFGHIJKLMNOPQRS';
     var start = new Date().getTime();
+    var startFullGCs = fullGCs;
+    var startIncrGCs = incrGCs;
+    var startLeaked = leaked;
     var sumOfTimePerSample = 0.0;
     async.times(
         CONCURRENCY_FACTOR,
@@ -139,7 +158,13 @@ function run(sample, callback) {
             if (err) { callback(err); return; }
             var perSample = sumOfTimePerSample / SAMPLES_PER_RUN;
             var totalElapsed = new Date().getTime() - start;
-            callback(null, { perSample: perSample, totalElapsed: totalElapsed });
+            callback(null, {
+                perSample: perSample,
+                totalElapsed: totalElapsed,
+                fullGCs: fullGCs - startFullGCs,
+                incrGCs: incrGCs - startIncrGCs,
+                leaked: leaked - startLeaked
+            });
         }
     );
 };
@@ -148,15 +173,34 @@ function run(sample, callback) {
 function createSampleFunction() {
     var selectedFunction = require('./' + SELECTED_FUNCTION + '/' + SELECTED_FUNCTION + '-' + SELECTED_VARIANT);
     switch (SELECTED_FUNCTION) {
-        case functions.largest:
-            var dirToCheck = path.join(__dirname, '.');
-            var options = { recurse: false, preview: true };
-            var sample = function (callback) { selectedFunction(dirToCheck, options, callback); };
-            break;
-
         case functions.countFiles:
             var dirToCheck = path.join(__dirname, '.');
-            var sample = function (callback) { selectedFunction(dirToCheck, callback); };
+            var sample = function (callback) {
+                selectedFunction(dirToCheck, function (err, result) {
+                    setImmediate(callback, err, result);
+                });
+            };
+            break;
+
+        case functions.fibonacci:
+            var n = 5;
+            var sample = function (callback) {
+                selectedFunction(n, function (err, result) {
+                    setImmediate(callback, err, result);
+                });
+            };
+            break;
+
+        case functions.largest:
+            var dirToCheck = path.join(__dirname, '..');
+            var options = { recurse: true, preview: true };
+            var sample = function (callback) {
+                selectedFunction(dirToCheck, options, function (err, result) {
+                    setImmediate(callback, err, result);
+                });
+            };
+            break;
+
     }
     return sample;
 }

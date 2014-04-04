@@ -9,7 +9,7 @@ var countFiles = function (dir) {
     var paths = _.map(files, function (file) { return path.join(dir, file); });
     var stats = _.map(paths, function (path) { return fs.statSync(path); });
     return _.filter(stats, function (stat) { return stat.isFile(); }).length;
-}
+};
 
 
 function nodeified(dir, callback) {
