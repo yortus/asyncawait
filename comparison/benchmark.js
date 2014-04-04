@@ -192,7 +192,7 @@ function createSampleFunction() {
             break;
 
         case functions.largest:
-            var dirToCheck = path.join(__dirname, '..');
+            var dirToCheck = path.join(__dirname, '.');
             var options = { recurse: true, preview: true };
             var sample = function (callback) {
                 selectedFunction(dirToCheck, options, function (err, result) {
