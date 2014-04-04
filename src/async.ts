@@ -7,10 +7,18 @@ export = async;
 
 
 // This interface describes the single argument passed to the wrapper() function (defined below).
-interface Context {
+class Context {
+    constructor(wrapped, thisArg, argsAsArray, resolve, reject, leave?) {
+        this.wrapped = wrapped;
+        this.thisArg = thisArg;
+        this.argsAsArray = argsAsArray;
+        this.resolve = resolve;
+        this.reject = reject;
+        this.leave = leave || (() => {});
+    }
     wrapped: Function;
     thisArg: any;
-    argsAsArray: IArguments;
+    argsAsArray: any[];
     resolve: Function;
     reject: Function;
     leave: Function;
@@ -47,30 +55,19 @@ var async: AsyncAwait.IAsync = function(fn: Function) {
     return function () {
 
         // Get all the arguments passed in, as an array.
-        var argsAsArray = arguments;
+        var argsAsArray = new Array(arguments.length);
+        for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
 
         // Create a new promise.
         return new Promise((resolve, reject) => {
 
-            // Construct the context argument to be passed into the wrapper() function.
-            var context: Context = {
-                wrapped: fn,
-                thisArg: this,
-                argsAsArray: argsAsArray,
-                resolve: resolve,
-                reject: reject,
-                leave: () => semaphore.leave()
-            };
-
-            // run() executes the wrapper() function in a new fiber.
-            var run = () => Fiber(wrapper).run(context);
-
             // Limit top-level call concurrency for better performance (TODO: in which situations? doc this).
             if (!Fiber.current) {
-                semaphore.enter(run);
+                var context = new Context(fn, this, argsAsArray, resolve, reject, () => semaphore.leave());
+                semaphore.enter(() => Fiber(wrapper).run(context));
             } else {
-                context.leave = () => {};
-                run();
+                var context = new Context(fn, this, argsAsArray, resolve, reject, () => {});
+                Fiber(wrapper).run(context);
             }
         });
     };
