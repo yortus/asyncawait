@@ -53,6 +53,10 @@
   <ItemGroup>
     <Folder Include="typings\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="iterable.ts" />
+    <Content Include="yield.ts" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>
     <VisualStudio>
