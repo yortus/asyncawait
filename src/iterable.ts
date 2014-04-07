@@ -7,10 +7,10 @@ export = iterable;
 // This is the iterable() API function (see docs).
 var iterable = function(fn: Function) {
 
-    //TODO:...
+    // Return a function that returns an iterator.
     return function () {
 
-        // Capture initial arguments used to start the iterator
+        // Capture initial arguments used to start the iterator.
         var initArgs = new Array(arguments.length);
         for (var i = 0; i < initArgs.length; ++i) initArgs[i] = arguments[i];
 
