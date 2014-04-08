@@ -49,7 +49,7 @@ var async: AsyncAwait.IAsync = function(fn: Function) {
 
     //TODO: temp testing... document and make configurable 
     // Create a semaphore.
-    var semaphore = new Semaphore(10);
+    var semaphore = new Semaphore(100);
 
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function () {
