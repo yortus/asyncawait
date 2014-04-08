@@ -3,7 +3,7 @@ var Promise = require('bluebird');
 var deep = require('deep');
 
 // This is the await() API function (see docs).
-var await = function (expr_) {
+var awaitNew = function (expr_) {
     // Parse argument(s). If not a single argument, treat it like an array was passed in.
     var expr = expr_;
     if (arguments.length !== 1) {
@@ -53,7 +53,7 @@ var await = function (expr_) {
 };
 
 //TODO: Remove once the plain object case has been properly transferred to above code
-var awaitOld = function (expr) {
+var await = function (expr) {
     // Set up promise settlement handlers that either resume, or throw into, the current fiber.
     var fiber = Fiber.current;
     function onResolved(val) {
