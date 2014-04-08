@@ -3,7 +3,8 @@
 
 // This is the yield() API function (see docs).
 var yield_ = function (expr) {
-    console.log('in yield()');
-    Fiber.yield(expr);
+    Fiber.current['value'].resolve(expr);
+    Fiber.current['done'].resolve(false);
+    Fiber.yield();
 };
 module.exports = yield_;

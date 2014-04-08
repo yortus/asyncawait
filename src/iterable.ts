@@ -10,11 +10,9 @@ interface Context {
     argsAsArray: any[];
 }
 function wrapper(context: Context) {
-    console.log('RUNNING');
     var result = context.wrapped.apply(context.thisArg, context.argsAsArray);
-    console.log('YIELDED');
-    console.log(result);
-//    context.resolve(result);
+    Fiber.current['value'].resolve(undefined);
+    Fiber.current['done'].resolve(true);
 }
 
 
@@ -45,8 +43,10 @@ var iterable = function(fn: Function) {
                 var context: Context = {
                     wrapped: fn,
                     thisArg: null,
-                    argsAsArray: initArgs
+                    argsAsArray: initArgs,
                 };
+                fiber['value'] = value;
+                fiber['done'] = done;
                 fiber.run(context);
 
                 // We don't need to pass the initial arguments after the first run of the fiber

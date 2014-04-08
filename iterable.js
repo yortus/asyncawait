@@ -2,11 +2,9 @@
 var Promise = require('bluebird');
 
 function wrapper(context) {
-    console.log('RUNNING');
     var result = context.wrapped.apply(context.thisArg, context.argsAsArray);
-    console.log('YIELDED');
-    console.log(result);
-    //    context.resolve(result);
+    Fiber.current['value'].resolve(undefined);
+    Fiber.current['done'].resolve(true);
 }
 
 // This is the iterable() API function (see docs).
@@ -35,6 +33,8 @@ var iterable = function (fn) {
                     thisArg: null,
                     argsAsArray: initArgs
                 };
+                fiber['value'] = value;
+                fiber['done'] = done;
                 fiber.run(context);
 
                 // We don't need to pass the initial arguments after the first run of the fiber
