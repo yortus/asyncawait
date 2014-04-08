@@ -1,10 +1,27 @@
-var Promise = require('bluebird');
+﻿var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('../../async');
 var await = require('../../await');
+var iterable = require('../../iterable');
+var yield_ = require('../../yield');
+
+
+var descendentFiles = iterable (function recurse(dir, recursive) {
+
+    var files = await (fs.readdirSync(dir));
+    var paths = _.map(files, function (file) { return path.join(dir, file); });
+    var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
+
+    _.each(stats, function(stat, i) {
+        yield_({ path: paths[i], stat: stat });
+        if (stat.isDirectory() && recursive) recurse(paths[i], true);
+    });
+});
+
+
 
 /**
   * FUNCTION: largest-asyncawait (see https://github.com/yortus/asyncawait)
@@ -24,15 +41,15 @@ var largest = async (function (dir, options, internal) {
     options = options || largest.options;
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
-    var files = await (fs.readdirAsync(dir));
-    var paths = _.map(files, function (file) { return path.join(dir, file); });
-    var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
+    var files = [];
+    var filesIterator = descendentFiles(dir, options.recurse);
+    filesIterator.forEach(function(file) { files.push(file); });
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
-    var candidates = await (_.map(stats, function (stat, i) {
-        if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
-        return options.recurse ? largest(paths[i], options, true) : null;
-    }));
+    var candidates = _.map(files, function (file) {
+        if (file.stat.isFile()) return { path: file.path, size: file.stat.size, searched: 1 };
+        return { path: file.path, size: 0, searched: 0 };
+    });
 
     // Choose the best candidate.
     var result = _(candidates)

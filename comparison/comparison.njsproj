@@ -30,6 +30,7 @@
     <Compile Include="fibonacci\fibonacci-synchronous.js" />
     <Compile Include="fibonacci\fibonacci-asyncawait.js" />
     <Compile Include="largest\largest-async.js" />
+    <Compile Include="largest\largest-asyncawait-iterators.js" />
     <Compile Include="largest\largest-asyncawait.js" />
     <Compile Include="largest\largest-callbacks.js" />
     <Compile Include="largest\largest-co.js" />
