@@ -8,11 +8,21 @@ interface Context {
     wrapped: Function;
     thisArg: any;
     argsAsArray: any[];
+    value: Promise.Resolver<any>;
+    done: Promise.Resolver<boolean>;
 }
+
+
 function wrapper(context: Context) {
-    var result = context.wrapped.apply(context.thisArg, context.argsAsArray);
-    Fiber.current['value'].resolve(undefined);
-    Fiber.current['done'].resolve(true);
+    try {
+        context.wrapped.apply(context.thisArg, context.argsAsArray);
+        context.value.resolve(undefined);
+        context.done.resolve(true);
+    }
+    catch (err) {
+        context.value.reject(err);
+        context.done.resolve(true);
+    }
 }
 
 
@@ -28,6 +38,13 @@ var iterable = function(fn: Function) {
 
         // 1 iterator <==> 1 fiber
         var fiber = Fiber(wrapper);
+        var context: Context = {
+            wrapped: fn,
+            thisArg: null,
+            argsAsArray: initArgs,
+            value: null,
+            done: null
+        };
 
         //TODO...
         return {
@@ -36,17 +53,12 @@ var iterable = function(fn: Function) {
                 var value = Promise.defer<any>();
                 var done = Promise.defer<boolean>();
 
-                //TODO...
-                //Promise.delay(1000).then(() => value.resolve('X'));
-                //Promise.delay(1000).then(() => done.resolve(false));
-
-                var context: Context = {
-                    wrapped: fn,
-                    thisArg: null,
-                    argsAsArray: initArgs,
-                };
+                context.value = value;
+                context.done = done;
                 fiber['value'] = value;
                 fiber['done'] = done;
+
+                // Run the fiber until it either yields a value or completes
                 fiber.run(context);
 
                 // We don't need to pass the initial arguments after the first run of the fiber
