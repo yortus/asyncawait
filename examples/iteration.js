@@ -7,6 +7,7 @@ var yield_ = require('../yield');
 
 
 var someNums = iterable (function () {
+    console.log('in someNums()');
 
     await (Promise.delay(500));
     

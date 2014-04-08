@@ -49,13 +49,11 @@
     <TypeScriptCompile Include="async.ts" />
     <TypeScriptCompile Include="await.ts" />
     <TypeScriptCompile Include="index.ts" />
+    <TypeScriptCompile Include="iterable.ts" />
+    <TypeScriptCompile Include="yield.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="typings\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="iterable.ts" />
-    <Content Include="yield.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>
