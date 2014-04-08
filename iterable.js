@@ -33,35 +33,39 @@ var iterable = function (fn) {
         };
 
         //TODO...
-        var result = {};
-        result['next'] = function () {
-            var value = Promise.defer();
-            var done = Promise.defer();
-
-            context.value = value;
-            context.done = done;
-            fiber['value'] = value;
-            fiber['done'] = done;
-
-            // Run the fiber until it either yields a value or completes
-            fiber.run(context);
-
-            // We don't need to pass the initial arguments after the first run of the fiber
-            initArgs = [];
-
-            return { value: value.promise, done: done.promise };
-        };
-
-        //TODO: temp testing forEach for iterator (should go on a prototype??)
-        result['forEach'] = function (callback) {
-            while (true) {
-                var i = result['next']();
-                if (await(i.done))
-                    break;
-                callback(await(i.value));
-            }
-        };
+        var result = new Iterator(fiber, context);
         return result;
     };
 };
+
+var Iterator = (function () {
+    function Iterator(fiber, context) {
+        this.fiber = fiber;
+        this.context = context;
+    }
+    Iterator.prototype.next = function () {
+        var value = Promise.defer();
+        var done = Promise.defer();
+
+        this.context.value = value;
+        this.context.done = done;
+        this.fiber['value'] = value;
+        this.fiber['done'] = done;
+
+        // Run the fiber until it either yields a value or completes
+        this.fiber.run(this.context);
+
+        return { value: value.promise, done: done.promise };
+    };
+
+    Iterator.prototype.forEach = function (callback) {
+        while (true) {
+            var i = this.next();
+            if (await(i.done))
+                break;
+            callback(await(i.value));
+        }
+    };
+    return Iterator;
+})();
 module.exports = iterable;

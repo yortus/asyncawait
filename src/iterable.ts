@@ -48,34 +48,35 @@ var iterable = function(fn: Function) {
         };
 
         //TODO...
-        var result = {};
-        result['next'] = function() {
-
-            var value = Promise.defer<any>();
-            var done = Promise.defer<boolean>();
-
-            context.value = value;
-            context.done = done;
-            fiber['value'] = value;
-            fiber['done'] = done;
-
-            // Run the fiber until it either yields a value or completes
-            fiber.run(context);
-
-            // We don't need to pass the initial arguments after the first run of the fiber
-            initArgs = [];
-
-            return { value: value.promise, done: done.promise };
-        };
-
-        //TODO: temp testing forEach for iterator (should go on a prototype??)
-        result['forEach'] = (callback: (value) => void) => {
-            while (true) {
-                var i = result['next']();
-                if (await (i.done)) break;
-                callback(await (i.value));
-            }
-        };
-        return result;
+        var result = new Iterator(fiber, context);
+        return <{ next: Function; forEach: Function; }> result;
     };
 };
+
+
+class Iterator {
+    constructor(private fiber: Fiber, private context: Context) {}
+
+    next(): { value: Promise<any>; done: Promise<boolean> } {
+        var value = Promise.defer<any>();
+        var done = Promise.defer<boolean>();
+
+        this.context.value = value;
+        this.context.done = done;
+        this.fiber['value'] = value;
+        this.fiber['done'] = done;
+
+        // Run the fiber until it either yields a value or completes
+        this.fiber.run(this.context);
+
+        return { value: value.promise, done: done.promise };
+    }
+
+    forEach(callback: (value) => void) {
+        while (true) {
+            var i = this.next();
+            if (await (i.done)) break;
+            callback(await (i.value));
+        }
+    }
+}
