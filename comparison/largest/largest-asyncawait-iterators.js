@@ -9,16 +9,21 @@ var iterable = require('../../iterable');
 var yield_ = require('../../yield');
 
 
-var descendentFiles = iterable (function recurse(dir, recursive) {
+var descendentFileBatches = iterable (function recurse(dir, recursive) {
 
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
     var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
 
-    _.each(stats, function(stat, i) {
-        yield_({ path: paths[i], stat: stat });
-        if (stat.isDirectory() && recursive) recurse(paths[i], true);
-    });
+    // Yield this batch
+    yield_ ({ in: dir, paths: paths, stats: stats });
+
+    // Recursively yield each subdirectory, if requested
+    if (recursive) {
+        _.each(stats, function(stat, i) {
+            if (stat.isDirectory()) recurse(paths[i], true);
+        });
+    }
 });
 
 
@@ -42,8 +47,12 @@ var largest = async (function (dir, options, internal) {
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
     var files = [];
-    var filesIterator = descendentFiles(dir, options.recurse);
-    filesIterator.forEach(function(file) { files.push(file); });
+    var fileBatchIterator = descendentFileBatches(dir, options.recurse);
+    fileBatchIterator.forEach(function(fileBatch) {
+        _.each(fileBatch.paths, function (path, i) {
+            files.push({ path: path, stat: fileBatch.stats[i] });
+        });
+    });
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = _.map(files, function (file) {
