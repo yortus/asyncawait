@@ -1,5 +1,6 @@
 ﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
+var await = require('./await');
 
 function wrapper(context) {
     try  {
@@ -32,25 +33,35 @@ var iterable = function (fn) {
         };
 
         //TODO...
-        return {
-            next: function () {
-                var value = Promise.defer();
-                var done = Promise.defer();
+        var result = {};
+        result['next'] = function () {
+            var value = Promise.defer();
+            var done = Promise.defer();
 
-                context.value = value;
-                context.done = done;
-                fiber['value'] = value;
-                fiber['done'] = done;
+            context.value = value;
+            context.done = done;
+            fiber['value'] = value;
+            fiber['done'] = done;
 
-                // Run the fiber until it either yields a value or completes
-                fiber.run(context);
+            // Run the fiber until it either yields a value or completes
+            fiber.run(context);
 
-                // We don't need to pass the initial arguments after the first run of the fiber
-                initArgs = [];
+            // We don't need to pass the initial arguments after the first run of the fiber
+            initArgs = [];
 
-                return { value: value.promise, done: done.promise };
+            return { value: value.promise, done: done.promise };
+        };
+
+        //TODO: temp testing forEach for iterator (should go on a prototype??)
+        result['forEach'] = function (callback) {
+            while (true) {
+                var i = result['next']();
+                if (await(i.done))
+                    break;
+                callback(await(i.value));
             }
         };
+        return result;
     };
 };
 module.exports = iterable;
