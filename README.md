@@ -50,7 +50,7 @@ The above function does not block node's event loop, despite its synchronous app
 
 
 # How does `asyncawait` work?
-`asyncawait`, like `co`, can suspend a running function without blocking the thread. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but use different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
+Like `co`, `asyncawait` can suspend a running function without blocking node's event loop. Both libraries are based on the same concept (the [coroutine](http://en.wikipedia.org/wiki/Coroutine)), but use different technologies. `co` uses ES6 generators, which work in node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and tool-chains. `asyncawait` is built on [`node-fibers`](https://github.com/laverdet/node-fibers) and works with plain ES3/ES5 JavaScript, which is great if your tools bork at ES6 generators.
 
 
 
