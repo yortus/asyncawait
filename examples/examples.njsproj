@@ -22,12 +22,10 @@
     <Content Include="package.json" />
     <Compile Include="basic.js" />
     <Compile Include="countFiles.js" />
+    <Compile Include="descendentFilePaths.js" />
     <Compile Include="interleaved.js" />
     <Compile Include="iteration.js" />
     <Compile Include="parallel.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="descendentFilePaths.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
