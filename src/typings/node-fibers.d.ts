@@ -16,6 +16,8 @@ declare module "fibers" {
     module Fiber {
         export var current: Fiber;
         export function yield(value?: any): any
+        export var poolSize: number;
+        export var fibersCreated: number;
     }
 
     export = Fiber;
