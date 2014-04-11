@@ -39,7 +39,11 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="async\asyncCommon.ts" />
+    <TypeScriptCompile Include="async\wrapper.ts" />
+    <TypeScriptCompile Include="async\asyncOutput.ts" />
+    <TypeScriptCompile Include="async\context.ts" />
+    <TypeScriptCompile Include="async\iterator.ts" />
+    <TypeScriptCompile Include="async\semaphore.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />
     <TypeScriptCompile Include="typings\lodash.d.ts" />

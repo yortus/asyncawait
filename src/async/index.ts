@@ -1,8 +1,11 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
-import common = require('./asyncCommon')
-var wrapper = common.wrapper, Semaphore = common.Semaphore, Context = common.Context, Output = common.AsyncOutput;
+import wrapper = require('./wrapper');
+import Context = require('./context');
+import AsyncOutput = require('./asyncOutput');
+import Semaphore = require('./semaphore');
+import Iterator = require('./iterator');
 export = async;
 
 
@@ -15,13 +18,13 @@ export = async;
  *                     promise is resolved when fn returns, or rejected if fn throws.
  */
 var async: AsyncAwait.Async;
-async = <any> createAsyncFunction({ output: Output.Promise });
-async.concurrency = (n: number) => createAsyncFunction({ output: Output.Promise, concurrency: n });
-async.iterable = createAsyncFunction({ output: Output.PromiseIterator });
+async = <any> createAsyncFunction({ output: AsyncOutput.Promise });
+async.concurrency = (n: number) => createAsyncFunction({ output: AsyncOutput.Promise, concurrency: n });
+async.iterable = createAsyncFunction({ output: AsyncOutput.PromiseIterator });
 
 /** Options for varying the behaviour of the async() function. */
 interface AsyncOptions {
-    output: common.AsyncOutput;
+    output: AsyncOutput;
     concurrency?: number;
 }
 
@@ -47,26 +50,26 @@ function createAsyncFunction(options: AsyncOptions) {
             var argsAsArray = new Array(arguments.length);
             for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
 
-            if (options.output === Output.Promise) {
+            if (options.output === AsyncOutput.Promise) {
 
                 // Create a new promise.
                 var resolver = Promise.defer<any>();
 
                 // Start fn in a coroutine. Limit top-level concurrency if requested.
                 var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-                var context = new Context(Output.Promise, fn, this, argsAsArray, sem);
+                var context = new Context(AsyncOutput.Promise, fn, this, argsAsArray, sem);
                 context.value = resolver;
                 sem.enter(() => Fiber(wrapper).run(context));
 
                 // Return the promise.
                 return resolver.promise;
 
-            } else if (options.output === Output.PromiseIterator) {
+            } else if (options.output === AsyncOutput.PromiseIterator) {
 
 
                 // 1 iterator <==> 1 fiber
                 var fiber = Fiber(wrapper);
-                var context = new common.Context(Output.PromiseIterator, fn, null/*TODO proper this arg*/, argsAsArray, semaphore);
+                var context = new Context(AsyncOutput.PromiseIterator, fn, null/*TODO proper this arg*/, argsAsArray, semaphore);
 
                 //TODO:...
                 var yield_ = expr => {
@@ -77,7 +80,7 @@ function createAsyncFunction(options: AsyncOptions) {
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new common.Iterator(fiber, context);
+                var result = new Iterator(fiber, context);
                 return <{ next: Function; forEach: Function; }> result;
             }
         };
