@@ -1,5 +1,5 @@
-var async = require('../../async');
-var await = require('../../await');
+var async = require('../..').async;
+var await = require('../..').await;
 
 
 // WARNING: BAD CODE!! THIS IMPL IS HUGELY INEFFICIENT. It's purpose is purely

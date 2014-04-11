@@ -1,6 +1,6 @@
 ﻿var Promise = require('bluebird');
-var async = require('../async');
-var await = require('../await');
+var async = require('..').async;
+var await = require('..').await;
 
 
 // A slow asynchronous function, written in async/await style.

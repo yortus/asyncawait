@@ -2,9 +2,9 @@
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
 var _ = require('lodash');
-var async = require('../async');
-var await = require('../await');
-var iterable = require('../iterable');
+var async = require('..').async;
+var await = require('..').await;
+var iterable = require('../iterable');//TODO: fix!!
 var yield_ = require('../yield');
 
 

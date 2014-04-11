@@ -1,7 +1,7 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
-var async = require('../async');
-var await = require('../await');
+var async = require('..').async;
+var await = require('..').await;
 
 
 // A function that returns a promise.

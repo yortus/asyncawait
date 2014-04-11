@@ -1,8 +1,8 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
-var async = require('../async');
-var await = require('../await');
-var iterable = require('../iterable');
+var async = require('..').async;
+var await = require('..').await;
+var iterable = require('../iterable');//TODO: fix!...
 var yield_ = require('../yield');
 
 

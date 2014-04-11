@@ -1,7 +1,7 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
-import await = require('../await');
+import await = require('../await/index');
 
 
 //TODO: ...

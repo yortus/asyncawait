@@ -1,4 +1,5 @@
-﻿var async = require('./async/index');
+﻿var async = require('./src/async');
+var await = require('./src/await');
+
 exports.async = async;
-var await = require('./await');
 exports.await = await;
