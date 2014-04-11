@@ -74,8 +74,8 @@ var await = require('asyncawait/await');
 To write a function that can be suspended async/await-style, wrap the definition inside `async(...)`. The call to `async` returns a function -- called `countFiles` in the example below. When `countFiles` is called, any arguments are passed through to the function wrapped by `async(...)` (in this case a path string), and `countFiles` immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Here is the example:
 
 ```javascript
-var async = require('../async');
-var await = require('../await');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
