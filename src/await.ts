@@ -6,26 +6,27 @@ export = await;
 
 
 /**
- * Suspends an async-wrapped function until the awaitable expression expr produces a result.
- * If expr produces an error, then an exception is raised in the async-wrapped function.
+ * Suspends an async-wrapped function until the given awaitable expression produces
+ * a result. If the given expression produces an error, then an exception is raised
+ * in the async-wrapped function.
  * @param {any} expr - The awaitable expression whose results are to be awaited.
- * @returns {any} The final result of the awaitable expression expr.
+ * @returns {any} The final result of the given awaitable expression.
  */
 var await: AsyncAwait.Await;
 await = <any> createAwaitFunction({ inPlace: false });
 await.inPlace = createAwaitFunction({ inPlace: true });
 
 
-// Options for varying the behaviour of the await() function.
+/** Options for varying the behaviour of the await() function. */
 interface AwaitOptions {
     inPlace: boolean;
 }
 
 
-// Function to create a specified variant of the await() function.
+/** Function for creating a specific variant of the await() function. */
 function createAwaitFunction(options: AwaitOptions) {
 
-    // Return an await function tailored to the given options
+    // Return an await function tailored to the given options.
     var traverseFunction = options.inPlace ? traverseInPlace : traverseClone;
     return function(expr_: any) {
 
@@ -70,7 +71,7 @@ function createAwaitFunction(options: AwaitOptions) {
 }
 
 
-// In-place (ie non-cloning) object traversal.
+/** In-place (ie non-cloning) object traversal. */
 function traverseInPlace(o, visitor: (obj, key) => void): any {
     if (_.isArray(o)) {
         var len = o.length;
@@ -89,7 +90,7 @@ function traverseInPlace(o, visitor: (obj, key) => void): any {
 }
 
 
-// Object traversal with cloning.
+/** Object traversal with cloning. */
 function traverseClone(o, visitor: (obj, key) => void): any {
     var result;
     if (_.isArray(o)) {
@@ -114,7 +115,7 @@ function traverseClone(o, visitor: (obj, key) => void): any {
 }
 
 
-// Visitor function factory for handling thunks and promises in awaited object graphs.
+/** Visitor function factory for handling thunks and promises in awaited object graphs. */
 function trackAndReplaceWithResolvedValue(tracking: Promise<any>[]) {
 
     // Return a visitor function closed over the specified tracking array.
@@ -136,7 +137,7 @@ function trackAndReplaceWithResolvedValue(tracking: Promise<any>[]) {
 }
 
 
-// Convert a thunk to a promise.
+/** Convert a thunk to a promise. */
 function thunkToPromise(thunk: Function) {
     return new Promise((resolve, reject) => {
         var callback = (err, val) => (err ? reject(err) : resolve(val));
