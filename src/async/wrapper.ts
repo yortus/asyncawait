@@ -5,6 +5,10 @@ import Context = require('./context');
 export = wrapper;
 
 
+//TODO: rename to runInFiber(runCtx: RunContext)
+
+
+
 /**
  * The wrapper() function accepts a Context instance, and calls the wrapped function which is
  * described in the context. The result of the call is used to resolve the context's promise.

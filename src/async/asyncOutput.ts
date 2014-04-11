@@ -2,7 +2,11 @@
 export = AsyncOutput;
 
 
-//TODO: ... rename this... and doc
+//TODO: ... rename this to ??? OutputKind? OutputType?
+
+
+
+//TODO: ...  doc
 enum AsyncOutput {
     Promise,
     PromiseIterator

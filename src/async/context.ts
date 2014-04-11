@@ -5,6 +5,9 @@ import Semaphore = require('./semaphore');
 export = Context;
 
 
+//TODO: rename to RunContext
+
+
 /** A class for encapsulating the single argument passed to the wrapper() function. */
 class Context {
     constructor(output: AsyncOutput, wrapped: Function, thisArg, argsAsArray: any[], semaphore: Semaphore) {
