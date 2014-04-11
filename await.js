@@ -1,9 +1,14 @@
 ﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
-var deep = require('deep');
+var _ = require('lodash');
 
-// This is the await() API function (see docs).
-var awaitNew = function (expr_) {
+/**
+* Suspends an async-wrapped function until the awaitable expression expr produces a result.
+* If expr produces an error, then an exception is raised in the async-wrapped function.
+* @param {any} expr - The awaitable expression whose results are to be awaited.
+* @returns {any} The final result of the awaitable expression expr.
+*/
+var await = function (expr_) {
     // Parse argument(s). If not a single argument, treat it like an array was passed in.
     var expr = expr_;
     if (arguments.length !== 1) {
@@ -13,128 +18,116 @@ var awaitNew = function (expr_) {
     }
 
     // Handle each supported 'awaitable' appropriately...
-    var fiber = Fiber.current, typeName;
-    if (!expr) {
-        // A falsy value: resume the coroutine with the value.
-        setImmediate(fiber.run, fiber, expr);
-    } else if (typeof expr.then === 'function') {
+    var fiber = Fiber.current;
+    if (_.isFunction(expr.then)) {
         // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
         expr.then(function (val) {
-            return fiber.run(val);
+            fiber.run(val);
+            fiber = null;
         }, function (err) {
-            return fiber.throwInto(err);
+            fiber.throwInto(err);
+            fiber = null;
         });
-    } else if (typeof expr === 'function') {
+    } else if (_.isFunction(expr)) {
         // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
         expr(function (err, val) {
             if (err)
                 fiber.throwInto(err);
             else
                 fiber.run(val);
+            fiber = null;
         });
-    } else if ('[object Array]' === (typeName = Object.prototype.toString.call(expr))) {
-        //TODO: reword: An array: resume the coroutine with a resolved array as per Promise.all
-        //TODO: handle thunks in there too
-        Promise.all(expr).then(function (val) {
-            return fiber.run(val);
+    } else if (_.isArray(expr) || _.isPlainObject(expr)) {
+        // An array or plain object: resume the coroutine with a deep clone of the array/object,
+        // where all contained promises and thunks have been replaced by their resolved values.
+        var trackedPromises = [];
+
+        //TODO:... implement option choosing for clone / don't clone
+        var traverse = traverseInPlace;
+
+        //var traverse = traverseClone;
+        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+        Promise.all(trackedPromises).then(function (val) {
+            return fiber.run(expr);
         }, function (err) {
             return fiber.throwInto(err);
         });
-    } else if (typeName === '[object Object]') {
-        throw new Error('NOT IMPLEMENTED!!!!!');
     } else {
-        // Anything else: resume the coroutine with the value.
-        setImmediate(fiber.run, fiber, expr);
+        // Anything else: resume the coroutine immediately with the value.
+        setImmediate(fiber.run.bind(fiber), expr);
     }
 
-    // Suspend the current fiber until the one of the above handlers runs it again.
-    // TODO: reword:  When the fiber is resumed, return the resolved value of expr's promise.
+    // Suspend the current fiber until the one of the above handlers resumes it again.
     return Fiber.yield();
 };
 
-//TODO: Remove once the plain object case has been properly transferred to above code
-var await = function (expr) {
-    // Set up promise settlement handlers that either resume, or throw into, the current fiber.
-    var fiber = Fiber.current;
-    function onResolved(val) {
-        fiber.run(val);
+// In-place (ie non-cloning) object traversal.
+function traverseInPlace(o, visitor) {
+    if (_.isArray(o)) {
+        var len = o.length;
+        for (var i = 0; i < len; ++i) {
+            traverseInPlace(o[i], visitor);
+            visitor(o, i);
+        }
+    } else if (_.isPlainObject(o)) {
+        for (var key in o) {
+            if (!o.hasOwnProperty(key))
+                continue;
+            traverseInPlace(o[key], visitor);
+            visitor(o, key);
+        }
     }
-    function onRejected(err) {
-        fiber.throwInto(err);
-    }
-
-    // Reduce expr to a single promise.
-    expr = reduceToPromise(expr);
-
-    // Install the above promise handlers.
-    expr.then(onResolved, onRejected);
-
-    // Suspend the current fiber until the promise settles. When the fiber is resumed,
-    // return the resolved value of expr's promise.
-    return Fiber.yield();
-};
-
-// Create a single promise that is settled when the expression is fully settled.
-function reduceToPromise(expr) {
-    // A falsy value - return a promise already resolved to the falsy value.
-    if (!expr)
-        return Promise.resolve(expr);
-
-    // A promise - return it verbatim.
-    var isPromise = typeof expr.then === 'function';
-    if (isPromise)
-        return expr;
-
-    // A thunk - return a promise that settles when the callback is called.
-    var isThunk = typeof expr === 'function';
-    if (isThunk)
-        return thunkToPromise(expr);
-
-    // An array - return a promise of the same array instance with all contained promises replaced by their resolution values.
-    var typeName = Object.prototype.toString.call(expr);
-    if (typeName === '[object Array]') {
-        // Make a promise that's resolved when all the array's thunks and promises are resolved.
-        //var prom = Promise.resolve(expr);
-        //for (var i = 0; i < expr.length; ++i) {
-        //    var elem = expr[i];
-        //    if (!elem) continue;
-        //    if (typeof elem.then === 'function') {
-        //        prom = prom.then(() => elem.then(expr)); // Promise
-        //    } else if (typeof elem === 'function') {
-        //        prom = prom.then(() => thunkToPromise(elem).then(expr)); // Thunk
-        //    }
-        //}
-        var prom = Promise.all(expr);
-        return prom;
-    }
-
-    // A plain object - return a promise of a deep clone with all contained promises resolved.
-    if (typeName === '[object Object]') {
-        // Clone the original object so we don't modify it, converting thunks to promises along the way.
-        var clone = deep.transform(expr, function (obj) {
-            return typeof obj === 'function';
-        }, thunkToPromise);
-
-        // Select all the promises in the object graph.
-        var proms = [], paths = deep.select(clone, function (obj) {
-            return obj && typeof obj.then === 'function';
-        });
-        for (var i = 0; i < paths.length; ++i)
-            proms.push(paths[i].value);
-
-        // Create a new promise that resolves when all the above promises are resolved.
-        return Promise.all(proms).then(function (val) {
-            for (var i = 0; i < paths.length; ++i)
-                deep.set(clone, paths[i].path, val[i]);
-            return clone;
-        });
-    }
-
-    // Anything else - return a promise already resolved to the value of expr.
-    return Promise.resolve(expr);
+    return o;
 }
 
-// Convert a thunk to a promise
+// Object traversal with cloning.
+function traverseClone(o, visitor) {
+    var result;
+    if (_.isArray(o)) {
+        var len = o.length;
+        result = new Array(len);
+        for (var i = 0; i < len; ++i) {
+            result[i] = traverseClone(o[i], visitor);
+            visitor(result, i);
+        }
+    } else if (_.isPlainObject(o)) {
+        result = {};
+        for (var key in o) {
+            if (o.hasOwnProperty(key)) {
+                result[key] = traverseClone(o[key], visitor);
+                visitor(result, key);
+            }
+        }
+    } else {
+        result = o;
+    }
+    return result;
+}
+
+// Visitor function factory for handling thunks and promises in awaited object graphs.
+function trackAndReplaceWithResolvedValue(tracking) {
+    // Return a visitor function closed over the specified tracking array.
+    return function (obj, key) {
+        // Get the value being visited, and return early if it's falsy.
+        var val = obj[key];
+        if (!val)
+            return;
+
+        // If the value is a thunk, convert it to an equivalent promise.
+        if (_.isFunction(val))
+            val = thunkToPromise(val);
+
+        // If the value is a promise, add it to the tracking array, and replace it with its value when resolved.
+        if (_.isFunction(val.then)) {
+            tracking.push(val);
+            val.then(function (result) {
+                obj[key] = result;
+            });
+        }
+    };
+}
+
+// Convert a thunk to a promise.
 function thunkToPromise(thunk) {
     return new Promise(function (resolve, reject) {
         var callback = function (err, val) {

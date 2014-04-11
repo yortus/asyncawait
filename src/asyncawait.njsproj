@@ -42,7 +42,7 @@
     <TypeScriptCompile Include="Semaphore.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />
-    <TypeScriptCompile Include="typings\deep.d.ts" />
+    <TypeScriptCompile Include="typings\lodash.d.ts" />
     <TypeScriptCompile Include="typings\node-fibers.d.ts" />
     <TypeScriptCompile Include="typings\node.d.ts" />
     <TypeScriptCompile Include="_refs.d.ts" />
