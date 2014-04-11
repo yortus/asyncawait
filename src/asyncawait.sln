@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{07D6
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\.npmignore = ..\.npmignore
+		..\changelog.md = ..\changelog.md
 		..\LICENSE = ..\LICENSE
 		..\package.json = ..\package.json
 		..\README.md = ..\README.md
