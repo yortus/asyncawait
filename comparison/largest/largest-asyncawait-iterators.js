@@ -5,11 +5,10 @@ var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('../../async');
 var await = require('../../await');
-var iterable = require('../../iterable');
 var yield_ = require('../../yield');
 
 
-var descendentFileBatches = iterable (function self(dir, recursive) {
+var descendentFileBatches = async.iterable (function self(dir, recursive) {
 
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
