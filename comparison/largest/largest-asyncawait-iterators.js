@@ -21,10 +21,10 @@ var descendentFileBatches = async.iterable (function self(dir, recursive) {
     if (recursive) {
         _.each(stats, function(stat, i) {
             //TODO: temp testing...
-            if (stat.isDirectory()) descendentFileBatches(paths[i], true).forEach(function (result) { return yield_(result); });
+            //if (stat.isDirectory()) descendentFileBatches(paths[i], true).forEach(function (result) { return yield_(result); });
 
             //TODO: was...
-            //if (stat.isDirectory()) self(paths[i], true);
+            if (stat.isDirectory()) self(paths[i], true);
         });
     }
 });
