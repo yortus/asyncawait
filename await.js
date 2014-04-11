@@ -19,7 +19,7 @@ var await = function (expr_) {
 
     // Handle each supported 'awaitable' appropriately...
     var fiber = Fiber.current;
-    if (_.isFunction(expr.then)) {
+    if (expr && _.isFunction(expr.then)) {
         // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
         expr.then(function (val) {
             fiber.run(val);

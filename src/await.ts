@@ -22,7 +22,7 @@ var await: AsyncAwait.IAwait = function(expr_) {
 
     // Handle each supported 'awaitable' appropriately...
     var fiber = Fiber.current;
-    if (_.isFunction(expr.then)) {
+    if (expr && _.isFunction(expr.then)) {
 
         // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
         expr.then(val => { fiber.run(val); fiber = null; }, err => { fiber.throwInto(err); fiber = null; });
