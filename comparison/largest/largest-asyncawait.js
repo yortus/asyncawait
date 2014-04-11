@@ -6,17 +6,13 @@ var _ = require('lodash');
 var async = require('../../async');
 var await = require('../../await');
 
+
 /**
-  * FUNCTION: largest-asyncawait (see https://github.com/yortus/asyncawait)
   * Finds the largest file in the given directory, optionally performing a recursive search.
-  *
-  * PARAMETERS:
-  * - dir: string
-  * - options?: { recurse?: boolean; preview?: boolean }
-  *
-  * RETURNS:
-  * - null if no files found -or-
-  * - { path: string; size: number; preview?: string, searched: number; }
+  * @param {string} dir - the directory to search.
+  * @param {object?} options - optional settings: { recurse?: boolean; preview?: boolean }.
+  * @returns {object?} null if no files found, otherwise an object of the form
+  *                    { path: string; size: number; preview?: string, searched: number; }
   */
 var largest = async (function self(dir, options, internal) {
 
@@ -31,7 +27,7 @@ var largest = async (function self(dir, options, internal) {
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = await (_.map(stats, function (stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
-        return options.recurse ? self(paths[i], options, true) : null;
+        return options.recurse ? largest(paths[i], options, true) : null;
     }));
 
     // Choose the best candidate.

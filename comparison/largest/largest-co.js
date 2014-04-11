@@ -10,16 +10,11 @@ var co = require('co');
 
 
 /**
-  * FUNCTION: largest-co (see https://github.com/visionmedia/co)
   * Finds the largest file in the given directory, optionally performing a recursive search.
-  *
-  * PARAMETERS:
-  * - dir: string
-  * - options?: { recurse?: boolean; preview?: boolean }
-  *
-  * RETURNS:
-  * - null if no files found -or-
-  * - { path: string; size: number; preview?: string, searched: number; }
+  * @param {string} dir - the directory to search.
+  * @param {object?} options - optional settings: { recurse?: boolean; preview?: boolean }.
+  * @returns {object?} null if no files found, otherwise an object of the form
+  *                    { path: string; size: number; preview?: string, searched: number; }
   */
 var largest = co(function* (dir, options, internal) {
 
