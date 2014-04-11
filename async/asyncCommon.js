@@ -1,6 +1,6 @@
 ﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
-var await = require('./await');
+var await = require('../await');
 
 //TODO: ...
 (function (AsyncOutput) {

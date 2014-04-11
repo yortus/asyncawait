@@ -39,19 +39,20 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="asyncCommon.ts" />
+    <TypeScriptCompile Include="async\asyncCommon.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />
     <TypeScriptCompile Include="typings\lodash.d.ts" />
     <TypeScriptCompile Include="typings\node-fibers.d.ts" />
     <TypeScriptCompile Include="typings\node.d.ts" />
     <TypeScriptCompile Include="_refs.d.ts" />
-    <TypeScriptCompile Include="async.ts" />
+    <TypeScriptCompile Include="async\index.ts" />
     <TypeScriptCompile Include="await.ts" />
     <TypeScriptCompile Include="index.ts" />
     <TypeScriptCompile Include="yield.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="async\" />
     <Folder Include="typings\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
@@ -94,7 +95,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <Target Name="AfterBuild">
-    <Exec Command="xcopy.exe /Y $(ProjectDir)*.js $(ProjectDir)..\" />
+    <Exec Command="xcopy.exe /S /Y $(ProjectDir)*.js $(ProjectDir)..\" />
     <Exec Command="xcopy.exe /Y $(ProjectDir)typings\asyncawait.d.ts $(ProjectDir)..\" />
   </Target>
 </Project>
