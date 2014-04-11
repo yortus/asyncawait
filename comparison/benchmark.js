@@ -29,15 +29,19 @@ var variants = {
 
 var SELECTED_FUNCTION = functions.largest;
 
-var SELECTED_VARIANT = variants.asyncawait2;
+var SELECTED_VARIANT = variants.asyncawait;
 
-var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run
+var SAMPLES_PER_RUN = 200;   // How many times the function will be called per run.
 
-var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark
+var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark.
 
-var CONCURRENCY_FACTOR = 100;  // Max number of concurrent invocations of the function
+var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
 
-var JUST_CHECK_THE_FUNCTION = false; // If true, just call the function once and display its results
+// Some additional switches
+var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
+var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
+var OUTPUT_GC_STATS = true;                     // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
+var OUTPUT_SAMPLES_PER_SEC_SUMMARY = false;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
 
 // ================================================================================
 
@@ -46,16 +50,17 @@ var JUST_CHECK_THE_FUNCTION = false; // If true, just call the function once and
 var fullGCs = 0;
 var incrGCs = 0;
 var leaked = 0;
-memwatch.on('leak', function(info) {
-    leaked += info.growth;
-    process.stdout.write(' [LEAK+' + info.growth +'] ');
-});
-memwatch.on('stats', function(stats) {
-    fullGCs += stats.num_full_gc;
-    incrGCs += stats.num_inc_gc;
-    process.stdout.write(' [GC] ');
-});
-
+if (OUTPUT_GC_STATS) {
+    memwatch.on('leak', function(info) {
+        leaked += info.growth;
+        process.stdout.write(' [LEAK+' + info.growth +'] ');
+    });
+    memwatch.on('stats', function(stats) {
+        fullGCs = stats.num_full_gc;
+        incrGCs = stats.num_inc_gc;
+        process.stdout.write(' [GC] ');
+    });
+}
 
 // Run the benchmark (or just check the function).
 if (JUST_CHECK_THE_FUNCTION) {
@@ -64,8 +69,10 @@ if (JUST_CHECK_THE_FUNCTION) {
     console.log("========== CHECKING '" + name + "': ==========");
     sample(function(err, result) {
         console.log(err || result);
-        console.log("========== GCs: " + fullGCs + 'full/' + incrGCs + "incr ==========");
-        console.log("========== Leaked: " + leaked + " ==========");
+        if (OUTPUT_GC_STATS) {
+            console.log("========== GCs: " + fullGCs + 'full/' + incrGCs + "incr ==========");
+            console.log("========== Leaked: " + leaked + " ==========");
+        }
     });
 } else {
     benchmark();
@@ -75,6 +82,7 @@ if (JUST_CHECK_THE_FUNCTION) {
 function benchmark() {
     var name = SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
     var sample = createSampleFunction();
+    var allSamplesPerSec = [];
     console.log('========== PERFORMING ' + RUNS_PER_BENCHMARK + " RUNS ON '" + name + "': ==========\n");
     var times = [];
     async.timesSeries(
@@ -86,6 +94,7 @@ function benchmark() {
                     next(err);
                 } else {
                     times.push(timing.totalElapsed);
+                    allSamplesPerSec.push(SAMPLES_PER_RUN * 1000.0 / timing.totalElapsed);
                     var msg = SAMPLES_PER_RUN
                         + ' samples took '
                         + (timing.totalElapsed / 1000.0)
@@ -93,14 +102,17 @@ function benchmark() {
                         + (SAMPLES_PER_RUN * 1000.0 / timing.totalElapsed)
                         + ' samples/sec), average latency per sample: '
                         + timing.perSample
-                        + 'ms, GCs: '
-                        + timing.fullGCs
-                        + 'full/'
-                        + timing.incrGCs
-                        + 'incr, leaked: '
-                        + timing.leaked
-                        + '\n';
-                    console.log(msg);
+                        + 'ms';
+                    if (OUTPUT_GC_STATS) {
+                        msg = msg
+                            + ', GCs: '
+                            + timing.fullGCs
+                            + 'full/'
+                            + timing.incrGCs
+                            + 'incr, leaked: '
+                            + timing.leaked;
+                    }
+                    console.log(msg + '\n');
                     next();
                 }
             });
@@ -118,17 +130,22 @@ function benchmark() {
                         + (SAMPLES_PER_RUN * 1000.0 / averageTime)
                         + ' samples/sec)';
                 console.log('========== ' + msg + ' ==========');
-                console.log("========== GCs: " + fullGCs + 'full/' + incrGCs + "incr ==========");
-                console.log("========== Leaked: " + leaked + " ==========");
+                if (OUTPUT_GC_STATS) {
+                    console.log("========== GCs: " + fullGCs + 'full/' + incrGCs + "incr ==========");
+                    console.log("========== Leaked: " + leaked + " ==========");
+                }
+                if (OUTPUT_SAMPLES_PER_SEC_SUMMARY) {
+                    console.log("========== Summary of samples/sec for all runs: ==========");
+                    console.log(allSamplesPerSec.join(', '));
+                }
             }
         });
-
 }
 
 
 
 function run(sample, callback) {
-    var chars = './#$@%^&*+!=-?~`|()[]ABCDEFGHIJKLMNOPQRS';
+    var chars = USE_SAME_SYMBOL_FOR_ALL_SAMPLES ? '.' : './#$@%^&*+!=-?~`|()[]ABCDEFGHIJKLMNOPQRS';
     var start = new Date().getTime();
     var startFullGCs = fullGCs;
     var startIncrGCs = incrGCs;
