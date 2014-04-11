@@ -4,6 +4,10 @@
 
 declare module AsyncAwait {
 
+    export interface Await extends AwaitFunc {
+        inPlace: AwaitFunc;
+    }
+
     export interface IAsync {
         <TResult>(fn: () => TResult): () => Thenable<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thenable<TResult>;
@@ -13,7 +17,7 @@ declare module AsyncAwait {
         (fn: Function): () => Thenable<any>;
     }
 
-    export interface IAwait {
+    export interface AwaitFunc {
         <T>(expr: AsyncAwait.Thenable<T>): T;
         <T>(expr: AsyncAwait.Thenable<T>[]): T[];
         <T>(expr: Thunk<T>): any;
@@ -34,7 +38,7 @@ declare module AsyncAwait {
 
 declare module AsyncAwaitStatic {
     export var async: AsyncAwait.IAsync;
-    export var await: AsyncAwait.IAwait;
+    export var await: AsyncAwait.Await;
 }
 
 declare module "asyncawait" {
@@ -45,6 +49,6 @@ declare module "asyncawait/async" {
     export = _;
 }
 declare module "asyncawait/await" {
-    var _: AsyncAwait.IAwait
+    var _: AsyncAwait.Await
     export = _;
 }

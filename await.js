@@ -8,58 +8,65 @@ var _ = require('lodash');
 * @param {any} expr - The awaitable expression whose results are to be awaited.
 * @returns {any} The final result of the awaitable expression expr.
 */
-var await = function (expr_) {
-    // Parse argument(s). If not a single argument, treat it like an array was passed in.
-    var expr = expr_;
-    if (arguments.length !== 1) {
-        expr = new Array(arguments.length);
-        for (var i = 0; i < arguments.length; ++i)
-            expr[i] = arguments[i];
-    }
+var await;
+await = createAwaitFunction({ inPlace: false });
+await.inPlace = createAwaitFunction({ inPlace: true });
 
-    // Handle each supported 'awaitable' appropriately...
-    var fiber = Fiber.current;
-    if (expr && _.isFunction(expr.then)) {
-        // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-        expr.then(function (val) {
-            fiber.run(val);
-            fiber = null;
-        }, function (err) {
-            fiber.throwInto(err);
-            fiber = null;
-        });
-    } else if (_.isFunction(expr)) {
-        // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
-        expr(function (err, val) {
-            if (err)
-                fiber.throwInto(err);
-            else
+
+// Function to create a specified variant of the await() function.
+function createAwaitFunction(options) {
+    // Return an await function tailored to the given options
+    var traverseFunction = options.inPlace ? traverseInPlace : traverseClone;
+    return function (expr_) {
+        // Parse argument(s). If not a single argument, treat it like an array was passed in.
+        var traverse = traverseFunction;
+        var expr = expr_;
+        if (arguments.length !== 1) {
+            expr = new Array(arguments.length);
+            for (var i = 0; i < arguments.length; ++i)
+                expr[i] = arguments[i];
+            traverse = traverseInPlace;
+        }
+
+        // Handle each supported 'awaitable' appropriately...
+        var fiber = Fiber.current;
+        if (expr && _.isFunction(expr.then)) {
+            // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
+            expr.then(function (val) {
                 fiber.run(val);
-            fiber = null;
-        });
-    } else if (_.isArray(expr) || _.isPlainObject(expr)) {
-        // An array or plain object: resume the coroutine with a deep clone of the array/object,
-        // where all contained promises and thunks have been replaced by their resolved values.
-        var trackedPromises = [];
+                fiber = null;
+            }, function (err) {
+                fiber.throwInto(err);
+                fiber = null;
+            });
+        } else if (_.isFunction(expr)) {
+            // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
+            expr(function (err, val) {
+                if (err)
+                    fiber.throwInto(err);
+                else
+                    fiber.run(val);
+                fiber = null;
+            });
+        } else if (_.isArray(expr) || _.isPlainObject(expr)) {
+            // An array or plain object: resume the coroutine with a deep clone of the array/object,
+            // where all contained promises and thunks have been replaced by their resolved values.
+            var trackedPromises = [];
+            expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+            Promise.all(trackedPromises).then(function (val) {
+                return fiber.run(expr);
+            }, function (err) {
+                return fiber.throwInto(err);
+            });
+        } else {
+            // Anything else: resume the coroutine immediately with the value.
+            setImmediate(fiber.run.bind(fiber), expr);
+        }
 
-        //TODO:... implement option choosing for clone / don't clone
-        var traverse = traverseInPlace;
-
-        //var traverse = traverseClone;
-        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
-        Promise.all(trackedPromises).then(function (val) {
-            return fiber.run(expr);
-        }, function (err) {
-            return fiber.throwInto(err);
-        });
-    } else {
-        // Anything else: resume the coroutine immediately with the value.
-        setImmediate(fiber.run.bind(fiber), expr);
-    }
-
-    // Suspend the current fiber until the one of the above handlers resumes it again.
-    return Fiber.yield();
-};
+        // Suspend the current fiber until the one of the above handlers resumes it again.
+        return Fiber.yield();
+    };
+}
 
 // In-place (ie non-cloning) object traversal.
 function traverseInPlace(o, visitor) {
