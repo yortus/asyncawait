@@ -18,7 +18,7 @@ var await = require('../../await');
   * - null if no files found -or-
   * - { path: string; size: number; preview?: string, searched: number; }
   */
-var largest = async (function (dir, options, internal) {
+var largest = async (function self(dir, options, internal) {
 
     // Parse arguments
     options = options || largest.options;
@@ -31,12 +31,12 @@ var largest = async (function (dir, options, internal) {
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = await (_.map(stats, function (stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
-        return options.recurse ? largest(paths[i], options, true) : null;
+        return options.recurse ? self(paths[i], options, true) : null;
     }));
 
     // Choose the best candidate.
     var result = _(candidates)
-        .filter(function (cand) { return cand; })
+        .compact()
         .reduce(function (best, cand) {
             if (cand.size > best.size) var temp = cand, cand = best, best = temp;
             best.searched += cand.searched;

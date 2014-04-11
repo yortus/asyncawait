@@ -64,7 +64,7 @@ var largest = function (dir, options, internal, callback) {
 
             // Choose the best candidate.
             var result = _(candidates)
-                .filter(function (cand) { return cand; })
+                .compact()
                 .reduce(function (best, cand) {
                     if (cand.size > best.size) var temp = cand, cand = best, best = temp;
                     best.searched += cand.searched;

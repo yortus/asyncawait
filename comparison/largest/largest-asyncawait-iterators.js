@@ -9,7 +9,7 @@ var iterable = require('../../iterable');
 var yield_ = require('../../yield');
 
 
-var descendentFileBatches = iterable (function recurse(dir, recursive) {
+var descendentFileBatches = iterable (function self(dir, recursive) {
 
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
@@ -21,7 +21,11 @@ var descendentFileBatches = iterable (function recurse(dir, recursive) {
     // Recursively yield each subdirectory, if requested
     if (recursive) {
         _.each(stats, function(stat, i) {
-            if (stat.isDirectory()) recurse(paths[i], true);
+            //TODO: temp testing...
+            if (stat.isDirectory()) descendentFileBatches(paths[i], true).forEach(function (result) { return yield_(result); });
+
+            //TODO: was...
+            //if (stat.isDirectory()) self(paths[i], true);
         });
     }
 });
@@ -62,7 +66,7 @@ var largest = async (function (dir, options, internal) {
 
     // Choose the best candidate.
     var result = _(candidates)
-        .filter(function (cand) { return cand; })
+        .compact()
         .reduce(function (best, cand) {
             if (cand.size > best.size) var temp = cand, cand = best, best = temp;
             best.searched += cand.searched;
