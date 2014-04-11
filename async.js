@@ -1,9 +1,97 @@
-﻿var deep = require('deep');
-var Fiber = require('fibers');
+﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
-var Semaphore = require('./Semaphore');
 
-// This interface describes the single argument passed to the wrapper() function (defined below).
+/**
+* Creates a function that can be suspended at each asynchronous operation using await().
+* @param {Function} fn - Contains the body of the suspendable function. Calls to await()
+*                        may appear inside this function.
+* @returns {Function} A function of the form `(...args) --> Promise`. Any arguments
+*                     passed to this function are passed through to fn. The returned
+*                     promise is resolved when fn returns, or rejected if fn throws.
+*/
+var async;
+async = createAsyncFunction({});
+async.concurrency = function (n) {
+    return createAsyncFunction({ concurrency: n });
+};
+
+
+/** Function for creating a specific variant of the async() function. */
+function createAsyncFunction(options) {
+    // Return an async function tailored to the given options.
+    var concurrency = options.concurrency;
+    return function (fn) {
+        // Create a semaphore for limiting top-level concurrency, if specified in options.
+        var semaphore = concurrency ? new Semaphore(concurrency) : null;
+        var leaveSemaphore = function () {
+            return semaphore.leave();
+        };
+        var noop = function () {
+        };
+
+        // Return a function that executes fn in a fiber and returns a promise of fn's result.
+        return function () {
+            var _this = this;
+            // Get all the arguments passed in, as an array.
+            var argsAsArray = new Array(arguments.length);
+            for (var i = 0; i < argsAsArray.length; ++i)
+                argsAsArray[i] = arguments[i];
+
+            // Create a new promise.
+            return new Promise(function (resolve, reject) {
+                // Limit top-level call concurrency, if requested.
+                var run = function () {
+                    Fiber(wrapper).run(context);
+                };
+
+                var isTopLevel = !Fiber.current;
+                if (isTopLevel && semaphore) {
+                    var context = new Context(fn, _this, argsAsArray, resolve, reject, leaveSemaphore);
+                    semaphore.enter(run);
+                } else {
+                    var context = new Context(fn, _this, argsAsArray, resolve, reject, noop);
+                    run();
+                }
+            });
+        };
+    };
+}
+
+/**
+* The following functionality prevents memory leaks in node-fibers by actively managing Fiber.poolSize.
+* For more information, see https://github.com/laverdet/node-fibers/issues/169.
+*/
+var fiberPoolSize = Fiber.poolSize;
+var activeFiberCount = 0;
+function adjustFiberCount(delta) {
+    activeFiberCount += delta;
+    if (activeFiberCount >= fiberPoolSize) {
+        fiberPoolSize += 100;
+        Fiber.poolSize = fiberPoolSize;
+    }
+}
+
+/**
+* The wrapper() function accepts a Context instance, and calls the wrapped function which is
+* described in the context. The result of the call is used to resolve the context's promise.
+* If an exception is thrown, the context's promise is rejected. This function must take all
+* its information in a single argument (i.e. the context), because it is called via
+* Fiber#run(), which accepts at most one argument.
+*/
+function wrapper(context) {
+    try  {
+        adjustFiberCount(+1);
+        var result = context.wrapped.apply(context.thisArg, context.argsAsArray);
+        context.resolve(result);
+    } catch (err) {
+        context.reject(err);
+    } finally {
+        adjustFiberCount(-1);
+        context.leave();
+    }
+}
+
+/** A class for encapsulating the single argument passed to the wrapper() function. */
 var Context = (function () {
     function Context(wrapped, thisArg, argsAsArray, resolve, reject, leave) {
         this.wrapped = wrapped;
@@ -11,59 +99,35 @@ var Context = (function () {
         this.argsAsArray = argsAsArray;
         this.resolve = resolve;
         this.reject = reject;
-        this.leave = leave || (function () {
-        });
+        this.leave = leave;
     }
     return Context;
 })();
 
-// This function accepts a context hash, and makes a function call as descibed in the context.
-// The result of the call is used to resolve the context's promise. If an exception is thrown,
-// the context's promise is rejected. This function must take all its information in a single
-// argument (i.e. the context), because it is called via Fiber#run(), which accepts at most
-// one argument.
-function wrapper(context) {
-    try  {
-        var result = context.wrapped.apply(context.thisArg, context.argsAsArray);
-        context.resolve(result);
-    } catch (err) {
-        context.reject(err);
-    } finally {
-        // Exit the semaphore.
-        context.leave();
+/** A simple abstraction for limiting concurrent function calls to a specific upper bound. */
+var Semaphore = (function () {
+    function Semaphore(n) {
+        this.n = n;
+        this._queued = [];
+        this._avail = n;
     }
-}
-
-// This is the async() API function (see docs).
-var async = function (fn) {
-    //TODO: temp testing... document and make configurable
-    // Create a semaphore.
-    var semaphore = new Semaphore(100);
-
-    // Return a function that executes fn in a fiber and returns a promise of fn's result.
-    return function () {
-        var _this = this;
-        // Get all the arguments passed in, as an array.
-        var argsAsArray = new Array(arguments.length);
-        for (var i = 0; i < argsAsArray.length; ++i)
-            argsAsArray[i] = arguments[i];
-
-        // Create a new promise.
-        return new Promise(function (resolve, reject) {
-            // Limit top-level call concurrency for better performance (TODO: in which situations? doc this).
-            if (!Fiber.current) {
-                var context = new Context(fn, _this, argsAsArray, resolve, reject, function () {
-                    return semaphore.leave();
-                });
-                semaphore.enter(function () {
-                    return Fiber(wrapper).run(context);
-                });
-            } else {
-                var context = new Context(fn, _this, argsAsArray, resolve, reject, function () {
-                });
-                Fiber(wrapper).run(context);
-            }
-        });
+    Semaphore.prototype.enter = function (fn) {
+        if (this._avail > 0) {
+            --this._avail;
+            fn();
+        } else {
+            this._queued.push(fn);
+        }
     };
-};
+
+    Semaphore.prototype.leave = function () {
+        if (this._queued.length > 0) {
+            var fn = this._queued.pop();
+            fn();
+        } else {
+            ++this._avail;
+        }
+    };
+    return Semaphore;
+})();
 module.exports = async;

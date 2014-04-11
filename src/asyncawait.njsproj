@@ -39,7 +39,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Semaphore.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />
     <TypeScriptCompile Include="typings\lodash.d.ts" />

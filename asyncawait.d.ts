@@ -4,11 +4,15 @@
 
 declare module AsyncAwait {
 
+    export interface Async extends AsyncFunc {
+        concurrency: (n: number) => AsyncFunc;
+    }
+
     export interface Await extends AwaitFunc {
         inPlace: AwaitFunc;
     }
 
-    export interface IAsync {
+    export interface AsyncFunc {
         <TResult>(fn: () => TResult): () => Thenable<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thenable<TResult>;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thenable<TResult>;
@@ -36,19 +40,32 @@ declare module AsyncAwait {
     }
 }
 
-declare module AsyncAwaitStatic {
-    export var async: AsyncAwait.IAsync;
-    export var await: AsyncAwait.Await;
+declare module "asyncawait" {
+    export import async = require("asyncawait/async");
+    export import await = require("asyncawait/await");
 }
 
-declare module "asyncawait" {
-    export = AsyncAwaitStatic
-}
 declare module "asyncawait/async" {
-    var _: AsyncAwait.IAsync;
-    export = _;
+    /**
+     * Creates a function that can be suspended at each asynchronous operation using await().
+     * @param {Function} fn - Contains the body of the suspendable function. Calls to await()
+     *                        may appear inside this function.
+     * @returns {Function} A function of the form `(...args) --> Promise`. Any arguments
+     *                     passed to this function are passed through to fn. The returned
+     *                     promise is resolved when fn returns, or rejected if fn throws.
+     */
+    var M: AsyncAwait.Async;
+    export = M;
 }
+
 declare module "asyncawait/await" {
-    var _: AsyncAwait.Await
-    export = _;
+    /**
+     * Suspends an async-wrapped function until the given awaitable expression produces
+     * a result. If the given expression produces an error, then an exception is raised
+     * in the async-wrapped function.
+     * @param {any} expr - The awaitable expression whose results are to be awaited.
+     * @returns {any} The final result of the given awaitable expression.
+     */
+    var M: AsyncAwait.Await
+    export = M;
 }
