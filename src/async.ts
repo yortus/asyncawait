@@ -43,22 +43,22 @@ function createAsyncFunction(options: AsyncOptions) {
             for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
 
             // Create a new promise.
-            return new Promise((resolve, reject) => {
+            var resolver = Promise.defer<any>();
+            var resolve = resolver.resolve.bind(resolver);
+            var reject = resolver.reject.bind(resolver);
 
-                // Limit top-level call concurrency, if requested.
-                var run = () => {
-                    Fiber(wrapper).run(context);
-                };
+            // Start fn in a coroutine. Limit top-level concurrency if requested.
+            var isTopLevel = !Fiber.current;
+            if (isTopLevel && semaphore) {
+                var context = new Context(fn, this, argsAsArray, resolve, reject, leaveSemaphore);
+                semaphore.enter(() => Fiber(wrapper).run(context));
+            } else {
+                var context = new Context(fn, this, argsAsArray, resolve, reject, noop);
+                Fiber(wrapper).run(context);
+            }
 
-                var isTopLevel = !Fiber.current;
-                if (isTopLevel && semaphore) {
-                    var context = new Context(fn, this, argsAsArray, resolve, reject, leaveSemaphore);
-                    semaphore.enter(run);
-                } else {
-                    var context = new Context(fn, this, argsAsArray, resolve, reject, noop);
-                    run();
-                }
-            });
+            // Return the promise.
+            return resolver.promise;
         };
     };
 }

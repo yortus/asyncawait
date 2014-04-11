@@ -31,28 +31,30 @@ function createAsyncFunction(options) {
 
         // Return a function that executes fn in a fiber and returns a promise of fn's result.
         return function () {
-            var _this = this;
             // Get all the arguments passed in, as an array.
             var argsAsArray = new Array(arguments.length);
             for (var i = 0; i < argsAsArray.length; ++i)
                 argsAsArray[i] = arguments[i];
 
             // Create a new promise.
-            return new Promise(function (resolve, reject) {
-                // Limit top-level call concurrency, if requested.
-                var run = function () {
-                    Fiber(wrapper).run(context);
-                };
+            var resolver = Promise.defer();
+            var resolve = resolver.resolve.bind(resolver);
+            var reject = resolver.reject.bind(resolver);
 
-                var isTopLevel = !Fiber.current;
-                if (isTopLevel && semaphore) {
-                    var context = new Context(fn, _this, argsAsArray, resolve, reject, leaveSemaphore);
-                    semaphore.enter(run);
-                } else {
-                    var context = new Context(fn, _this, argsAsArray, resolve, reject, noop);
-                    run();
-                }
-            });
+            // Start fn in a coroutine. Limit top-level concurrency if requested.
+            var isTopLevel = !Fiber.current;
+            if (isTopLevel && semaphore) {
+                var context = new Context(fn, this, argsAsArray, resolve, reject, leaveSemaphore);
+                semaphore.enter(function () {
+                    return Fiber(wrapper).run(context);
+                });
+            } else {
+                var context = new Context(fn, this, argsAsArray, resolve, reject, noop);
+                Fiber(wrapper).run(context);
+            }
+
+            // Return the promise.
+            return resolver.promise;
         };
     };
 }
