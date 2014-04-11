@@ -5,10 +5,9 @@ var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('../..').async;
 var await = require('../..').await;
-var yield_ = require('../../yield');
 
 
-var descendentFileBatches = async.iterable (function self(dir, recursive) {
+var descendentFileBatches = async.iterable (function self(yield_, dir, recursive) {
 
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
@@ -24,7 +23,7 @@ var descendentFileBatches = async.iterable (function self(dir, recursive) {
             //if (stat.isDirectory()) descendentFileBatches(paths[i], true).forEach(function (result) { return yield_(result); });
 
             //TODO: was...
-            if (stat.isDirectory()) self(paths[i], true);
+            if (stat.isDirectory()) self(yield_, paths[i], true);
         });
     }
 });

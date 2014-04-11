@@ -147,11 +147,8 @@ export class Iterator {
     next(): { value: Promise<any>; done: Promise<boolean> } {
         var value = Promise.defer<any>();
         var done = Promise.defer<boolean>();
-
         this.context.value = value;
         this.context.done = done;
-        this.fiber['value'] = value;
-        this.fiber['done'] = done;
 
         // Run the fiber until it either yields a value or completes
         this.fiber.run(this.context);

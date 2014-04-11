@@ -63,9 +63,18 @@ function createAsyncFunction(options: AsyncOptions) {
 
             } else if (options.output === Output.PromiseIterator) {
 
+
                 // 1 iterator <==> 1 fiber
                 var fiber = Fiber(wrapper);
                 var context = new common.Context(Output.PromiseIterator, fn, null/*TODO proper this arg*/, argsAsArray, semaphore);
+
+                //TODO:...
+                var yield_ = expr => {
+                    context.value.resolve(expr);
+                    context.done.resolve(false);
+                    Fiber.yield();
+                }
+                argsAsArray.unshift(yield_);
 
                 //TODO...
                 var result = new common.Iterator(fiber, context);

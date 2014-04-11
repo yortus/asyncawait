@@ -48,7 +48,6 @@
     <TypeScriptCompile Include="_refs.d.ts" />
     <TypeScriptCompile Include="async\index.ts" />
     <TypeScriptCompile Include="await\index.ts" />
-    <TypeScriptCompile Include="yield.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="async\" />
