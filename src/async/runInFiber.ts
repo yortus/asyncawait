@@ -1,6 +1,6 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
-import AsyncOutput = require('./asyncOutput');
+import OutputKind = require('./outputKind');
 import RunContext = require('./runContext');
 export = runInFiber;
 
@@ -22,11 +22,11 @@ function runInFiber(runCtx: RunContext) {
         var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
 
         // If we get here, the wrapped function finished normally (ie via explicit or implicit return).
-        switch (runCtx.output) {
-            case AsyncOutput.Promise:
+        switch (runCtx.outputKind) {
+            case OutputKind.Promise:
                 runCtx.value.resolve(result);
                 break;
-            case AsyncOutput.PromiseIterator:
+            case OutputKind.PromiseIterator:
                 runCtx.value.resolve(undefined);
                 runCtx.done.resolve(true);
                 break;
@@ -35,11 +35,11 @@ function runInFiber(runCtx: RunContext) {
     catch (err) {
 
         // If we get here, the wrapped function had an unhandled exception.
-        switch (runCtx.output) {
-            case AsyncOutput.Promise:
+        switch (runCtx.outputKind) {
+            case OutputKind.Promise:
                 runCtx.value.reject(err);
                 break;
-            case AsyncOutput.PromiseIterator:
+            case OutputKind.PromiseIterator:
                 runCtx.value.reject(err);
                 runCtx.done.resolve(true);
                 break;

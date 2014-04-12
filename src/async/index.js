@@ -2,7 +2,7 @@
 var Promise = require('bluebird');
 var runInFiber = require('./runInFiber');
 var RunContext = require('./runContext');
-var AsyncOutput = require('./asyncOutput');
+var OutputKind = require('./outputKind');
 var Semaphore = require('./semaphore');
 var Iterator = require('./iterator');
 
@@ -15,11 +15,11 @@ var Iterator = require('./iterator');
 *                     promise is resolved when fn returns, or rejected if fn throws.
 */
 var async;
-async = createAsyncFunction({ output: 0 /* Promise */ });
+async = createAsyncFunction({ outputKind: 0 /* Promise */ });
 async.concurrency = function (n) {
-    return createAsyncFunction({ output: 0 /* Promise */, concurrency: n });
+    return createAsyncFunction({ outputKind: 0 /* Promise */, concurrency: n });
 };
-async.iterable = createAsyncFunction({ output: 1 /* PromiseIterator */ });
+async.iterable = createAsyncFunction({ outputKind: 1 /* PromiseIterator */ });
 
 
 /** Function for creating a specific variant of the async() function. */
@@ -41,7 +41,7 @@ function createAsyncFunction(options) {
             for (var i = 0; i < argsAsArray.length; ++i)
                 argsAsArray[i] = arguments[i];
 
-            if (options.output === 0 /* Promise */) {
+            if (options.outputKind === 0 /* Promise */) {
                 // Create a new promise.
                 var resolver = Promise.defer();
 
@@ -55,7 +55,7 @@ function createAsyncFunction(options) {
 
                 // Return the promise.
                 return resolver.promise;
-            } else if (options.output === 1 /* PromiseIterator */) {
+            } else if (options.outputKind === 1 /* PromiseIterator */) {
                 // 1 iterator <==> 1 fiber
                 var fiber = Fiber(runInFiber);
                 var runContext = new RunContext(1 /* PromiseIterator */, fn, null, argsAsArray, semaphore);

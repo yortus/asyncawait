@@ -1,5 +1,5 @@
 ﻿var Fiber = require('fibers');
-var AsyncOutput = require('./asyncOutput');
+var OutputKind = require('./outputKind');
 
 
 /**
@@ -17,7 +17,7 @@ function runInFiber(runCtx) {
         // Call the wrapped function. It may be suspended several times (at await and/or yield calls).
         var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
 
-        switch (runCtx.output) {
+        switch (runCtx.outputKind) {
             case 0 /* Promise */:
                 runCtx.value.resolve(result);
                 break;
@@ -27,7 +27,7 @@ function runInFiber(runCtx) {
                 break;
         }
     } catch (err) {
-        switch (runCtx.output) {
+        switch (runCtx.outputKind) {
             case 0 /* Promise */:
                 runCtx.value.reject(err);
                 break;
