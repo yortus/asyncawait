@@ -2,14 +2,15 @@
 import Promise = require('bluebird');
 import AsyncOutput = require('./asyncOutput');
 import Semaphore = require('./semaphore');
-export = Context;
+export = RunContext;
 
 
-//TODO: rename to RunContext
-
-
-/** A class for encapsulating the single argument passed to the wrapper() function. */
-class Context {
+/**
+ * This class is used to pass all required contextual information to the runInFiber()
+ * function as a single argument. runInFiber() can only accept a single argument because
+ * it is invoked via Fiber#run(), which can only pass through a single argument.
+ */
+class RunContext {
     constructor(output: AsyncOutput, wrapped: Function, thisArg, argsAsArray: any[], semaphore: Semaphore) {
         this.output = output;
         this.wrapped = wrapped;

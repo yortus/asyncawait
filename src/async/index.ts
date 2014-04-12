@@ -1,8 +1,8 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
-import wrapper = require('./wrapper');
-import Context = require('./context');
+import runInFiber = require('./runInFiber');
+import RunContext = require('./runContext');
 import AsyncOutput = require('./asyncOutput');
 import Semaphore = require('./semaphore');
 import Iterator = require('./iterator');
@@ -57,9 +57,9 @@ function createAsyncFunction(options: AsyncOptions) {
 
                 // Start fn in a coroutine. Limit top-level concurrency if requested.
                 var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-                var context = new Context(AsyncOutput.Promise, fn, this, argsAsArray, sem);
-                context.value = resolver;
-                sem.enter(() => Fiber(wrapper).run(context));
+                var runContext = new RunContext(AsyncOutput.Promise, fn, this, argsAsArray, sem);
+                runContext.value = resolver;
+                sem.enter(() => Fiber(runInFiber).run(runContext));
 
                 // Return the promise.
                 return resolver.promise;
@@ -68,19 +68,19 @@ function createAsyncFunction(options: AsyncOptions) {
 
 
                 // 1 iterator <==> 1 fiber
-                var fiber = Fiber(wrapper);
-                var context = new Context(AsyncOutput.PromiseIterator, fn, null/*TODO proper this arg*/, argsAsArray, semaphore);
+                var fiber = Fiber(runInFiber);
+                var runContext = new RunContext(AsyncOutput.PromiseIterator, fn, null/*TODO proper this arg*/, argsAsArray, semaphore);
 
                 //TODO:...
                 var yield_ = expr => {
-                    context.value.resolve(expr);
-                    context.done.resolve(false);
+                    runContext.value.resolve(expr);
+                    runContext.done.resolve(false);
                     Fiber.yield();
                 }
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new Iterator(fiber, context);
+                var result = new Iterator(fiber, runContext);
                 return <{ next: Function; forEach: Function; }> result;
             }
         };

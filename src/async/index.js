@@ -1,7 +1,7 @@
 ﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
-var wrapper = require('./wrapper');
-var Context = require('./context');
+var runInFiber = require('./runInFiber');
+var RunContext = require('./runContext');
 var AsyncOutput = require('./asyncOutput');
 var Semaphore = require('./semaphore');
 var Iterator = require('./iterator');
@@ -47,29 +47,29 @@ function createAsyncFunction(options) {
 
                 // Start fn in a coroutine. Limit top-level concurrency if requested.
                 var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-                var context = new Context(0 /* Promise */, fn, this, argsAsArray, sem);
-                context.value = resolver;
+                var runContext = new RunContext(0 /* Promise */, fn, this, argsAsArray, sem);
+                runContext.value = resolver;
                 sem.enter(function () {
-                    return Fiber(wrapper).run(context);
+                    return Fiber(runInFiber).run(runContext);
                 });
 
                 // Return the promise.
                 return resolver.promise;
             } else if (options.output === 1 /* PromiseIterator */) {
                 // 1 iterator <==> 1 fiber
-                var fiber = Fiber(wrapper);
-                var context = new Context(1 /* PromiseIterator */, fn, null, argsAsArray, semaphore);
+                var fiber = Fiber(runInFiber);
+                var runContext = new RunContext(1 /* PromiseIterator */, fn, null, argsAsArray, semaphore);
 
                 //TODO:...
                 var yield_ = function (expr) {
-                    context.value.resolve(expr);
-                    context.done.resolve(false);
+                    runContext.value.resolve(expr);
+                    runContext.done.resolve(false);
                     Fiber.yield();
                 };
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new Iterator(fiber, context);
+                var result = new Iterator(fiber, runContext);
                 return result;
             }
         };

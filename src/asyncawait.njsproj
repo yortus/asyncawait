@@ -39,9 +39,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="async\wrapper.ts" />
+    <TypeScriptCompile Include="async\runInFiber.ts" />
     <TypeScriptCompile Include="async\asyncOutput.ts" />
-    <TypeScriptCompile Include="async\context.ts" />
+    <TypeScriptCompile Include="async\runContext.ts" />
     <TypeScriptCompile Include="async\iterator.ts" />
     <TypeScriptCompile Include="async\semaphore.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />

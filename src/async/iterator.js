@@ -9,9 +9,9 @@ var Iterator = (function () {
     /**
     * TODO: ...
     */
-    function Iterator(fiber, context) {
+    function Iterator(fiber, runContext) {
         this.fiber = fiber;
-        this.context = context;
+        this.runContext = runContext;
     }
     /**
     * TODO: ...
@@ -19,11 +19,11 @@ var Iterator = (function () {
     Iterator.prototype.next = function () {
         var value = Promise.defer();
         var done = Promise.defer();
-        this.context.value = value;
-        this.context.done = done;
+        this.runContext.value = value;
+        this.runContext.done = done;
 
         // Run the fiber until it either yields a value or completes
-        this.fiber.run(this.context);
+        this.fiber.run(this.runContext);
 
         return { value: value.promise, done: done.promise };
     };
@@ -36,7 +36,7 @@ var Iterator = (function () {
             var i = this.next();
             if (await(i.done)) {
                 this.fiber = null;
-                this.context = null;
+                this.runContext = null;
                 break;
             }
             callback(await(i.value));

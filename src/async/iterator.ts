@@ -1,7 +1,7 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
-import Context = require('./context');
+import RunContext = require('./runContext');
 import await = require('../await/index');
 export = Iterator;
 
@@ -14,7 +14,7 @@ class Iterator {
     /**
      * TODO: ...
      */
-    constructor(private fiber: Fiber, private context: Context) {}
+    constructor(private fiber: Fiber, private runContext: RunContext) {}
 
     /**
      * TODO: ...
@@ -22,11 +22,11 @@ class Iterator {
     next(): { value: Promise<any>; done: Promise<boolean> } {
         var value = Promise.defer<any>();
         var done = Promise.defer<boolean>();
-        this.context.value = value;
-        this.context.done = done;
+        this.runContext.value = value;
+        this.runContext.done = done;
 
         // Run the fiber until it either yields a value or completes
-        this.fiber.run(this.context);
+        this.fiber.run(this.runContext);
 
         return { value: value.promise, done: done.promise };
     }
@@ -37,7 +37,7 @@ class Iterator {
     forEach(callback: (value) => void) {
         while (true) {
             var i = this.next();
-            if (await (i.done)) { this.fiber = null; this.context = null; break; }
+            if (await (i.done)) { this.fiber = null; this.runContext = null; break; }
             callback(await (i.value));
         }
     }
