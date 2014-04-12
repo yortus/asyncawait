@@ -2,6 +2,3 @@
 *.user
 obj/
 node_modules/
-/src/**/*.js
-/src/**/*.js.map
-README.html

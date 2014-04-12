@@ -2,6 +2,3 @@
 *.user
 obj/
 node_modules/
-README.html
-
-/src/
