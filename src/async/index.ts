@@ -5,7 +5,7 @@ import runInFiber = require('./runInFiber');
 import RunContext = require('./runContext');
 import OutputKind = require('./outputKind');
 import Semaphore = require('./semaphore');
-import Iterator = require('./iterator');
+import PromiseIterator = require('./promiseIterator');
 export = async;
 
 
@@ -80,7 +80,7 @@ function createAsyncFunction(options: AsyncOptions) {
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new Iterator(fiber, runContext);
+                var result = new PromiseIterator(fiber, runContext);
                 return <{ next: Function; forEach: Function; }> result;
             }
         };

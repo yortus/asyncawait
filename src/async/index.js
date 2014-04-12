@@ -4,7 +4,7 @@ var runInFiber = require('./runInFiber');
 var RunContext = require('./runContext');
 var OutputKind = require('./outputKind');
 var Semaphore = require('./semaphore');
-var Iterator = require('./iterator');
+var PromiseIterator = require('./promiseIterator');
 
 /**
 * Creates a function that can be suspended at each asynchronous operation using await().
@@ -69,7 +69,7 @@ function createAsyncFunction(options) {
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new Iterator(fiber, runContext);
+                var result = new PromiseIterator(fiber, runContext);
                 return result;
             }
         };

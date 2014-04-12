@@ -3,13 +3,13 @@ import Fiber = require('fibers');
 import Promise = require('bluebird');
 import RunContext = require('./runContext');
 import await = require('../await/index');
-export = Iterator;
+export = PromiseIterator;
 
 
 /**
  * TODO: ...
  */
-class Iterator {
+class PromiseIterator {
 
     /**
      * TODO: ...

@@ -5,18 +5,18 @@ var await = require('../await/index');
 /**
 * TODO: ...
 */
-var Iterator = (function () {
+var PromiseIterator = (function () {
     /**
     * TODO: ...
     */
-    function Iterator(fiber, runContext) {
+    function PromiseIterator(fiber, runContext) {
         this.fiber = fiber;
         this.runContext = runContext;
     }
     /**
     * TODO: ...
     */
-    Iterator.prototype.next = function () {
+    PromiseIterator.prototype.next = function () {
         var value = Promise.defer();
         var done = Promise.defer();
         this.runContext.value = value;
@@ -31,7 +31,7 @@ var Iterator = (function () {
     /**
     * TODO: ...
     */
-    Iterator.prototype.forEach = function (callback) {
+    PromiseIterator.prototype.forEach = function (callback) {
         while (true) {
             var i = this.next();
             if (await(i.done)) {
@@ -42,7 +42,7 @@ var Iterator = (function () {
             callback(await(i.value));
         }
     };
-    return Iterator;
+    return PromiseIterator;
 })();
-module.exports = Iterator;
-//# sourceMappingURL=iterator.js.map
+module.exports = PromiseIterator;
+//# sourceMappingURL=promiseIterator.js.map
