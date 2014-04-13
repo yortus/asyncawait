@@ -6,7 +6,8 @@
 */
 var RunContext = (function () {
     function RunContext(options, wrapped, thisArg, argsAsArray, semaphore) {
-        this.value = null;
+        this.resolver = null;
+        this.callback = null;
         this.options = options;
         this.wrapped = wrapped;
         this.thisArg = thisArg;

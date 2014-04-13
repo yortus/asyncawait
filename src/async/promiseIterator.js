@@ -18,7 +18,7 @@ var PromiseIterator = (function () {
     */
     PromiseIterator.prototype.next = function () {
         var nextValue = Promise.defer();
-        this.runContext.value = nextValue;
+        this.runContext.resolver = nextValue;
 
         // Run the fiber until it either yields a value or completes
         this.fiber.run(this.runContext);

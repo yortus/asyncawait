@@ -12,9 +12,9 @@ var await = require('../..').await;
   * @param {string} dir - the directory to search.
   * @param {object?} options - optional settings: { recurse?: boolean; preview?: boolean }.
   * @returns {object?} null if no files found, otherwise an object of the form
-  *                    { path: string; size: number; preview?: string, searched: number; }
+  *                    { path: string; size: number; preview?: string, searched: number; }.
   */
-var largest = async (function self(dir, options, internal) {
+var largest = async.cps (function self(dir, options, internal) {
 
     // Parse arguments
     options = options || largest.options;
@@ -27,7 +27,7 @@ var largest = async (function self(dir, options, internal) {
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = await (_.map(stats, function (stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
-        return options.recurse ? largest(paths[i], options, true) : null;
+        return options.recurse ? self(paths[i], options, true) : null;
     }));
 
     // Choose the best candidate.
@@ -52,8 +52,10 @@ var largest = async (function self(dir, options, internal) {
 largest.options = {};
 
 
-function nodeified(dir, options, callback) {
-    if (arguments.length == 2) callback = options, options = null;
-    largest(dir, options).nodeify(callback);
-}
-module.exports = nodeified;
+//TODO: remove/cleanup...
+//function nodeified(dir, options, callback) {
+//    if (arguments.length == 2) callback = options, options = null;
+//    largest(dir, options).nodeify(callback);
+//}
+//module.exports = nodeified;
+module.exports = largest;

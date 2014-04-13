@@ -7,6 +7,7 @@ declare module AsyncAwait {
     export interface Async extends AsyncFunc {
         concurrency: (n: number) => AsyncFunc;
         iterable: Function;//TODO:...
+        cps: Function;//TODO:...
     }
 
     export interface Await extends AwaitFunc {

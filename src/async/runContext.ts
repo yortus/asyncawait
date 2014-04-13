@@ -25,5 +25,6 @@ class RunContext {
     argsAsArray: any[];
     semaphore: Semaphore;
 
-    value: Promise.Resolver<any> = null;
+    resolver: Promise.Resolver<any> = null;
+    callback: (err, val?) => void = null;
 }
