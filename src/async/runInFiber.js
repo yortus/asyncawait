@@ -22,18 +22,14 @@ function runInFiber(runCtx) {
                 runCtx.value.resolve(result);
                 break;
             case 1 /* PromiseIterator */:
-                runCtx.value.resolve(undefined);
-                runCtx.done.resolve(true);
+                runCtx.value.resolve({ done: true });
                 break;
         }
     } catch (err) {
         switch (runCtx.outputKind) {
             case 0 /* Promise */:
-                runCtx.value.reject(err);
-                break;
             case 1 /* PromiseIterator */:
                 runCtx.value.reject(err);
-                runCtx.done.resolve(true);
                 break;
         }
     } finally {

@@ -4,11 +4,9 @@ var path = require('path');
 var _ = require('lodash');
 var async = require('..').async;
 var await = require('..').await;
-var iterable = require('../iterable');//TODO: fix!!
-var yield_ = require('../yield');
 
 
-var descendentFilePaths = iterable (function recurse(dir, recursive) {
+var descendentFilePaths = async.iterable (function self(yield_, dir, recursive) {
 
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
@@ -16,20 +14,14 @@ var descendentFilePaths = iterable (function recurse(dir, recursive) {
 
     _.each(stats, function(stat, i) {
         if (stat.isFile()) yield_ (paths[i]);
-        else if (recursive) recurse(paths[i], true);
+        else if (recursive) self(yield_, paths[i], true);
     });
 });
 
 
 var program = async (function(dir) {
     var paths = descendentFilePaths(dir, true);
-
-    while (true) {
-        var path = paths.next();
-        if (await(path.done)) break;
-        console.log(await(path.value));
-    }
-
+    paths.forEach(console.log);
     return 'Finished!';
 });
 

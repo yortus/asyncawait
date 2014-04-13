@@ -27,8 +27,7 @@ function runInFiber(runCtx: RunContext) {
                 runCtx.value.resolve(result);
                 break;
             case OutputKind.PromiseIterator:
-                runCtx.value.resolve(undefined);
-                runCtx.done.resolve(true);
+                runCtx.value.resolve({ done: true });
                 break;
         }
     }
@@ -37,11 +36,8 @@ function runInFiber(runCtx: RunContext) {
         // If we get here, the wrapped function had an unhandled exception.
         switch (runCtx.outputKind) {
             case OutputKind.Promise:
-                runCtx.value.reject(err);
-                break;
             case OutputKind.PromiseIterator:
                 runCtx.value.reject(err);
-                runCtx.done.resolve(true);
                 break;
         }
     }

@@ -2,11 +2,9 @@
 var Promise = require('bluebird');
 var async = require('..').async;
 var await = require('..').await;
-var iterable = require('../iterable');//TODO: fix!...
-var yield_ = require('../yield');
 
 
-var someNums = iterable (function () {
+var someNums = async.iterable (function (yield_) {
 
     await (Promise.delay(500));
     yield_(111);
@@ -22,9 +20,9 @@ var program = async (function() {
     var iterator = someNums();
 
     while (true) {
-        var item = iterator.next();
-        if (await(item.done)) break;
-        console.log(await(item.value));
+        var item = await (iterator.next());
+        if (item.done) break;
+        console.log(item.value);
     }
 
     return 'Finished!';

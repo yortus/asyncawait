@@ -19,16 +19,14 @@ class PromiseIterator {
     /**
      * TODO: ...
      */
-    next(): { value: Promise<any>; done: Promise<boolean> } {
-        var value = Promise.defer<any>();
-        var done = Promise.defer<boolean>();
-        this.runContext.value = value;
-        this.runContext.done = done;
+    next(): Promise<{ value?: any; done: boolean; }> {
+        var nextValue = Promise.defer<any>();
+        this.runContext.value = nextValue;
 
         // Run the fiber until it either yields a value or completes
         this.fiber.run(this.runContext);
 
-        return { value: value.promise, done: done.promise };
+        return nextValue.promise;
     }
 
     /**
@@ -36,9 +34,9 @@ class PromiseIterator {
      */
     forEach(callback: (value) => void) {
         while (true) {
-            var i = this.next();
-            if (await (i.done)) { this.fiber = null; this.runContext = null; break; }
-            callback(await (i.value));
+            var i = await (this.next());
+            if (i.done) break;
+            callback(i.value);
         }
     }
 }

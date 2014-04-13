@@ -17,15 +17,13 @@ var PromiseIterator = (function () {
     * TODO: ...
     */
     PromiseIterator.prototype.next = function () {
-        var value = Promise.defer();
-        var done = Promise.defer();
-        this.runContext.value = value;
-        this.runContext.done = done;
+        var nextValue = Promise.defer();
+        this.runContext.value = nextValue;
 
         // Run the fiber until it either yields a value or completes
         this.fiber.run(this.runContext);
 
-        return { value: value.promise, done: done.promise };
+        return nextValue.promise;
     };
 
     /**
@@ -33,13 +31,10 @@ var PromiseIterator = (function () {
     */
     PromiseIterator.prototype.forEach = function (callback) {
         while (true) {
-            var i = this.next();
-            if (await(i.done)) {
-                this.fiber = null;
-                this.runContext = null;
+            var i = await(this.next());
+            if (i.done)
                 break;
-            }
-            callback(await(i.value));
+            callback(i.value);
         }
     };
     return PromiseIterator;

@@ -73,8 +73,8 @@ function createAsyncFunction(options: AsyncOptions) {
 
                 //TODO:...
                 var yield_ = expr => {
-                    runContext.value.resolve(expr);
-                    runContext.done.resolve(false);
+                    //TODO: await expr first?
+                    runContext.value.resolve({ value: expr, done: false });
                     Fiber.yield();
                 }
                 argsAsArray.unshift(yield_);
