@@ -18,19 +18,17 @@ function runInFiber(runCtx) {
 
         // If we get here, the wrapped function finished normally (ie via explicit or implicit return).
         if (runCtx.options.acceptsCallback) {
-            runCtx.callback(null, result);
+            runCtx.callback(null, runCtx.options.isIterable ? { done: true } : result);
         }
         if (runCtx.options.returnsPromise) {
             runCtx.resolver.resolve(runCtx.options.isIterable ? { done: true } : result);
         }
     } catch (err) {
         // If we get here, the wrapped function had an unhandled exception.
-        if (runCtx.options.acceptsCallback) {
+        if (runCtx.options.acceptsCallback)
             runCtx.callback(err);
-        }
-        if (runCtx.options.returnsPromise) {
+        if (runCtx.options.returnsPromise)
             runCtx.resolver.reject(err);
-        }
     } finally {
         // Track the number of currently active fibers
         adjustFiberCount(-1);

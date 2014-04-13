@@ -29,7 +29,7 @@ var variants = {
 
 var SELECTED_FUNCTION = functions.largest;
 
-var SELECTED_VARIANT = variants.asyncawait;
+var SELECTED_VARIANT = variants.asyncawait2;
 
 var SAMPLES_PER_RUN = 200;   // How many times the function will be called per run.
 

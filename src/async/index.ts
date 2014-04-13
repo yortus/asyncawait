@@ -88,15 +88,14 @@ function createAsyncFunction(options_: Options) {
                 //TODO:...
                 var yield_ = expr => {
                     //TODO: await expr first?
-                    //TODO: also support cps... if (options.acceptsCallback) runContext.callback(null, { value: expr, done: false });
+                    if (options.acceptsCallback) runContext.callback(null, { value: expr, done: false });
                     if (options.returnsPromise) runContext.resolver.resolve({ value: expr, done: false });
                     Fiber.yield();
                 }
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new AsyncIterator(fiber, runContext);
-                return <{ next: Function; forEach: Function; }> result;
+                return new AsyncIterator(fiber, runContext);
             }
         };
     };
