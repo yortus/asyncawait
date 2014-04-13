@@ -6,7 +6,7 @@ import runInFiber = require('./runInFiber');
 import RunContext = require('./runContext');
 import Options = require('./options');
 import Semaphore = require('./semaphore');
-import PromiseIterator = require('./promiseIterator');
+import AsyncIterator = require('./asyncIterator');
 export = async;
 
 
@@ -36,7 +36,7 @@ async.cps = createAsyncFunction({ acceptsCallback: true, returnsPromise: false }
 
 /** Function for creating a specific variant of the async() function. */
 function createAsyncFunction(options_: Options) {
-
+    
     // Return an async function tailored to the given options.
     var options: Options = _.defaults({}, options_, defaultOptions);
     return function(fn: Function) {
@@ -79,7 +79,7 @@ function createAsyncFunction(options_: Options) {
                 // Return the appropriate value.
                 return options.returnsPromise ? resolver.promise : undefined;
 
-            } else if (options.isIterable && options.returnsPromise && !options.acceptsCallback) {
+            } else /* iterable */ {
 
                 // 1 iterator <==> 1 fiber
                 var fiber = Fiber(runInFiber);
@@ -88,30 +88,15 @@ function createAsyncFunction(options_: Options) {
                 //TODO:...
                 var yield_ = expr => {
                     //TODO: await expr first?
-                    runContext.resolver.resolve({ value: expr, done: false });
+                    //TODO: also support cps... if (options.acceptsCallback) runContext.callback(null, { value: expr, done: false });
+                    if (options.returnsPromise) runContext.resolver.resolve({ value: expr, done: false });
                     Fiber.yield();
                 }
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new PromiseIterator(fiber, runContext);
+                var result = new AsyncIterator(fiber, runContext);
                 return <{ next: Function; forEach: Function; }> result;
-
-            //}
-            //else if (!options.isIterable && !options.returnsPromise && options.acceptsCallback) {
-
-            //    // Pop the callback from the args array
-            //    var callback = argsAsArray.pop();
-
-            //    // Start fn in a coroutine. Limit top-level concurrency if requested.
-            //    var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-            //    var runContext = new RunContext(options, fn, this, argsAsArray, sem);
-            //    runContext.callback = callback;
-            //    sem.enter(() => Fiber(runInFiber).run(runContext));
-            } else {
-
-                //TODO:...
-                throw new Error('Not Implemented!');
             }
         };
     };

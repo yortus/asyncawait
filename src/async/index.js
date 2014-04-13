@@ -5,7 +5,7 @@ var runInFiber = require('./runInFiber');
 var RunContext = require('./runContext');
 
 var Semaphore = require('./semaphore');
-var PromiseIterator = require('./promiseIterator');
+var AsyncIterator = require('./asyncIterator');
 
 /** TODO: ... */
 var defaultOptions = {
@@ -72,7 +72,7 @@ function createAsyncFunction(options_) {
 
                 // Return the appropriate value.
                 return options.returnsPromise ? resolver.promise : undefined;
-            } else if (options.isIterable && options.returnsPromise && !options.acceptsCallback) {
+            } else {
                 // 1 iterator <==> 1 fiber
                 var fiber = Fiber(runInFiber);
                 var runContext = new RunContext(options, fn, null, argsAsArray, semaphore);
@@ -80,25 +80,16 @@ function createAsyncFunction(options_) {
                 //TODO:...
                 var yield_ = function (expr) {
                     //TODO: await expr first?
-                    runContext.resolver.resolve({ value: expr, done: false });
+                    //TODO: also support cps... if (options.acceptsCallback) runContext.callback(null, { value: expr, done: false });
+                    if (options.returnsPromise)
+                        runContext.resolver.resolve({ value: expr, done: false });
                     Fiber.yield();
                 };
                 argsAsArray.unshift(yield_);
 
                 //TODO...
-                var result = new PromiseIterator(fiber, runContext);
+                var result = new AsyncIterator(fiber, runContext);
                 return result;
-                //}
-                //else if (!options.isIterable && !options.returnsPromise && options.acceptsCallback) {
-                //    // Pop the callback from the args array
-                //    var callback = argsAsArray.pop();
-                //    // Start fn in a coroutine. Limit top-level concurrency if requested.
-                //    var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-                //    var runContext = new RunContext(options, fn, this, argsAsArray, sem);
-                //    runContext.callback = callback;
-                //    sem.enter(() => Fiber(runInFiber).run(runContext));
-            } else {
-                throw new Error('Not Implemented!');
             }
         };
     };

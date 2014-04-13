@@ -42,7 +42,7 @@
     <TypeScriptCompile Include="async\options.ts" />
     <TypeScriptCompile Include="async\runInFiber.ts" />
     <TypeScriptCompile Include="async\runContext.ts" />
-    <TypeScriptCompile Include="async\promiseIterator.ts" />
+    <TypeScriptCompile Include="async\asyncIterator.ts" />
     <TypeScriptCompile Include="async\semaphore.ts" />
     <TypeScriptCompile Include="typings\asyncawait.d.ts" />
     <TypeScriptCompile Include="typings\bluebird.d.ts" />

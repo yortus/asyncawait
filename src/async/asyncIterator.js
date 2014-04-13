@@ -5,18 +5,19 @@ var await = require('../await/index');
 /**
 * TODO: ...
 */
-var PromiseIterator = (function () {
+var AsyncIterator = (function () {
     /**
     * TODO: ...
     */
-    function PromiseIterator(fiber, runContext) {
+    function AsyncIterator(fiber, runContext) {
         this.fiber = fiber;
         this.runContext = runContext;
     }
     /**
     * TODO: ...
     */
-    PromiseIterator.prototype.next = function () {
+    AsyncIterator.prototype.next = function () {
+        //TODO: also support cps...
         var nextValue = Promise.defer();
         this.runContext.resolver = nextValue;
 
@@ -29,7 +30,7 @@ var PromiseIterator = (function () {
     /**
     * TODO: ...
     */
-    PromiseIterator.prototype.forEach = function (callback) {
+    AsyncIterator.prototype.forEach = function (callback) {
         while (true) {
             var i = await(this.next());
             if (i.done)
@@ -37,7 +38,7 @@ var PromiseIterator = (function () {
             callback(i.value);
         }
     };
-    return PromiseIterator;
+    return AsyncIterator;
 })();
-module.exports = PromiseIterator;
-//# sourceMappingURL=promiseIterator.js.map
+module.exports = AsyncIterator;
+//# sourceMappingURL=asyncIterator.js.map

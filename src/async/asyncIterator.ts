@@ -3,13 +3,13 @@ import Fiber = require('fibers');
 import Promise = require('bluebird');
 import RunContext = require('./runContext');
 import await = require('../await/index');
-export = PromiseIterator;
+export = AsyncIterator;
 
 
 /**
  * TODO: ...
  */
-class PromiseIterator {
+class AsyncIterator {
 
     /**
      * TODO: ...
@@ -20,6 +20,7 @@ class PromiseIterator {
      * TODO: ...
      */
     next(): Promise<{ value?: any; done: boolean; }> {
+        //TODO: also support cps...
         var nextValue = Promise.defer<any>();
         this.runContext.resolver = nextValue;
 
