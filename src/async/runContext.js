@@ -5,9 +5,9 @@
 * it is invoked via Fiber#run(), which can only pass through a single argument.
 */
 var RunContext = (function () {
-    function RunContext(outputKind, wrapped, thisArg, argsAsArray, semaphore) {
+    function RunContext(options, wrapped, thisArg, argsAsArray, semaphore) {
         this.value = null;
-        this.outputKind = outputKind;
+        this.options = options;
         this.wrapped = wrapped;
         this.thisArg = thisArg;
         this.argsAsArray = argsAsArray;

@@ -1,5 +1,4 @@
 ﻿var Fiber = require('fibers');
-var OutputKind = require('./outputKind');
 
 
 /**
@@ -17,21 +16,17 @@ function runInFiber(runCtx) {
         // Call the wrapped function. It may be suspended several times (at await and/or yield calls).
         var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
 
-        switch (runCtx.outputKind) {
-            case 0 /* Promise */:
-                runCtx.value.resolve(result);
-                break;
-            case 1 /* PromiseIterator */:
-                runCtx.value.resolve({ done: true });
-                break;
+        // If we get here, the wrapped function finished normally (ie via explicit or implicit return).
+        if (runCtx.options.returnsPromise) {
+            runCtx.value.resolve(runCtx.options.isIterable ? { done: true } : result);
         }
+        //TODO: else...
     } catch (err) {
-        switch (runCtx.outputKind) {
-            case 0 /* Promise */:
-            case 1 /* PromiseIterator */:
-                runCtx.value.reject(err);
-                break;
+        // If we get here, the wrapped function had an unhandled exception.
+        if (runCtx.options.returnsPromise) {
+            runCtx.value.reject(err);
         }
+        //TODO: else...
     } finally {
         // Track the number of currently active fibers
         adjustFiberCount(-1);

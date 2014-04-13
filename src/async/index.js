@@ -1,10 +1,18 @@
 ﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
+var _ = require('lodash');
 var runInFiber = require('./runInFiber');
 var RunContext = require('./runContext');
-var OutputKind = require('./outputKind');
+
 var Semaphore = require('./semaphore');
 var PromiseIterator = require('./promiseIterator');
+
+/** TODO: ... */
+var defaultOptions = {
+    isIterable: false,
+    returnsPromise: true,
+    concurrency: null
+};
 
 /**
 * Creates a function that can be suspended at each asynchronous operation using await().
@@ -15,20 +23,19 @@ var PromiseIterator = require('./promiseIterator');
 *                     promise is resolved when fn returns, or rejected if fn throws.
 */
 var async;
-async = createAsyncFunction({ outputKind: 0 /* Promise */ });
+async = createAsyncFunction({});
 async.concurrency = function (n) {
-    return createAsyncFunction({ outputKind: 0 /* Promise */, concurrency: n });
+    return createAsyncFunction({ concurrency: n });
 };
-async.iterable = createAsyncFunction({ outputKind: 1 /* PromiseIterator */ });
-
+async.iterable = createAsyncFunction({ isIterable: true });
 
 /** Function for creating a specific variant of the async() function. */
-function createAsyncFunction(options) {
+function createAsyncFunction(options_) {
     // Return an async function tailored to the given options.
-    var concurrency = options.concurrency;
+    var options = _.defaults({}, options_, defaultOptions);
     return function (fn) {
         // Create a semaphore for limiting top-level concurrency, if specified in options.
-        var semaphore = concurrency ? new Semaphore(concurrency) : Semaphore.unlimited;
+        var semaphore = options.concurrency ? new Semaphore(options.concurrency) : Semaphore.unlimited;
 
         //TODO:...
         // Return a function that executes fn in a fiber and returns a promise of fn's result.
@@ -41,13 +48,13 @@ function createAsyncFunction(options) {
             for (var i = 0; i < argsAsArray.length; ++i)
                 argsAsArray[i] = arguments[i];
 
-            if (options.outputKind === 0 /* Promise */) {
+            if (!options.isIterable && options.returnsPromise) {
                 // Create a new promise.
                 var resolver = Promise.defer();
 
                 // Start fn in a coroutine. Limit top-level concurrency if requested.
                 var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-                var runContext = new RunContext(0 /* Promise */, fn, this, argsAsArray, sem);
+                var runContext = new RunContext(options, fn, this, argsAsArray, sem);
                 runContext.value = resolver;
                 sem.enter(function () {
                     return Fiber(runInFiber).run(runContext);
@@ -55,10 +62,10 @@ function createAsyncFunction(options) {
 
                 // Return the promise.
                 return resolver.promise;
-            } else if (options.outputKind === 1 /* PromiseIterator */) {
+            } else if (options.isIterable && options.returnsPromise) {
                 // 1 iterator <==> 1 fiber
                 var fiber = Fiber(runInFiber);
-                var runContext = new RunContext(1 /* PromiseIterator */, fn, null, argsAsArray, semaphore);
+                var runContext = new RunContext(options, fn, null, argsAsArray, semaphore);
 
                 //TODO:...
                 var yield_ = function (expr) {
@@ -71,6 +78,8 @@ function createAsyncFunction(options) {
                 //TODO...
                 var result = new PromiseIterator(fiber, runContext);
                 return result;
+            } else {
+                throw new Error('Not Implemented!');
             }
         };
     };

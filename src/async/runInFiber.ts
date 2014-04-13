@@ -1,6 +1,6 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
-import OutputKind = require('./outputKind');
+import Options = require('./options');
 import RunContext = require('./runContext');
 export = runInFiber;
 
@@ -22,24 +22,18 @@ function runInFiber(runCtx: RunContext) {
         var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
 
         // If we get here, the wrapped function finished normally (ie via explicit or implicit return).
-        switch (runCtx.outputKind) {
-            case OutputKind.Promise:
-                runCtx.value.resolve(result);
-                break;
-            case OutputKind.PromiseIterator:
-                runCtx.value.resolve({ done: true });
-                break;
+        if (runCtx.options.returnsPromise) {
+            runCtx.value.resolve(runCtx.options.isIterable ? { done: true } : result);
         }
+        //TODO: else...
     }
     catch (err) {
 
         // If we get here, the wrapped function had an unhandled exception.
-        switch (runCtx.outputKind) {
-            case OutputKind.Promise:
-            case OutputKind.PromiseIterator:
-                runCtx.value.reject(err);
-                break;
+        if (runCtx.options.returnsPromise) {
+            runCtx.value.reject(err);
         }
+        //TODO: else...
     }
     finally {
 

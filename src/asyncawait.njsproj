@@ -39,6 +39,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="async\options.ts" />
     <TypeScriptCompile Include="async\runInFiber.ts" />
     <TypeScriptCompile Include="async\runContext.ts" />
     <TypeScriptCompile Include="async\promiseIterator.ts" />
@@ -56,9 +57,6 @@
     <Folder Include="async\" />
     <Folder Include="await\" />
     <Folder Include="typings\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="async\outputKind.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>

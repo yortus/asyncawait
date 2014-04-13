@@ -1,6 +1,6 @@
 ﻿import _refs = require('_refs');
 import Promise = require('bluebird');
-import OutputKind = require('./outputKind');
+import Options = require('./options');
 import Semaphore = require('./semaphore');
 export = RunContext;
 
@@ -11,15 +11,15 @@ export = RunContext;
  * it is invoked via Fiber#run(), which can only pass through a single argument.
  */
 class RunContext {
-    constructor(outputKind: OutputKind, wrapped: Function, thisArg, argsAsArray: any[], semaphore: Semaphore) {
-        this.outputKind = outputKind;
+    constructor(options: Options, wrapped: Function, thisArg, argsAsArray: any[], semaphore: Semaphore) {
+        this.options = options;
         this.wrapped = wrapped;
         this.thisArg = thisArg;
         this.argsAsArray = argsAsArray;
         this.semaphore = semaphore;
     }
 
-    outputKind: OutputKind;
+    options: Options;
     wrapped: Function;
     thisArg: any;
     argsAsArray: any[];
