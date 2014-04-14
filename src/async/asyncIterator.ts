@@ -1,6 +1,7 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
+import runInFiber = require('./runInFiber');
 import RunContext = require('./runContext');
 import CallbackArg = require('./callbackArg');
 import ReturnValue = require('./returnValue');
@@ -16,7 +17,11 @@ class AsyncIterator {
     /**
      * TODO: ...
      */
-    constructor(private fiber: Fiber, private runContext: RunContext) {}
+    constructor(private runContext: RunContext) {
+
+        // 1 iterator <==> 1 fiber
+        this.fiber = Fiber(runInFiber);
+    }
 
     /**
      * TODO: ...
@@ -32,6 +37,8 @@ class AsyncIterator {
         }
 
         // Run the fiber until it either yields a value or completes.
+        //TODO: apply semaphore...
+        //TODO: BUT...    // Remove concurrency restrictions for nested calls, to avoid race conditions.
         this.fiber.run(this.runContext);
 
         // Return the appropriate value.
@@ -80,4 +87,5 @@ class AsyncIterator {
         }
     }
 
+    private fiber: Fiber;
 }

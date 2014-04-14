@@ -1,4 +1,6 @@
-﻿var Promise = require('bluebird');
+﻿var Fiber = require('fibers');
+var Promise = require('bluebird');
+var runInFiber = require('./runInFiber');
 
 var CallbackArg = require('./callbackArg');
 var ReturnValue = require('./returnValue');
@@ -11,9 +13,10 @@ var AsyncIterator = (function () {
     /**
     * TODO: ...
     */
-    function AsyncIterator(fiber, runContext) {
-        this.fiber = fiber;
+    function AsyncIterator(runContext) {
         this.runContext = runContext;
+        // 1 iterator <==> 1 fiber
+        this.fiber = Fiber(runInFiber);
     }
     /**
     * TODO: ...
@@ -29,6 +32,8 @@ var AsyncIterator = (function () {
         }
 
         // Run the fiber until it either yields a value or completes.
+        //TODO: apply semaphore...
+        //TODO: BUT...    // Remove concurrency restrictions for nested calls, to avoid race conditions.
         this.fiber.run(this.runContext);
 
         // Return the appropriate value.
