@@ -28,9 +28,9 @@ var defaultOptions = {
 */
 var async;
 async = createAsyncFunction({});
-async.concurrency = function (n) {
+async.concurrency = (function (n) {
     return createAsyncFunction({ maxConcurrency: n });
-};
+});
 async.iterable = createAsyncFunction({ isIterable: true });
 async.cps = createAsyncFunction({ returnValue: 0 /* None */, callbackArg: 1 /* Required */ });
 
@@ -44,7 +44,12 @@ function createAsyncFunction(options_) {
 
         // Choose and run the appropriate function factory based on whether the result should be iterable.
         var createFn = options.isIterable ? createAsyncIterator : createAsyncNonIterator;
-        return createFn(bodyFunc, options, semaphore);
+        var result = createFn(bodyFunc, options, semaphore);
+
+        //TODO: 'arity' should be +1 if CallbackArg.Required (think of mocha's 'done', express's 'next', ...)
+        //TODO: document this...
+        result = passThruWithArity(result, bodyFunc.name, bodyFunc.length);
+        return result;
     };
 }
 
@@ -112,6 +117,52 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
         // Return the appropriate value.
         return options.returnValue === 1 /* Promise */ ? resolver.promise : undefined;
     };
+}
+
+/**
+* TODO: document this, not all bodies are identical, only formal param list changes
+* TODO: would eval be competitive here (slower setup, faster on hot path?)
+*/
+function passThruWithArity(fn, name, arity) {
+    switch (arity) {
+        case 0:
+            return function () {
+                var l = arguments.length, args = new Array(l);
+                for (var i = 0; i < l; ++i)
+                    args[i] = arguments[i];
+                return fn.apply(this, args);
+            };
+        case 1:
+            return function (a) {
+                var l = arguments.length, args = new Array(l);
+                for (var i = 0; i < l; ++i)
+                    args[i] = arguments[i];
+                return fn.apply(this, args);
+            };
+        case 2:
+            return function (a1, a2) {
+                var l = arguments.length, args = new Array(l);
+                for (var i = 0; i < l; ++i)
+                    args[i] = arguments[i];
+                return fn.apply(this, args);
+            };
+        case 3:
+            return function (a1, a2, a3) {
+                var l = arguments.length, args = new Array(l);
+                for (var i = 0; i < l; ++i)
+                    args[i] = arguments[i];
+                return fn.apply(this, args);
+            };
+        case 4:
+            return function (a1, a2, a3, a4) {
+                var l = arguments.length, args = new Array(l);
+                for (var i = 0; i < l; ++i)
+                    args[i] = arguments[i];
+                return fn.apply(this, args);
+            };
+        default:
+            return fn;
+    }
 }
 module.exports = async;
 //# sourceMappingURL=index.js.map

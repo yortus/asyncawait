@@ -44,11 +44,11 @@ var largest = async (function (dir, options, internal) {
     // Enumerate all files and subfolders in 'dir' to get their stats.
     var files = [];
     var fileBatchIterator = descendentFileBatches(dir, options.recurse);
-    fileBatchIterator.forEach(function(fileBatch) {
+    await (fileBatchIterator.forEach(function(fileBatch) {
         _.each(fileBatch.paths, function (path, i) {
             files.push({ path: path, stat: fileBatch.stats[i] });
         });
-    });
+    }));
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = _.map(files, function (file) {

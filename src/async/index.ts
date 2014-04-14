@@ -32,7 +32,7 @@ var defaultOptions: Options = {
  */
 var async: AsyncAwait.Async;
 async = <any> createAsyncFunction({});
-async.concurrency = (n: number) => createAsyncFunction({ maxConcurrency: n });
+async.concurrency = <any> ((n: number) => createAsyncFunction({ maxConcurrency: n }));
 async.iterable = createAsyncFunction({ isIterable: true });
 async.cps = createAsyncFunction({ returnValue: ReturnValue.None, callbackArg: CallbackArg.Required });
 
@@ -49,7 +49,12 @@ function createAsyncFunction(options_: Options) {
 
         // Choose and run the appropriate function factory based on whether the result should be iterable.
         var createFn = options.isIterable ? createAsyncIterator : createAsyncNonIterator;
-        return createFn(bodyFunc, options, semaphore);
+        var result: Function = createFn(bodyFunc, options, semaphore);
+
+        //TODO: 'arity' should be +1 if CallbackArg.Required (think of mocha's 'done', express's 'next', ...)
+        //TODO: document this...
+        result = passThruWithArity(result, (<any> bodyFunc).name, bodyFunc.length);
+        return result;
     };
 }
 
@@ -116,4 +121,59 @@ function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore:
         // Return the appropriate value.
         return options.returnValue === ReturnValue.Promise ? resolver.promise : undefined;
     };
+}
+
+
+/**
+ * TODO: document this, not all bodies are identical, only formal param list changes
+ * TODO: would eval be competitive here (slower setup, faster on hot path?)
+ */
+function passThruWithArity(fn: Function, name: string, arity: number) {
+
+    // Safe eval version (no untrusted vectors):
+    // NB: slower to define async function, but faster to call (TEST THIS)
+    //var defn    = "function funcName(/*params*/) {"
+    //            + "    var l = arguments.length, args = new Array(l);"
+    //            + "    for (var i = 0; i < l; ++i) args[i] = arguments[i];"
+    //            + "    return fn.apply(this, args);"
+    //            + "}";
+    //var params: string[] = [];
+    //for (var i = 0 ; i < arity; ++i) params.push('arg' + i);
+    //var s = 'f = ' + defn.replace("funcName", name).replace('/*params*/', params.join(', '));
+    //var f: Function;
+    //eval(s);
+    //return f;
+
+
+    // Static version (need to handle each arity individually, but body never changes):
+    // NB: faster to define async function, but slower to call (TEST THIS)
+    switch (arity) {
+        case 0: return function () {
+            var l = arguments.length, args = new Array(l);
+            for (var i = 0; i < l; ++i) args[i] = arguments[i];
+            return fn.apply(this, args);
+        }
+        case 1: return function (a) {
+            var l = arguments.length, args = new Array(l);
+            for (var i = 0; i < l; ++i) args[i] = arguments[i];
+            return fn.apply(this, args);
+        }
+        case 2: return function (a1, a2) {
+            var l = arguments.length, args = new Array(l);
+            for (var i = 0; i < l; ++i) args[i] = arguments[i];
+            return fn.apply(this, args);
+        }
+        case 3: return function (a1, a2, a3) {
+            var l = arguments.length, args = new Array(l);
+            for (var i = 0; i < l; ++i) args[i] = arguments[i];
+            return fn.apply(this, args);
+        }
+        case 4: return function (a1, a2, a3, a4) {
+            var l = arguments.length, args = new Array(l);
+            for (var i = 0; i < l; ++i) args[i] = arguments[i];
+            return fn.apply(this, args);
+        }
+        default:
+            return fn;
+    }
 }
