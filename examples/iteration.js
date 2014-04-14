@@ -19,11 +19,13 @@ var someNums = async.iterable (function (yield_) {
 var program = async (function() {
     var iterator = someNums();
 
-    while (true) {
-        var item = await (iterator.next());
-        if (item.done) break;
-        console.log(item.value);
-    }
+    await (iterator.forEach(console.log));
+    // or the long (but equivalent) way...
+    //while (true) {
+    //    var item = await (iterator.next());
+    //    if (item.done) break;
+    //    console.log(item.value);
+    //}
 
     return 'Finished!';
 });
