@@ -1,5 +1,7 @@
 ﻿var Promise = require('bluebird');
 
+var CallbackArg = require('./callbackArg');
+var ReturnValue = require('./returnValue');
 var await = require('../await/index');
 
 /**
@@ -17,11 +19,11 @@ var AsyncIterator = (function () {
     * TODO: ...
     */
     AsyncIterator.prototype.next = function () {
-        if (this.runContext.options.acceptsCallback) {
+        if (this.runContext.options.callbackArg === 1 /* Required */) {
             var callback = arguments[0];
             this.runContext.callback = callback;
         }
-        if (this.runContext.options.returnsPromise) {
+        if (this.runContext.options.returnValue === 1 /* Promise */) {
             var resolver = Promise.defer();
             this.runContext.resolver = resolver;
         }
@@ -30,7 +32,7 @@ var AsyncIterator = (function () {
         this.fiber.run(this.runContext);
 
         // Return the appropriate value.
-        return this.runContext.options.returnsPromise ? resolver.promise : undefined;
+        return this.runContext.options.returnValue === 1 /* Promise */ ? resolver.promise : undefined;
     };
 
     /**

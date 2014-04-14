@@ -1,5 +1,7 @@
 ﻿var Fiber = require('fibers');
 
+var CallbackArg = require('./callbackArg');
+var ReturnValue = require('./returnValue');
 
 /**
 * The runInFiber() function accepts a RunContext instance, and calls the wrapped function
@@ -17,17 +19,17 @@ function runInFiber(runCtx) {
         var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
 
         // If we get here, the wrapped function finished normally (ie via explicit or implicit return).
-        if (runCtx.options.acceptsCallback) {
+        if (runCtx.options.callbackArg === 1 /* Required */) {
             runCtx.callback(null, runCtx.options.isIterable ? { done: true } : result);
         }
-        if (runCtx.options.returnsPromise) {
+        if (runCtx.options.returnValue === 1 /* Promise */) {
             runCtx.resolver.resolve(runCtx.options.isIterable ? { done: true } : result);
         }
     } catch (err) {
         // If we get here, the wrapped function had an unhandled exception.
-        if (runCtx.options.acceptsCallback)
+        if (runCtx.options.callbackArg === 1 /* Required */)
             runCtx.callback(err);
-        if (runCtx.options.returnsPromise)
+        if (runCtx.options.returnValue === 1 /* Promise */)
             runCtx.resolver.reject(err);
     } finally {
         // Track the number of currently active fibers

@@ -39,7 +39,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="async\callbackArg.ts" />
     <TypeScriptCompile Include="async\options.ts" />
+    <TypeScriptCompile Include="async\returnValue.ts" />
     <TypeScriptCompile Include="async\runInFiber.ts" />
     <TypeScriptCompile Include="async\runContext.ts" />
     <TypeScriptCompile Include="async\asyncIterator.ts" />

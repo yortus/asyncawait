@@ -1,12 +1,15 @@
-﻿export = Options;
+﻿import CallbackArg = require('./callbackArg');
+import ReturnValue = require('./returnValue');
+export = Options;
 
 
 /**
  * TODO:...
  */
 interface Options {
+    returnValue?: ReturnValue;
+    callbackArg?: CallbackArg;
     isIterable?: boolean;
-    returnsPromise?: boolean;
-    acceptsCallback?: boolean;
-    concurrency?: number;
+    //TODO:...isVariadic?: boolean;
+    maxConcurrency?: number;
 }
