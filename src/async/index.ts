@@ -42,64 +42,76 @@ function createAsyncFunction(options_: Options) {
     
     // Return an async function tailored to the given options.
     var options: Options = _.defaults({}, options_, defaultOptions);
-    return function(fn: Function) {
+    return function(bodyFunc: Function) {
 
         // Create a semaphore for limiting top-level concurrency, if specified in options.
         var semaphore = options.maxConcurrency ? new Semaphore(options.maxConcurrency) : Semaphore.unlimited;
 
-        //TODO:...
-        // Return a function that executes fn in a fiber and returns a promise of fn's result.
-        // Return a function that returns an iterator.
-        return function (): any {
+        // Choose and run the appropriate function factory based on whether the result should be iterable.
+        var createFn = options.isIterable ? createAsyncIterator : createAsyncNonIterator;
+        return createFn(bodyFunc, options, semaphore);
+    };
+}
 
-            //TODO:...
-            // Get all the arguments passed in, as an array.
-            // Capture initial arguments used to start the iterator.
-            var argsAsArray = new Array(arguments.length);
-            for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
 
-            if (!options.isIterable) {
+function createAsyncIterator(bodyFunc: Function, options: Options, semaphore: Semaphore) {
 
-                // Configure the run context. Limit top-level concurrency if requested.
-                var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
-                var runContext = new RunContext(options, fn, this, argsAsArray, sem);
-                if (options.returnValue === ReturnValue.Promise) {
+    // Return a function that returns an iterator.
+    return function (): any {
 
-                    // Create a new promise.
-                    var resolver = Promise.defer<any>();
-                    runContext.resolver = resolver;
-                }
-                if (options.callbackArg === CallbackArg.Required) {
+        // Capture the initial arguments used to start the iterator.
+        var argsAsArray = new Array(arguments.length);
+        for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
 
-                    // Pop the callback from the args array.
-                    var callback = argsAsArray.pop();
-                    runContext.callback = callback;
-                }
+        // 1 iterator <==> 1 fiber
+        //TODO: limit concurrency?
+        var fiber = Fiber(runInFiber);
+        var runContext = new RunContext(options, bodyFunc, this, argsAsArray, semaphore);
 
-                // Execute fn to completion in a coroutine.
-                sem.enter(() => Fiber(runInFiber).run(runContext));
+        // Create a yield() function tailored for this iterator.
+        var yield_ = expr => {
+            //TODO: await expr first?
+            if (options.callbackArg === CallbackArg.Required) runContext.callback(null, { value: expr, done: false });
+            if (options.returnValue === ReturnValue.Promise) runContext.resolver.resolve({ value: expr, done: false });
+            Fiber.yield();
+        }
+        argsAsArray.unshift(yield_);
 
-                // Return the appropriate value.
-                return options.returnValue === ReturnValue.Promise ? resolver.promise : undefined;
+        // Return the iterator.
+        return new AsyncIterator(fiber, runContext);
+    };
+}
 
-            } else /* iterable */ {
 
-                // 1 iterator <==> 1 fiber
-                var fiber = Fiber(runInFiber);
-                var runContext = new RunContext(options, fn, this, argsAsArray, semaphore);
+function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore: Semaphore) {
 
-                //TODO:...
-                var yield_ = expr => {
-                    //TODO: await expr first?
-                    if (options.callbackArg === CallbackArg.Required) runContext.callback(null, { value: expr, done: false });
-                    if (options.returnValue === ReturnValue.Promise) runContext.resolver.resolve({ value: expr, done: false });
-                    Fiber.yield();
-                }
-                argsAsArray.unshift(yield_);
+    // Return a function that executes fn in a fiber and returns a promise of fn's result.
+    return function (): any {
 
-                //TODO...
-                return new AsyncIterator(fiber, runContext);
-            }
-        };
+        // Get all the arguments passed in, as an array.
+        var argsAsArray = new Array(arguments.length);
+        for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
+
+        // Configure the run context. Limit top-level concurrency if requested.
+        var isTopLevel = !Fiber.current, sem = isTopLevel ? semaphore : Semaphore.unlimited;
+        var runContext = new RunContext(options, bodyFunc, this, argsAsArray, sem);
+        if (options.returnValue === ReturnValue.Promise) {
+
+            // Create a new promise.
+            var resolver = Promise.defer<any>();
+            runContext.resolver = resolver;
+        }
+        if (options.callbackArg === CallbackArg.Required) {
+
+            // Pop the callback from the args array.
+            var callback = argsAsArray.pop();
+            runContext.callback = callback;
+        }
+
+        // Execute fn to completion in a coroutine.
+        sem.enter(() => Fiber(runInFiber).run(runContext));
+
+        // Return the appropriate value.
+        return options.returnValue === ReturnValue.Promise ? resolver.promise : undefined;
     };
 }
