@@ -34,7 +34,7 @@ var async: AsyncAwait.Async;
 async = <any> createAsyncFunction({});
 async.concurrency = <any> ((n: number) => createAsyncFunction({ maxConcurrency: n }));
 async.iterable = createAsyncFunction({ isIterable: true });
-async.cps = createAsyncFunction({ returnValue: ReturnValue.None, callbackArg: CallbackArg.Required });
+async.cps = <any> createAsyncFunction({ returnValue: ReturnValue.None, callbackArg: CallbackArg.Required });
 
 
 /** Function for creating a specific variant of the async() function. */
