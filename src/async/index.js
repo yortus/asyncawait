@@ -76,25 +76,28 @@ function createAsyncIterator(bodyFunc, options, semaphore) {
         // Insert the yield function as the first argument when starting the iterator.
         argsAsArray.unshift(yield_);
 
-        // Wrap the given bodyFunc so that its final return value is always {done:true}.
-        var innerBody = bodyFunc;
-        bodyFunc = function () {
-            var len = arguments.length, args = new Array(len);
-            for (var i = 0; i < len; ++i)
-                args[i] = arguments[i];
-            innerBody.apply(_this, args);
-            return { done: true };
-        };
-
         // Configure the run context.
-        var runContext = new RunContext(bodyFunc, this, argsAsArray, semaphore);
+        var runContext = new RunContext(bodyFunc, this, argsAsArray);
         if (options.returnValue === 1 /* Promise */)
             runContext.resolver = true; //TODO: Hacky?
         if (options.callbackArg === 1 /* Required */)
             runContext.callback = true; //TODO: Hacky?
 
+        // Create the iterator.
+        var iterator = new AsyncIterator(runContext, semaphore);
+
+        // Wrap the given bodyFunc to properly complete the iteration.
+        runContext.wrapped = function () {
+            var len = arguments.length, args = new Array(len);
+            for (var i = 0; i < len; ++i)
+                args[i] = arguments[i];
+            bodyFunc.apply(_this, args);
+            iterator.destroy();
+            return { done: true };
+        };
+
         // Return the iterator.
-        return new AsyncIterator(runContext);
+        return iterator;
     };
 }
 
@@ -113,7 +116,9 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
             semaphore = Semaphore.unlimited;
 
         // Configure the run context.
-        var runContext = new RunContext(bodyFunc, this, argsAsArray, semaphore);
+        var runContext = new RunContext(bodyFunc, this, argsAsArray, function () {
+            return semaphore.leave();
+        });
         if (options.returnValue === 1 /* Promise */) {
             var resolver = Promise.defer();
             runContext.resolver = resolver;

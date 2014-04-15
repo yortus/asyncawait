@@ -6,51 +6,51 @@ var Semaphore = require('./semaphore');
 
 
 /**
-* TODO: ...
+* Asynchronous analogue to an ES6 Iterator. Rather than return each value/done
+* result synchronously, the next() function notifies a promise and/or callback
+* when the next result is ready.
 */
 var AsyncIterator = (function () {
-    /**
-    * TODO: ...
-    */
-    function AsyncIterator(runContext) {
-        this.runContext = runContext;
-        this.fiber = Fiber(runInFiber);
+    /** Construct a new AsyncIterator instance. This will create a fiber. */
+    function AsyncIterator(runContext, semaphore) {
+        this._runContext = runContext;
+        this._semaphore = semaphore;
+        this._fiber = Fiber(runInFiber);
     }
-    /**
-    * TODO: ...
-    */
+    /** Fetch the next result from the iterator. */
     AsyncIterator.prototype.next = function () {
         var _this = this;
         // Configure the run context.
-        if (this.runContext.callback) {
+        if (this._runContext.callback) {
             var callback = arguments[0];
-            this.runContext.callback = callback;
+            this._runContext.callback = callback;
         }
-        if (this.runContext.resolver) {
+        if (this._runContext.resolver) {
             var resolver = Promise.defer();
-            this.runContext.resolver = resolver;
+            this._runContext.resolver = resolver;
         }
 
         // Remove concurrency restrictions for nested calls, to avoid race conditions.
         var isTopLevel = !Fiber.current;
         if (!isTopLevel)
-            this.runContext.semaphore = Semaphore.unlimited;
+            this._semaphore = Semaphore.unlimited;
 
         // Run the fiber until it either yields a value or completes.
-        this.runContext.semaphore.enter(function () {
-            return _this.fiber.run(_this.runContext);
+        this._semaphore.enter(function () {
+            return _this._fiber.run(_this._runContext);
         });
+        this._runContext.done = function () {
+            return _this._semaphore.leave();
+        };
 
         // Return the appropriate value.
-        return this.runContext.resolver ? resolver.promise : undefined;
+        return this._runContext.resolver ? resolver.promise : undefined;
     };
 
-    /**
-    * TODO: ...
-    */
+    /** Enumerate the entire iterator, calling callback with each result. */
     AsyncIterator.prototype.forEach = function (callback) {
         var _this = this;
-        if (this.runContext.resolver) {
+        if (this._runContext.resolver) {
             var doneResolver = Promise.defer();
             var handler = function (result) {
                 if (result.done)
@@ -67,7 +67,7 @@ var AsyncIterator = (function () {
             });
             return doneResolver.promise;
         }
-        if (this.runContext.callback) {
+        if (this._runContext.callback) {
             var doneCallback = arguments[1];
             var handler = function (err, result) {
                 if (err)
@@ -79,6 +79,11 @@ var AsyncIterator = (function () {
             };
             this.next(handler);
         }
+    };
+
+    /** Release resources associated with this instance (i.e., the fiber). */
+    AsyncIterator.prototype.destroy = function () {
+        this._fiber = null;
     };
     return AsyncIterator;
 })();

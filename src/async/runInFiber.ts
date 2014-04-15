@@ -1,23 +1,22 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import RunContext = require('./runContext');
-import Options = require('./options');
 import CallbackArg = require('./callbackArg');
 import ReturnValue = require('./returnValue');
 export = runInFiber;
 
 
 /**
- * The runInFiber() function accepts a RunContext instance, and calls the wrapped function
- * as specified in this context. The result of the call is used to resolve the context's
- * promise. If an exception is thrown, the context's promise is rejected. This function
- * must take all its information in a single argument (i.e. the RunContext), because it is
- * called via Fiber#run(), which accepts at most one argument.
+ * The runInFiber() function provides the prolog/epilog wrapper code for running a function inside
+ * a fiber. The runInFiber() function accepts a RunContext instance, and calls the wrapped function
+ * specified there. The final return/throw value of the wrapped function is used to notify the 
+ * promise resolver and/or callback specified in the RunContext. This function must take all its
+ * information in a single argument because it is called via Fiber#run(), which accepts one argument.
  */
 function runInFiber(runCtx: RunContext) {
     try {
 
-        // Increment the number of currently active fibers
+        // Maintain an accurate count of currently active fibers, for pool management.
         adjustFiberCount(+1);
 
         // Call the wrapped function. It may be suspended several times (at await and/or yield calls).
@@ -35,11 +34,11 @@ function runInFiber(runCtx: RunContext) {
     }
     finally {
 
-        // Decrement the number of currently active fibers.
+        // Maintain an accurate count of currently active fibers, for pool management.
         adjustFiberCount(-1);
 
-        // Exit the semaphore.
-        runCtx.semaphore.leave();
+        // Execute the done() callback, if provided.
+        if (runCtx.done) runCtx.done();
     }
 }
 

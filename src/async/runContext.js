@@ -5,13 +5,16 @@
 * it is invoked via Fiber#run(), which can only pass through a single argument.
 */
 var RunContext = (function () {
-    function RunContext(wrapped, thisArg, argsAsArray, semaphore) {
+    /** Construct a new RunContext instance. */
+    function RunContext(wrapped, thisArg, argsAsArray, done) {
+        /** Optional promise resolver for notifying the wrapped function's return/throw value. */
         this.resolver = null;
+        /** Optional callback for notifying the wrapped function's return/throw value. */
         this.callback = null;
         this.wrapped = wrapped;
         this.thisArg = thisArg;
         this.argsAsArray = argsAsArray;
-        this.semaphore = semaphore;
+        this.done = done;
     }
     return RunContext;
 })();
