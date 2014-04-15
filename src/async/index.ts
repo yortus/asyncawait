@@ -33,7 +33,7 @@ var defaultOptions: Options = {
 var async: AsyncAwait.Async;
 async = <any> createAsyncFunction({});
 async.concurrency = <any> ((n: number) => createAsyncFunction({ maxConcurrency: n }));
-async.iterable = createAsyncFunction({ isIterable: true });
+async.iterable = <any> createAsyncFunction({ isIterable: true });
 async.cps = <any> createAsyncFunction({ returnValue: ReturnValue.None, callbackArg: CallbackArg.Required });
 
 

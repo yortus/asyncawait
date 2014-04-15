@@ -6,7 +6,7 @@ declare module AsyncAwait {
 
     export interface Async extends AsyncReturnsPromise {
         concurrency: (n: number) => AsyncReturnsPromise;
-        iterable: Function;//TODO:...
+        iterable: AsyncReturnsIteratorReturnsPromise;
         cps: AsyncAcceptsCallback
     }
 
@@ -30,6 +30,13 @@ declare module AsyncAwait {
         <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: (err, result: TResult) => void) => void;
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: (err, result: TResult) => void) => void;
         (fn: Function): (callback?: (err, result) => void) => void;
+    }
+
+    export interface AsyncReturnsIteratorReturnsPromise {
+        (fn: Function): () => {
+            next(): Thenable<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void): Thenable<void>;
+        };
     }
 
     export interface AwaitFunc {
