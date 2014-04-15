@@ -34,7 +34,7 @@ async.concurrency = (function (n) {
 async.iterable = createAsyncFunction({ isIterable: true });
 async.cps = createAsyncFunction({ returnValue: 0 /* None */, callbackArg: 1 /* Required */ });
 
-/** Function for creating a specific variant of the async() function. */
+/** Function for creating a specific variant of the async function. */
 function createAsyncFunction(options_) {
     // Return an async function tailored to the given options.
     var options = _.defaults({}, options_, defaultOptions);
@@ -53,7 +53,7 @@ function createAsyncFunction(options_) {
     };
 }
 
-/** TODO: describe */
+/** Function for creating iterable async-wrapped functions. */
 function createAsyncIterator(bodyFunc, options, semaphore) {
     // Return a function that returns an iterator.
     return function () {
@@ -101,7 +101,7 @@ function createAsyncIterator(bodyFunc, options, semaphore) {
     };
 }
 
-/** TODO: describe */
+/** Function for creating non-iterable async-wrapped functions. */
 function createAsyncNonIterator(bodyFunc, options, semaphore) {
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function () {
@@ -111,9 +111,8 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
             argsAsArray[i] = arguments[i];
 
         // Remove concurrency restrictions for nested calls, to avoid race conditions.
-        var isTopLevel = !Fiber.current;
-        if (!isTopLevel)
-            semaphore = Semaphore.unlimited;
+        if (FiberMgr.isExecutingInFiber())
+            this._semaphore = Semaphore.unlimited;
 
         // Configure the run context.
         var runContext = new RunContext(bodyFunc, this, argsAsArray, function () {
@@ -139,10 +138,7 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
     };
 }
 
-/**
-* TODO: document this, not all bodies are identical, only formal param list changes
-* TODO: would eval be competitive here (slower setup, faster on hot path?)
-*/
+/** Returns a function that directly proxies the given function, whilst reporting the given arity. */
 function passThruWithArity(fn, arity) {
     switch (arity) {
         case 0:

@@ -35,8 +35,7 @@ class AsyncIterator {
         }
 
         // Remove concurrency restrictions for nested calls, to avoid race conditions.
-        var isTopLevel = !Fiber.current;
-        if (!isTopLevel) this._semaphore = Semaphore.unlimited;
+        if (FiberMgr.isExecutingInFiber()) this._semaphore = Semaphore.unlimited;
 
         // Run the fiber until it either yields a value or completes.
         this._semaphore.enter(() => this._fiber.run(this._runContext));

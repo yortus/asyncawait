@@ -37,7 +37,7 @@ async.iterable = <any> createAsyncFunction({ isIterable: true });
 async.cps = <any> createAsyncFunction({ returnValue: ReturnValue.None, callbackArg: CallbackArg.Required });
 
 
-/** Function for creating a specific variant of the async() function. */
+/** Function for creating a specific variant of the async function. */
 function createAsyncFunction(options_: Options) {
     
     // Return an async function tailored to the given options.
@@ -59,7 +59,7 @@ function createAsyncFunction(options_: Options) {
 }
 
 
-/** TODO: describe */
+/** Function for creating iterable async-wrapped functions. */
 function createAsyncIterator(bodyFunc: Function, options: Options, semaphore: Semaphore) {
 
     // Return a function that returns an iterator.
@@ -103,7 +103,7 @@ function createAsyncIterator(bodyFunc: Function, options: Options, semaphore: Se
 }
 
 
-/** TODO: describe */
+/** Function for creating non-iterable async-wrapped functions. */
 function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore: Semaphore) {
 
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
@@ -114,8 +114,7 @@ function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore:
         for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
 
         // Remove concurrency restrictions for nested calls, to avoid race conditions.
-        var isTopLevel = !Fiber.current;
-        if (!isTopLevel) semaphore = Semaphore.unlimited;
+        if (FiberMgr.isExecutingInFiber()) this._semaphore = Semaphore.unlimited;
 
         // Configure the run context.
         var runContext = new RunContext(bodyFunc, this, argsAsArray, () => semaphore.leave());
@@ -138,10 +137,7 @@ function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore:
 }
 
 
-/**
- * TODO: document this, not all bodies are identical, only formal param list changes
- * TODO: would eval be competitive here (slower setup, faster on hot path?)
- */
+/** Returns a function that directly proxies the given function, whilst reporting the given arity. */
 function passThruWithArity(fn: Function, arity: number) {
 
     // Need to handle each arity individually, but the body never changes.
@@ -156,6 +152,6 @@ function passThruWithArity(fn: Function, arity: number) {
         case 7: return function (a,b,c,d,e,f,g) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
         case 8: return function (a,b,c,d,e,f,g,h) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
         case 9: return function (a,b,c,d,e,f,g,h,i) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        default: return fn; // Bail out if arity is crazy high
+        default: return fn; // Bail out if arity is crazy high.
     }
 }
