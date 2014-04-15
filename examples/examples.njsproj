@@ -6,7 +6,7 @@
     <ProjectGuid>{b2439c8a-cc41-4409-a07a-173ba0b6094b}</ProjectGuid>
     <ProjectHome />
     <ProjectView>ProjectFiles</ProjectView>
-    <StartupFile>iteration.js</StartupFile>
+    <StartupFile>asyncMod.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
@@ -20,6 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Content Include="package.json" />
+    <Compile Include="asyncMod.js" />
     <Compile Include="basic.js" />
     <Compile Include="countFiles.js" />
     <Compile Include="descendentFilePaths.js" />

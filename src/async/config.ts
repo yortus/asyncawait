@@ -1,16 +1,24 @@
-﻿import CallbackArg = require('./callbackArg');
-import ReturnValue = require('./returnValue');
+﻿import _refs = require('_refs');
 export = Config;
+
+
 
 
 /**
  * TODO:...
  */
-class Config {
+class Config implements AsyncAwait.AsyncOptions {
     constructor() { }
-    returnValue: ReturnValue;
-    callbackArg: CallbackArg;
-    isIterable: boolean;
+    returnValue: string = Config.PROMISE; // Recognised values: 'none', 'promise', 'thunk', 'result'
+    callbackArg: string = Config.NONE; // Recognised values: 'none', 'optional', 'required'
+    isIterable: boolean = false;
     //TODO:...isVariadic?: boolean;
-    maxConcurrency: number;
+    maxConcurrency: number = null;
+
+    /**
+     * TODO:...
+     */
+    static NONE = 'none';
+    static PROMISE = 'promise';
+    static REQUIRED = 'required';
 }

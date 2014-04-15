@@ -5,20 +5,28 @@
 declare module AsyncAwait {
 
     //------------------------- Async -------------------------
-    export interface Async extends AsyncReturnsPromise {
+    export interface Async extends AsyncFunction, AsyncReturnsPromise {
 
-        //TODO: ...
-        config: Config;
-        mod: (options: any) => Function;
-
-        concurrency: (n: number) => AsyncReturnsPromise;
+        //TODO: the predefined ones
         iterable: AsyncReturnsIteratorReturnsPromise;
         cps: AsyncAcceptsCallback
     }
 
-    export interface Options {/*TODO*/}
+    export interface AsyncFunction {
 
-    export interface Config {/*TODO*/}
+        //TODO: the general API...
+        (fn: Function): Function;
+        config: AsyncOptions; //TODO: should really reference Config class
+        mod: (options: AsyncOptions) => AsyncFunction;
+    }
+
+    export interface AsyncOptions {
+        returnValue?: string; // Recognised values: 'none', 'promise', 'thunk', 'result'
+        callbackArg?: string; // Recognised values: 'none', 'optional', 'required'
+        isIterable?: boolean;
+        //TODO:...isVariadic?: boolean;
+        maxConcurrency?: number;
+    }
 
     export interface AsyncReturnsPromise {
         <TResult>(fn: () => TResult): () => Thenable<TResult>;

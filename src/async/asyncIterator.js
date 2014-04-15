@@ -1,5 +1,4 @@
-﻿var Fiber = require('fibers');
-var Promise = require('bluebird');
+﻿var Promise = require('bluebird');
 var FiberMgr = require('./fiberManager');
 
 var Semaphore = require('./semaphore');
@@ -30,8 +29,7 @@ var AsyncIterator = (function () {
         }
 
         // Remove concurrency restrictions for nested calls, to avoid race conditions.
-        var isTopLevel = !Fiber.current;
-        if (!isTopLevel)
+        if (FiberMgr.isExecutingInFiber())
             this._semaphore = Semaphore.unlimited;
 
         // Run the fiber until it either yields a value or completes.
@@ -63,7 +61,7 @@ var AsyncIterator = (function () {
             };
             this.next().then(handler, function (err) {
                 return doneResolver.reject(err);
-            });
+            }); //TODO: bug here if both promise and callback specd
             return doneResolver.promise;
         }
         if (this._runContext.callback) {
@@ -76,7 +74,7 @@ var AsyncIterator = (function () {
                 callback(result.value);
                 setImmediate(_this.next.bind(_this), handler);
             };
-            this.next(handler);
+            this.next(handler); //TODO: bug here if both promise and callback specd
         }
     };
 

@@ -54,8 +54,8 @@ class AsyncIterator {
                 callback(result.value);
                 setImmediate(() => this.next().then(handler, err => doneResolver.reject(err)));
             }
-            this.next().then(handler, err => doneResolver.reject(err));
-            return doneResolver.promise;
+            this.next().then(handler, err => doneResolver.reject(err));//TODO: bug here if both promise and callback specd 
+            return doneResolver.promise;//TODO: bug here if both promise and callback specd
         }
         if (this._runContext.callback) {
             var doneCallback = arguments[1];//TODO: assert is function
@@ -65,7 +65,7 @@ class AsyncIterator {
                 callback(result.value);
                 setImmediate(this.next.bind(this), handler);
             }
-            (<Function> this.next)(handler);
+            (<Function> this.next)(handler);//TODO: bug here if both promise and callback specd
         }
     }
 

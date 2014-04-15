@@ -52,10 +52,4 @@ var largest = async.cps (function self(dir, options, internal) {
 largest.options = {};
 
 
-//TODO: remove/cleanup...
-//function nodeified(dir, options, callback) {
-//    if (arguments.length == 2) callback = options, options = null;
-//    largest(dir, options).nodeify(callback);
-//}
-//module.exports = nodeified;
 module.exports = largest;
