@@ -1,7 +1,5 @@
 ﻿var Fiber = require('fibers');
 
-var CallbackArg = require('./callbackArg');
-var ReturnValue = require('./returnValue');
 
 /**
 * The runInFiber() function accepts a RunContext instance, and calls the wrapped function
@@ -12,30 +10,28 @@ var ReturnValue = require('./returnValue');
 */
 function runInFiber(runCtx) {
     try  {
-        // Track the number of currently active fibers
+        // Increment the number of currently active fibers
         adjustFiberCount(+1);
 
         // Call the wrapped function. It may be suspended several times (at await and/or yield calls).
         var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
 
         // If we get here, the wrapped function finished normally (ie via explicit or implicit return).
-        if (runCtx.options.callbackArg === 1 /* Required */) {
-            runCtx.callback(null, runCtx.options.isIterable ? { done: true } : result);
-        }
-        if (runCtx.options.returnValue === 1 /* Promise */) {
-            runCtx.resolver.resolve(runCtx.options.isIterable ? { done: true } : result);
-        }
+        if (runCtx.callback)
+            runCtx.callback(null, result);
+        if (runCtx.resolver)
+            runCtx.resolver.resolve(result);
     } catch (err) {
         // If we get here, the wrapped function had an unhandled exception.
-        if (runCtx.options.callbackArg === 1 /* Required */)
+        if (runCtx.callback)
             runCtx.callback(err);
-        if (runCtx.options.returnValue === 1 /* Promise */)
+        if (runCtx.resolver)
             runCtx.resolver.reject(err);
     } finally {
-        // Track the number of currently active fibers
+        // Decrement the number of currently active fibers.
         adjustFiberCount(-1);
 
-        // TODO: for semaphores
+        // Exit the semaphore.
         runCtx.semaphore.leave();
     }
 }

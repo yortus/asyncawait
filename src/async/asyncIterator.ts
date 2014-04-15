@@ -28,11 +28,11 @@ class AsyncIterator {
     next() {
 
         // Configure the run context.
-        if (this.runContext.options.callbackArg === CallbackArg.Required) {
-            var callback = arguments[0];
+        if (this.runContext.callback) {
+            var callback = arguments[0];//TODO: assert is function
             this.runContext.callback = callback;
         }
-        if (this.runContext.options.returnValue === ReturnValue.Promise) {
+        if (this.runContext.resolver) {
             var resolver = Promise.defer<any>();
             this.runContext.resolver = resolver;
         }
@@ -45,14 +45,14 @@ class AsyncIterator {
         this.runContext.semaphore.enter(() => this.fiber.run(this.runContext));
 
         // Return the appropriate value.
-        return this.runContext.options.returnValue === ReturnValue.Promise ? resolver.promise : undefined;
+        return this.runContext.resolver ? resolver.promise : undefined;
     }
 
     /**
      * TODO: ...
      */
     forEach(callback: (value) => void) {
-        if (this.runContext.options.returnValue === ReturnValue.Promise) {
+        if (this.runContext.resolver) {
             var doneResolver = Promise.defer<any>();
             var handler: any = (result) => {
                 if (result.done) return doneResolver.resolve(null);
@@ -62,8 +62,8 @@ class AsyncIterator {
             this.next().then(handler, err => doneResolver.reject(err));
             return doneResolver.promise;
         }
-        if (this.runContext.options.callbackArg === CallbackArg.Required) {
-            var doneCallback = arguments[1];
+        if (this.runContext.callback) {
+            var doneCallback = arguments[1];//TODO: assert is function
             var handler: any = (err, result) => {
                 if (err) return doneCallback(err);
                 if (result.done) return doneCallback();

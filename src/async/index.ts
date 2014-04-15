@@ -53,7 +53,7 @@ function createAsyncFunction(options_: Options) {
 
         //TODO: 'arity' should be +1 if CallbackArg.Required (think of mocha's 'done', express's 'next', ...)
         //TODO: document this...
-        result = passThruWithArity(result, (<any> bodyFunc).name, bodyFunc.length);
+        result = passThruWithArity(result, bodyFunc.length);
         return result;
     };
 }
@@ -80,8 +80,19 @@ function createAsyncIterator(bodyFunc: Function, options: Options, semaphore: Se
         // Insert the yield function as the first argument when starting the iterator.
         argsAsArray.unshift(yield_);
 
+        // Wrap the given bodyFunc so that its final return value is always {done:true}.
+        var innerBody = bodyFunc;
+        bodyFunc = () => {
+            var len = arguments.length, args=new Array(len);
+            for (var i = 0; i < len; ++i) args[i] = arguments[i];
+            innerBody.apply(this, args);
+            return { done: true };
+        }
+
         // Configure the run context.
-        var runContext = new RunContext(options, bodyFunc, this, argsAsArray, semaphore);
+        var runContext = new RunContext(bodyFunc, this, argsAsArray, semaphore);
+        if (options.returnValue === ReturnValue.Promise) runContext.resolver = <any> true; //TODO: Hacky?
+        if (options.callbackArg === CallbackArg.Required) runContext.callback = <any> true; //TODO: Hacky?
 
         // Return the iterator.
         return new AsyncIterator(runContext);
@@ -104,7 +115,7 @@ function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore:
         if (!isTopLevel) semaphore = Semaphore.unlimited;
 
         // Configure the run context.
-        var runContext = new RunContext(options, bodyFunc, this, argsAsArray, semaphore);
+        var runContext = new RunContext(bodyFunc, this, argsAsArray, semaphore);
         if (options.returnValue === ReturnValue.Promise) {
             var resolver = Promise.defer<any>();
             runContext.resolver = resolver;
@@ -128,7 +139,7 @@ function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore:
  * TODO: document this, not all bodies are identical, only formal param list changes
  * TODO: would eval be competitive here (slower setup, faster on hot path?)
  */
-function passThruWithArity(fn: Function, name: string, arity: number) {
+function passThruWithArity(fn: Function, arity: number) {
 
     // Need to handle each arity individually, but the body never changes.
     switch (arity) {

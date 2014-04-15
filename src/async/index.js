@@ -48,7 +48,7 @@ function createAsyncFunction(options_) {
 
         //TODO: 'arity' should be +1 if CallbackArg.Required (think of mocha's 'done', express's 'next', ...)
         //TODO: document this...
-        result = passThruWithArity(result, bodyFunc.name, bodyFunc.length);
+        result = passThruWithArity(result, bodyFunc.length);
         return result;
     };
 }
@@ -57,6 +57,7 @@ function createAsyncFunction(options_) {
 function createAsyncIterator(bodyFunc, options, semaphore) {
     // Return a function that returns an iterator.
     return function () {
+        var _this = this;
         // Capture the initial arguments used to start the iterator.
         var argsAsArray = new Array(arguments.length);
         for (var i = 0; i < argsAsArray.length; ++i)
@@ -75,8 +76,22 @@ function createAsyncIterator(bodyFunc, options, semaphore) {
         // Insert the yield function as the first argument when starting the iterator.
         argsAsArray.unshift(yield_);
 
+        // Wrap the given bodyFunc so that its final return value is always {done:true}.
+        var innerBody = bodyFunc;
+        bodyFunc = function () {
+            var len = arguments.length, args = new Array(len);
+            for (var i = 0; i < len; ++i)
+                args[i] = arguments[i];
+            innerBody.apply(_this, args);
+            return { done: true };
+        };
+
         // Configure the run context.
-        var runContext = new RunContext(options, bodyFunc, this, argsAsArray, semaphore);
+        var runContext = new RunContext(bodyFunc, this, argsAsArray, semaphore);
+        if (options.returnValue === 1 /* Promise */)
+            runContext.resolver = true; //TODO: Hacky?
+        if (options.callbackArg === 1 /* Required */)
+            runContext.callback = true; //TODO: Hacky?
 
         // Return the iterator.
         return new AsyncIterator(runContext);
@@ -98,7 +113,7 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
             semaphore = Semaphore.unlimited;
 
         // Configure the run context.
-        var runContext = new RunContext(options, bodyFunc, this, argsAsArray, semaphore);
+        var runContext = new RunContext(bodyFunc, this, argsAsArray, semaphore);
         if (options.returnValue === 1 /* Promise */) {
             var resolver = Promise.defer();
             runContext.resolver = resolver;
@@ -123,7 +138,7 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
 * TODO: document this, not all bodies are identical, only formal param list changes
 * TODO: would eval be competitive here (slower setup, faster on hot path?)
 */
-function passThruWithArity(fn, name, arity) {
+function passThruWithArity(fn, arity) {
     switch (arity) {
         case 0:
             return function () {

@@ -2,8 +2,6 @@
 var Promise = require('bluebird');
 var runInFiber = require('./runInFiber');
 
-var CallbackArg = require('./callbackArg');
-var ReturnValue = require('./returnValue');
 var Semaphore = require('./semaphore');
 
 
@@ -24,11 +22,11 @@ var AsyncIterator = (function () {
     AsyncIterator.prototype.next = function () {
         var _this = this;
         // Configure the run context.
-        if (this.runContext.options.callbackArg === 1 /* Required */) {
+        if (this.runContext.callback) {
             var callback = arguments[0];
             this.runContext.callback = callback;
         }
-        if (this.runContext.options.returnValue === 1 /* Promise */) {
+        if (this.runContext.resolver) {
             var resolver = Promise.defer();
             this.runContext.resolver = resolver;
         }
@@ -44,7 +42,7 @@ var AsyncIterator = (function () {
         });
 
         // Return the appropriate value.
-        return this.runContext.options.returnValue === 1 /* Promise */ ? resolver.promise : undefined;
+        return this.runContext.resolver ? resolver.promise : undefined;
     };
 
     /**
@@ -52,7 +50,7 @@ var AsyncIterator = (function () {
     */
     AsyncIterator.prototype.forEach = function (callback) {
         var _this = this;
-        if (this.runContext.options.returnValue === 1 /* Promise */) {
+        if (this.runContext.resolver) {
             var doneResolver = Promise.defer();
             var handler = function (result) {
                 if (result.done)
@@ -69,7 +67,7 @@ var AsyncIterator = (function () {
             });
             return doneResolver.promise;
         }
-        if (this.runContext.options.callbackArg === 1 /* Required */) {
+        if (this.runContext.callback) {
             var doneCallback = arguments[1];
             var handler = function (err, result) {
                 if (err)
