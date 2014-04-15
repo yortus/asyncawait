@@ -1,9 +1,8 @@
 ﻿var Fiber = require('fibers');
 var Promise = require('bluebird');
-var runInFiber = require('./runInFiber');
+var FiberMgr = require('./fiberManager');
 
 var Semaphore = require('./semaphore');
-
 
 /**
 * Asynchronous analogue to an ES6 Iterator. Rather than return each value/done
@@ -15,7 +14,7 @@ var AsyncIterator = (function () {
     function AsyncIterator(runContext, semaphore) {
         this._runContext = runContext;
         this._semaphore = semaphore;
-        this._fiber = Fiber(runInFiber);
+        this._fiber = FiberMgr.create();
     }
     /** Fetch the next result from the iterator. */
     AsyncIterator.prototype.next = function () {

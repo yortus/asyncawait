@@ -41,9 +41,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="async\callbackArg.ts" />
     <TypeScriptCompile Include="async\config.ts" />
+    <TypeScriptCompile Include="async\fiberManager.ts" />
     <TypeScriptCompile Include="async\options.ts" />
     <TypeScriptCompile Include="async\returnValue.ts" />
-    <TypeScriptCompile Include="async\runInFiber.ts" />
     <TypeScriptCompile Include="async\runContext.ts" />
     <TypeScriptCompile Include="async\asyncIterator.ts" />
     <TypeScriptCompile Include="async\semaphore.ts" />

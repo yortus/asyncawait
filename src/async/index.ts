@@ -5,7 +5,7 @@ import _ = require('lodash');
 import Options = require('./options');
 import CallbackArg = require('./callbackArg');
 import ReturnValue = require('./returnValue');
-import runInFiber = require('./runInFiber');
+import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
 import AsyncIterator = require('./asyncIterator');
@@ -130,7 +130,7 @@ function createAsyncNonIterator(bodyFunc: Function, options: Options, semaphore:
         }
 
         // Execute bodyFunc to completion in a coroutine.
-        semaphore.enter(() => Fiber(runInFiber).run(runContext));
+        semaphore.enter(() => FiberMgr.create().run(runContext));
 
         // Return the appropriate value.
         return options.returnValue === ReturnValue.Promise ? resolver.promise : undefined;

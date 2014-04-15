@@ -1,12 +1,9 @@
 ﻿import _refs = require('_refs');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
-import runInFiber = require('./runInFiber');
+import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
-import CallbackArg = require('./callbackArg');
-import ReturnValue = require('./returnValue');
 import Semaphore = require('./semaphore');
-import await = require('../await/index');
 export = AsyncIterator;
 
 
@@ -21,7 +18,7 @@ class AsyncIterator {
     constructor(runContext: RunContext, semaphore: Semaphore) {
         this._runContext = runContext;
         this._semaphore = semaphore;
-        this._fiber = Fiber(runInFiber);
+        this._fiber = FiberMgr.create();
     }
 
     /** Fetch the next result from the iterator. */

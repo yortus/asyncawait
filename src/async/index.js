@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 var CallbackArg = require('./callbackArg');
 var ReturnValue = require('./returnValue');
-var runInFiber = require('./runInFiber');
+var FiberMgr = require('./fiberManager');
 var RunContext = require('./runContext');
 var Semaphore = require('./semaphore');
 var AsyncIterator = require('./asyncIterator');
@@ -131,7 +131,7 @@ function createAsyncNonIterator(bodyFunc, options, semaphore) {
 
         // Execute bodyFunc to completion in a coroutine.
         semaphore.enter(function () {
-            return Fiber(runInFiber).run(runContext);
+            return FiberMgr.create().run(runContext);
         });
 
         // Return the appropriate value.
