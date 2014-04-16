@@ -37,7 +37,7 @@ function makeAsyncFunc(config) {
     return result;
 }
 
-/** Function for creating iterable async-wrapped functions. */
+/** Function for creating iterable suspendable functions. */
 function makeAsyncIterator(bodyFunc, config, semaphore) {
     // Return a function that returns an iterator.
     return function () {
@@ -86,7 +86,7 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
     };
 }
 
-/** Function for creating non-iterable async-wrapped functions. */
+/** Function for creating non-iterable suspendable functions. */
 function makeAsyncNonIterator(bodyFunc, config, semaphore) {
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function () {
