@@ -7,6 +7,8 @@ declare module AsyncAwait {
     //------------------------- Async -------------------------
     export interface Async extends AsyncReturnsPromise {
         cps: AsyncAcceptsCallbackReturnsNothing;
+        thunk: AsyncReturnsThunk;
+        value: AsyncReturnsValue;
         iterable: AsyncIterableReturnsPromise;
     }
 
@@ -47,11 +49,11 @@ declare module AsyncAwait {
     }
 
     export interface AsyncReturnsThunk extends AsyncFunction {
-        <TResult>(fn: () => TResult): () => Callback<TResult>;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Callback<TResult>;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Callback<TResult>;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Callback<TResult>;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Callback<TResult>;
+        <TResult>(fn: () => TResult): () => Thunk<TResult>;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
 
     export interface AsyncReturnsValue extends AsyncFunction {
@@ -71,11 +73,11 @@ declare module AsyncAwait {
     }
 
     export interface AsyncAcceptsCallbackReturnsThunk extends AsyncFunction {
-        <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => Callback<TResult>;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => Callback<TResult>;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => Callback<TResult>;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => Callback<TResult>;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => Callback<TResult>;
+        <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => Thunk<TResult>;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => Thunk<TResult>;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => Thunk<TResult>;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => Thunk<TResult>;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => Thunk<TResult>;
     }
 
     export interface AsyncAcceptsCallbackReturnsValue extends AsyncFunction {
@@ -103,8 +105,8 @@ declare module AsyncAwait {
 
     export interface AsyncIterableReturnsThunk extends AsyncFunction {
         (fn: Function): () => {
-            next(): Callback<{ done: boolean; value?: any; }>;
-            forEach(callback: (value) => void): Callback<void>;
+            next(): Thunk<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void): Thunk<void>;
         };
     }
 
@@ -124,8 +126,8 @@ declare module AsyncAwait {
 
     export interface AsyncIterableAcceptsCallbackReturnsThunk extends AsyncFunction {
         (fn: Function): () => {
-            next(callback?: Callback<any>): Callback<{ done: boolean; value?: any; }>;
-            forEach(callback: (value) => void, doneCallback?: Callback<void>): Callback<void>;
+            next(callback?: Callback<any>): Thunk<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void, doneCallback?: Callback<void>): Thunk<void>;
         };
     }
 
@@ -151,7 +153,7 @@ declare module AsyncAwait {
     export interface AwaitFunc {
         <T>(expr: AsyncAwait.Thenable<T>): T;
         <T>(expr: AsyncAwait.Thenable<T>[]): T[];
-        <T>(expr: Callback<T>): any;
+        <T>(expr: Thunk<T>): any;
         (expr: Object): Object;
     }
 
@@ -165,6 +167,10 @@ declare module AsyncAwait {
 
     export interface Callback<TResult> {
         (err: any, result: TResult): void;
+    }
+
+    export interface Thunk<TResult> {
+        (callback?: (err, result?) => void): void;
     }
 }
 

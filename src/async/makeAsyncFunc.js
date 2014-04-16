@@ -6,6 +6,7 @@ var FiberMgr = require('./fiberManager');
 var RunContext = require('./runContext');
 var Semaphore = require('./semaphore');
 var AsyncIterator = require('./asyncIterator');
+var await = require('../await/index');
 
 /** Function for creating a specific variant of the async function. */
 function makeAsyncFunc(config) {
@@ -46,7 +47,12 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
 
         // Create a yield() function tailored for this iterator.
         var yield_ = function (expr) {
-            //TODO: await expr first? YES if options.returnValue === ReturnValue.Result
+            // Ensure this function is executing inside a fiber.
+            if (!Fiber.current) {
+                throw new Error('await functions, yield functions, and value-returning suspendable ' + 'functions may only be called from inside a suspendable function. ');
+            }
+
+            // Notify waiters of the next result, then suspend the iterator.
             if (runContext.callback)
                 runContext.callback(null, { value: expr, done: false });
             if (runContext.resolver)
@@ -57,16 +63,9 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
         // Insert the yield function as the first argument when starting the iterator.
         startupArgs[0] = yield_;
 
-        // Configure the run context.
-        var runContext = new RunContext(bodyFunc, this, startupArgs);
-        if (config.returnValue === Config.PROMISE)
-            runContext.resolver = Promise.defer(); // non-falsy sentinel for AsyncIterator.
-        if (config.acceptsCallback)
-            runContext.callback = function () {
-            }; // non-falsy sentinel for AsyncIterator.
-
         // Create the iterator.
-        var iterator = new AsyncIterator(runContext, semaphore);
+        var runContext = new RunContext(bodyFunc, this, startupArgs);
+        var iterator = new AsyncIterator(runContext, semaphore, config.returnValue, config.acceptsCallback);
 
         // Wrap the given bodyFunc to properly complete the iteration.
         runContext.wrapped = function () {
@@ -100,7 +99,7 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
         var runContext = new RunContext(bodyFunc, this, argsAsArray, function () {
             return semaphore.leave();
         });
-        if (config.returnValue === Config.PROMISE) {
+        if (config.returnValue !== Config.NONE) {
             var resolver = Promise.defer();
             runContext.resolver = resolver;
         }
@@ -109,13 +108,35 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
             runContext.callback = callback;
         }
 
-        // Execute bodyFunc to completion in a coroutine.
-        semaphore.enter(function () {
-            return FiberMgr.create().run(runContext);
-        });
+        // Execute bodyFunc to completion in a coroutine. For thunks, this is a lazy operation.
+        if (config.returnValue === Config.THUNK) {
+            var thunk = function (done) {
+                if (done)
+                    resolver.promise.then(function (val) {
+                        return done(null, val);
+                    }, function (err) {
+                        return done(err);
+                    });
+                semaphore.enter(function () {
+                    return FiberMgr.create().run(runContext);
+                });
+            };
+        } else {
+            semaphore.enter(function () {
+                return FiberMgr.create().run(runContext);
+            });
+        }
 
-        // Return the appropriate value.
-        return config.returnValue === Config.PROMISE ? resolver.promise : undefined;
+        switch (config.returnValue) {
+            case Config.PROMISE:
+                return resolver.promise;
+            case Config.THUNK:
+                return thunk;
+            case Config.VALUE:
+                return await(resolver.promise);
+            case Config.NONE:
+                return;
+        }
     };
 }
 
@@ -200,6 +221,8 @@ function makeFuncWithArity(fn, arity) {
 function makeModFunc(config) {
     return function (options, maxConcurrency) {
         if (_.isString(options)) {
+            // This way of specifying options is useful for TypeScript users, as they get better type information.
+            // JavaScript users can use this too, but providing an options hash is more useful in that case.
             var rt, cb, it;
             switch (options) {
                 case 'returns: promise, callback: false, iterable: false':

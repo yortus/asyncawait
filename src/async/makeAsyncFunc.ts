@@ -7,6 +7,7 @@ import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
 import AsyncIterator = require('./asyncIterator');
+import await = require('../await/index');
 export = makeAsyncFunc;
 
 
@@ -51,7 +52,16 @@ function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaph
 
         // Create a yield() function tailored for this iterator.
         var yield_ = expr => {
-            //TODO: await expr first? YES if options.returnValue === ReturnValue.Result
+
+            // Ensure this function is executing inside a fiber.
+            if (!Fiber.current) {
+                throw new Error(
+                    'await functions, yield functions, and value-returning suspendable ' +
+                    'functions may only be called from inside a suspendable function. '
+                );
+            }
+
+            // Notify waiters of the next result, then suspend the iterator.
             if (runContext.callback) runContext.callback(null, { value: expr, done: false });
             if (runContext.resolver) runContext.resolver.resolve({ value: expr, done: false });
             Fiber.yield();
@@ -60,13 +70,9 @@ function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaph
         // Insert the yield function as the first argument when starting the iterator.
         startupArgs[0] = yield_;
 
-        // Configure the run context.
-        var runContext = new RunContext(bodyFunc, this, startupArgs);
-        if (config.returnValue === Config.PROMISE) runContext.resolver = Promise.defer<any>(); // non-falsy sentinel for AsyncIterator.
-        if (config.acceptsCallback) runContext.callback = ()=>{}; // non-falsy sentinel for AsyncIterator.
-
         // Create the iterator.
-        var iterator = new AsyncIterator(runContext, semaphore);
+        var runContext = new RunContext(bodyFunc, this, startupArgs);
+        var iterator = new AsyncIterator(runContext, semaphore, config.returnValue, config.acceptsCallback);
 
         // Wrap the given bodyFunc to properly complete the iteration.
         runContext.wrapped = () => {
@@ -98,7 +104,7 @@ function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Sem
 
         // Configure the run context.
         var runContext = new RunContext(bodyFunc, this, argsAsArray, () => semaphore.leave());
-        if (config.returnValue === Config.PROMISE) {
+        if (config.returnValue !== Config.NONE) {
             var resolver = Promise.defer<any>();
             runContext.resolver = resolver;
         }
@@ -107,11 +113,23 @@ function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Sem
             runContext.callback = callback;
         }
 
-        // Execute bodyFunc to completion in a coroutine.
-        semaphore.enter(() => FiberMgr.create().run(runContext));
+        // Execute bodyFunc to completion in a coroutine. For thunks, this is a lazy operation.
+        if (config.returnValue === Config.THUNK) {
+            var thunk: AsyncAwait.Thunk<any> = (done?) => {
+                if (done) resolver.promise.then(val => done(null, val), err => done(err));
+                semaphore.enter(() => FiberMgr.create().run(runContext));
+            };
+        } else {
+            semaphore.enter(() => FiberMgr.create().run(runContext));
+        }
 
         // Return the appropriate value.
-        return config.returnValue === Config.PROMISE ? resolver.promise : undefined;
+        switch (config.returnValue) {
+            case Config.PROMISE:    return resolver.promise;
+            case Config.THUNK:      return thunk;
+            case Config.VALUE:      return await (resolver.promise);
+            case Config.NONE:       return;
+        }
     };
 }
 
@@ -139,6 +157,9 @@ function makeFuncWithArity(fn: Function, arity: number) {
 function makeModFunc(config: Config) {
     return (options: any, maxConcurrency?: number) => {
         if (_.isString(options)) {
+
+            // This way of specifying options is useful for TypeScript users, as they get better type information.
+            // JavaScript users can use this too, but providing an options hash is more useful in that case. 
             var rt, cb, it;
             switch(options) {
                 case 'returns: promise, callback: false, iterable: false': rt = 'promise'; cb = false; it = false; break;

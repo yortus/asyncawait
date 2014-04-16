@@ -26,7 +26,13 @@ function createAwaitFunction(options: AwaitOptions) {
     var traverseFunction = options.inPlace ? traverseInPlace : traverseClone;
     return function(expr_: any) {
 
-        //TODO: ensure running in a fiber...
+        // Ensure this function is executing inside a fiber.
+        if (!Fiber.current) {
+            throw new Error(
+                'await functions, yield functions, and value-returning suspendable ' +
+                'functions may only be called from inside a suspendable function. '
+            );
+        }
 
         // Parse argument(s). If not a single argument, treat it like an array was passed in.
         var traverse = traverseFunction;

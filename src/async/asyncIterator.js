@@ -3,6 +3,8 @@
 var FiberMgr = require('./fiberManager');
 
 var Semaphore = require('./semaphore');
+var Config = require('./config');
+var await = require('../await/index');
 
 /**
 * Asynchronous analogue to an ES6 Iterator. Rather than return each value/done
@@ -11,11 +13,12 @@ var Semaphore = require('./semaphore');
 */
 var AsyncIterator = (function () {
     /** Construct a new AsyncIterator instance. This will create a fiber. */
-    function AsyncIterator(runContext, semaphore) {
+    function AsyncIterator(runContext, semaphore, returnValue, acceptsCallback) {
         this._runContext = runContext;
         this._semaphore = semaphore;
         this._fiber = FiberMgr.create();
-        this._acceptsCallback = !!runContext.callback;
+        this._returnValue = returnValue;
+        this._acceptsCallback = acceptsCallback;
     }
     /** Fetch the next result from the iterator. */
     AsyncIterator.prototype.next = function (callback) {
@@ -24,7 +27,7 @@ var AsyncIterator = (function () {
         if (this._acceptsCallback) {
             this._runContext.callback = callback; // May be null, in which case it won't be used.
         }
-        if (this._runContext.resolver) {
+        if (this._returnValue !== Config.NONE) {
             var resolver = Promise.defer();
             this._runContext.resolver = resolver;
         }
@@ -33,54 +36,136 @@ var AsyncIterator = (function () {
         if (FiberMgr.isExecutingInFiber())
             this._semaphore = Semaphore.unlimited;
 
-        // Run the fiber until it either yields a value or completes.
-        this._semaphore.enter(function () {
-            return _this._fiber.run(_this._runContext);
-        });
-        this._runContext.done = function () {
-            return _this._semaphore.leave();
-        };
+        // Run the fiber until it either yields a value or completes. For thunks, this is a lazy operation.
+        if (this._returnValue === Config.THUNK) {
+            var thunk = function (done) {
+                if (done)
+                    resolver.promise.then(function (val) {
+                        return done(null, val);
+                    }, function (err) {
+                        return done(err);
+                    });
+                _this._semaphore.enter(function () {
+                    return _this._fiber.run(_this._runContext);
+                });
+                _this._runContext.done = function () {
+                    return _this._semaphore.leave();
+                };
+            };
+        } else {
+            this._semaphore.enter(function () {
+                return _this._fiber.run(_this._runContext);
+            });
+            this._runContext.done = function () {
+                return _this._semaphore.leave();
+            };
+        }
 
-        // Return the appropriate value.
-        return this._runContext.resolver ? resolver.promise : undefined;
+        switch (this._returnValue) {
+            case Config.PROMISE:
+                return resolver.promise;
+            case Config.THUNK:
+                return thunk;
+            case Config.VALUE:
+                return await(resolver.promise);
+            case Config.NONE:
+                return;
+        }
     };
 
     /** Enumerate the entire iterator, calling callback with each result. */
     AsyncIterator.prototype.forEach = function (callback, doneCallback) {
         var _this = this;
-        // Asynchronously call next() repeatedly until done.
-        if (this._acceptsCallback) {
-            var handler = function (err, result) {
-                if (err || result.done)
-                    return done(err);
-                callback(result.value);
-                setImmediate(_this.next.bind(_this), handler);
-            };
-            this.next(handler);
-        } else if (this._runContext.resolver) {
-            var handler = function (result) {
-                if (result.done)
-                    return done();
-                callback(result.value);
-                setImmediate(function () {
-                    return _this.next().then(handler, done);
+        // Create a function that calls next() in an asynchronous loop until the iteration is complete.
+        var run, runCtx = this._runContext;
+        if (this._returnValue === Config.VALUE)
+            run = function () {
+                return stepAwaited(function () {
+                    return _this.next();
                 });
             };
-            this.next().then(handler, done);
-        }
+        else if (this._returnValue === Config.THUNK)
+            run = function () {
+                return _this.next()(stepCallback);
+            };
+        else if (this._acceptsCallback)
+            run = function () {
+                return _this.next(stepCallback);
+            };
+        else
+            run = function () {
+                return _this.next().then(stepResolved, endOfIteration);
+            };
 
-        // Synchronously return the appropriate value.
-        var doneResolver = this._runContext.resolver ? Promise.defer() : null;
-        return doneResolver ? doneResolver.promise : undefined;
+        // Configure the resolver and callback to be invoked at the end of the iteration.
+        if (this._returnValue === Config.PROMISE || this._returnValue === Config.THUNK) {
+            var doneResolver = Promise.defer();
+        }
         if (!this._acceptsCallback)
             doneCallback = null;
 
-        // This function notifies waiters when the iteration finishes or fails.
-        function done(err) {
-            if (doneResolver)
-                doneResolver.resolve(err);
+        // Execute the entire iteration. For thunks, this is a lazy operation.
+        if (this._returnValue === Config.THUNK) {
+            var thunk = function (done) {
+                if (done)
+                    doneResolver.promise.then(function (val) {
+                        return done(null, val);
+                    }, function (err) {
+                        return done(err);
+                    });
+                run();
+            };
+        } else {
+            run();
+        }
+
+        switch (this._returnValue) {
+            case Config.PROMISE:
+                return doneResolver.promise;
+            case Config.THUNK:
+                return thunk;
+            case Config.VALUE:
+                return undefined;
+            case Config.NONE:
+                return undefined;
+        }
+
+        // These functions handle stepping through and finalising the iteration.
+        function stepAwaited(next) {
+            try  {
+                while (true) {
+                    var item = next();
+                    if (item.done)
+                        return endOfIteration();
+                    callback(item.value);
+                }
+            } catch (err) {
+                endOfIteration(err);
+                throw err;
+            }
+        }
+        function stepCallback(err, result) {
+            if (err || result.done)
+                return endOfIteration(err);
+            callback(result.value);
+            setImmediate(run);
+        }
+        function stepResolved(result) {
+            if (result.done)
+                return endOfIteration();
+            callback(result.value);
+            setImmediate(run);
+        }
+        function endOfIteration(err) {
             if (doneCallback)
-                doneCallback(err);
+                err ? doneCallback(err) : doneCallback();
+            if (doneResolver) {
+                if (FiberMgr.isExecutingInFiber()) {
+                    runCtx.resolver = doneResolver; // FiberManager will handle it
+                } else {
+                    err ? doneResolver.reject(err) : doneResolver.resolve(null);
+                }
+            }
         }
     };
 

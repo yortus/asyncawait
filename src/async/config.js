@@ -21,11 +21,16 @@ var Config = (function () {
     }
     /** Checks all configuration values and throw an error if anything is invalid. */
     Config.prototype.validate = function () {
+        var knownRetVal = [Config.PROMISE, Config.THUNK, Config.VALUE, Config.NONE].indexOf(this.returnValue) !== -1;
+        assert(knownRetVal, 'Unrecognised return value: ' + this.returnValue);
+
         var hasNotifier = this.returnValue !== Config.NONE || this.acceptsCallback;
-        assert(hasNotifier, 'At least one notification method must be supported.');
+        assert(hasNotifier, 'At least one notification method must be enabled.');
     };
-    Config.NONE = 'none';
     Config.PROMISE = 'promise';
+    Config.THUNK = 'thunk';
+    Config.VALUE = 'value';
+    Config.NONE = 'none';
     return Config;
 })();
 module.exports = Config;

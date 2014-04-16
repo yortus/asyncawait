@@ -29,12 +29,17 @@ class Config implements AsyncAwait.AsyncOptions {
     maxConcurrency: number = null;
 
     // Constants for use with returnValue and callbackArg
-    static NONE = 'none';
     static PROMISE = 'promise';
+    static THUNK = 'thunk';
+    static VALUE = 'value';
+    static NONE = 'none';
 
     /** Checks all configuration values and throw an error if anything is invalid. */
     validate() {
+        var knownRetVal = [Config.PROMISE, Config.THUNK, Config.VALUE, Config.NONE].indexOf(this.returnValue) !== -1;
+        assert(knownRetVal, 'Unrecognised return value: ' + this.returnValue);        
+
         var hasNotifier = this.returnValue !== Config.NONE || this.acceptsCallback;
-        assert(hasNotifier, 'At least one notification method must be supported.');        
+        assert(hasNotifier, 'At least one notification method must be enabled.');        
     }
 }
