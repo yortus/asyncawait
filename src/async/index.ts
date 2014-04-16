@@ -15,5 +15,5 @@ export = async;
   *                     promise is resolved when fn returns, or rejected if fn throws.
   */
 var async: AsyncAwait.Async = <any> makeAsyncFunc(new Config());
-async.iterable = async.mod('returns: promise, iterable: true');
-async.cps = async.mod('returns: none, iterable: false', true);
+async.iterable = async.mod('returns: promise, callback: false, iterable: true');
+async.cps = async.mod('returns: none, callback: true, iterable: false');

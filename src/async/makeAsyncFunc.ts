@@ -34,26 +34,7 @@ function makeAsyncFunc(config: Config): AsyncAwait.AsyncFunction {
     };
 
     // Add the mod() function, and return the result.
-    result.mod = (options_: any, acceptsCallback?: boolean, maxConcurrency?: number) => {
-        if (_.isString(options_)) {
-            var newConfig = new Config(config);
-            switch(options_) {
-                case 'returns: promise, iterable: false':   newConfig.returnValue = 'promise';  newConfig.isIterable = false;   break;
-                case 'returns: thunk, iterable: false':     newConfig.returnValue = 'thunk';    newConfig.isIterable = false;   break;
-                case 'returns: value, iterable: false':     newConfig.returnValue = 'value';    newConfig.isIterable = false;   break;
-                case 'returns: none, iterable: false':      newConfig.returnValue = 'none';     newConfig.isIterable = false;   break;
-                case 'returns: promise, iterable: true':    newConfig.returnValue = 'promise';  newConfig.isIterable = true;    break;
-                case 'returns: thunk, iterable: true':      newConfig.returnValue = 'thunk';    newConfig.isIterable = true;    break;
-                case 'returns: value, iterable: true':      newConfig.returnValue = 'value';    newConfig.isIterable = true;    break;
-                case 'returns: none, iterable: true':       newConfig.returnValue = 'none';     newConfig.isIterable = true;    break;
-            }
-            newConfig.acceptsCallback = acceptsCallback;
-            newConfig.maxConcurrency = maxConcurrency;
-        } else {
-            var newConfig = new Config(_.defaults({}, options_, config));
-        }
-        return makeAsyncFunc(newConfig);
-    };
+    result.mod = makeModFunc(config);
     return result;
 }
 
@@ -152,4 +133,32 @@ function makeFuncWithArity(fn: Function, arity: number) {
         case 9: return function (a,b,c,d,e,f,g,h,i) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
         default: return fn; // Bail out if arity is crazy high.
     }
+}
+
+
+function makeModFunc(config: Config) {
+    return (options: any, maxConcurrency?: number) => {
+        if (_.isString(options)) {
+            var rt, cb, it;
+            switch(options) {
+                case 'returns: promise, callback: false, iterable: false': rt = 'promise'; cb = false; it = false; break;
+                case 'returns: thunk, callback: false, iterable: false':   rt = 'thunk'; cb = false; it = false; break;
+                case 'returns: value, callback: false, iterable: false':   rt = 'value'; cb = false; it = false; break;
+                case 'returns: promise, callback: true, iterable: false':  rt = 'promise'; cb = true; it = false; break;
+                case 'returns: thunk, callback: true, iterable: false':    rt = 'thunk'; cb = true; it = false; break;
+                case 'returns: value, callback: true, iterable: false':    rt = 'value'; cb = true; it = false; break;
+                case 'returns: none, callback: true, iterable: false':     rt = 'none'; cb = true; it = false; break;
+                case 'returns: promise, callback: false, iterable: true':  rt = 'promise'; cb = false; it = true; break;
+                case 'returns: thunk, callback: false, iterable: true':    rt = 'thunk'; cb = false; it = true; break;
+                case 'returns: value, callback: false, iterable: true':    rt = 'value'; cb = false; it = true; break;
+                case 'returns: promise, callback: true, iterable: true':   rt = 'promise'; cb = true; it = true; break;
+                case 'returns: thunk, callback: true, iterable: true':     rt = 'thunk'; cb = true; it = true; break;
+                case 'returns: value, callback: true, iterable: true':     rt = 'value'; cb = true; it = true; break;
+                case 'returns: none, callback: true, iterable: true':      rt = 'none'; cb = true; it = true; break;
+            }
+            options = { returnValue: rt, acceptsCallback: cb, isIterable: it, maxConcurrency: maxConcurrency };
+        }
+        var newConfig = new Config(_.defaults({}, options, config));
+        return makeAsyncFunc(newConfig);
+    };
 }
