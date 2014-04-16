@@ -1,18 +1,31 @@
-﻿
-/**
-* TODO:...
-*/
+﻿var assert = require('assert');
+
+/** A config object holds the configuration options for a variant of the async function. */
 var Config = (function () {
-    function Config() {
+    /** Construct a new Config instance. */
+    function Config(options) {
+        /** Recognised values: 'none', 'promise', 'thunk', 'result'. */
         this.returnValue = Config.PROMISE;
-        this.callbackArg = Config.NONE;
+        /** Indicates whether a callback function, if supplied, will be used to notify waiters of results. */
+        this.acceptsCallback = false;
+        /** Indicates whether the suspendable function has iterator semantics or normal semantics. */
         this.isIterable = false;
-        //TODO:...isVariadic?: boolean;
+        /** Indicates whether top-level concurrency should be limited to a specified ceiling. */
         this.maxConcurrency = null;
+        if (options) {
+            this.returnValue = options.returnValue;
+            this.acceptsCallback = options.acceptsCallback;
+            this.isIterable = options.isIterable;
+            this.maxConcurrency = options.maxConcurrency;
+        }
     }
+    /** Checks all configuration values and throw an error if anything is invalid. */
+    Config.prototype.validate = function () {
+        var hasNotifier = this.returnValue !== Config.NONE || this.acceptsCallback;
+        assert(hasNotifier, 'At least one notification method must be supported.');
+    };
     Config.NONE = 'none';
     Config.PROMISE = 'promise';
-    Config.REQUIRED = 'required';
     return Config;
 })();
 module.exports = Config;

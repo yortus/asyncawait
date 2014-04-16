@@ -38,9 +38,9 @@ module FiberManager {
  * NB: Since try/catch/finally prevents V8 optimisations, the function is split into several parts.
  */
 function runInFiber(runCtx: RunContext) {
-    try         {   tryBlock(runCtx);           }
-    catch (err) {   catchBlock(runCtx, err);    }
-    finally     {   finallyBlock(runCtx);       }
+    try         { tryBlock(runCtx);        }
+    catch (err) { catchBlock(runCtx, err); }
+    finally     { finallyBlock(runCtx);    }
 }
 function tryBlock(runCtx: RunContext) {
     

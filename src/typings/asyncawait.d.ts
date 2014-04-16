@@ -6,25 +6,19 @@ declare module AsyncAwait {
 
     //------------------------- Async -------------------------
     export interface Async extends AsyncFunction, AsyncReturnsPromise {
-
-        //TODO: the predefined ones
-        iterable: AsyncReturnsIteratorReturnsPromise;
         cps: AsyncAcceptsCallback
+        iterable: AsyncReturnsIteratorReturnsPromise;
     }
 
     export interface AsyncFunction {
-
-        //TODO: the general API...
         (fn: Function): Function;
-        config: AsyncOptions; //TODO: should really reference Config class
         mod: (options: AsyncOptions) => AsyncFunction;
     }
 
     export interface AsyncOptions {
         returnValue?: string; // Recognised values: 'none', 'promise', 'thunk', 'result'
-        callbackArg?: string; // Recognised values: 'none', 'optional', 'required'
+        acceptsCallback?: boolean;
         isIterable?: boolean;
-        //TODO:...isVariadic?: boolean;
         maxConcurrency?: number;
     }
 
@@ -84,7 +78,9 @@ declare module "asyncawait" {
 
 declare module "asyncawait/async" {
     /**
-     * Creates a function that can be suspended at each asynchronous operation using await().
+     * Creates a suspendable function. Suspendable functions may use the await() function
+     * internally to suspend execution at arbitrary points, pending the results of
+     * internal asynchronous operations.
      * @param {Function} fn - Contains the body of the suspendable function. Calls to await()
      *                        may appear inside this function.
      * @returns {Function} A function of the form `(...args) --> Promise`. Any arguments
@@ -97,9 +93,9 @@ declare module "asyncawait/async" {
 
 declare module "asyncawait/await" {
     /**
-     * Suspends an async-wrapped function until the given awaitable expression produces
+     * Suspends a suspendable function until the given awaitable expression produces
      * a result. If the given expression produces an error, then an exception is raised
-     * in the async-wrapped function.
+     * in the suspendable function.
      * @param {any} expr - The awaitable expression whose results are to be awaited.
      * @returns {any} The final result of the given awaitable expression.
      */

@@ -1,5 +1,4 @@
 ﻿import _refs = require('_refs');
-import assert = require('assert');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
@@ -21,15 +20,15 @@ class AsyncIterator {
         this._runContext = runContext;
         this._semaphore = semaphore;
         this._fiber = FiberMgr.create();
+        this._acceptsCallback = !!runContext.callback;
     }
 
     /** Fetch the next result from the iterator. */
     next(callback?: (err, result) => void) {
 
         // Configure the run context.
-        if (this._runContext.callback) {
-            assert(_.isFunction(callback), 'AsyncIterator#next() expected a callback function');
-            this._runContext.callback = callback;
+        if (this._acceptsCallback) {
+            this._runContext.callback = callback; // May be null, in which case it won't be used.
         }
         if (this._runContext.resolver) {
             var resolver = Promise.defer<any>();
@@ -51,7 +50,7 @@ class AsyncIterator {
     forEach(callback: (value) => void, doneCallback?: (err?) => void) {
 
         // Asynchronously call next() repeatedly until done.
-        if (this._runContext.callback) {
+        if (this._acceptsCallback) {
             var handler: any = (err, result) => {
                 if (err || result.done) return done(err);
                 callback(result.value);
@@ -70,6 +69,7 @@ class AsyncIterator {
         // Synchronously return the appropriate value.
         var doneResolver = this._runContext.resolver ? Promise.defer<any>() : null;
         return doneResolver ? doneResolver.promise : undefined;
+        if (!this._acceptsCallback) doneCallback = null;
 
         // This function notifies waiters when the iteration finishes or fails.
         function done(err?) {
@@ -78,7 +78,7 @@ class AsyncIterator {
         }
     }
 
-    /** Release resources associated with this instance (i.e., the fiber). */
+    /** Release resources associated with this object (i.e., the fiber). */
     destroy() {
         this._fiber = null;
     }
@@ -86,4 +86,5 @@ class AsyncIterator {
     private _runContext: RunContext;
     private _semaphore: Semaphore;
     private _fiber: Fiber;
+    private _acceptsCallback: boolean;
 }

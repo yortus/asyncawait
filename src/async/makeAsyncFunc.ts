@@ -7,11 +7,14 @@ import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
 import AsyncIterator = require('./asyncIterator');
-export = createAsyncFunction;
+export = makeAsyncFunc;
 
 
 /** Function for creating a specific variant of the async function. */
-function createAsyncFunction(config: Config): AsyncAwait.AsyncFunction {
+function makeAsyncFunc(config: Config): AsyncAwait.AsyncFunction {
+
+    // Validate the specified configuration
+    config.validate();
     
     // Create an async function tailored to the given options.
     var result: AsyncAwait.AsyncFunction = <any> function(bodyFunc: Function) {
@@ -20,34 +23,34 @@ function createAsyncFunction(config: Config): AsyncAwait.AsyncFunction {
         var semaphore = config.maxConcurrency ? new Semaphore(config.maxConcurrency) : Semaphore.unlimited;
 
         // Choose and run the appropriate function factory based on whether the result should be iterable.
-        var createFn = config.isIterable ? createAsyncIterator : createAsyncNonIterator;
-        var result: Function = createFn(bodyFunc, config, semaphore);
+        var makeFunc = config.isIterable ? makeAsyncIterator : makeAsyncNonIterator;
+        var result: Function = makeFunc(bodyFunc, config, semaphore);
 
-        //TODO: 'arity' should be +1 if CallbackArg.Required (think of mocha's 'done', express's 'next', ...)
-        //TODO: document this...
-        result = passThruWithArity(result, bodyFunc.length);
+        // Ensure the suspendable function's arity matches that of the function it wraps.
+        var arity = bodyFunc.length;
+        if (config.acceptsCallback) ++arity;
+        result = makeFuncWithArity(result, arity);
         return result;
     };
 
-    // Add the config property and the mod() function, and return the result.
-    result.config = config;
-    result.mod = (options_) => {
-        var options: any = _.defaults({}, options_, config);
-        return createAsyncFunction(options);
+    // Add the mod() function, and return the result.
+    result.mod = (options) => {
+        var newConfig = new Config(_.defaults({}, options, config));
+        return makeAsyncFunc(newConfig);
     };
     return result;
 }
 
 
 /** Function for creating iterable async-wrapped functions. */
-function createAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
+function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
 
     // Return a function that returns an iterator.
     return function (): any {
 
-        // Capture the initial arguments used to start the iterator.
-        var argsAsArray = new Array(arguments.length);
-        for (var i = 0; i < argsAsArray.length; ++i) argsAsArray[i] = arguments[i];
+        // Capture the initial arguments used to start the iterator, as an array.
+        var startupArgs = new Array(arguments.length + 1); // Reserve 0th arg for the yield function. 
+        for (var i = 0, len = arguments.length; i < len; ++i) startupArgs[i + 1] = arguments[i];
 
         // Create a yield() function tailored for this iterator.
         var yield_ = expr => {
@@ -58,12 +61,12 @@ function createAsyncIterator(bodyFunc: Function, config: Config, semaphore: Sema
         }
 
         // Insert the yield function as the first argument when starting the iterator.
-        argsAsArray.unshift(yield_);
+        startupArgs[0] = yield_;
 
         // Configure the run context.
-        var runContext = new RunContext(bodyFunc, this, argsAsArray);
-        if (config.returnValue === Config.PROMISE) runContext.resolver = <any> true; //TODO: Hacky?
-        if (config.callbackArg === Config.REQUIRED) runContext.callback = <any> true; //TODO: Hacky?
+        var runContext = new RunContext(bodyFunc, this, startupArgs);
+        if (config.returnValue === Config.PROMISE) runContext.resolver = Promise.defer<any>(); // non-falsy sentinel for AsyncIterator.
+        if (config.acceptsCallback) runContext.callback = ()=>{}; // non-falsy sentinel for AsyncIterator.
 
         // Create the iterator.
         var iterator = new AsyncIterator(runContext, semaphore);
@@ -84,7 +87,7 @@ function createAsyncIterator(bodyFunc: Function, config: Config, semaphore: Sema
 
 
 /** Function for creating non-iterable async-wrapped functions. */
-function createAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
+function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
 
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
     return function (): any {
@@ -102,8 +105,7 @@ function createAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: S
             var resolver = Promise.defer<any>();
             runContext.resolver = resolver;
         }
-        if (config.callbackArg === Config.REQUIRED) {
-            //TODO: pop() or take [nth] depending on isVariadic
+        if (config.acceptsCallback && argsAsArray.length && _.isFunction(argsAsArray[argsAsArray.length - 1])) {
             var callback = argsAsArray.pop();
             runContext.callback = callback;
         }
@@ -118,7 +120,7 @@ function createAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: S
 
 
 /** Returns a function that directly proxies the given function, whilst reporting the given arity. */
-function passThruWithArity(fn: Function, arity: number) {
+function makeFuncWithArity(fn: Function, arity: number) {
 
     // Need to handle each arity individually, but the body never changes.
     switch (arity) {

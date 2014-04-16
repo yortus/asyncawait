@@ -1,7 +1,5 @@
-﻿var assert = require('assert');
+﻿var Promise = require('bluebird');
 
-var Promise = require('bluebird');
-var _ = require('lodash');
 var FiberMgr = require('./fiberManager');
 
 var Semaphore = require('./semaphore');
@@ -17,14 +15,14 @@ var AsyncIterator = (function () {
         this._runContext = runContext;
         this._semaphore = semaphore;
         this._fiber = FiberMgr.create();
+        this._acceptsCallback = !!runContext.callback;
     }
     /** Fetch the next result from the iterator. */
     AsyncIterator.prototype.next = function (callback) {
         var _this = this;
         // Configure the run context.
-        if (this._runContext.callback) {
-            assert(_.isFunction(callback), 'AsyncIterator#next() expected a callback function');
-            this._runContext.callback = callback;
+        if (this._acceptsCallback) {
+            this._runContext.callback = callback; // May be null, in which case it won't be used.
         }
         if (this._runContext.resolver) {
             var resolver = Promise.defer();
@@ -51,7 +49,7 @@ var AsyncIterator = (function () {
     AsyncIterator.prototype.forEach = function (callback, doneCallback) {
         var _this = this;
         // Asynchronously call next() repeatedly until done.
-        if (this._runContext.callback) {
+        if (this._acceptsCallback) {
             var handler = function (err, result) {
                 if (err || result.done)
                     return done(err);
@@ -74,6 +72,8 @@ var AsyncIterator = (function () {
         // Synchronously return the appropriate value.
         var doneResolver = this._runContext.resolver ? Promise.defer() : null;
         return doneResolver ? doneResolver.promise : undefined;
+        if (!this._acceptsCallback)
+            doneCallback = null;
 
         // This function notifies waiters when the iteration finishes or fails.
         function done(err) {
@@ -84,7 +84,7 @@ var AsyncIterator = (function () {
         }
     };
 
-    /** Release resources associated with this instance (i.e., the fiber). */
+    /** Release resources associated with this object (i.e., the fiber). */
     AsyncIterator.prototype.destroy = function () {
         this._fiber = null;
     };

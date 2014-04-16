@@ -40,7 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="async\config.ts" />
-    <TypeScriptCompile Include="async\factory.ts" />
     <TypeScriptCompile Include="async\fiberManager.ts" />
     <TypeScriptCompile Include="async\runContext.ts" />
     <TypeScriptCompile Include="async\asyncIterator.ts" />
@@ -58,6 +57,9 @@
     <Folder Include="async\" />
     <Folder Include="await\" />
     <Folder Include="typings\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="async\makeAsyncFunc.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>

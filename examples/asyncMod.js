@@ -4,7 +4,7 @@ var async = require('..').async;
 var await = require('..').await;
 
 
-var ITER = async.mod({ isIterable: true, callbackArg: 'required', returnValue: 'promise' });
+var ITER = async.mod({ isIterable: true, acceptsCallback: true, returnValue: 'promise' });
 
 
 var someNums = ITER (function (yield_) {
