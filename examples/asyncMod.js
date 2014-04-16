@@ -4,8 +4,7 @@ var async = require('..').async;
 var await = require('..').await;
 
 
-var ITER = async.mod({ isIterable: true, callbackArg: 'none', returnValue: 'none' });
-ITER.config.callbackArg = 'required';
+var ITER = async.mod({ isIterable: true, callbackArg: 'required', returnValue: 'promise' });
 
 
 var someNums = ITER (function (yield_) {
@@ -23,7 +22,9 @@ var program = function() {
     var iterator = someNums();
 
     iterator.forEach(console.log, function (err) {
-        console.log('Finished!');
+        console.log('Finished (callback)!');
+    }).then(function () {
+        console.log('Finished (promise)!');
     });
 }
 

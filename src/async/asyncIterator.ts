@@ -1,6 +1,8 @@
 ﻿import _refs = require('_refs');
+import assert = require('assert');
 import Fiber = require('fibers');
 import Promise = require('bluebird');
+import _ = require('lodash');
 import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
@@ -22,11 +24,11 @@ class AsyncIterator {
     }
 
     /** Fetch the next result from the iterator. */
-    next() {
+    next(callback?: (err, result) => void) {
 
         // Configure the run context.
         if (this._runContext.callback) {
-            var callback = arguments[0];//TODO: assert is function
+            assert(_.isFunction(callback), 'AsyncIterator#next() expected a callback function');
             this._runContext.callback = callback;
         }
         if (this._runContext.resolver) {
@@ -46,26 +48,33 @@ class AsyncIterator {
     }
 
     /** Enumerate the entire iterator, calling callback with each result. */
-    forEach(callback: (value) => void) {
-        if (this._runContext.resolver) {
-            var doneResolver = Promise.defer<any>();
-            var handler: any = (result) => {
-                if (result.done) return doneResolver.resolve(null);
-                callback(result.value);
-                setImmediate(() => this.next().then(handler, err => doneResolver.reject(err)));
-            }
-            this.next().then(handler, err => doneResolver.reject(err));//TODO: bug here if both promise and callback specd 
-            return doneResolver.promise;//TODO: bug here if both promise and callback specd
-        }
+    forEach(callback: (value) => void, doneCallback?: (err?) => void) {
+
+        // Asynchronously call next() repeatedly until done.
         if (this._runContext.callback) {
-            var doneCallback = arguments[1];//TODO: assert is function
             var handler: any = (err, result) => {
-                if (err) return doneCallback(err);
-                if (result.done) return doneCallback();
+                if (err || result.done) return done(err);
                 callback(result.value);
                 setImmediate(this.next.bind(this), handler);
             }
-            (<Function> this.next)(handler);//TODO: bug here if both promise and callback specd
+            this.next(handler);
+        } else if (this._runContext.resolver) {
+            var handler: any = (result) => {
+                if (result.done) return done();
+                callback(result.value);
+                setImmediate(() => this.next().then(handler, done));
+            }
+            this.next().then(handler, done);
+        }
+
+        // Synchronously return the appropriate value.
+        var doneResolver = this._runContext.resolver ? Promise.defer<any>() : null;
+        return doneResolver ? doneResolver.promise : undefined;
+
+        // This function notifies waiters when the iteration finishes or fails.
+        function done(err?) {
+            if (doneResolver) doneResolver.resolve(err);
+            if (doneCallback) doneCallback(err);
         }
     }
 

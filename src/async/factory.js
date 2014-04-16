@@ -46,9 +46,9 @@ function createAsyncIterator(bodyFunc, config, semaphore) {
         // Create a yield() function tailored for this iterator.
         var yield_ = function (expr) {
             //TODO: await expr first? YES if options.returnValue === ReturnValue.Result
-            if (config.callbackArg === Config.REQUIRED)
+            if (runContext.callback)
                 runContext.callback(null, { value: expr, done: false });
-            if (config.returnValue === Config.PROMISE)
+            if (runContext.resolver)
                 runContext.resolver.resolve({ value: expr, done: false });
             Fiber.yield();
         };

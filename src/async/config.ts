@@ -21,4 +21,7 @@ class Config implements AsyncAwait.AsyncOptions {
     static NONE = 'none';
     static PROMISE = 'promise';
     static REQUIRED = 'required';
+
+//TODO: add validate() function
+    //eg must have at least one notification method
 }

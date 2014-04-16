@@ -1,4 +1,7 @@
-﻿var Promise = require('bluebird');
+﻿var assert = require('assert');
+
+var Promise = require('bluebird');
+var _ = require('lodash');
 var FiberMgr = require('./fiberManager');
 
 var Semaphore = require('./semaphore');
@@ -16,11 +19,11 @@ var AsyncIterator = (function () {
         this._fiber = FiberMgr.create();
     }
     /** Fetch the next result from the iterator. */
-    AsyncIterator.prototype.next = function () {
+    AsyncIterator.prototype.next = function (callback) {
         var _this = this;
         // Configure the run context.
         if (this._runContext.callback) {
-            var callback = arguments[0];
+            assert(_.isFunction(callback), 'AsyncIterator#next() expected a callback function');
             this._runContext.callback = callback;
         }
         if (this._runContext.resolver) {
@@ -45,36 +48,39 @@ var AsyncIterator = (function () {
     };
 
     /** Enumerate the entire iterator, calling callback with each result. */
-    AsyncIterator.prototype.forEach = function (callback) {
+    AsyncIterator.prototype.forEach = function (callback, doneCallback) {
         var _this = this;
-        if (this._runContext.resolver) {
-            var doneResolver = Promise.defer();
-            var handler = function (result) {
-                if (result.done)
-                    return doneResolver.resolve(null);
-                callback(result.value);
-                setImmediate(function () {
-                    return _this.next().then(handler, function (err) {
-                        return doneResolver.reject(err);
-                    });
-                });
-            };
-            this.next().then(handler, function (err) {
-                return doneResolver.reject(err);
-            }); //TODO: bug here if both promise and callback specd
-            return doneResolver.promise;
-        }
+        // Asynchronously call next() repeatedly until done.
         if (this._runContext.callback) {
-            var doneCallback = arguments[1];
             var handler = function (err, result) {
-                if (err)
-                    return doneCallback(err);
-                if (result.done)
-                    return doneCallback();
+                if (err || result.done)
+                    return done(err);
                 callback(result.value);
                 setImmediate(_this.next.bind(_this), handler);
             };
-            this.next(handler); //TODO: bug here if both promise and callback specd
+            this.next(handler);
+        } else if (this._runContext.resolver) {
+            var handler = function (result) {
+                if (result.done)
+                    return done();
+                callback(result.value);
+                setImmediate(function () {
+                    return _this.next().then(handler, done);
+                });
+            };
+            this.next().then(handler, done);
+        }
+
+        // Synchronously return the appropriate value.
+        var doneResolver = this._runContext.resolver ? Promise.defer() : null;
+        return doneResolver ? doneResolver.promise : undefined;
+
+        // This function notifies waiters when the iteration finishes or fails.
+        function done(err) {
+            if (doneResolver)
+                doneResolver.resolve(err);
+            if (doneCallback)
+                doneCallback(err);
         }
     };
 
