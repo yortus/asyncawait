@@ -7,6 +7,7 @@ export = await;
 
 
 //TODO: split into separate index/factory files
+//TODO: put vsdoc back here
 var await: AsyncAwait.Await;
 await = <any> createAwaitFunction({ inPlace: false });
 await.inPlace = createAwaitFunction({ inPlace: true });
@@ -24,6 +25,8 @@ function createAwaitFunction(options: AwaitOptions) {
     // Return an await function tailored to the given options.
     var traverseFunction = options.inPlace ? traverseInPlace : traverseClone;
     return function(expr_: any) {
+
+        //TODO: ensure running in a fiber...
 
         // Parse argument(s). If not a single argument, treat it like an array was passed in.
         var traverse = traverseFunction;

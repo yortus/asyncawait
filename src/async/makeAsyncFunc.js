@@ -30,8 +30,48 @@ function makeAsyncFunc(config) {
     };
 
     // Add the mod() function, and return the result.
-    result.mod = function (options) {
-        var newConfig = new Config(_.defaults({}, options, config));
+    result.mod = function (options_, acceptsCallback, maxConcurrency) {
+        if (_.isString(options_)) {
+            var newConfig = new Config(config);
+            switch (options_) {
+                case 'returns: promise, iterable: false':
+                    newConfig.returnValue = 'promise';
+                    newConfig.isIterable = false;
+                    break;
+                case 'returns: thunk, iterable: false':
+                    newConfig.returnValue = 'thunk';
+                    newConfig.isIterable = false;
+                    break;
+                case 'returns: value, iterable: false':
+                    newConfig.returnValue = 'value';
+                    newConfig.isIterable = false;
+                    break;
+                case 'returns: none, iterable: false':
+                    newConfig.returnValue = 'none';
+                    newConfig.isIterable = false;
+                    break;
+                case 'returns: promise, iterable: true':
+                    newConfig.returnValue = 'promise';
+                    newConfig.isIterable = true;
+                    break;
+                case 'returns: thunk, iterable: true':
+                    newConfig.returnValue = 'thunk';
+                    newConfig.isIterable = true;
+                    break;
+                case 'returns: value, iterable: true':
+                    newConfig.returnValue = 'value';
+                    newConfig.isIterable = true;
+                    break;
+                case 'returns: none, iterable: true':
+                    newConfig.returnValue = 'none';
+                    newConfig.isIterable = true;
+                    break;
+            }
+            newConfig.acceptsCallback = acceptsCallback;
+            newConfig.maxConcurrency = maxConcurrency;
+        } else {
+            var newConfig = new Config(_.defaults({}, options_, config));
+        }
         return makeAsyncFunc(newConfig);
     };
     return result;
