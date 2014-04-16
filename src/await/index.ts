@@ -5,13 +5,8 @@ import _ = require('lodash');
 export = await;
 
 
-/**
- * Suspends an async-wrapped function until the given awaitable expression produces
- * a result. If the given expression produces an error, then an exception is raised
- * in the async-wrapped function.
- * @param {any} expr - The awaitable expression whose results are to be awaited.
- * @returns {any} The final result of the given awaitable expression.
- */
+
+//TODO: split into separate index/factory files
 var await: AsyncAwait.Await;
 await = <any> createAwaitFunction({ inPlace: false });
 await.inPlace = createAwaitFunction({ inPlace: true });

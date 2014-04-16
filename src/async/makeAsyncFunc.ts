@@ -42,7 +42,7 @@ function makeAsyncFunc(config: Config): AsyncAwait.AsyncFunction {
 }
 
 
-/** Function for creating iterable async-wrapped functions. */
+/** Function for creating iterable suspendable functions. */
 function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
 
     // Return a function that returns an iterator.
@@ -86,7 +86,7 @@ function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaph
 }
 
 
-/** Function for creating non-iterable async-wrapped functions. */
+/** Function for creating non-iterable suspendable functions. */
 function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
 
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
