@@ -88,8 +88,8 @@ var largest = function (dir, options, internal, callback) {
                     function(callback) {
                         fs.close(fd_, callback);
                     },
-                    function(callback) {
-                        callback(null, result);
+                    function(cb1, cb2) {
+                        (cb1 || cb2)(null, result); // bug workaround: mock-fs passes an extra arg to fs.close's callback, but it shouldn't
                     }
                 ], callback);
             } else {

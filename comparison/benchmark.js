@@ -3,6 +3,7 @@ var async = require('async'); // NB: async is used here in the benchmarking code
                               // asyncawait won't run on the version of node being benchmarked.
 var _ = require('lodash');
 var memwatch = require('memwatch');
+var rewire = require('rewire');
 
 
 // Functions available for benchmarking.
@@ -31,15 +32,16 @@ var SELECTED_FUNCTION = functions.largest;
 
 var SELECTED_VARIANT = variants.asyncawait;
 
-var SAMPLES_PER_RUN = 200;   // How many times the function will be called per run.
+var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run.
 
 var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark.
 
 var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
 
 // Some additional switches
-var JUST_CHECK_THE_FUNCTION = true;            // If true, just call the function once and display its results.
+var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
+var USE_MOCK_FS = true;                         // If true, uses a mocked 'fs' module returning fixed in-memory results.
 var OUTPUT_GC_STATS = true;                     // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = false;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
 
@@ -61,6 +63,7 @@ if (OUTPUT_GC_STATS) {
         process.stdout.write(' [GC] ');
     });
 }
+
 
 // Run the benchmark (or just check the function).
 if (JUST_CHECK_THE_FUNCTION) {
@@ -189,7 +192,9 @@ function run(sample, callback) {
 
 
 function createSampleFunction() {
-    var selectedFunction = require('./' + SELECTED_FUNCTION + '/' + SELECTED_FUNCTION + '-' + SELECTED_VARIANT);
+    var moduleId = './' + SELECTED_FUNCTION + '/' + SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
+    var selectedFunction = rewire(moduleId);
+    if (USE_MOCK_FS) selectedFunction.__set__('fs', require('./mockfs'));
     switch (SELECTED_FUNCTION) {
         case functions.countFiles:
             var dirToCheck = path.join(__dirname, '.');

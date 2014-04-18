@@ -6,6 +6,8 @@
     "async": "*",
     "co": "*",
     "lodash": "*",
-    "memwatch": "*"
+    "memwatch": "*",
+    "rewire": "~2.0.0",
+    "mock-fs": "~2.2.0"
   }
 }
