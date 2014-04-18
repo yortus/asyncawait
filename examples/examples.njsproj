@@ -21,6 +21,7 @@
   <ItemGroup>
     <Content Include="package.json" />
     <Compile Include="asyncMod.js" />
+    <Compile Include="awaitTop.js" />
     <Compile Include="basic.js" />
     <Compile Include="countFiles.js" />
     <Compile Include="descendentFilePaths.js" />

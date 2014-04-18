@@ -14,7 +14,7 @@ function makeAsyncFunc(config) {
     config.validate();
 
     // Create an async function tailored to the given options.
-    var result = function (bodyFunc) {
+    var result = function async(bodyFunc) {
         // Create a semaphore for limiting top-level concurrency, if specified in options.
         var semaphore = config.maxConcurrency ? new Semaphore(config.maxConcurrency) : Semaphore.unlimited;
 
@@ -38,7 +38,7 @@ function makeAsyncFunc(config) {
 /** Function for creating iterable suspendable functions. */
 function makeAsyncIterator(bodyFunc, config, semaphore) {
     // Return a function that returns an iterator.
-    return function () {
+    return function iterable() {
         var _this = this;
         // Capture the initial arguments used to start the iterator, as an array.
         var startupArgs = new Array(arguments.length + 1);
@@ -85,7 +85,7 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
 /** Function for creating non-iterable suspendable functions. */
 function makeAsyncNonIterator(bodyFunc, config, semaphore) {
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
-    return function () {
+    return function nonIterable() {
         // Get all the arguments passed in, as an array.
         var argsAsArray = new Array(arguments.length);
         for (var i = 0; i < argsAsArray.length; ++i)
@@ -144,70 +144,70 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
 function makeFuncWithArity(fn, arity) {
     switch (arity) {
         case 0:
-            return function () {
+            return function f0() {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 1:
-            return function (a) {
+            return function f1(a) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 2:
-            return function (a, b) {
+            return function f2(a, b) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 3:
-            return function (a, b, c) {
+            return function f3(a, b, c) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 4:
-            return function (a, b, c, d) {
+            return function f4(a, b, c, d) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 5:
-            return function (a, b, c, d, e) {
+            return function f5(a, b, c, d, e) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 6:
-            return function (a, b, c, d, e, f) {
+            return function f6(a, b, c, d, e, f) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 7:
-            return function (a, b, c, d, e, f, g) {
+            return function f7(a, b, c, d, e, f, g) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 8:
-            return function (a, b, c, d, e, f, g, h) {
+            return function f8(a, b, c, d, e, f, g, h) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];
                 return fn.apply(this, r);
             };
         case 9:
-            return function (a, b, c, d, e, f, g, h, i) {
+            return function f9(a, b, c, d, e, f, g, h, i) {
                 var i, l = arguments.length, r = new Array(l);
                 for (i = 0; i < l; ++i)
                     r[i] = arguments[i];

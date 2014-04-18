@@ -146,14 +146,16 @@ declare module AsyncAwait {
     }
 
     //------------------------- Await -------------------------
-    export interface Await extends AwaitFunc {
-        inPlace: AwaitFunc;
+    export interface Await extends AwaitFunction {
+        in: AwaitFunction;
+        top(n: number): AwaitFunction;
     }
 
-    export interface AwaitFunc {
-        <T>(expr: AsyncAwait.Thenable<T>): T;
-        <T>(expr: AsyncAwait.Thenable<T>[]): T[];
-        <T>(expr: Thunk<T>): any;
+    export interface AwaitFunction {
+        <T>(expr: Thenable<T>): T;
+        <T>(expr: Thenable<T>[]): T[];
+        <T>(expr: Thunk<T>): T;
+        <T>(expr: Thunk<T>[]): T[];
         (expr: Object): Object;
     }
 

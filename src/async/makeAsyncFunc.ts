@@ -18,7 +18,7 @@ function makeAsyncFunc(config: Config): AsyncAwait.AsyncFunction {
     config.validate();
     
     // Create an async function tailored to the given options.
-    var result: AsyncAwait.AsyncFunction = <any> function(bodyFunc: Function) {
+    var result: AsyncAwait.AsyncFunction = <any> function async(bodyFunc: Function) {
 
         // Create a semaphore for limiting top-level concurrency, if specified in options.
         var semaphore = config.maxConcurrency ? new Semaphore(config.maxConcurrency) : Semaphore.unlimited;
@@ -44,7 +44,7 @@ function makeAsyncFunc(config: Config): AsyncAwait.AsyncFunction {
 function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
 
     // Return a function that returns an iterator.
-    return function (): any {
+    return function iterable(): any {
 
         // Capture the initial arguments used to start the iterator, as an array.
         var startupArgs = new Array(arguments.length + 1); // Reserve 0th arg for the yield function. 
@@ -93,7 +93,7 @@ function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaph
 function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Semaphore) {
 
     // Return a function that executes fn in a fiber and returns a promise of fn's result.
-    return function (): any {
+    return function nonIterable(): any {
 
         // Get all the arguments passed in, as an array.
         var argsAsArray = new Array(arguments.length);
@@ -139,16 +139,16 @@ function makeFuncWithArity(fn: Function, arity: number) {
 
     // Need to handle each arity individually, but the body never changes.
     switch (arity) {
-        case 0: return function () {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 1: return function (a) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 2: return function (a,b) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 3: return function (a,b,c) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 4: return function (a,b,c,d) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 5: return function (a,b,c,d,e) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 6: return function (a,b,c,d,e,f) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 7: return function (a,b,c,d,e,f,g) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 8: return function (a,b,c,d,e,f,g,h) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
-        case 9: return function (a,b,c,d,e,f,g,h,i) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 0: return function f0() {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 1: return function f1(a) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 2: return function f2(a,b) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 3: return function f3(a,b,c) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 4: return function f4(a,b,c,d) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 5: return function f5(a,b,c,d,e) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 6: return function f6(a,b,c,d,e,f) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 7: return function f7(a,b,c,d,e,f,g) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 8: return function f8(a,b,c,d,e,f,g,h) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
+        case 9: return function f9(a,b,c,d,e,f,g,h,i) {var i,l=arguments.length,r=new Array(l);for(i=0;i<l;++i)r[i]=arguments[i];return fn.apply(this,r)}
         default: return fn; // Bail out if arity is crazy high.
     }
 }
