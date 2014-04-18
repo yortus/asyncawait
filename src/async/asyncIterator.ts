@@ -57,7 +57,7 @@ class AsyncIterator {
         switch (this._returnValue) {
             case Config.PROMISE:    return resolver.promise;
             case Config.THUNK:      return thunk;
-            case Config.VALUE:      return await (resolver.promise);
+            case Config.RESULT:     return await (resolver.promise);
             case Config.NONE:       return;
         }
     }
@@ -67,7 +67,7 @@ class AsyncIterator {
 
         // Create a function that calls next() in an asynchronous loop until the iteration is complete.
         var run, runCtx = this._runContext;
-        if (this._returnValue === Config.VALUE)         run = () => stepAwaited(() => this.next());
+        if (this._returnValue === Config.RESULT)        run = () => stepAwaited(() => this.next());
         else if (this._returnValue === Config.THUNK)    run = () => this.next()(stepCallback);
         else if (this._acceptsCallback)                 run = () => this.next(stepCallback);
         else                                            run = () => this.next().then(stepResolved, endOfIteration);
@@ -92,7 +92,7 @@ class AsyncIterator {
         switch (this._returnValue) {
             case Config.PROMISE:    return doneResolver.promise;
             case Config.THUNK:      return thunk;
-            case Config.VALUE:      return undefined;
+            case Config.RESULT:     return undefined;
             case Config.NONE:       return undefined;
         }
 

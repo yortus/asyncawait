@@ -127,7 +127,7 @@ function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Sem
         switch (config.returnValue) {
             case Config.PROMISE:    return resolver.promise;
             case Config.THUNK:      return thunk;
-            case Config.VALUE:      return await (resolver.promise);
+            case Config.RESULT:     return await (resolver.promise);
             case Config.NONE:       return;
         }
     };
@@ -164,17 +164,17 @@ function makeModFunc(config: Config) {
             switch(options) {
                 case 'returns: promise, callback: false, iterable: false': rt = 'promise'; cb = false; it = false; break;
                 case 'returns: thunk, callback: false, iterable: false':   rt = 'thunk'; cb = false; it = false; break;
-                case 'returns: value, callback: false, iterable: false':   rt = 'value'; cb = false; it = false; break;
+                case 'returns: result, callback: false, iterable: false':  rt = 'result'; cb = false; it = false; break;
                 case 'returns: promise, callback: true, iterable: false':  rt = 'promise'; cb = true; it = false; break;
                 case 'returns: thunk, callback: true, iterable: false':    rt = 'thunk'; cb = true; it = false; break;
-                case 'returns: value, callback: true, iterable: false':    rt = 'value'; cb = true; it = false; break;
+                case 'returns: result, callback: true, iterable: false':   rt = 'result'; cb = true; it = false; break;
                 case 'returns: none, callback: true, iterable: false':     rt = 'none'; cb = true; it = false; break;
                 case 'returns: promise, callback: false, iterable: true':  rt = 'promise'; cb = false; it = true; break;
                 case 'returns: thunk, callback: false, iterable: true':    rt = 'thunk'; cb = false; it = true; break;
-                case 'returns: value, callback: false, iterable: true':    rt = 'value'; cb = false; it = true; break;
+                case 'returns: result, callback: false, iterable: true':   rt = 'result'; cb = false; it = true; break;
                 case 'returns: promise, callback: true, iterable: true':   rt = 'promise'; cb = true; it = true; break;
                 case 'returns: thunk, callback: true, iterable: true':     rt = 'thunk'; cb = true; it = true; break;
-                case 'returns: value, callback: true, iterable: true':     rt = 'value'; cb = true; it = true; break;
+                case 'returns: result, callback: true, iterable: true':    rt = 'result'; cb = true; it = true; break;
                 case 'returns: none, callback: true, iterable: true':      rt = 'none'; cb = true; it = true; break;
             }
             options = { returnValue: rt, acceptsCallback: cb, isIterable: it, maxConcurrency: maxConcurrency };

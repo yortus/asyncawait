@@ -132,7 +132,7 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
                 return resolver.promise;
             case Config.THUNK:
                 return thunk;
-            case Config.VALUE:
+            case Config.RESULT:
                 return await(resolver.promise);
             case Config.NONE:
                 return;
@@ -235,8 +235,8 @@ function makeModFunc(config) {
                     cb = false;
                     it = false;
                     break;
-                case 'returns: value, callback: false, iterable: false':
-                    rt = 'value';
+                case 'returns: result, callback: false, iterable: false':
+                    rt = 'result';
                     cb = false;
                     it = false;
                     break;
@@ -250,8 +250,8 @@ function makeModFunc(config) {
                     cb = true;
                     it = false;
                     break;
-                case 'returns: value, callback: true, iterable: false':
-                    rt = 'value';
+                case 'returns: result, callback: true, iterable: false':
+                    rt = 'result';
                     cb = true;
                     it = false;
                     break;
@@ -270,8 +270,8 @@ function makeModFunc(config) {
                     cb = false;
                     it = true;
                     break;
-                case 'returns: value, callback: false, iterable: true':
-                    rt = 'value';
+                case 'returns: result, callback: false, iterable: true':
+                    rt = 'result';
                     cb = false;
                     it = true;
                     break;
@@ -285,8 +285,8 @@ function makeModFunc(config) {
                     cb = true;
                     it = true;
                     break;
-                case 'returns: value, callback: true, iterable: true':
-                    rt = 'value';
+                case 'returns: result, callback: true, iterable: true':
+                    rt = 'result';
                     cb = true;
                     it = true;
                     break;

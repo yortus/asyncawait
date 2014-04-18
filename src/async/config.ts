@@ -31,12 +31,12 @@ class Config implements AsyncAwait.AsyncOptions {
     // Constants for use with returnValue and callbackArg
     static PROMISE = 'promise';
     static THUNK = 'thunk';
-    static VALUE = 'value';
+    static RESULT = 'result';
     static NONE = 'none';
 
     /** Checks all configuration values and throw an error if anything is invalid. */
     validate() {
-        var knownRetVal = [Config.PROMISE, Config.THUNK, Config.VALUE, Config.NONE].indexOf(this.returnValue) !== -1;
+        var knownRetVal = [Config.PROMISE, Config.THUNK, Config.RESULT, Config.NONE].indexOf(this.returnValue) !== -1;
         assert(knownRetVal, 'Unrecognised return value: ' + this.returnValue);        
 
         var hasNotifier = this.returnValue !== Config.NONE || this.acceptsCallback;

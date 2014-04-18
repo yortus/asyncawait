@@ -21,7 +21,7 @@ var Config = (function () {
     }
     /** Checks all configuration values and throw an error if anything is invalid. */
     Config.prototype.validate = function () {
-        var knownRetVal = [Config.PROMISE, Config.THUNK, Config.VALUE, Config.NONE].indexOf(this.returnValue) !== -1;
+        var knownRetVal = [Config.PROMISE, Config.THUNK, Config.RESULT, Config.NONE].indexOf(this.returnValue) !== -1;
         assert(knownRetVal, 'Unrecognised return value: ' + this.returnValue);
 
         var hasNotifier = this.returnValue !== Config.NONE || this.acceptsCallback;
@@ -29,7 +29,7 @@ var Config = (function () {
     };
     Config.PROMISE = 'promise';
     Config.THUNK = 'thunk';
-    Config.VALUE = 'value';
+    Config.RESULT = 'result';
     Config.NONE = 'none';
     return Config;
 })();

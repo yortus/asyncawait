@@ -8,7 +8,7 @@ declare module AsyncAwait {
     export interface Async extends AsyncReturnsPromise {
         cps: AsyncAcceptsCallbackReturnsNothing;
         thunk: AsyncReturnsThunk;
-        value: AsyncReturnsValue;
+        result: AsyncReturnsResult;
         iterable: AsyncIterableReturnsPromise;
     }
 
@@ -17,17 +17,17 @@ declare module AsyncAwait {
         // These overloads provide enhanced type information to TypeScript users. The strings must match exactly.
         mod(options: 'returns: promise, callback: false, iterable: false'   , maxConcurrency?: number): AsyncReturnsPromise;
         mod(options: 'returns: thunk, callback: false, iterable: false'     , maxConcurrency?: number): AsyncReturnsThunk;
-        mod(options: 'returns: value, callback: false, iterable: false'     , maxConcurrency?: number): AsyncReturnsValue;
+        mod(options: 'returns: result, callback: false, iterable: false'    , maxConcurrency?: number): AsyncReturnsResult;
         mod(options: 'returns: promise, callback: true, iterable: false'    , maxConcurrency?: number): AsyncAcceptsCallbackReturnsPromise;
         mod(options: 'returns: thunk, callback: true, iterable: false'      , maxConcurrency?: number): AsyncAcceptsCallbackReturnsThunk;
-        mod(options: 'returns: value, callback: true, iterable: false'      , maxConcurrency?: number): AsyncAcceptsCallbackReturnsValue;
+        mod(options: 'returns: result, callback: true, iterable: false'     , maxConcurrency?: number): AsyncAcceptsCallbackReturnsResult;
         mod(options: 'returns: none, callback: true, iterable: false'       , maxConcurrency?: number): AsyncAcceptsCallbackReturnsNothing;
         mod(options: 'returns: promise, callback: false, iterable: true'    , maxConcurrency?: number): AsyncIterableReturnsPromise;
         mod(options: 'returns: thunk, callback: false, iterable: true'      , maxConcurrency?: number): AsyncIterableReturnsThunk;
-        mod(options: 'returns: value, callback: false, iterable: true'      , maxConcurrency?: number): AsyncIterableReturnsValue;
+        mod(options: 'returns: result, callback: false, iterable: true'     , maxConcurrency?: number): AsyncIterableReturnsResult;
         mod(options: 'returns: promise, callback: true, iterable: true'     , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsPromise;
         mod(options: 'returns: thunk, callback: true, iterable: true'       , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsThunk;
-        mod(options: 'returns: value, callback: true, iterable: true'       , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsValue;
+        mod(options: 'returns: result, callback: true, iterable: true'      , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsResult;
         mod(options: 'returns: none, callback: true, iterable: true'        , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsNothing;
         mod(options: string, maxConcurrency?: number): AsyncFunction;
         mod(options: AsyncOptions): AsyncFunction;
@@ -56,7 +56,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
 
-    export interface AsyncReturnsValue extends AsyncFunction {
+    export interface AsyncReturnsResult extends AsyncFunction {
         <TResult>(fn: () => TResult): () => TResult;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => TResult;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => TResult;
@@ -80,7 +80,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => Thunk<TResult>;
     }
 
-    export interface AsyncAcceptsCallbackReturnsValue extends AsyncFunction {
+    export interface AsyncAcceptsCallbackReturnsResult extends AsyncFunction {
         <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => TResult;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => TResult;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => TResult;
@@ -110,7 +110,7 @@ declare module AsyncAwait {
         };
     }
 
-    export interface AsyncIterableReturnsValue extends AsyncFunction {
+    export interface AsyncIterableReturnsResult extends AsyncFunction {
         (fn: Function): () => {
             next(): { done: boolean; value?: any; };
             forEach(callback: (value) => void): void;
@@ -131,7 +131,7 @@ declare module AsyncAwait {
         };
     }
 
-    export interface AsyncIterableAcceptsCallbackReturnsValue extends AsyncFunction {
+    export interface AsyncIterableAcceptsCallbackReturnsResult extends AsyncFunction {
         (fn: Function): () => {
             next(callback?: Callback<any>): { done: boolean; value?: any; };
             forEach(callback: (value) => void, doneCallback?: Callback<void>): void;

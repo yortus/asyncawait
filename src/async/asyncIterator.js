@@ -66,7 +66,7 @@ var AsyncIterator = (function () {
                 return resolver.promise;
             case Config.THUNK:
                 return thunk;
-            case Config.VALUE:
+            case Config.RESULT:
                 return await(resolver.promise);
             case Config.NONE:
                 return;
@@ -78,7 +78,7 @@ var AsyncIterator = (function () {
         var _this = this;
         // Create a function that calls next() in an asynchronous loop until the iteration is complete.
         var run, runCtx = this._runContext;
-        if (this._returnValue === Config.VALUE)
+        if (this._returnValue === Config.RESULT)
             run = function () {
                 return stepAwaited(function () {
                     return _this.next();
@@ -124,7 +124,7 @@ var AsyncIterator = (function () {
                 return doneResolver.promise;
             case Config.THUNK:
                 return thunk;
-            case Config.VALUE:
+            case Config.RESULT:
                 return undefined;
             case Config.NONE:
                 return undefined;
