@@ -3,7 +3,7 @@ var path = require('path');
 var _ = require('lodash');
 
 
-// Return the number of files in the given directory
+/** Returns the number of files in the given directory. */
 var countFiles = function (dir, callback) {
 
     // Get all directory entries.

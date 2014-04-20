@@ -5,7 +5,7 @@ var _ = require('lodash');
 var co = require('co');
 
 
-// Return the number of files in the given directory
+/** Returns the number of files in the given directory. */
 var countFiles = co(function* (dir) {
     var files = yield fs.readdirSync(dir);
     var paths = _.map(files, function (file) { return path.join(dir, file); });

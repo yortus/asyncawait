@@ -6,7 +6,7 @@ var async = require('../..').async;
 var await = require('../..').await;
 
 
-// Return the number of files in the given directory
+/** Returns the number of files in the given directory. */
 var countFiles = async.cps (function (dir) {
     var files = await (fs.readdirSync(dir));
     var paths = _.map(files, function (file) { return path.join(dir, file); });

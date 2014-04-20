@@ -4,7 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 
 
-// Return the number of files in the given directory
+/** Returns the number of files in the given directory. */
 var countFiles = function (dir, callback) {
     async.waterfall([
         function (callback) {
