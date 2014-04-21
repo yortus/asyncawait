@@ -9,7 +9,7 @@
   * [Async/Await 101](#asyncawait-101)
   * [Basic Example](#basic-example)
   * [More Examples](#more-examples)
-7. [Using `async` with Suspendable Functions](#7-using-async-with-suspendable-functions)
+7. [`async` in Depth: Suspendable Functions](#7-async-in-depth-suspendable-functions)
   * [Accepting Arguments and Returning Values](#accepting-arguments-and-returning-values)
   * [Handling Errors and Exceptions](#handling-errors-and-exceptions)
   * [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)
@@ -18,7 +18,7 @@
   * [Eager versus Lazy Execution](#eager-versus-lazy-execution)
   * [Nesting, Composition and Recursion](#nesting-composition-and-recursion)
   * [The `async.mod` Function](#the-asyncmod-function)
-8. [Using `await` with Awaitable Expressions](#8-using-await-with-awaitable-expressions)
+8. [`await` in Depth: Awaitable Expressions](#8-await-in-depth-awaitable-expressions)
   * [What Works with `await`?](#what-works-with-await)
   * [Obtaining Awaitable Versions of Node-Style APIs](#obtaining-awaitable-versions-of-node-style-apis)
   * [Maximising Concurrency](#maximising-concurrency)
@@ -170,7 +170,7 @@ The [examples](./examples) folder contains more examples. The [comparison](./com
 
 
 
-# 7. Using `async` with Suspendable Functions
+# 7. `async` in Depth: Suspendable Functions
 The subsections below refer to the following code:
 ```javascript
 var suspendable = async (function defn(a, b) {
@@ -232,7 +232,7 @@ Omitted properties will inherit their value from the `async` variant being modde
 
 
 
-# 8. Using `await` with Awaitable Expressions
+# 8. `await` in Depth: Awaitable Expressions
 The subsections below refer to the following code:
 ```javascript
 var suspendable = async (function () {
