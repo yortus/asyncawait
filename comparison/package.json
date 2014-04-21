@@ -5,9 +5,8 @@
   "dependencies": {
     "async": "*",
     "co": "*",
-    "lodash": "*",
     "memwatch": "*",
-    "rewire": "~2.0.0",
-    "mock-fs": "~2.2.0"
+    "rewire": "*",
+    "mock-fs": "*"
   }
 }
