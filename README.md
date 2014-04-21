@@ -209,7 +209,7 @@ When a suspendable function is called, its `this` context is passed through to t
 ### Creating and Using Asynchronous Iterators
 The `async` function can be used to create asynchronous iterators. These are analogous to [ES6 iterators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/The_Iterator_protocol), except that the `next()` function is a suspendable function obeying all the rules described in this section. `async.iterable` creates an iterable which returns an asynchronous iterator whose `next()` function returns a promise of a `{value, done}` result.
 
-Asynchronous iterators have a `forEach()` method for iterating over their values, and a `stream()` method for returning all their values as a stream. For more information, take a look at the [descendentFilePaths.js](./examples/descendentFilePaths.js) and [iteration.js](./examples/iteration.js) examples.
+Asynchronous iterators have a `forEach()` method for iterating over their values. For more information, take a look at the [descendentFilePaths.js](./examples/descendentFilePaths.js) and [iteration.js](./examples/iteration.js) examples.
 
 ### Eager versus Lazy Execution
 Calling a suspendable function such as `suspendable` starts its asynchronous execution immediately, as per the normal semantics of promises. In contrast, thunk-returning suspendable functions do not begin executing until a callback is passed to the thunk. Suspendable functions such as `suspendable3` thus have lazy semantics.
