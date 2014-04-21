@@ -19,7 +19,7 @@
  - added bluebird to comparisons
  - manage fiber pool size
 
-#### Bugfixes
+#### Bug Fixes
 
  - TODO
  - memory leak (see ...)
