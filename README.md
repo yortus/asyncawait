@@ -1,52 +1,34 @@
 # Contents
 1. [Introduction](#1-introduction)
-2. [How Does it Work?](#2-how-does-it-work)
-3. [Compared to...](#3-compared-to)
-4. [Performance](#4-performance)
-5. [Quick Start](#5-quick-start)
+2. [Feature/Gotcha Summary](#2-featuregotcha-summary)
+3. [How Does it Work?](#3-how-does-it-work)
+4. [Compared to...](#4-compared-to)
+5. [Performance](#5-performance)
+6. [Quick Start](#6-quick-start)
   * [Installation](#installation)
-  * [Async/Await 101](#async-await-101)
+  * [Async/Await 101](#asyncawait-101)
   * [Basic Example](#basic-example)
   * [More Examples](#more-examples)
-6. [Using `async` with Suspendable Functions](#6-using-async-with-suspendable-functions)
+7. [Using `async` with Suspendable Functions](#7-using-async-with-suspendable-functions)
   * [Accepting Arguments and Returning Values](#accepting-arguments-and-returning-values)
   * [Handling Errors and Exceptions](#handling-errors-and-exceptions)
   * [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)
   * [Preservation of `this` Context](#preservation-of-this-context)
   * [Creating and Using Asynchronous Iterators](#creating-and-using-asynchronous-iterators)
-  * [Eager vs Lazy Execution](#eager-vs-lazy-execution)
+  * [Eager versus Lazy Execution](#eager-versus-lazy-execution)
   * [Nesting, Composition and Recursion](#nesting-composition-and-recursion)
   * [The `async.mod` Function](#the-asyncmod-function)
-  
-
----
-
-TODO
-
-
-7. [Using `await` with Awaitable Expressions](#)
-  * What Works with `await`?
-  * Maximising Concurrency
-  * Obtaining Promises and Thunks
-  
-  
-8. Recipes
-  * Handling HTTP Routes with Express
-  * Asynchronous Testing with Mocha
-  
-
-
-
-
-9. [API reference](#)
-10. [Feature/gotcha summary](#)
-
-
-11. Acknowledgements
-TODO: node-fibers, bluebird, TypeScript
-
-
-12. [License](#)
+8. [Using `await` with Awaitable Expressions](#8-using-await-with-awaitable-expressions)
+  * [What Works with `await`?](#what-works-with-await)
+  * [Obtaining Awaitable Versions of Node-Style APIs](#obtaining-awaitable-versions-of-node-style-apis)
+  * [Maximising Concurrency](#maximising-concurrency)
+  * [Variations of `await`](#variations-of-await)
+9. [Recipes](#9-recipes)
+  * [Handling HTTP Routes with Express](#handling-http-routes-with-express)
+  * [Asynchronous Testing with Mocha](#asynchronous-testing-with-mocha)
+10. [API reference](#10-api-reference)
+11. [Acknowledgements](#11-acknowledgements)
+12. [License](#12-license)
 
 
 
@@ -62,7 +44,7 @@ var foo = async (function() {
 });
 ```
 
-which, with one [proviso](#obtaining-promises-and-thunks), is semantically equivalent to:
+which, with one [proviso](#obtaining-awaitable-versions-of-node-style-apis), is semantically equivalent to:
 
 ```javascript
 function foo2(callback) {
@@ -85,10 +67,27 @@ function foo2(callback) {
 
 The function `foo` does not block Node's event loop, despite its synchronous appearance. Execution within `foo` is suspended during each of its three asynchronous operations, but Node's event loop can execute other code whilst those operations are pending. You can write code like the above example in a HTTP request handler, and achieve high throughput with many simultaneous connections, just like with callback-based asynchronous handlers.
 
-In short, you can write highly concurrent code with the visual clarity and conciseness of synchronous code. Rather than using callbacks and error-backs, you can use return values and `try/catch` blocks. Rather than `require`ing specialised asynchronous control-flow constructs like [`each`](https://github.com/caolan/async#eacharr-iterator-callback) and [`whilst`](https://github.com/caolan/async#whilsttest-fn-callback), you can use plain JavaScript constructs like `for` and `while` loops.
+In short, `asyncawait` marries the high concurrency of asynchronous code with the visual clarity and conciseness of synchronous code. Rather than passing callbacks and error-backs, you can `return` values and use `try/catch` blocks. Rather than `require`ing specialised asynchronous control-flow constructs like [`each`](https://github.com/caolan/async#eacharr-iterator-callback) and [`whilst`](https://github.com/caolan/async#whilsttest-fn-callback), you can use plain JavaScript constructs like `for` and `while` loops.
 
 
-# 2. How does it work?
+
+# 2. Feature/Gotcha Summary
+* Eliminates callback spaghetti code.
+* Enables the use of ordinary JavaScript control flow constructs for asynchronous operations.
+* Syntax is plain JavaScript, and behaves much like C#'s async/await.
+* Seamless interoperation with most other libraries, including [Express](expressjs.com), [Mocha](http://visionmedia.github.io/mocha/), [Underscore](http://documentcloud.github.io/underscore/), [Bluebird](https://github.com/petkaantonov/bluebird), etc.
+* [Fast](./comparison) and lightweight.
+* Completely [non-blocking](http://stackoverflow.com/a/14797359).
+* Does not require [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
+* No code preprocessing or special build steps, simply write and execute your code normally.
+* Built with [node-fibers](https://github.com/laverdet/node-fibers).
+* [TypeScript](http://www.typescriptlang.org/) and X-to-JavaScript friendly (since ES6 generators are not required).
+* [asyncawait.d.ts](./asyncawait.d.ts) included.
+* Works only in Node.js, not in browsers (since it uses node-fibers).
+
+
+
+# 3. How does it work?
 Like [`co`](https://github.com/visionmedia/co), `asyncawait` can suspend a running function without blocking Node's event loop. Both libraries are built on [coroutines](http://en.wikipedia.org/wiki/Coroutine), but use different technologies. `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*), which work in Node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and toolchains.
 
 `asyncawait` uses [`node-fibers`](https://github.com/laverdet/node-fibers). It works with plain ES3/ES5 JavaScript, which is great if your tools do not yet support ES6 generators. This may be an important consideration when using [compile-to-JavaScript languages](https://github.com/jashkenas/coffee-script/wiki/List-of-languages-that-compile-to-JS), such as [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/).
@@ -97,7 +96,7 @@ A similar outcome may be achieved by transforming JavaScript source code in a pr
 
 
 
-# 3. Compared to...
+# 4. Compared to...
 `asyncawait` represents one of several viable approaches to writing complex asynchronous code in Node.js, with its own particular trade-offs. Notable alternatives include [`async`](https://github.com/caolan/async), [`bluebird`](https://github.com/petkaantonov/bluebird/) and [`co`](https://github.com/visionmedia/co), each with their own trade-offs. The following table summarises some of the alternatives and their pros and cons. For more information about how the alternatives compare, take a look in the [comparison](./comparison) folder.
 
 `asyncawait` may be a good choice if (a) you need highly concurrent throughput, (b) your asynchronous code must be clear and concise, (c) your code targets Node.js, and (d) you are limited to ES3/ES5 syntax (e.g. you write in TypeScript or CoffeeScript).
@@ -121,12 +120,12 @@ A similar outcome may be achieved by transforming JavaScript source code in a pr
 
 
 
-# 4. Performance
+# 5. Performance
 How well does `asyncawait` perform? The answer depends on what kinds of performance you care about. As a rough guide, compared with bare callbacks, expect your code to be 70% shorter with 66% less indents and run at 75.4% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison](./comparison) folder, and do run your own [benchmarks](./comparison/benchmark.js).
 
 
 
-# 5. Quick Start
+# 6. Quick Start
 
 ### Installation
 `npm install asyncawait`
@@ -171,7 +170,7 @@ The [examples](./examples) folder contains more examples. The [comparison](./com
 
 
 
-# 6. Using `async` with Suspendable Functions
+# 7. Using `async` with Suspendable Functions
 The subsections below refer to the following code:
 ```javascript
 var suspendable = async (function defn(a, b) {
@@ -202,7 +201,7 @@ A suspendable function executes asynchronously, so it cannot generally `return` 
 - returning a lazily-executed thunk: `suspendable3(1, 2)(function (err, val) {...});`
 - returning the value directly: `try { var val = suspendable4(1, 2); } catch (err) {...}`
 
-Note that `suspendable4` can only be called from inside another suspendable function. Also, it is possible to create suspendable functions that comminucate results in multiple ways, such as both accepting a callback and returning a promise. You can use the [`async.mod`](#the-asyncmod-function) ***TODO check link *** function to achieve this.
+Note that `suspendable4` can only be called from inside another suspendable function. Also, it is possible to create suspendable functions that comminucate results in multiple ways, such as both accepting a callback and returning a promise. You can use the [`async.mod`](#the-asyncmod-function) function to achieve this.
 
 ### Preservation of `this` Context
 When a suspendable function is called, its `this` context is passed through to the call to its definition. For example, when `suspendable.call(myObj, 1, 2)` is executed, `defn` will be called with arguments `1` and `2` and a `this` value of `myObj`.
@@ -210,9 +209,9 @@ When a suspendable function is called, its `this` context is passed through to t
 ### Creating and Using Asynchronous Iterators
 The `async` function can be used to create asynchronous iterators. These are analogous to [ES6 iterators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/The_Iterator_protocol), except that the `next()` function is a suspendable function obeying all the rules described in this section. `async.iterable` creates an iterable which returns an asynchronous iterator whose `next()` function returns a promise of a `{value, done}` result.
 
-Asynchronous iterators have a `forEach()` method for iterating over their values, and a `stream()` method for returning all their values as a stream. For more information, take a look at the [descendentFilePaths.js](./examples/descendentFilePaths.js) and [iteration.js](./examples/iteration.js) examples. ***TODO check link ***
+Asynchronous iterators have a `forEach()` method for iterating over their values, and a `stream()` method for returning all their values as a stream. For more information, take a look at the [descendentFilePaths.js](./examples/descendentFilePaths.js) and [iteration.js](./examples/iteration.js) examples.
 
-### Eager vs Lazy Execution
+### Eager versus Lazy Execution
 Calling a suspendable function such as `suspendable` starts its asynchronous execution immediately, as per the normal semantics of promises. In contrast, thunk-returning suspendable functions do not begin executing until a callback is passed to the thunk. Suspendable functions such as `suspendable3` thus have lazy semantics.
 
 ### Nesting, Composition and Recursion
@@ -233,85 +232,104 @@ Omitted properties will inherit their value from the `async` variant being modde
 
 
 
-# 7. Using `await` with Awaitable Expressions
+# 8. Using `await` with Awaitable Expressions
+The subsections below refer to the following code:
+```javascript
+var suspendable = async (function () {
+	var promise1 = new Promise(.../* eventually produces the value 'p1' */);
+	var promise2 = new Promise(.../* eventually produces the value 'p2' */);
+    var thunk1 = function(callback) {.../* eventually produces the value 't1' */});
+    var thunk2 = function(callback) {.../* eventually produces the value 't2' */});
+    var thunk3 = ..., thunk4 = ...;
+	var r1 = await (promise1);
+	var r2 = await (thunk1);
+	var r3 = await (3.14);
+	var r4 = await ([promise2, 2, ['222', thunk2]]);
+	var r5 = await ({ t3: thunk3, t4: thunk4 });
+    return [a1, a2, a3, a4, a5];
+});
+```
 
 ### What Works with `await`?
+`await` takes a single argument, which must be an awaitable expression. An awaitable expression may be any of the following:
+
+1. A [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (or any [`then`able object](http://wiki.commonjs.org/wiki/Promises/A)), as in `var r1 = await (promise1)`. The function `suspendable` will be suspended until `promise1` is settled. The promise's resolution value (`'p1'`) will become the `await` call's return value, and assigned to `r1`. If `promise1` is rejected, the rejection value will be thrown as an exception inside `suspendable`.
+2. A [thunk](https://github.com/visionmedia/co#thunks-vs-promises), as in `var r2 = await (thunk1)`. The thunk `thunk1` will be called immediately, and `suspendable` will be suspended until control is returned to the thunk's callback. The thunk's result (`'t1'`) will become the `await` call's return value, and assigned to `r2`. If `thunk1` returns an error, the error value will be thrown as an exception inside `suspendable`.
+3. A primitive value, such as a number, string or null, as in `var r3 = await (3.14)`. The `await` call will return immediately with the primitive value, in this case assigning the value `3.14` to `r3`.
+4. An array or [plain object](http://lodash.com/docs#isPlainObject), whose elements are all awaitables, as in `var r4 = await ([promise2, 2, ['222', thunk2]])`. Note this definition is recursive and allows nested object graphs. The function `suspendable` will be suspended until all contained awaitables (`promise2`, `2`, `'222'` and `thunk2`) have produced their value, at which time the `await` call will return a clone of the object graph with all awaitable expressions replaced by their results (`['p2', 2 ['222', 't2']]`). If any of the contained awaitables produces an error, the error value will be thrown as an exception in `suspendable`.
+
+Note that calling `await` with more than one argument (or with zero arguments) is equivalent to calling `await` with a single array containing all the arguments.
+
+### Obtaining Awaitable Versions of Node-Style APIs
+In conventional Node.js code, asynchronous functions take a callback as their last parameter and don't return any value. Therefore, calls to these functions are **not awaitable**. However, awaitable versions may be obtained with relative ease using something like [`bluebird's`](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [`thunkify`](https://github.com/visionmedia/node-thunkify).
+
 ### Maximising Concurrency
-### Obtaining Promises and Thunks
-  
-  
-# 8. Recipes
+A series of `await` calls are executed serially. For example, execution of `var r1 = await (promise1)` is completed before execution of `var r2 = await (thunk1)` begins.
+
+In contrast, a single `await` call on an array or plain object processes all of the contained awaitables concurrently. For example, when the statement `var r5 = await ({ t3: thunk3, t4: thunk4 })` both `thunk3` and `thunk4` are called immediately, and their asynchronous tasks are executed concurrently. 
+
+Libraries such as [lodash](http://lodash.com) and [underscore](http://underscorejs.org/) interoperate smoothly with `asyncawait`, for both producing arrays of concurrently executing tasks, and for consuming arrays of results.
+
+### Variations of `await`
+There are several variations of the `await` function, with alternative behaviour when the awaitable expression is an array or plain object. Take a look at [awaitTop.js](./examples/awaitTop.js) for a usage example.
+
+The `await.top(n)` variant accepts a number `n`, and resumes the suspendable function when the first `n` awaitable expressions contained in the awaitable array or plain object produce their value. The return value of the `await.top(n)` call is an array containing the fastest `n` results in the order they were resolved.
+
+The `await.in` variant is like `await`, but does not clone the awaitable expression it recieves as an argument. The results of the contained awaitables are substituted in place into the original awaitable array or plain object, which becomes the return value of the `await` call.
+
+
+
+# 9. Recipes
+
 ### Handling HTTP Routes with Express
+Coming soon...
+
 ### Asynchronous Testing with Mocha
-  
+Coming soon...
 
 
 
-
-
-# What Works with `await`?
-`await` takes a single argument, which can be any of the following (the so-called **awaitables**):
-
-- A [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (or any `then`-able object). The function will suspend until the promise is settled. The promise's resolution value will become `await`'s return value. If the promise is rejected, `await` will raise an exception inside the function with the rejection value.
-- A [thunk](https://github.com/visionmedia/co#thunks-vs-promises). The thunk's result will become `await`'s return value. If the thunk returns an error, `await` will raise an exception inside the function with the error value.
-- A simple value, such as a number, string or null. `await` will return immediately with the value.
-- An array or [plain object](http://lodash.com/docs#isPlainObject), whose elements are all awaitables. Note this definition is recursive and allows nested object graphs. The function will suspend until all nested awaitables have produced their value, at which time `await` will return with a clone of the object graph with all promises and thunks replaced by their results. If any promise is rejected or any thunk returns an error, then `await` will raise an exception inside the function with the rejection or error value.
-
-
-
-# 8. Additional Coding Tips
-
-### Accepting Arguments and Returning Values
-Suspendable functions may accept arguments, return with or without a value, and throw exceptions just like ordinary functions. When a `return` statement is executed, the function's promise is resolved with the return value (which will be `undefined` if it is an expression-less `return`).
-
-### Handling Errors and Exceptions
-Within suspendable functions, errors may be handled using ordinary `try/catch` blocks. This includes asynchronous errors that originate from any of the `await` operations. The exception object will also contain a useable stack trace. If a suspendable function has no error-handling logic, and an error occurs during execution (or an exception is explicitly thrown by the function), then the function's promise will be rejected with the exception value.
-
-### Nesting and Composing Suspendable Functions
-Suspendable functions may be called in `await` expressions, since they return promises and are therefore [awaitable](#what-works-with-await). It follows that calls to suspendable functions may be arbitrarily nested and composed, and may be recursive.
-
-### Maximising concurrency
-You can execute any number of asynchronous operations concurrently by applying `await` to an array of awaitable expressions. `await` will return the array of results when all the concurrent operations are complete, or throw if any of them fail. Libraries like [lodash](http://lodash.com) and [underscore](http://underscorejs.org/) make this very succinct.
-
-### Obtaining Promises and Thunks
-In conventional Node.js code, asynchronous functions take a callback as their last parameter and don't return any value. As such, calls to these functions are **not** [awaitable](#what-works-with-await). However, awaitable versions may be obtained with relative ease using something like [`bluebird's`](https://github.com/petkaantonov/bluebird/) [`promisifyAll()`](https://github.com/petkaantonov/bluebird/blob/master/API.md#promisepromisifyallobject-target---object), or [`thunkify`](https://github.com/visionmedia/node-thunkify).
-
-### Developing in TypeScript
-`asyncawait` is written in TypeScript (look in the [src folder](./src)), and includes a [type definition file](./asyncawait.d.ts). Go nuts!
-
-
-
-# API Reference
+# 10. API Reference
 
 ### `function async(fn: Function) --> (...args) --> Promise`
 Creates a function that can be suspended at each asynchronous operation. `fn` contains the body of the suspendable function. `async` returns a function of the form `(...args) --> Promise`. Any arguments passed to this function are passed through to `fn`. The returned promise is resolved when `fn` returns, or rejected if `fn` throws.
 
+### `function async.cps(fn: Function) --> (...args, callback) --> void`
+Variant of `async` that produces a suspendable function that accepts a node-style callback and returns nothing. See [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions).
+
+### `function async.thunk(fn: Function) --> (...args) --> Thunk`
+Variant of `async` that produces a suspendable function that returns a thunk. See [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions).
+
+### `function async.result(fn: Function) --> (...args) --> any`
+Variant of `async` that produces a suspendable function that returns its result directly, but can only be called from inside another suspendable function. See [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions).
+
+### `function async.iterable(fn: Function) --> (...args) --> AsyncIterator`
+Variant of `async` that produces a function which returns an asynchronous iterator, whose `next()` method is a suspendable function that returns a promise. See [Creating and Using Asynchronous Iterators](#creating-and-using-asynchronous-iterators).
+
+### `function async.mod(options) --> AsyncFunction`
+Enables the creation of arbitrary variants of the `async` function. Accepts an `options` object and returns an `async` function variant. See [The `async.mod` Function](#the-asyncmod-function).
+
 ### `function await(expr: Awaitable) --> Any`
-Suspends an `async`-wrapped function until the [awaitable](#what-works-with-await) expression `expr` produces a result. The result becomes the return value of the `await` call. If `expr` produces an error, then an exception is raised in the `async`-wrapped function.
+Suspends a suspendable function until the [awaitable](#what-works-with-await) expression `expr` produces a result. The result becomes the return value of the `await` call. If `expr` produces an error, then an exception is raised in the suspendable function.
+
+### `function await.top(n: number) --> (expr: Array|Object) --> Array`
+Variant of `await` whose result consists of the `n` fastest-resolving awaitables contained in its argument. See [Variations of `await`](#variations-of-await).
+
+### `function await.in(expr: Array|Object) --> Array|Object`
+Variant of `await` that returns the original array/object, rather than a cloned array/object, substituting the results of contained awaitables in-place. See [Variations of `await`](#variations-of-await).
 
 
 
-# Feature/Gotcha Summary
-* Reduces length and complexity of asynchronous code
-* [Fast](./comparison) and lightweight
-* Completely [non-blocking](http://stackoverflow.com/a/14797359)
-* Does not require [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
-* Syntax is plain JavaScript, and behaves much like C#'s async/await
-* Seamless interoperation with libraries that consume and/or produce promises
-* No code preprocessing or special tools, simply write and execute your code normally
-* Built with [node-fibers](https://github.com/laverdet/node-fibers)
-* [TypeScript](http://www.typescriptlang.org/) and X-to-JavaScript friendly (since ES6 generators are not required)
-* TypeScript .d.ts included
-* Works only on node.js, not in browsers (since it uses node-fibers)
+# 11. Acknowledgements
+The following technologies are central to `asyncawait`:
+
+- [node-fibers](https://github.com/laverdet/node-fibers): This implementation of coroutines is unfortunately limited to Node.js. ES6 generators may be simpler, but fibers are more flexible and support a far broader space of design possibilities. It would be great if ES6 generators were this open and flexible.
+- [bluebird](https://github.com/petkaantonov/bluebird): this promise library is both a core component of `asyncawait` and a great source of inspiration for writing high-performance JavaScript code.
+- [TypeScript](http://www.typescriptlang.org/): `asyncawait` is written in TypeScript (look in the [src folder](./src)), and includes a [type declaration file](./asyncawait.d.ts). TypeScript makes JavaScript development faster, less error-prone, more scaleable, and generally more pleasant.
 
 
 
-# Acknowledgements
-TODO...
-
-
-
-# License
+# 12. License
 Copyright (c) 2014 Troy Gerwien
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
