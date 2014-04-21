@@ -1,29 +1,30 @@
-## 0.6.5 (2014-04-12) (diff: TODO)
+# 0.7.0 (2014-04-21)
 
 #### New Features
 
- - TODO
- - async.cps
- - async.thunk
- - async.result
- - async.iterable
- - async.mod
- - await.top(n)
- - await.in
+ - Suspendable functions can accept node-style callbacks (`async.cps`)
+ - Suspendable functions can return a thunk (`async.thunk`)
+ - Suspendable function can await and return their result directly (`async.result`)
+ - Suspendable functions can yield multiple values (`async.iterable`)
+ - Custom `async` functions can be created by modding existing `async` functions (`async.mod`)
+ - `await` supports a variant equivalent to bluebird's `race()` (`await.top(n)`)
+ - `await` supports a variant that reuses existing arrays/objects (`await.in`)
 
 #### Improvements
- - async preserves function.length
- - concurrency factor for benchmarks
- - fs mocking for benchmarks
- - optimisations (concurrent loads)
- - added bluebird to comparisons
- - manage fiber pool size
+
+ - Suspendable functions have the same arity (i.e. `function.length`) as their definition
+ - benchmark.js supports a configurable concurrency factor
+ - benchmark.js supports optionally mocking the `fs` module
+ - benchmark.js provides more GC details
+ - Various optimisations for heavy concurrent loads
+ - Added bluebird to comparisons
+ - Added fibonacci function to comparisons
+ - Added automatic management of fiber pool size
 
 #### Bug Fixes
 
- - TODO
- - memory leak (see ...)
+ - fixed memory leak under heavy concurrent loads (see this [node-fibers issue](https://github.com/laverdet/node-fibers/issues/169))
 
-## 0.6.1 (2014-03-28)
+# 0.6.1 (2014-03-28)
 
-No changelog yet
+No changes logged for this or prior versions.
