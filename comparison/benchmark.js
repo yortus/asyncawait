@@ -18,7 +18,6 @@ var functions = {
 var variants = {
     async: 'async',
     asyncawait: 'asyncawait',
-    asyncawait2: 'asyncawait-iterators',
     bluebird: 'bluebird',
     callbacks: 'callbacks',
     co: 'co',
@@ -33,7 +32,7 @@ var SELECTED_FUNCTION = functions.largest;
 
 var SELECTED_VARIANT = variants.asyncawait;
 
-var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run.
+var SAMPLES_PER_RUN = 100;   // How many times the function will be called per run.
 
 var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark.
 
@@ -42,7 +41,7 @@ var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the fun
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
-var USE_MOCK_FS = true;                         // If true, uses a mocked 'fs' module returning fixed in-memory results.
+var USE_MOCK_FS = false;                         // If true, uses a mocked 'fs' module returning fixed in-memory results.
 var OUTPUT_GC_STATS = true;                     // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = false;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
 

@@ -121,7 +121,7 @@ A similar outcome may be achieved by transforming JavaScript source code in a pr
 
 
 # 5. Performance
-How well does `asyncawait` perform? The answer depends on what kinds of performance you care about. As a rough guide, compared with bare callbacks, expect your code to be 70% shorter with 66% less indents and run at 75.4% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison](./comparison) folder, and do run your own [benchmarks](./comparison/benchmark.js).
+How well does `asyncawait` perform? The answer depends on what kinds of performance you care about. As a rough guide, compared with bare callbacks, expect your code to be 70% shorter with 66% less indents and run at 79% of the speed of bare callbacks. OK, so don't trust those numbers (which actually are [real](./comparison/README.md#comparison-summary)) but do check out the code in the [comparison](./comparison) folder, and do run your own [benchmarks](./comparison/benchmark.js).
 
 
 

@@ -9,6 +9,7 @@ var await = require('../..').await;
 
 /**
   * Finds the largest file in the given directory, optionally performing a recursive search.
+  * This is an alternative implementation, using an asynchronous iterator.
   * @param {string} dir - the directory to search.
   * @param {object?} options - optional settings: { recurse?: boolean; preview?: boolean }.
   * @returns {object?} null if no files found, otherwise an object of the form
