@@ -26,7 +26,7 @@
 9. [Recipes](#9-recipes)
   * [Handling HTTP Routes with Express](#handling-http-routes-with-express)
   * [Asynchronous Testing with Mocha](#asynchronous-testing-with-mocha)
-10. [API reference](#10-api-reference)
+10. [API Reference](#10-api-reference)
 11. [Acknowledgements](#11-acknowledgements)
 12. [License](#12-license)
 
