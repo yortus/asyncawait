@@ -8,19 +8,17 @@ var async = require('async');
 var countFiles = function (dir, callback) {
     async.waterfall([
         function (callback) {
-
-            // Get all directory entries.
             fs.readdir(dir, callback);
         },
-        function (files, callback) {
 
-            // Get all file stats in parallel.
+        // Get all file stats in parallel.
+        function (files, callback) {
             var paths = _.map(files, function (file) { return path.join(dir, file); });
             async.parallel(_.map(paths, function (path) { return fs.stat.bind(fs, path); }), callback);
         },
-        function (stats, callback) {
 
-            // Count the files.
+        // Count the files.
+        function (stats, callback) {
             var result = _.filter(stats, function (stat) { return stat.isFile(); }).length;
             callback(null, result);
         }

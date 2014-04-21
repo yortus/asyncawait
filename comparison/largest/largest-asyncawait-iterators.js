@@ -16,7 +16,7 @@ var await = require('../..').await;
   */
 var largest = async.cps (function (dir, options, internal) {
 
-    // Parse arguments
+    // Parse arguments.
     options = options || largest.options;
 
     // Create an iterable to return all files and subfolders (recursively) in dir.

@@ -14,7 +14,7 @@ var _ = require('lodash');
   */
 var largest = function (dir, options, internal, callback) {
 
-    // Parse arguments
+    // Parse arguments.
     options = options || largest.options;
     if (arguments.length == 3) callback = internal, internal = null;
 

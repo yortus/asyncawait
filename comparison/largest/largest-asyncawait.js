@@ -16,7 +16,7 @@ var await = require('../..').await;
   */
 var largest = async.cps (function self(dir, options, internal) {
 
-    // Parse arguments
+    // Parse arguments.
     options = options || largest.options;
 
     // Enumerate all files and subfolders in 'dir' to get their stats.

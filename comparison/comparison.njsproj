@@ -16,6 +16,9 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <Compile Include="countFiles\countFiles-bluebird.js" />
+    <Compile Include="fibonacci\fibonacci-bluebird.js" />
+    <Compile Include="largest\largest-bluebird.js" />
     <Compile Include="mockfs.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />

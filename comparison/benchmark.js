@@ -19,6 +19,7 @@ var variants = {
     async: 'async',
     asyncawait: 'asyncawait',
     asyncawait2: 'asyncawait-iterators',
+    bluebird: 'bluebird',
     callbacks: 'callbacks',
     co: 'co',
     synchronous: 'synchronous'

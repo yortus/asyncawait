@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var fs = require('fs');
 var path = require('path');
 var Buffer = require('buffer').Buffer;
@@ -15,7 +14,7 @@ var async = require('async');
   */
 var largest = function (dir, options, internal, callback) {
 
-    // Parse arguments
+    // Parse arguments.
     options = options || largest.options;
     if (arguments.length == 3) callback = internal, internal = null;
 
@@ -83,9 +82,6 @@ var largest = function (dir, options, internal, callback) {
                     },
                     function(bytesRead, buffer, callback) {
                         result.preview = buffer.toString('utf-8', 0, bytesRead);
-                        callback();
-                    },
-                    function(callback) {
                         fs.close(fd_, callback);
                     },
                     function(cb1, cb2) {

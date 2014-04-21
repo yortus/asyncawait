@@ -18,7 +18,7 @@ var co = require('co');
   */
 var largest = co(function* (dir, options, internal) {
 
-    // Parse arguments
+    // Parse arguments.
     options = options || largest.options;
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
