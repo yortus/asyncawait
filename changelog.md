@@ -1,6 +1,6 @@
-## 0.6.5 (2014-04-12)
+## 0.6.5 (2014-04-12) (diff: TODO)
 
-New Features:
+#### New Features
 
  - TODO
  - async.cps
@@ -11,7 +11,7 @@ New Features:
  - await.top(n)
  - await.in
 
-Improvements:
+#### Improvements
  - async preserves function.length
  - concurrency factor for benchmarks
  - fs mocking for benchmarks
@@ -19,7 +19,7 @@ Improvements:
  - added bluebird to comparisons
  - manage fiber pool size
 
-Bugfixes:
+#### Bugfixes
 
  - TODO
  - memory leak (see ...)
