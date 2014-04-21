@@ -1,4 +1,4 @@
-# Guide to `asyncawait` v0.7.0
+# Guide to `asyncawait` v0.7
 1. [Introduction](#1-introduction)
 2. [Feature/Gotcha Summary](#2-featuregotcha-summary)
 3. [How Does it Work?](#3-how-does-it-work)
