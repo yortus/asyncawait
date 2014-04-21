@@ -1,6 +1,6 @@
 # Contents
 1. [Introduction](#1-introduction)
-2. [How Does it Work?](##2-how-does-it-work)
+2. [How Does it Work?](#2-how-does-it-work)
 3. [Compared to...](#3-compared-to)
 4. [Performance](#4-performance)
 5. [Quick Start](#5-quick-start)
