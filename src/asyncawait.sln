@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30324.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "asyncawait", "asyncawait.njsproj", "{330C5F49-70CC-42B2-B036-7E7C0C4E604D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{07D6E85E-F15E-438B-8293-313B50927A8E}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\.npmignore = ..\.npmignore
+		..\async.js = ..\async.js
+		..\await.js = ..\await.js
 		..\changelog.md = ..\changelog.md
 		..\index.js = ..\index.js
 		..\LICENSE = ..\LICENSE
