@@ -184,7 +184,7 @@ var suspendable4 = async.result (function defn(a, b) {...});
 ```
 
 ### Accepting Arguments and Returning Values
-Suspendable functions may accept arguments. Calling `suspendable(1, 2)` will in turn call `defn(1, 2)`. Suspendable functions may be variadic. They report the same arity as their definition (i.e. `suspendable.length === defn.length` returns `true` (both have arity `2`).
+Suspendable functions may accept arguments. Calling `suspendable(1, 2)` will in turn call `defn(1, 2)`. Suspendable functions may be variadic. They report the same arity as their definition (i.e. `suspendable.length` and `defn.length` both return `2`).
 
 A suspendable function's definition may return with or without a value, or it may throw. Returning without a value is equivalent to returning `undefined`. The return value of the definition function becomes the result of the suspendable function (see [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)). 
 
@@ -246,7 +246,7 @@ var suspendable = async (function () {
 	var r3 = await (3.14);
 	var r4 = await ([promise2, 2, ['222', thunk2]]);
 	var r5 = await ({ t3: thunk3, t4: thunk4 });
-    return [a1, a2, a3, a4, a5];
+    return [r1, r2, r3, r4, r5];
 });
 ```
 
