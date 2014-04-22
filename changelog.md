@@ -1,3 +1,9 @@
+# 0.7.1 (2014-04-22)
+
+#### Bug Fixes
+
+ - Added missing files to root folder (`require('asyncawait/async')` was failing)
+
 # 0.7.0 (2014-04-21)
 
 #### New Features
