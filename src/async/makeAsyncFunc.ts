@@ -117,10 +117,10 @@ function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Sem
         if (config.returnValue === Config.THUNK) {
             var thunk: AsyncAwait.Thunk<any> = (done?) => {
                 if (done) resolver.promise.then(val => done(null, val), err => done(err));
-                semaphore.enter(() => FiberMgr.create().run(runContext));
+                semaphore.enter(() => FiberMgr.create(runContext).run());
             };
         } else {
-            semaphore.enter(() => FiberMgr.create().run(runContext));
+            semaphore.enter(() => FiberMgr.create(runContext).run());
         }
 
         // Return the appropriate value.
