@@ -8,7 +8,7 @@ export = RunContext;
  * function as a single argument. runInFiber() can only accept a single argument because
  * it is invoked via Fiber#run(), which can only pass through a single argument.
  */
-class RunContext {
+class RunContext implements AsyncAwait.RunContext {
 
     /** Construct a new RunContext instance. */
     constructor(wrapped: Function, thisArg, argsAsArray: any[], done?: () => void) {

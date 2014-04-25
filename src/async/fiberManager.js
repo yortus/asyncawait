@@ -11,11 +11,19 @@ var FiberManager;
     FiberManager.isExecutingInFiber = isExecutingInFiber;
 
     /** Creates and returns a new fiber in which an arbitrary function may be executed. */
-    function create() {
-        return Fiber(runInFiber);
+    function create(runCtx) {
+        var fiber = Fiber(runInFiber);
+        fiber.runContext = runCtx;
+        fiber.start = startFiber;
+        return fiber;
     }
     FiberManager.create = create;
 })(FiberManager || (FiberManager = {}));
+
+/** Helper function for starting a fiber. Must be called in the context of the fiber. */
+function startFiber() {
+    return this.run(this.runContext);
+}
 
 /**
 * The runInFiber() function provides the prolog/epilog wrapper code for running a function inside

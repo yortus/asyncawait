@@ -174,6 +174,15 @@ declare module AsyncAwait {
     export interface Thunk<TResult> {
         (callback?: (err, result?) => void): void;
     }
+
+    export interface RunContext {
+        wrapped: Function;
+        thisArg: any;
+        argsAsArray: any[];
+        done: () => void;
+        resolver: Promise.Resolver<any>;
+        callback: (err, val?) => void;
+    }
 }
 
 declare module "asyncawait" {

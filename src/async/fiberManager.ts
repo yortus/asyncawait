@@ -12,27 +12,20 @@ module FiberManager {
         return !!Fiber.current;
     }
 
+
     /** Creates and returns a new fiber in which an arbitrary function may be executed. */
-    export function create(runCtx: RunContext): FiberEx {
-        var fiber = <FiberEx> Fiber(runInFiber);
+    export function create(runCtx: RunContext): Fiber {
+        var fiber = Fiber(runInFiber);
         fiber.runContext = runCtx;
-        var oldRun = fiber.run;
-        fiber.run = oldRun.bind(fiber, runCtx);
+        fiber.start = startFiber;
         return fiber;
     }
+}
 
-    export interface FiberEx extends Fiber {
 
-        /** The RunContext associated with this fiber. */
-        runContext: RunContext;
-
-        /**
-         * Executes the wrapped function specified in the RunContext instance. The final
-         * return/throw value of the wrapped function is used to notify the promise resolver
-         * and/or callback specified in the RunContext.
-         */
-        run(): void;
-    }
+/** Helper function for starting a fiber. Must be called in the context of the fiber. */
+function startFiber() {
+    return this.run(this.runContext);
 }
 
 
@@ -75,8 +68,6 @@ function finallyBlock(runCtx: RunContext) {
     // Execute the done() callback, if provided.
     if (runCtx.done) runCtx.done();
 }
-
-
 
 
 /**

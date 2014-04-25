@@ -16,7 +16,7 @@ var AsyncIterator = (function () {
     function AsyncIterator(runContext, semaphore, returnValue, acceptsCallback) {
         this._runContext = runContext;
         this._semaphore = semaphore;
-        this._fiber = FiberMgr.create();
+        this._fiber = FiberMgr.create(runContext);
         this._returnValue = returnValue;
         this._acceptsCallback = acceptsCallback;
     }
@@ -46,7 +46,7 @@ var AsyncIterator = (function () {
                         return done(err);
                     });
                 _this._semaphore.enter(function () {
-                    return _this._fiber.run(_this._runContext);
+                    return _this._fiber.start();
                 });
                 _this._runContext.done = function () {
                     return _this._semaphore.leave();
@@ -54,7 +54,7 @@ var AsyncIterator = (function () {
             };
         } else {
             this._semaphore.enter(function () {
-                return _this._fiber.run(_this._runContext);
+                return _this._fiber.start();
             });
             this._runContext.done = function () {
                 return _this._semaphore.leave();

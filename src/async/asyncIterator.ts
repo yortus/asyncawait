@@ -45,11 +45,11 @@ class AsyncIterator {
         if (this._returnValue === Config.THUNK) {
             var thunk: AsyncAwait.Thunk<any> = (done?) => {
                 if (done) resolver.promise.then(val => done(null, val), err => done(err));
-                this._semaphore.enter(() => this._fiber.run());
+                this._semaphore.enter(() => this._fiber.start());
                 this._runContext.done = () => this._semaphore.leave();
             };
         } else {
-            this._semaphore.enter(() => this._fiber.run());
+            this._semaphore.enter(() => this._fiber.start());
             this._runContext.done = () => this._semaphore.leave();
         }
 

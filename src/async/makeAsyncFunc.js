@@ -118,12 +118,12 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
                         return done(err);
                     });
                 semaphore.enter(function () {
-                    return FiberMgr.create().run(runContext);
+                    return FiberMgr.create(runContext).start();
                 });
             };
         } else {
             semaphore.enter(function () {
-                return FiberMgr.create().run(runContext);
+                return FiberMgr.create(runContext).start();
             });
         }
 
