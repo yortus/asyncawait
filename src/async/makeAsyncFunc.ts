@@ -47,28 +47,8 @@ function makeAsyncIterator(bodyFunc: Function, config: Config, semaphore: Semaph
     return function iterable(): any {
 
         // Capture the initial arguments used to start the iterator, as an array.
-        var startupArgs = new Array(arguments.length + 1); // Reserve 0th arg for the yield function. 
-        for (var i = 0, len = arguments.length; i < len; ++i) startupArgs[i + 1] = arguments[i];
-
-        // Create a yield() function tailored for this iterator.
-        var yield_ = expr => {
-
-            // Ensure this function is executing inside a fiber.
-            if (!Fiber.current) {
-                throw new Error(
-                    'await functions, yield functions, and value-returning suspendable ' +
-                    'functions may only be called from inside a suspendable function. '
-                );
-            }
-
-            // Notify waiters of the next result, then suspend the iterator.
-            if (runContext.callback) runContext.callback(null, { value: expr, done: false });
-            if (runContext.resolver) runContext.resolver.resolve({ value: expr, done: false });
-            Fiber.yield();
-        }
-
-        // Insert the yield function as the first argument when starting the iterator.
-        startupArgs[0] = yield_;
+        var startupArgs = new Array(arguments.length);
+        for (var i = 0, len = arguments.length; i < len; ++i) startupArgs[i] = arguments[i];
 
         // Create the iterator.
         var runContext = new RunContext(bodyFunc, this, startupArgs);

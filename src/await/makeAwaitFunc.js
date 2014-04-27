@@ -23,7 +23,7 @@ function getExtraInfo(traverse, topN) {
     return function await() {
         // Ensure this function is executing inside a fiber.
         if (!Fiber.current) {
-            throw new Error('await functions, yield functions, and value-returning suspendable ' + 'functions may only be called from inside a suspendable function. ');
+            throw new Error('await functions, yield functions, and result-returning suspendable ' + 'functions may only be called from inside a suspendable function. ');
         }
 
         // Parse argument(s). If not a single argument, treat it like an array was passed in.

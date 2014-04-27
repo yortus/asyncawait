@@ -5,6 +5,7 @@ var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('../..').async;
 var await = require('../..').await;
+var yield_ = require('../..').yield;
 
 
 /**
@@ -21,13 +22,13 @@ var largest = async.cps (function (dir, options, internal) {
     options = options || largest.options;
 
     // Create an iterable to return all files and subfolders (recursively) in dir.
-    var descendentFiles = async.iterable (function self(yield_, dir) {
+    var descendentFiles = async.iterable (function self(dir) {
         var files = await (fs.readdirSync(dir));
         var paths = _.map(files, function (file) { return path.join(dir, file); });
         var stats = await.in (_.map(paths, function (path) { return fs.statAsync(path); }));
         _.each(stats, function(stat, i) {
             yield_ ({ in: dir, path: paths[i], stat: stat });
-            if (options.recurse && stat.isDirectory()) self(yield_, paths[i]);
+            if (options.recurse && stat.isDirectory()) self(paths[i]);
         });
     });
 

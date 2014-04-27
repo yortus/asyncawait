@@ -2,9 +2,10 @@
 var Promise = require('bluebird');
 var async = require('..').async;
 var await = require('..').await;
+var yield_ = require('..').yield;
 
 
-var someNums = async.iterable (function (yield_) {
+var someNums = async.iterable (function () {
 
     await (Promise.delay(500));
     yield_(111);

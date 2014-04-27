@@ -3,7 +3,6 @@ import makeAwaitFunc = require('./makeAwaitFunc');
 export = await;
 
 
-
 /**
   * Suspends a suspendable function until the given awaitable expression produces
   * a result. If the given expression produces an error, then an exception is raised

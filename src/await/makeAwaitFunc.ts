@@ -27,7 +27,7 @@ function getExtraInfo(traverse: (o, visitor: Function) => void, topN?: number) {
         // Ensure this function is executing inside a fiber.
         if (!Fiber.current) {
             throw new Error(
-                'await functions, yield functions, and value-returning suspendable ' +
+                'await functions, yield functions, and result-returning suspendable ' +
                 'functions may only be called from inside a suspendable function. '
             );
         }
