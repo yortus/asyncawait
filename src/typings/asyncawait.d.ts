@@ -98,49 +98,49 @@ declare module AsyncAwait {
     }
 
     export interface AsyncIterableReturnsPromise extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(): Thenable<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Thenable<void>;
         };
     }
 
     export interface AsyncIterableReturnsThunk extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(): Thunk<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Thunk<void>;
         };
     }
 
     export interface AsyncIterableReturnsResult extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(): { done: boolean; value?: any; };
             forEach(callback: (value) => void): void;
         };
     }
 
     export interface AsyncIterableAcceptsCallbackReturnsPromise extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): Thenable<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void, doneCallback?: Callback<void>): Thenable<void>;
         };
     }
 
     export interface AsyncIterableAcceptsCallbackReturnsThunk extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): Thunk<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void, doneCallback?: Callback<void>): Thunk<void>;
         };
     }
 
     export interface AsyncIterableAcceptsCallbackReturnsResult extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): { done: boolean; value?: any; };
             forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
         };
     }
 
     export interface AsyncIterableAcceptsCallbackReturnsNothing extends AsyncFunction {
-        (fn: Function): () => {
+        (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): void;
             forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
         };
@@ -208,6 +208,12 @@ declare module AsyncAwait {
         yield(coro: Coroutine, item: any): void;
         //TODO: runs *inside* coro
         cleanup(coro: Coroutine): void;
+    }
+
+    export interface CoroStatic {
+        new(): Coro;
+        maxConcurrency(n?: number): number;
+        arityFor(func: Function): number;
     }
 
     export interface Coro {

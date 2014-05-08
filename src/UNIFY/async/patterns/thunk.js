@@ -18,6 +18,10 @@ var ThunkIdiom = (function (_super) {
             _super.prototype.invoke.call(_this, func, this_, args);
         };
     };
+
+    ThunkIdiom.arityFor = function (func) {
+        return func.length;
+    };
     return ThunkIdiom;
 })(NodebackIdiom);
 module.exports = ThunkIdiom;

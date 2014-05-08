@@ -12,4 +12,8 @@ class ThunkIdiom extends NodebackIdiom {
             super.invoke(func, this_, args);
         };
     }
+
+    static arityFor(func: Function) {
+        return func.length;
+    }
 }

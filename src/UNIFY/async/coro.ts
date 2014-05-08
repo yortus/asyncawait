@@ -53,6 +53,10 @@ class Coro implements AsyncAwait.Coro {
         semaphore = new Semaphore(n);
     }
 
+    static arityFor(func: Function) {
+        return func.length;
+    }
+
     private fiberBody() {
 
         // NB: V8 may not optimise functions containing try/catch/finally,

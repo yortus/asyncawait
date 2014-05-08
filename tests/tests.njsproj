@@ -33,6 +33,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="async.iterable.ts" />
+    <TypeScriptCompile Include="async.result.ts" />
+    <TypeScriptCompile Include="async.thunk.ts" />
+    <TypeScriptCompile Include="async.cps.ts" />
     <TypeScriptCompile Include="await.ts" />
     <TypeScriptCompile Include="async.ts" />
   </ItemGroup>

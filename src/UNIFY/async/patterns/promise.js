@@ -32,7 +32,6 @@ var PromiseCoro = (function (_super) {
 
     PromiseCoro.prototype.yield = function (value) {
         this.resolver.progress(value);
-        //this.suspend();
     };
     return PromiseCoro;
 })(Coro);

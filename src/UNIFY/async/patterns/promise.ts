@@ -24,7 +24,6 @@ class PromiseCoro extends Coro {
 
     yield(value) {
         this.resolver.progress(value);
-        //this.suspend();
     }
 
     private resolver: Promise.Resolver<any>;

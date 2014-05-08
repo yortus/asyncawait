@@ -63,6 +63,10 @@ var Coro = (function () {
         semaphore = new Semaphore(n);
     };
 
+    Coro.arityFor = function (func) {
+        return func.length;
+    };
+
     Coro.prototype.fiberBody = function () {
         try  {
             this.try();

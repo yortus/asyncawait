@@ -4,6 +4,7 @@
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var _ = require('lodash');
 var Promise = require('bluebird');
 var Coro = require('../coro');
 
@@ -19,12 +20,16 @@ var IterableCoro = (function (_super) {
     };
 
     IterableCoro.prototype.invokeNext = function (callback) {
-        this.nextResolver = Promise.defer();
-        this.resume();
+        var _this = this;
+        var res = this.nextResolver = Promise.defer();
+        setImmediate(function () {
+            return _this.done ? res.reject('iterated past end') : _this.resume();
+        });
         return this.nextResolver.promise;
     };
 
     IterableCoro.prototype.return = function (result) {
+        this.done = true;
         this.nextResolver.resolve({ done: true, value: result });
     };
 
@@ -40,7 +45,6 @@ var IterableCoro = (function (_super) {
     return IterableCoro;
 })(Coro);
 
-//TODO: catch more errors - eg re-iteration, next after done, etc
 var AsyncIterator = (function () {
     function AsyncIterator(iterable) {
         this.iterable = iterable;
@@ -51,10 +55,16 @@ var AsyncIterator = (function () {
 
     AsyncIterator.prototype.forEach = function (callback) {
         var _this = this;
+        // Ensure that a single argument has been supplied, which is a function.
+        if (arguments.length !== 1)
+            throw new Error('forEach(): expected a single argument');
+        if (!_.isFunction(callback))
+            throw new Error('forEach(): expected argument to be a function');
+
         var result = Promise.defer();
         var stepResolved = function (item) {
             if (item.done)
-                return result.resolve(null);
+                return result.resolve(item.value);
             callback(item.value);
             setImmediate(function () {
                 return _this.next().then(stepResolved, function (err) {

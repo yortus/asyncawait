@@ -16,20 +16,20 @@ describe('The await(...) function', function () {
     it('should suspend the suspendable function until the expression produces a result', function (done) {
         var x = 5;
         var foo = async(function () {
-            await(Promise.delay(20));
+            await(Promise.delay(40));
             x = 7;
-            await(Promise.delay(20));
+            await(Promise.delay(40));
             x = 9;
         });
         foo();
-        Promise.delay(10).then(function () {
+        Promise.delay(20).then(function () {
             return expect(x).to.equal(5);
         }).then(function () {
-            return Promise.delay(20);
+            return Promise.delay(40);
         }).then(function () {
             return expect(x).to.equal(7);
         }).then(function () {
-            return Promise.delay(20);
+            return Promise.delay(40);
         }).then(function () {
             return expect(x).to.equal(9);
         }).then(function () {

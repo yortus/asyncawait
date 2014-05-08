@@ -1,4 +1,5 @@
 ﻿import _refs = require('_refs');
+import _ = require('lodash');
 import Coro = require('../coro');
 export = NodebackCoro;
 
@@ -8,7 +9,9 @@ class NodebackCoro extends Coro {
 
     invoke(func: Function, this_: any, args: any[]) {
         this.callback = args.pop();
-        super.invoke(func, this_, args).resume();
+        if (!_.isFunction(this.callback)) throw new Error('Expected final argument to be a callback');
+        super.invoke(func, this_, args);
+        setImmediate(() => super.resume());
     }
 
     return(result) {
@@ -17,6 +20,10 @@ class NodebackCoro extends Coro {
 
     throw(error) {
         this.callback(error);
+    }
+
+    static arityFor(func: Function) {
+        return func.length + 1;
     }
 
     private callback: Function;

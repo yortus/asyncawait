@@ -5,50 +5,72 @@ var async = require('asyncawait/async');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
-describe('The async(...) function', function () {
-    it('should throw if not passed a single function', function () {
-        expect(function () {
-            return async.call(async, 1);
-        }).to.throw(Error);
-        expect(function () {
-            return async.call(async, 'sss');
-        }).to.throw(Error);
-        expect(function () {
-            return async.call(async, function () {
-            }, true);
-        }).to.throw(Error);
-        expect(function () {
-            return async.call(async, function () {
-            }, function () {
+function runTestsFor(variant) {
+    var name = 'async' + (variant ? ('.' + variant) : '');
+    var func = variant ? async[variant] : async;
+    var arityFor = function (fn) {
+        return fn.length + (variant === 'cps' ? 1 : 0);
+    };
+
+    describe('The ' + name + '(...) function', function () {
+        it('should throw if not passed a single function', function () {
+            expect(function () {
+                return func.call(func, 1);
+            }).to.throw(Error);
+            expect(function () {
+                return func.call(func, 'sss');
+            }).to.throw(Error);
+            expect(function () {
+                return func.call(func, function () {
+                }, true);
+            }).to.throw(Error);
+            expect(function () {
+                return func.call(func, function () {
+                }, function () {
+                });
+            }).to.throw(Error);
+        });
+
+        it('should synchronously return a function', function () {
+            var foo = func(function () {
             });
-        }).to.throw(Error);
-    });
+            expect(foo).to.be.a('function');
+        });
 
-    it('should synchronously return a function', function () {
-        var foo = async(function () {
+        it('should return a function whose arity matches that of its definition', function () {
+            var defns = [
+                function () {
+                },
+                function (a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
+                },
+                function (x) {
+                }
+            ];
+            for (var i = 0; i < defns.length; ++i) {
+                var foo = func(defns[i]);
+                expect(foo.length).to.equal(arityFor(defns[i]));
+            }
         });
-        expect(foo).to.be.a('function');
     });
+}
+runTestsFor(null);
+runTestsFor('cps');
+runTestsFor('thunk');
+runTestsFor('result');
 
-    it('should return a function with the same arity as the function passed to it', function () {
-        var foo = async(function () {
-        });
-        var bar = async(function (a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
-        });
-        var baz = async(function (x) {
-        });
-        expect(foo.length).to.equal(0);
-        expect(bar.length).to.equal(14);
-        expect(baz.length).to.equal(1);
-    });
-});
+//TODO:...
+//runTestsFor('stream');
+runTestsFor('iterable');
 
+//runTestsFor('iterable.cps');
+//runTestsFor('iterable.thunk');
+//runTestsFor('iterable.result');
 describe('A suspendable function returned by async(...)', function () {
     it('should synchronously return a promise', function () {
         var foo = async(function () {
         });
-        var promise = foo();
-        expect(promise).instanceOf(Promise);
+        var syncResult = foo();
+        expect(syncResult).instanceOf(Promise);
     });
 
     it('should execute its definition asynchronously', function (done) {
@@ -75,7 +97,7 @@ describe('A suspendable function returned by async(...)', function () {
         }).catch(done);
     });
 
-    it('should eventually reject with its definition\s thrown value', function (done) {
+    it('should eventually reject with its definition\'s thrown value', function (done) {
         var act, exp = new Error('Expected thrown value to match rejection value');
         var foo = async(function () {
             throw exp;

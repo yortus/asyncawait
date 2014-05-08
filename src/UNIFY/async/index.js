@@ -21,7 +21,7 @@ function makeAsyncFunc(coroClass) {
         if (arguments.length !== 1)
             throw new Error('async(): expected a single argument');
         if (!_.isFunction(suspendableDefn))
-            throw new Error('async(): expected a function as its argument');
+            throw new Error('async(): expected argument to be a function');
 
         // The following function is the 'template' for the returned suspendable function.
         function asyncRunner($ARGS) {
@@ -36,8 +36,8 @@ function makeAsyncFunc(coroClass) {
         }
 
         // Create the suspendable function from the template function above, giving it the correct arity.
-        var result, args = [];
-        for (var i = 0; i < suspendableDefn.length; ++i)
+        var result, args = [], arity = coroClass.arityFor(suspendableDefn);
+        for (var i = 0; i < arity; ++i)
             args.push('a' + i);
         var funcDefn, funcCode = eval('funcDefn = ' + asyncRunner.toString().replace('$ARGS', args.join(', ')));
         return funcDefn;

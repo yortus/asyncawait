@@ -6,37 +6,56 @@ import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
 
-describe('The async(...) function', () => {
+function runTestsFor(variant?: string) {
+    var name = 'async' + (variant ? ('.' + variant) : '');
+    var func = variant ? async[variant] : async;
+    var arityFor = fn => fn.length + (variant === 'cps' ? 1 : 0);
 
-    it('should throw if not passed a single function', () => {
-        expect(() => async.call(async, 1)).to.throw(Error);
-        expect(() => async.call(async, 'sss')).to.throw(Error);
-        expect(() => async.call(async, ()=>{}, true)).to.throw(Error);
-        expect(() => async.call(async, ()=>{}, ()=>{})).to.throw(Error);
-    });
+    describe('The ' + name + '(...) function', () => {
 
-    it('should synchronously return a function', () => {
-        var foo = async(() => {});
-        expect(foo).to.be.a('function');
-    });
+        it('should throw if not passed a single function', () => {
+            expect(() => func.call(func, 1)).to.throw(Error);
+            expect(() => func.call(func, 'sss')).to.throw(Error);
+            expect(() => func.call(func, ()=>{}, true)).to.throw(Error);
+            expect(() => func.call(func, ()=>{}, ()=>{})).to.throw(Error);
+        });
 
-    it('should return a function with the same arity as the function passed to it', () => {
-        var foo = async (() => {});
-        var bar = async ((a, b, c, d, e, f, g, h, i, j, k, l, m, n) => {});
-        var baz = async (x => {});
-        expect(foo.length).to.equal(0);
-        expect(bar.length).to.equal(14);
-        expect(baz.length).to.equal(1);
+        it('should synchronously return a function', () => {
+            var foo = func(() => {});
+            expect(foo).to.be.a('function');
+        });
+
+        it('should return a function whose arity matches that of its definition', () => {
+            var defns = [
+                () => {},
+                (a, b, c, d, e, f, g, h, i, j, k, l, m, n) => {},
+                x => {}
+            ];
+            for (var i = 0; i < defns.length; ++i) {
+                var foo = func(defns[i]);
+                expect(foo.length).to.equal(arityFor(defns[i]));
+            }
+        });
     });
-});
+}
+runTestsFor(null);
+runTestsFor('cps');
+runTestsFor('thunk');
+runTestsFor('result');
+//TODO:...
+//runTestsFor('stream');
+runTestsFor('iterable');
+//runTestsFor('iterable.cps');
+//runTestsFor('iterable.thunk');
+//runTestsFor('iterable.result');
 
 
 describe('A suspendable function returned by async(...)', () => {
 
     it('should synchronously return a promise', () => {
         var foo = async (() => {});
-        var promise = foo();
-        expect(promise).instanceOf(Promise);
+        var syncResult = foo();
+        expect(syncResult).instanceOf(Promise);
     });
 
     it('should execute its definition asynchronously', done => {
@@ -57,7 +76,7 @@ describe('A suspendable function returned by async(...)', () => {
         .catch(done);
     });
 
-    it('should eventually reject with its definition\s thrown value', done => {
+    it('should eventually reject with its definition\'s thrown value', done => {
         var act, exp = new Error('Expected thrown value to match rejection value');
         var foo = async (() => { throw exp; return 'blah'; });
         (<Promise<any>> foo())
@@ -79,4 +98,4 @@ describe('A suspendable function returned by async(...)', () => {
         .then(() => done())
         .catch(done);
     });
-})
+});

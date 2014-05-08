@@ -210,6 +210,12 @@ declare module AsyncAwait {
         cleanup(coro: Coroutine): void;
     }
 
+    export interface CoroStatic {
+        new(): Coro;
+        maxConcurrency(n?: number): number;
+        arityFor(func: Function): number;
+    }
+
     export interface Coro {
         invoke(func: Function, this_: any, args: any[]): any; //outside
         resume(): void;             // outside

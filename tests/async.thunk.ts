@@ -1,0 +1,69 @@
+﻿///<reference path="../src/_refs.d.ts" />
+import chai = require('chai');
+import Promise = require('bluebird');
+import async = require('asyncawait/async');
+import yield_ = require('asyncawait/yield');
+var expect = chai.expect;
+
+
+describe('A suspendable function returned by async.thunk(...)', () => {
+
+    it('should synchronously return a thunk', () => {
+        var foo = async.thunk (() => {});
+        var syncResult = foo();
+        expect(syncResult).instanceOf(Function);
+        expect(syncResult.length).to.equal(1);
+    });
+
+    it('should not execute if the thunk is not invoked', done => {
+        var x = 5;
+        var foo = async.thunk (() => { x = 7; });
+        var thunk = foo();
+        Promise.delay(50)
+        .then(() => expect(x).to.equal(5))
+        .then(() => done())
+        .catch(done);
+        expect(x).to.equal(5);
+    });
+
+    it('should execute its definition asynchronously', done => {
+        var x = 5;
+        var foo = async.thunk (() => { x = 7; });
+        Promise.promisify(foo())()
+        .then(result => expect(x).to.equal(7))
+        .then(() => done())
+        .catch(done);
+        expect(x).to.equal(5);
+    });
+
+    it('should eventually resolve with its definition\'s returned value', done => {
+        var foo = async.thunk (() => { return 'blah'; });
+        Promise.promisify(foo())()
+        .then(result => expect(result).to.equal('blah'))
+        .then(() => done())
+        .catch(done);
+    });
+
+    it('should eventually reject with its definition\'s thrown value', done => {
+        var act, exp = new Error('Expected thrown value to match rejection value');
+        var foo = async.thunk (() => { throw exp; return 'blah'; });
+        Promise.promisify(foo())()
+        .catch(err => act = err)
+        .then(() => {
+            if (!act) done(new Error("Expected function to throw"))
+            else if (act.message !== exp.message) done(exp);
+            else done();
+        });
+    });
+
+    it('should ignore yielded values', done => {
+        var foo = async.thunk (() => { yield_(111); yield_(222); yield_(333); return 444; });
+        var yields = [];
+        Promise.promisify(foo())()
+        .progressed(value => yields.push(value))
+        .then(result => expect(result).to.equal(444))
+        .then(() => expect(yields).to.deep.equal([]))
+        .then(() => done())
+        .catch(done);
+    });
+});
