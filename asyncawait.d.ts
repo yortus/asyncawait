@@ -253,3 +253,9 @@ declare module "asyncawait/await" {
     var M: AsyncAwait.Await
     export = M;
 }
+
+declare module "asyncawait/yield" {
+    //TODO: doc this
+    var M: (expr?: any) => void;
+    export = M;
+}

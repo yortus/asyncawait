@@ -2,7 +2,6 @@
 import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
-import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -28,7 +27,6 @@ describe('The async(...) function', () => {
         expect(foo.length).to.equal(0);
         expect(bar.length).to.equal(14);
         expect(baz.length).to.equal(1);
-        
     });
 });
 
