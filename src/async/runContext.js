@@ -6,12 +6,12 @@
 */
 var RunContext = (function () {
     /** Construct a new RunContext instance. */
-    function RunContext(wrapped, thisArg, argsAsArray, done) {
+    function RunContext(suspendable, thisArg, argsAsArray, done) {
         /** Optional promise resolver for notifying the wrapped function's return/throw value. */
         this.resolver = null;
         /** Optional callback for notifying the wrapped function's return/throw value. */
         this.callback = null;
-        this.wrapped = wrapped;
+        this.suspendable = suspendable;
         this.thisArg = thisArg;
         this.argsAsArray = argsAsArray;
         this.done = done;

@@ -50,6 +50,16 @@
     <TypeScriptCompile Include="typings\lodash.d.ts" />
     <TypeScriptCompile Include="typings\node-fibers.d.ts" />
     <TypeScriptCompile Include="typings\node.d.ts" />
+    <TypeScriptCompile Include="UNIFY\async\coro.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\iterable.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\pseudoSync.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\thunk.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\nodeback.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\promise.ts" />
+    <TypeScriptCompile Include="UNIFY\async\index.ts" />
+    <TypeScriptCompile Include="UNIFY\async\semaphore.ts" />
+    <TypeScriptCompile Include="UNIFY\await\index.ts" />
+    <TypeScriptCompile Include="UNIFY\yield\index.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
     <TypeScriptCompile Include="_refs.d.ts" />
     <TypeScriptCompile Include="async\index.ts" />
@@ -58,6 +68,11 @@
   <ItemGroup>
     <Folder Include="async\" />
     <Folder Include="await\" />
+    <Folder Include="UNIFY\" />
+    <Folder Include="UNIFY\async\" />
+    <Folder Include="UNIFY\async\patterns\" />
+    <Folder Include="UNIFY\await\" />
+    <Folder Include="UNIFY\yield\" />
     <Folder Include="yield\" />
     <Folder Include="typings\" />
   </ItemGroup>

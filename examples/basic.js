@@ -27,18 +27,18 @@ var program = async (function () {
     try  {
         console.log('zero...');
 
-        var msg = await(longCalculation(1, 'one...'));
+        var msg = await (longCalculation(1, 'one...'));
         console.log(msg);
 
-        msg = await(longCalculation(1, 'two...'));
+        msg = await (longCalculation(1, 'two...'));
         console.log(msg);
 
-        msg = await(longCalculation(1, 'three...'));
+        msg = await (longCalculation(1, 'three...'));
         console.log(msg);
 
-        var file = await(readFile('NonExistingFilename'));
+        var file = await (readFile('NonExistingFilename'));
 
-        msg = await(longCalculation(1, 'four...'));
+        msg = await (longCalculation(1, 'four...'));
         console.log(msg);
     } catch (ex) {
         console.log('Caught an error');

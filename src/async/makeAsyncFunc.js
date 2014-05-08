@@ -49,7 +49,7 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
         var iterator = new AsyncIterator(runContext, semaphore, config.returnValue, config.acceptsCallback);
 
         // Wrap the given bodyFunc to properly complete the iteration.
-        runContext.wrapped = function () {
+        runContext.suspendable = function () {
             var len = arguments.length, args = new Array(len);
             for (var i = 0; i < len; ++i)
                 args[i] = arguments[i];

@@ -10,6 +10,7 @@ declare module AsyncAwait {
         thunk: AsyncReturnsThunk;
         result: AsyncReturnsResult;
         iterable: AsyncIterableReturnsPromise;
+        maxConcurrency(n?: number): number;
     }
 
     export interface AsyncFunction {
@@ -175,14 +176,50 @@ declare module AsyncAwait {
         (callback?: (err, result?) => void): void;
     }
 
-    export interface RunContext {
-        wrapped: Function;
+    //TODO: cleanup...
+    export interface RunContextBase {
+        suspendable: Function;
+    }
+    export interface RunContext extends RunContextBase {
         thisArg: any;
         argsAsArray: any[];
         done: () => void;
         resolver: Promise.Resolver<any>;
         callback: (err, val?) => void;
     }
+
+
+    //TODO: testing...
+    export interface Coroutine {
+        func: Function;
+        this: any;
+        args: any[];
+        resume(): void;
+        suspend(): void;
+    }
+    export interface AsyncPattern {
+        //TODO: runs *outside* coro
+        invoke(coro: Coroutine): any;
+        //TODO: runs *inside* coro
+        return(coro: Coroutine, result: any): void;
+        //TODO: runs *inside* coro
+        throw(coro: Coroutine, error: any): void;
+        //TODO: runs *inside* coro
+        yield(coro: Coroutine, item: any): void;
+        //TODO: runs *inside* coro
+        cleanup(coro: Coroutine): void;
+    }
+
+    export interface Coro {
+        invoke(func: Function, this_: any, args: any[]): any; //outside
+        resume(): void;             // outside
+        suspend(): void;            // inside
+        return(result: any): void;  // inside
+        throw(error: any): void;    // inside
+        yield(value: any): void;    // inside
+        dispose(): void;            // ???
+    }
+
 }
 
 declare module "asyncawait" {

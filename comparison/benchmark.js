@@ -37,7 +37,7 @@ var SAMPLES_PER_RUN = 100;   // How many times the function will be called per r
 
 var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark.
 
-var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
+var CONCURRENCY_FACTOR = 100;  // Max number of concurrent invocations of the function.
 
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
@@ -162,9 +162,9 @@ function run(sample, callback) {
             async.timesSeries(
                 1.0 * SAMPLES_PER_RUN / CONCURRENCY_FACTOR,
                 function (n, nextInner) {
-                    process.stdout.write(char);
                     var start = new Date().getTime();
                     sample(function() {
+                        process.stdout.write(char);
                         var end = new Date().getTime();
                         sumOfTimePerSample += (end - start);
                         nextInner();

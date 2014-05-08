@@ -11,15 +11,15 @@ export = RunContext;
 class RunContext implements AsyncAwait.RunContext {
 
     /** Construct a new RunContext instance. */
-    constructor(wrapped: Function, thisArg, argsAsArray: any[], done?: () => void) {
-        this.wrapped = wrapped;
+    constructor(suspendable: Function, thisArg, argsAsArray: any[], done?: () => void) {
+        this.suspendable = suspendable;
         this.thisArg = thisArg;
         this.argsAsArray = argsAsArray;
         this.done = done;
     }
 
     /** The function to be executed in a fiber. */
-    wrapped: Function;
+    suspendable: Function;
 
     /** 'this' context to be applied to the wrapped function. */
     thisArg: any;

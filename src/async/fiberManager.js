@@ -47,7 +47,7 @@ function tryBlock(runCtx) {
     adjustFiberCount(+1);
 
     // Call the wrapped function. It may be suspended several times (at await and/or yield calls).
-    var result = runCtx.wrapped.apply(runCtx.thisArg, runCtx.argsAsArray);
+    var result = runCtx.suspendable.apply(runCtx.thisArg, runCtx.argsAsArray);
 
     // The wrapped function returned normally. Notify any waiters.
     if (runCtx.callback)

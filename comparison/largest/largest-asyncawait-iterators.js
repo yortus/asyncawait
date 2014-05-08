@@ -25,7 +25,7 @@ var largest = async.cps (function (dir, options, internal) {
     var descendentFiles = async.iterable (function self(dir) {
         var files = await (fs.readdirSync(dir));
         var paths = _.map(files, function (file) { return path.join(dir, file); });
-        var stats = await.in (_.map(paths, function (path) { return fs.statAsync(path); }));
+        var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
         _.each(stats, function(stat, i) {
             yield_ ({ in: dir, path: paths[i], stat: stat });
             if (options.recurse && stat.isDirectory()) self(paths[i]);

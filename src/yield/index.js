@@ -8,7 +8,10 @@ function yield_(expr) {
     }
 
     // Notify waiters of the next result, then suspend the iterator.
+    //TODO: temp testing...
     var runContext = Fiber.current.runContext;
+
+    //TODO: was... var runContext = Fiber.current.runContext;
     if (runContext.callback)
         runContext.callback(null, { value: expr, done: false });
     if (runContext.resolver)

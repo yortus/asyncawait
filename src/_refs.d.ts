@@ -9,8 +9,12 @@ declare module "_refs" { }
 /** Extended Fiber interface. */
 interface Fiber {
 
+    //TODO: temp testing...
+    yield(value?: any): any;
+    //idiom: AsyncAwait.Idiom;
+
     /** The RunContext associated with this fiber. */
-    runContext: AsyncAwait.RunContext;
+    runContext: AsyncAwait.RunContextBase;//TODO: testing, was... RunContext
 
     /**
      * Executes the wrapped function specified in the RunContext instance. The final
@@ -18,4 +22,10 @@ interface Fiber {
      * and/or callback specified in the RunContext.
      */
     start(): any;
+}
+
+
+/** V8 supports Function.name. */ 
+interface Function {
+    name: string;
 }
