@@ -1,4 +1,6 @@
 *.suo
 *.user
 obj/
-node_modules/
+/node_modules/*
+!/node_modules/asyncawait
+/*/node_modules/

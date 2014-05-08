@@ -13,8 +13,12 @@ var PromiseCoro = (function (_super) {
         _super.call(this);
     }
     PromiseCoro.prototype.invoke = function (func, this_, args) {
+        var _this = this;
         this.resolver = Promise.defer();
-        _super.prototype.invoke.call(this, func, this_, args).resume();
+        _super.prototype.invoke.call(this, func, this_, args);
+        setImmediate(function () {
+            return _super.prototype.resume.call(_this);
+        });
         return this.resolver.promise;
     };
 
@@ -28,7 +32,7 @@ var PromiseCoro = (function (_super) {
 
     PromiseCoro.prototype.yield = function (value) {
         this.resolver.progress(value);
-        this.suspend();
+        //this.suspend();
     };
     return PromiseCoro;
 })(Coro);

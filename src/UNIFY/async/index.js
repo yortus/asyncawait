@@ -1,4 +1,5 @@
-﻿var Coro = require('./coro');
+﻿var _ = require('lodash');
+var Coro = require('./coro');
 var PromiseCoro = require('./patterns/promise');
 var NodebackCoro = require('./patterns/nodeback');
 var ThunkCoro = require('./patterns/thunk');
@@ -14,28 +15,33 @@ async.maxConcurrency = Coro.maxConcurrency;
 
 //TODO:...
 function makeAsyncFunc(coroClass) {
-    //TODO:...
-    var result = function async(suspendable) {
-        //TODO:...
+    // Create and return an async(...) variant that uses the given coroutine class.
+    return function async(suspendableDefn) {
+        // Ensure that a single argument has been supplied, which is a function.
+        if (arguments.length !== 1)
+            throw new Error('async(): expected a single argument');
+        if (!_.isFunction(suspendableDefn))
+            throw new Error('async(): expected a function as its argument');
+
+        // The following function is the 'template' for the returned suspendable function.
         function asyncRunner($ARGS) {
             // Copy all passed arguments into a new array.
             var nargs = arguments.length, args = new Array(nargs);
             for (var i = 0; i < nargs; ++i)
                 args[i] = arguments[i];
 
-            // Begin execution of the suspendable function in a coroutine.
+            // Begin execution of the suspendable function definition in a coroutine.
             var coro = new coroClass();
-            return coro.invoke(suspendable, this, args);
+            return coro.invoke(suspendableDefn, this, args);
         }
 
-        //TODO:...
+        // Create the suspendable function from the template function above, giving it the correct arity.
         var result, args = [];
-        for (var i = 0; i < suspendable.length; ++i)
+        for (var i = 0; i < suspendableDefn.length; ++i)
             args.push('a' + i);
         var funcDefn, funcCode = eval('funcDefn = ' + asyncRunner.toString().replace('$ARGS', args.join(', ')));
         return funcDefn;
     };
-    return result;
 }
 module.exports = async;
 //# sourceMappingURL=index.js.map

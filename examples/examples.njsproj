@@ -19,7 +19,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
-    <Content Include="package.json" />
     <Compile Include="asyncMod.js" />
     <Compile Include="awaitTop.js" />
     <Compile Include="basic.js" />

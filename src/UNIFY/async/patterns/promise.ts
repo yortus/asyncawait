@@ -9,7 +9,8 @@ class PromiseCoro extends Coro {
 
     invoke(func: Function, this_: any, args: any[]) {
         this.resolver = Promise.defer<any>();
-        super.invoke(func, this_, args).resume();
+        super.invoke(func, this_, args);
+        setImmediate(() => super.resume());
         return this.resolver.promise;
     }
 
@@ -23,7 +24,7 @@ class PromiseCoro extends Coro {
 
     yield(value) {
         this.resolver.progress(value);
-        this.suspend();
+        //this.suspend();
     }
 
     private resolver: Promise.Resolver<any>;
