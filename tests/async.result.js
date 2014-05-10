@@ -6,7 +6,7 @@ var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
 describe('A suspendable function returned by async.result(...)', function () {
-    it('should throw if called outside a suspendable function', function () {
+    it('throws if called outside a suspendable function', function () {
         var foo = async.result(function () {
         });
         expect(function () {
@@ -14,7 +14,7 @@ describe('A suspendable function returned by async.result(...)', function () {
         }).to.throw(Error);
     });
 
-    it('should pseudo-synchronously return with its definition\'s returned value', function (done) {
+    it('pseudo-synchronously returns with its definition\'s returned value', function (done) {
         var foo = async.result(function () {
             return 'blah';
         });
@@ -26,7 +26,7 @@ describe('A suspendable function returned by async.result(...)', function () {
         }, done);
     });
 
-    it('should pseudo-synchronously throw with its definition\'s thrown value', function (done) {
+    it('pseudo-synchronously throws with its definition\'s thrown value', function (done) {
         var exp = new Error('Expected thrown value to match rejection value');
         var foo = async.result(function () {
             throw exp;
@@ -47,7 +47,7 @@ describe('A suspendable function returned by async.result(...)', function () {
         }, done);
     });
 
-    it('should ignore yielded values', function (done) {
+    it('ignores yielded values', function (done) {
         var foo = async.result(function () {
             yield_(111);
             yield_(222);

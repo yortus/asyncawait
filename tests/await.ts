@@ -9,11 +9,11 @@ var expect = chai.expect;
 
 describe('The await(...) function', () => {
 
-    it('should throw if not called within a suspendable function', () => {
+    it('throws if not called within a suspendable function', () => {
         expect(() => await(111)).to.throw(Error);
     });
 
-    it('should suspend the suspendable function until the expression produces a result', done => {
+    it('suspends the suspendable function until the expression produces a result', done => {
         var x = 5;
         var foo = async (() => {
             await (Promise.delay(40));
@@ -33,7 +33,7 @@ describe('The await(...) function', () => {
         expect(x).to.equal(5);
     });
 
-    it('should resume the suspendable function with the value of the awaited expression', done => {
+    it('resumes the suspendable function with the value of the awaited expression', done => {
         var foo = async (() => await (Promise.delay(20).then(() => 'blah')));
         (<Promise<any>> foo())
         .then(result => expect(result).to.equal('blah'))

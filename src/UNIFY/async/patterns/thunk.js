@@ -4,25 +4,28 @@
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var NodebackIdiom = require('./nodeback');
+var NodebackCoro = require('./nodeback');
 
-var ThunkIdiom = (function (_super) {
-    __extends(ThunkIdiom, _super);
-    function ThunkIdiom() {
+var ThunkCoro = (function (_super) {
+    __extends(ThunkCoro, _super);
+    function ThunkCoro() {
         _super.call(this);
     }
-    ThunkIdiom.prototype.invoke = function (func, this_, args) {
+    ThunkCoro.prototype.invoke = function (func, this_, args) {
         var _this = this;
         return function (callback) {
-            args.push(callback);
+            args.push(callback || nullFunc);
             _super.prototype.invoke.call(_this, func, this_, args);
         };
     };
 
-    ThunkIdiom.arityFor = function (func) {
+    ThunkCoro.arityFor = function (func) {
         return func.length;
     };
-    return ThunkIdiom;
-})(NodebackIdiom);
-module.exports = ThunkIdiom;
+    return ThunkCoro;
+})(NodebackCoro);
+
+function nullFunc() {
+}
+module.exports = ThunkCoro;
 //# sourceMappingURL=thunk.js.map

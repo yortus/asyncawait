@@ -8,12 +8,12 @@ var expect = chai.expect;
 
 describe('A suspendable function returned by async.result(...)', () => {
 
-    it('should throw if called outside a suspendable function', () => {
+    it('throws if called outside a suspendable function', () => {
         var foo = async.result (() => {});
         expect(() => foo()).to.throw(Error);
     });
 
-    it('should pseudo-synchronously return with its definition\'s returned value', done => {
+    it('pseudo-synchronously returns with its definition\'s returned value', done => {
         var foo = async.result (() => { return 'blah'; });
         var bar = async(() => {
             expect(foo()).to.equal('blah');
@@ -21,7 +21,7 @@ describe('A suspendable function returned by async.result(...)', () => {
         bar().then(() => done(), done);
     });
 
-    it('should pseudo-synchronously throw with its definition\'s thrown value', done => {
+    it('pseudo-synchronously throws with its definition\'s thrown value', done => {
         var exp = new Error('Expected thrown value to match rejection value');
         var foo = async.result (() => { throw exp; return 'blah'; });
         var bar = async(() => {
@@ -37,7 +37,7 @@ describe('A suspendable function returned by async.result(...)', () => {
         bar().then(() => done(), done);
     });
 
-    it('should ignore yielded values', done => {
+    it('ignores yielded values', done => {
         var foo = async.result (() => { yield_(111); yield_(222); yield_(333); return 444; });
         var bar = async(() => {
             expect(foo()).to.equal(444);

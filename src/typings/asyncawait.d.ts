@@ -9,7 +9,9 @@ declare module AsyncAwait {
         cps: AsyncAcceptsCallbackReturnsNothing;
         thunk: AsyncReturnsThunk;
         result: AsyncReturnsResult;
+        stream: AsyncReturnsStream;
         iterable: AsyncIterableReturnsPromise;
+        express: AsyncAcceptsCallbackReturnsNothing;
         maxConcurrency(n?: number): number;
     }
 
@@ -65,6 +67,10 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult;
     }
 
+    export interface AsyncReturnsStream extends AsyncFunction {//TODO: require stream
+        (fn: Function): (...args: any[]) => any;
+    }
+
     export interface AsyncAcceptsCallbackReturnsPromise extends AsyncFunction {
         <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => Thenable<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => Thenable<TResult>;
@@ -102,6 +108,10 @@ declare module AsyncAwait {
             next(): Thenable<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Thenable<void>;
         };
+
+        cps: AsyncIterableAcceptsCallbackReturnsNothing;
+        thunk: AsyncIterableReturnsThunk;
+        result: AsyncIterableReturnsResult;
     }
 
     export interface AsyncIterableReturnsThunk extends AsyncFunction {

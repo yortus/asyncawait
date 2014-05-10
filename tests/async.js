@@ -7,13 +7,17 @@ var expect = chai.expect;
 
 function runTestsFor(variant) {
     var name = 'async' + (variant ? ('.' + variant) : '');
-    var func = variant ? async[variant] : async;
+    var func = async;
+    if (variant)
+        variant.split('.').forEach(function (prop) {
+            return func = func[prop];
+        });
     var arityFor = function (fn) {
         return fn.length + (variant === 'cps' ? 1 : 0);
     };
 
     describe('The ' + name + '(...) function', function () {
-        it('should throw if not passed a single function', function () {
+        it('throws if not passed a single function', function () {
             expect(function () {
                 return func.call(func, 1);
             }).to.throw(Error);
@@ -31,13 +35,13 @@ function runTestsFor(variant) {
             }).to.throw(Error);
         });
 
-        it('should synchronously return a function', function () {
+        it('synchronously returns a function', function () {
             var foo = func(function () {
             });
             expect(foo).to.be.a('function');
         });
 
-        it('should return a function whose arity matches that of its definition', function () {
+        it('returns a function whose arity matches that of its definition', function () {
             var defns = [
                 function () {
                 },
@@ -57,23 +61,21 @@ runTestsFor(null);
 runTestsFor('cps');
 runTestsFor('thunk');
 runTestsFor('result');
-
-//TODO:...
-//runTestsFor('stream');
+runTestsFor('stream');
 runTestsFor('iterable');
+runTestsFor('iterable.cps');
+runTestsFor('iterable.thunk');
+runTestsFor('iterable.result');
 
-//runTestsFor('iterable.cps');
-//runTestsFor('iterable.thunk');
-//runTestsFor('iterable.result');
 describe('A suspendable function returned by async(...)', function () {
-    it('should synchronously return a promise', function () {
+    it('synchronously returns a promise', function () {
         var foo = async(function () {
         });
         var syncResult = foo();
         expect(syncResult).instanceOf(Promise);
     });
 
-    it('should execute its definition asynchronously', function (done) {
+    it('executes its definition asynchronously', function (done) {
         var x = 5;
         var foo = async(function () {
             x = 7;
@@ -86,7 +88,7 @@ describe('A suspendable function returned by async(...)', function () {
         expect(x).to.equal(5);
     });
 
-    it('should eventually resolve with its definition\'s returned value', function (done) {
+    it('eventually resolves with its definition\'s returned value', function (done) {
         var foo = async(function () {
             return 'blah';
         });
@@ -97,7 +99,7 @@ describe('A suspendable function returned by async(...)', function () {
         }).catch(done);
     });
 
-    it('should eventually reject with its definition\'s thrown value', function (done) {
+    it('eventually rejects with its definition\'s thrown value', function (done) {
         var act, exp = new Error('Expected thrown value to match rejection value');
         var foo = async(function () {
             throw exp;
@@ -115,7 +117,7 @@ describe('A suspendable function returned by async(...)', function () {
         });
     });
 
-    it('should emit progress with each yielded value', function (done) {
+    it('emits progress with each yielded value', function (done) {
         var foo = async(function () {
             yield_(111);
             yield_(222);

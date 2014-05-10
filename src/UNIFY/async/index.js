@@ -4,13 +4,23 @@ var PromiseCoro = require('./patterns/promise');
 var NodebackCoro = require('./patterns/nodeback');
 var ThunkCoro = require('./patterns/thunk');
 var PseudoSyncCoro = require('./patterns/pseudoSync');
+var StreamCoro = require('./patterns/stream');
 var IterableCoro = require('./patterns/iterable');
+var IterableCpsCoro = require('./patterns/iterable.cps');
+var IterableThunkCoro = require('./patterns/iterable.thunk');
+var IterableResultCoro = require('./patterns/iterable.result');
+var ExpressCoro = require('./patterns/express');
 
 var async = makeAsyncFunc(PromiseCoro);
 async.cps = makeAsyncFunc(NodebackCoro);
 async.thunk = makeAsyncFunc(ThunkCoro);
 async.result = makeAsyncFunc(PseudoSyncCoro);
+async.stream = makeAsyncFunc(StreamCoro);
 async.iterable = makeAsyncFunc(IterableCoro);
+async.iterable.cps = makeAsyncFunc(IterableCpsCoro);
+async.iterable.thunk = makeAsyncFunc(IterableThunkCoro);
+async.iterable.result = makeAsyncFunc(IterableResultCoro);
+async.express = makeAsyncFunc(ExpressCoro);
 async.maxConcurrency = Coro.maxConcurrency;
 
 //TODO:...

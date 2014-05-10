@@ -6,7 +6,7 @@ var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
 describe('A suspendable function returned by async.cps(...)', function () {
-    it('should synchronously return nothing', function () {
+    it('synchronously returns nothing', function () {
         var foo = async.cps(function () {
         });
         var syncResult = foo(function () {
@@ -14,7 +14,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         expect(syncResult).to.not.exist;
     });
 
-    it('should throw if a callback is not supplied after the other arguments', function () {
+    it('throws if a callback is not supplied after the other arguments', function () {
         var foo = async.cps(function () {
         });
         var bar = async.cps(function (a, b) {
@@ -37,7 +37,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         }).to.throw(Error);
     });
 
-    it('should execute its definition asynchronously', function (done) {
+    it('executes its definition asynchronously', function (done) {
         var x = 5;
         var foo = async.cps(function () {
             x = 7;
@@ -50,7 +50,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         expect(x).to.equal(5);
     });
 
-    it('should eventually resolve with its definition\'s returned value', function (done) {
+    it('eventually resolves with its definition\'s returned value', function (done) {
         var foo = async.cps(function () {
             return 'blah';
         });
@@ -61,7 +61,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         }).catch(done);
     });
 
-    it('should eventually reject with its definition\'s thrown value', function (done) {
+    it('eventually rejects with its definition\'s thrown value', function (done) {
         var act, exp = new Error('Expected thrown value to match rejection value');
         var foo = async.cps(function () {
             throw exp;
@@ -79,7 +79,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         });
     });
 
-    it('should ignore yielded values', function (done) {
+    it('ignores yielded values', function (done) {
         var foo = async.cps(function () {
             yield_(111);
             yield_(222);

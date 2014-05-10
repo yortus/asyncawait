@@ -8,6 +8,7 @@ class NodebackCoro extends Coro {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]) {
+        //TODO: allow callback to be omitted if arity is known (need option for this?)
         this.callback = args.pop();
         if (!_.isFunction(this.callback)) throw new Error('Expected final argument to be a callback');
         super.invoke(func, this_, args);

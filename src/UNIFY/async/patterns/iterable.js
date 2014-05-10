@@ -19,11 +19,11 @@ var IterableCoro = (function (_super) {
         return new AsyncIterator(this);
     };
 
-    IterableCoro.prototype.invokeNext = function (callback) {
+    IterableCoro.prototype.invokeNext = function () {
         var _this = this;
         var res = this.nextResolver = Promise.defer();
         setImmediate(function () {
-            return _this.done ? res.reject('iterated past end') : _this.resume();
+            return _this.done ? res.reject(new Error('iterated past end')) : _this.resume();
         });
         return this.nextResolver.promise;
     };
@@ -49,8 +49,8 @@ var AsyncIterator = (function () {
     function AsyncIterator(iterable) {
         this.iterable = iterable;
     }
-    AsyncIterator.prototype.next = function (callback) {
-        return this.iterable.invokeNext(callback);
+    AsyncIterator.prototype.next = function () {
+        return this.iterable.invokeNext();
     };
 
     AsyncIterator.prototype.forEach = function (callback) {
@@ -62,19 +62,18 @@ var AsyncIterator = (function () {
             throw new Error('forEach(): expected argument to be a function');
 
         var result = Promise.defer();
+        var stepNext = function () {
+            return _this.next().then(stepResolved, function (err) {
+                return result.reject(err);
+            });
+        };
         var stepResolved = function (item) {
             if (item.done)
                 return result.resolve(item.value);
             callback(item.value);
-            setImmediate(function () {
-                return _this.next().then(stepResolved, function (err) {
-                    return result.reject(err);
-                });
-            });
+            setImmediate(stepNext);
         };
-        this.next().then(stepResolved, function (err) {
-            return result.reject(err);
-        });
+        stepNext();
         return result.promise;
     };
     return AsyncIterator;

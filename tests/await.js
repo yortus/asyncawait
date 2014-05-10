@@ -7,13 +7,13 @@ var await = require('asyncawait/await');
 var expect = chai.expect;
 
 describe('The await(...) function', function () {
-    it('should throw if not called within a suspendable function', function () {
+    it('throws if not called within a suspendable function', function () {
         expect(function () {
             return await(111);
         }).to.throw(Error);
     });
 
-    it('should suspend the suspendable function until the expression produces a result', function (done) {
+    it('suspends the suspendable function until the expression produces a result', function (done) {
         var x = 5;
         var foo = async(function () {
             await(Promise.delay(40));
@@ -38,7 +38,7 @@ describe('The await(...) function', function () {
         expect(x).to.equal(5);
     });
 
-    it('should resume the suspendable function with the value of the awaited expression', function (done) {
+    it('resumes the suspendable function with the value of the awaited expression', function (done) {
         var foo = async(function () {
             return await(Promise.delay(20).then(function () {
                 return 'blah';

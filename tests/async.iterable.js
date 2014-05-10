@@ -2,6 +2,7 @@
 var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -18,9 +19,7 @@ describe('async.iterable(...)', function () {
     });
 
     describe('returns a function', function () {
-        it('which returns an AsyncIterator with next() and forEach() methods', function () {
-            var foo = async.iterable(function () {
-            });
+        it('which returns an async iterator with next() and forEach() methods', function () {
             var syncResult = foo();
             expect(syncResult).is.an('object');
             expect(syncResult.next).is.a('function');
@@ -44,60 +43,35 @@ describe('async.iterable(...)', function () {
             expect(arr).to.be.empty;
         });
 
-        it('eventually resolves with the definition\'s yielded value', function (done) {
+        it('eventually resolves with the definition\'s yielded value', async.cps(function () {
             var iter = foo(3);
-            iter.next().then(function (result) {
-                return expect(result).to.deep.equal({ done: false, value: 111 });
-            }).then(function (result) {
-                return iter.next();
-            }).then(function (result) {
-                return expect(result).to.deep.equal({ done: false, value: 222 });
-            }).then(function (result) {
-                return iter.next();
-            }).then(function (result) {
-                return expect(result).to.deep.equal({ done: false, value: 333 });
-            }).then(function (result) {
-                return iter.next();
-            }).then(function (result) {
-                return expect(result).to.deep.equal({ done: true, value: 'done' });
-            }).then(function () {
-                return done();
-            }).catch(done);
-        });
+            expect(await(iter.next())).to.deep.equal({ done: false, value: 111 });
+            expect(await(iter.next())).to.deep.equal({ done: false, value: 222 });
+            expect(await(iter.next())).to.deep.equal({ done: false, value: 333 });
+            expect(await(iter.next())).to.deep.equal({ done: true, value: 'done' });
+        }));
 
-        it('eventually rejects with the definition\'s thrown value', function (done) {
+        it('eventually rejects with the definition\'s thrown value', async.cps(function () {
             var err, iter = foo(20);
-            iter.next().catch(function (err_) {
-                return err = err_;
-            }).then(function () {
-                if (!err)
-                    done(new Error("Expected function to throw"));
-                else if (err.message === 'out of range')
-                    done();
-                else
-                    done(new Error('Expected thrown value to match rejection value'));
-            });
-        });
+            expect(function () {
+                return await(iter.next());
+            }).to.throw(Error, 'out of range');
+        }));
 
-        it('eventually rejects if the iteration is already finished', function (done) {
+        it('eventually rejects if the iteration is already finished', async.cps(function () {
             var err, iter = foo(1);
-            iter.next().then(function (result) {
-                return expect(result).to.deep.equal({ done: false, value: 111 });
-            }).then(function (result) {
-                return iter.next();
-            }).then(function (result) {
-                return expect(result).to.deep.equal({ done: true, value: 'done' });
-            }).then(function (result) {
-                return iter.next();
-            }).catch(function (err_) {
-                return err = err_;
-            }).then(function () {
-                return done(err ? null : new Error("Expected function to throw"));
-            });
-        });
+            expect(await(iter.next())).to.deep.equal({ done: false, value: 111 });
+            expect(await(iter.next())).to.deep.equal({ done: true, value: 'done' });
+            expect(function () {
+                return await(iter.next());
+            }).to.throw(Error);
+        }));
     });
 
     describe('provides an AsyncIterator whose forEach() method', function () {
+        function nullFunc() {
+        }
+
         it('expects a single callback as its argument', function () {
             expect(function () {
                 return foo(3).forEach();
@@ -106,21 +80,18 @@ describe('async.iterable(...)', function () {
                 return foo(3).forEach(1);
             }).to.throw(Error);
             expect(function () {
-                return foo(3).forEach(1, function () {
-                });
+                return foo(3).forEach(1, nullFunc);
             }).to.throw(Error);
         });
 
         it('synchronously returns a promise', function () {
             var iter = foo(3);
-            expect(iter.forEach(function () {
-            })).instanceOf(Promise);
+            expect(iter.forEach(nullFunc)).instanceOf(Promise);
         });
 
         it('executes its definition asynchronously', function (done) {
             var arr = [], iter = foo(3, arr);
-            iter.forEach(function () {
-            }).then(function (result) {
+            iter.forEach(nullFunc).then(function (result) {
                 return expect(arr).to.deep.equal([111, 222, 333]);
             }).then(function () {
                 return done();
@@ -128,56 +99,35 @@ describe('async.iterable(...)', function () {
             expect(arr).to.be.empty;
         });
 
-        it('iterates over all yielded values', function (done) {
+        it('iterates over all yielded values', async.cps(function () {
             var arr = [], iter = foo(4);
-            iter.forEach(function (val) {
+            await(iter.forEach(function (val) {
                 return arr.push(val);
-            }).then(function (result) {
-                return expect(arr).to.deep.equal([111, 222, 333, 444]);
-            }).then(function () {
-                return done();
-            }).catch(done);
-        });
+            }));
+            expect(arr).to.deep.equal([111, 222, 333, 444]);
+        }));
 
-        it('eventually resolves with the definition\'s returned value', function (done) {
+        it('eventually resolves with the definition\'s returned value', async.cps(function () {
             var arr = [], iter = foo(7, arr);
-            iter.forEach(function () {
-            }).then(function (result) {
-                return expect(result).to.equal('done');
-            }).then(function (result) {
-                return expect(arr.length).to.equal(7);
-            }).then(function () {
-                return done();
-            }).catch(done);
-        });
+            var result = await(iter.forEach(nullFunc));
+            expect(result).to.equal('done');
+            expect(arr.length).to.equal(7);
+        }));
 
-        it('eventually rejects with the definition\'s thrown value', function (done) {
+        it('eventually rejects with the definition\'s thrown value', async.cps(function () {
             var err, iter = foo(20);
-            iter.forEach(function () {
-            }).catch(function (err_) {
-                return err = err_;
-            }).then(function () {
-                if (!err)
-                    done(new Error("Expected function to throw"));
-                else if (err.message === 'out of range')
-                    done();
-                else
-                    done(new Error('Expected thrown value to match rejection value'));
-            });
-        });
+            expect(function () {
+                return await(iter.forEach(nullFunc));
+            }).to.throw(Error, 'out of range');
+        }));
 
-        it('eventually rejects if the iteration is already finished', function (done) {
-            var err, iter = foo(3);
-            iter.forEach(function () {
-            }).then(function () {
-                return iter.forEach(function () {
-                });
-            }).catch(function (err_) {
-                return err = err_;
-            }).then(function () {
-                return done(err ? null : new Error("Expected function to throw"));
-            });
-        });
+        it('eventually rejects if the iteration is already finished', async.cps(function () {
+            var err, iter = foo(1);
+            await(iter.forEach(nullFunc));
+            expect(function () {
+                return await(iter.forEach(nullFunc));
+            }).to.throw(Error);
+        }));
     });
 });
 //# sourceMappingURL=async.iterable.js.map

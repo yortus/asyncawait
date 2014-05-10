@@ -6,7 +6,7 @@ var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
 describe('A suspendable function returned by async.thunk(...)', function () {
-    it('should synchronously return a thunk', function () {
+    it('synchronously returns a thunk', function () {
         var foo = async.thunk(function () {
         });
         var syncResult = foo();
@@ -14,7 +14,7 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         expect(syncResult.length).to.equal(1);
     });
 
-    it('should not execute if the thunk is not invoked', function (done) {
+    it('does not execute if the thunk is not invoked', function (done) {
         var x = 5;
         var foo = async.thunk(function () {
             x = 7;
@@ -28,7 +28,7 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         expect(x).to.equal(5);
     });
 
-    it('should execute its definition asynchronously', function (done) {
+    it('executes its definition asynchronously', function (done) {
         var x = 5;
         var foo = async.thunk(function () {
             x = 7;
@@ -41,7 +41,7 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         expect(x).to.equal(5);
     });
 
-    it('should eventually resolve with its definition\'s returned value', function (done) {
+    it('eventually resolves with its definition\'s returned value', function (done) {
         var foo = async.thunk(function () {
             return 'blah';
         });
@@ -52,7 +52,7 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         }).catch(done);
     });
 
-    it('should eventually reject with its definition\'s thrown value', function (done) {
+    it('eventually rejects with its definition\'s thrown value', function (done) {
         var act, exp = new Error('Expected thrown value to match rejection value');
         var foo = async.thunk(function () {
             throw exp;
@@ -70,7 +70,7 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         });
     });
 
-    it('should ignore yielded values', function (done) {
+    it('ignores yielded values', function (done) {
         var foo = async.thunk(function () {
             yield_(111);
             yield_(222);

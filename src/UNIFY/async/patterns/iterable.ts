@@ -8,14 +8,14 @@ export = IterableCoro;
 class IterableCoro extends Coro {
     constructor() { super(); }
 
-    invoke(func: Function, this_: any, args: any[]) {
+    invoke(func: Function, this_: any, args: any[]): any {
         super.invoke(func, this_, args);
-        return <any> new AsyncIterator(this);
+        return new AsyncIterator(this);
     }
 
-    invokeNext(callback?) {
+    invokeNext() {
         var res = this.nextResolver = Promise.defer<any>();
-        setImmediate(() => this.done ? res.reject('iterated past end') : this.resume());
+        setImmediate(() => this.done ? res.reject(new Error('iterated past end')) : this.resume());
         return this.nextResolver.promise;
     }
 
@@ -43,8 +43,8 @@ class AsyncIterator {
 
     constructor(private iterable: IterableCoro) { }
 
-    next(callback?) {
-        return this.iterable.invokeNext(callback);
+    next() {
+        return this.iterable.invokeNext();
     }
 
     forEach(callback: (value) => void) {
@@ -54,12 +54,13 @@ class AsyncIterator {
         if (!_.isFunction(callback)) throw new Error('forEach(): expected argument to be a function');
 
         var result = Promise.defer<void>();
+        var stepNext = () => this.next().then(stepResolved, err => result.reject(err));
         var stepResolved = item => {
             if (item.done) return result.resolve(item.value);
             callback(item.value);
-            setImmediate(() => this.next().then(stepResolved, err => result.reject(err)));
+            setImmediate(stepNext);
         }
-        this.next().then(stepResolved, err => result.reject(err))
+        stepNext();
         return result.promise;
     }
 }

@@ -28,6 +28,9 @@
     <Compile Include="iteration.js" />
     <Compile Include="parallel.js" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="stream.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>

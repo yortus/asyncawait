@@ -53,7 +53,12 @@
     <TypeScriptCompile Include="typings\node-fibers.d.ts" />
     <TypeScriptCompile Include="typings\node.d.ts" />
     <TypeScriptCompile Include="UNIFY\async\coro.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\express.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\iterable.thunk.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\iterable.result.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\iterable.cps.ts" />
     <TypeScriptCompile Include="UNIFY\async\patterns\iterable.ts" />
+    <TypeScriptCompile Include="UNIFY\async\patterns\stream.ts" />
     <TypeScriptCompile Include="UNIFY\async\patterns\pseudoSync.ts" />
     <TypeScriptCompile Include="UNIFY\async\patterns\thunk.ts" />
     <TypeScriptCompile Include="UNIFY\async\patterns\nodeback.ts" />

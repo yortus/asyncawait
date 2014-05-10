@@ -14,6 +14,7 @@ var NodebackCoro = (function (_super) {
     }
     NodebackCoro.prototype.invoke = function (func, this_, args) {
         var _this = this;
+        //TODO: allow callback to be omitted if arity is known (need option for this?)
         this.callback = args.pop();
         if (!_.isFunction(this.callback))
             throw new Error('Expected final argument to be a callback');

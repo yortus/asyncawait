@@ -1,14 +1,14 @@
 ﻿import _refs = require('_refs');
-import NodebackIdiom = require('./nodeback');
-export = ThunkIdiom;
+import NodebackCoro = require('./nodeback');
+export = ThunkCoro;
 
 
-class ThunkIdiom extends NodebackIdiom {
+class ThunkCoro extends NodebackCoro {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]) {
-        return (callback: (err, result) => void) => {
-            args.push(callback);
+        return (callback?: (err, result) => void) => {
+            args.push(callback || nullFunc);
             super.invoke(func, this_, args);
         };
     }
@@ -17,3 +17,6 @@ class ThunkIdiom extends NodebackIdiom {
         return func.length;
     }
 }
+
+
+function nullFunc() {}
