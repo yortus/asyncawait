@@ -41,6 +41,12 @@ module.exports = function(grunt) {
                 options: { reporter: 'list' },
                 src: ['tests/**/*.js']
             }
+        },
+
+        execute: {
+            bench: {
+                src: ['./comparison/benchmark.js']
+            }
         }
 
     });
@@ -51,9 +57,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-execute');
 
     // Register task aliases and the default task
     grunt.registerTask('build', ['ts:main', 'copy:main']);
     grunt.registerTask('test', ['mochaTest:main']);
+    grunt.registerTask('bench', ['execute:bench']);
     grunt.registerTask('default', ['build', 'test']);
 };

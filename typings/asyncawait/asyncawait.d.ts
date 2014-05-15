@@ -3,6 +3,9 @@
 // Definitions by: Troy Gerwien <https://github.com/yortus>
 
 
+///<reference path="../node/node.d.ts" />
+
+
 declare module AsyncAwait {
 
     //------------------------- Async -------------------------
@@ -58,8 +61,8 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
 
-    export interface AsyncStream extends AsyncFunction {//TODO: require stream
-        (fn: Function): (...args: any[]) => any;
+    export interface AsyncStream extends AsyncFunction {
+        (fn: Function): (...args: any[]) => ReadableStream;
     }
 
     export interface AsyncIterablePromise extends AsyncFunction {
@@ -95,6 +98,11 @@ declare module AsyncAwait {
         <T>(expr: Thunk<T>): T;
         <T>(expr: Thunk<T>[]): T[];
         (expr: Object): Object;
+    }
+
+    //------------------------- Yield -------------------------
+    export interface Yield {
+        (expr?: any): void;
     }
 
     //------------------------- Common -------------------------
@@ -152,37 +160,61 @@ declare module AsyncAwait {
 declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
+    export import yield = require("asyncawait/yield");
 }
+declare module "asyncawait/async" { var async: AsyncAwait.Async; export = async; }
+declare module "asyncawait/await" { var await: AsyncAwait.Await; export = await; }
+declare module "asyncawait/yield" { var yield_: AsyncAwait.Yield; export = yield_; }
+declare module "asyncawait/async/promise" { var async: AsyncAwait.AsyncPromise; export = async; }
+declare module "asyncawait/async/cps" { var async: AsyncAwait.AsyncCPS; export = async; }
+declare module "asyncawait/async/thunk" { var async: AsyncAwait.AsyncThunk; export = async; }
+declare module "asyncawait/async/stream" { var async: AsyncAwait.AsyncStream; export = async; }
+declare module "asyncawait/async/express" { var async: AsyncAwait.AsyncCPS; export = async; }
+declare module "asyncawait/async/iterable" { var async: AsyncAwait.AsyncIterable; export = async; }
+declare module "asyncawait/async/iterable/promise" { var async: AsyncAwait.AsyncIterablePromise; export = async; }
+declare module "asyncawait/async/iterable/cps" { var async: AsyncAwait.AsyncIterableCPS; export = async; }
+declare module "asyncawait/async/iterable/thunk" { var async: AsyncAwait.AsyncIterableThunk; export = async; }
 
-declare module "asyncawait/async" {
-    /**
-     * Creates a suspendable function. Suspendable functions may use the await() function
-     * internally to suspend execution at arbitrary points, pending the results of
-     * internal asynchronous operations.
-     * @param {Function} fn - Contains the body of the suspendable function. Calls to await()
-     *                        may appear inside this function.
-     * @returns {Function} A function of the form `(...args) --> Promise`. Any arguments
-     *                     passed to this function are passed through to fn. The returned
-     *                     promise is resolved when fn returns, or rejected if fn throws.
-     */
-    var M: AsyncAwait.Async;
-    export = M;
-}
 
-declare module "asyncawait/await" {
-    /**
-     * Suspends a suspendable function until the given awaitable expression produces
-     * a result. If the given expression produces an error, then an exception is raised
-     * in the suspendable function.
-     * @param {any} expr - The awaitable expression whose results are to be awaited.
-     * @returns {any} The final result of the given awaitable expression.
-     */
-    var M: AsyncAwait.Await
-    export = M;
-}
 
-declare module "asyncawait/yield" {
-    //TODO: doc this
-    var M: (expr?: any) => void;
-    export = M;
-}
+
+
+
+//TODO: was...
+//declare module "asyncawait" {
+//    export import async = require("asyncawait/async");
+//    export import await = require("asyncawait/await");
+//}
+
+//declare module "asyncawait/async" {
+//    /**
+//     * Creates a suspendable function. Suspendable functions may use the await() function
+//     * internally to suspend execution at arbitrary points, pending the results of
+//     * internal asynchronous operations.
+//     * @param {Function} fn - Contains the body of the suspendable function. Calls to await()
+//     *                        may appear inside this function.
+//     * @returns {Function} A function of the form `(...args) --> Promise`. Any arguments
+//     *                     passed to this function are passed through to fn. The returned
+//     *                     promise is resolved when fn returns, or rejected if fn throws.
+//     */
+//    var M: AsyncAwait.Async;
+//    export = M;
+//}
+
+//declare module "asyncawait/await" {
+//    /**
+//     * Suspends a suspendable function until the given awaitable expression produces
+//     * a result. If the given expression produces an error, then an exception is raised
+//     * in the suspendable function.
+//     * @param {any} expr - The awaitable expression whose results are to be awaited.
+//     * @returns {any} The final result of the given awaitable expression.
+//     */
+//    var M: AsyncAwait.Await
+//    export = M;
+//}
+
+//declare module "asyncawait/yield" {
+//    //TODO: doc this
+//    var M: (expr?: any) => void;
+//    export = M;
+//}
