@@ -1,10 +1,10 @@
 ﻿import references = require('references');
 import _ = require('lodash');
-import Coro = require('../coro');
-export = NodebackCoro;
+import Protocol = require('./impl/protocol');
+export = CPSProtocol;
 
 
-class NodebackCoro extends Coro {
+class CPSProtocol extends Protocol {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]) {

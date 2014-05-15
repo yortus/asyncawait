@@ -1,11 +1,11 @@
 ﻿import references = require('references');
 import _ = require('lodash');
 import Promise = require('bluebird');
-import Coro = require('../coro');
-export = IterableCpsCoro;
+import Protocol = require('../impl/protocol');
+export = IterableCPSProtocol;
 
 
-class IterableCpsCoro extends Coro {
+class IterableCPSProtocol extends Protocol {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]): any {
@@ -40,7 +40,7 @@ class IterableCpsCoro extends Coro {
 
 class AsyncIterator {
 
-    constructor(private iterable: IterableCpsCoro) { }
+    constructor(private iterable: IterableCPSProtocol) { }
 
     next(callback?: (err, item?: { done: boolean; value?: any; }) => void) {
         return this.iterable.invokeNext(callback || nullFunc);

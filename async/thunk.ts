@@ -1,9 +1,9 @@
 ﻿import references = require('references');
-import NodebackCoro = require('./nodeback');
-export = ThunkCoro;
+import CPSProtocol = require('./cps');
+export = ThunkProtocol;
 
 
-class ThunkCoro extends NodebackCoro {
+class ThunkProtocol extends CPSProtocol {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]) {

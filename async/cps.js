@@ -5,14 +5,14 @@
     d.prototype = new __();
 };
 var _ = require('lodash');
-var Coro = require('../coro');
+var Protocol = require('./impl/protocol');
 
-var NodebackCoro = (function (_super) {
-    __extends(NodebackCoro, _super);
-    function NodebackCoro() {
+var CPSProtocol = (function (_super) {
+    __extends(CPSProtocol, _super);
+    function CPSProtocol() {
         _super.call(this);
     }
-    NodebackCoro.prototype.invoke = function (func, this_, args) {
+    CPSProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
         //TODO: allow callback to be omitted if arity is known (need option for this?)
         this.callback = args.pop();
@@ -24,18 +24,18 @@ var NodebackCoro = (function (_super) {
         });
     };
 
-    NodebackCoro.prototype.return = function (result) {
+    CPSProtocol.prototype.return = function (result) {
         this.callback(null, result);
     };
 
-    NodebackCoro.prototype.throw = function (error) {
+    CPSProtocol.prototype.throw = function (error) {
         this.callback(error);
     };
 
-    NodebackCoro.arityFor = function (func) {
+    CPSProtocol.arityFor = function (func) {
         return func.length + 1;
     };
-    return NodebackCoro;
-})(Coro);
-module.exports = NodebackCoro;
-//# sourceMappingURL=nodeback.js.map
+    return CPSProtocol;
+})(Protocol);
+module.exports = CPSProtocol;
+//# sourceMappingURL=cps.js.map

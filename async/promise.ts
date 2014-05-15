@@ -1,10 +1,10 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
-import Coro = require('../coro');
-export = PromiseCoro;
+import Protocol = require('./impl/protocol');
+export = PromiseProtocol;
 
 
-class PromiseCoro extends Coro {
+class PromiseProtocol extends Protocol {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]) {

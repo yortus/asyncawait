@@ -1,11 +1,11 @@
 ﻿import references = require('references');
 import _ = require('lodash');
 import Promise = require('bluebird');
-import IterableCpsCoro = require('./iterable.cps');
-export = IterableThunkCoro;
+import IterableCPSProtocol = require('./cps');
+export = IterableThunkProtocol;
 
 
-class IterableThunkCoro extends IterableCpsCoro {
+class IterableThunkProtocol extends IterableCPSProtocol {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]): any {

@@ -6,14 +6,14 @@
 };
 var stream = require('stream');
 
-var Coro = require('../coro');
+var Protocol = require('./impl/protocol');
 
-var StreamCoro = (function (_super) {
-    __extends(StreamCoro, _super);
-    function StreamCoro() {
+var StreamProtocol = (function (_super) {
+    __extends(StreamProtocol, _super);
+    function StreamProtocol() {
         _super.call(this);
     }
-    StreamCoro.prototype.invoke = function (func, this_, args) {
+    StreamProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
         _super.prototype.invoke.call(this, func, this_, args);
         var stream = this.stream = new Stream(function () {
@@ -24,20 +24,20 @@ var StreamCoro = (function (_super) {
         return stream;
     };
 
-    StreamCoro.prototype.return = function (result) {
+    StreamProtocol.prototype.return = function (result) {
         this.stream.push(null);
     };
 
-    StreamCoro.prototype.throw = function (error) {
+    StreamProtocol.prototype.throw = function (error) {
         this.stream.emit('error', error);
     };
 
-    StreamCoro.prototype.yield = function (value) {
+    StreamProtocol.prototype.yield = function (value) {
         this.stream.push(value);
         this.suspend();
     };
-    return StreamCoro;
-})(Coro);
+    return StreamProtocol;
+})(Protocol);
 
 var Stream = (function (_super) {
     __extends(Stream, _super);
@@ -50,5 +50,5 @@ var Stream = (function (_super) {
     };
     return Stream;
 })(stream.Readable);
-module.exports = StreamCoro;
+module.exports = StreamProtocol;
 //# sourceMappingURL=stream.js.map

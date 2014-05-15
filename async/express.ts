@@ -1,9 +1,9 @@
 ﻿import references = require('references');
-import NodebackCoro = require('./nodeback');
-export = ExpressCoro;
+import CPSPRotocol = require('./cps');
+export = ExpressProtocol;
 
 
-class ExpressCoro extends NodebackCoro {
+class ExpressProtocol extends CPSPRotocol {
     constructor() { super(); }
 
     return(result) {

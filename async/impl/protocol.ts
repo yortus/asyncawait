@@ -1,10 +1,10 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
 import Semaphore = require('./semaphore');
-export = Coro;
+export = Protocol;
 
 
-class Coro implements AsyncAwait.Coro {
+class Protocol implements AsyncAwait.Protocol {
 
     invoke(func: Function, this_: any, args: any[]): any {
         this.semaphore = semaphore;

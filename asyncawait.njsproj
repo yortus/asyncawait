@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>asyncawait</Name>
@@ -18,8 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>comparison\benchmark.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -41,37 +43,37 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
-    <Content Include="async\coro.ts" />
-    <Content Include="async\index.ts" />
-    <Content Include="async\patterns\express.ts" />
-    <Content Include="async\patterns\iterable.cps.ts" />
-    <Content Include="async\patterns\iterable.result.ts" />
-    <Content Include="async\patterns\iterable.thunk.ts" />
-    <Content Include="async\patterns\iterable.ts" />
-    <Content Include="async\patterns\nodeback.ts" />
-    <Content Include="async\patterns\promise.ts" />
-    <Content Include="async\patterns\pseudoSync.ts" />
-    <Content Include="async\patterns\stream.ts" />
-    <Content Include="async\patterns\thunk.ts" />
-    <Content Include="async\semaphore.ts" />
-    <Content Include="await\index.ts" />
+    <TypeScriptCompile Include="async\impl\makeAsyncFunc.ts" />
+    <TypeScriptCompile Include="async\impl\protocol.ts" />
+    <TypeScriptCompile Include="async\impl\semaphore.ts" />
+    <TypeScriptCompile Include="async\index.ts" />
+    <TypeScriptCompile Include="async\cps.ts" />
+    <TypeScriptCompile Include="async\promise.ts" />
+    <TypeScriptCompile Include="async\stream.ts" />
+    <TypeScriptCompile Include="async\thunk.ts" />
+    <TypeScriptCompile Include="async\express.ts" />
+    <TypeScriptCompile Include="async\iterable\index.ts" />
+    <TypeScriptCompile Include="async\iterable\cps.ts" />
+    <TypeScriptCompile Include="async\iterable\thunk.ts" />
+    <TypeScriptCompile Include="async\iterable\promise.ts" />
+    <TypeScriptCompile Include="await\index.ts" />
     <Content Include="changelog.md" />
     <Content Include="comparison\README.md" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="references.d.ts" />
-    <Content Include="tests\async.cps.ts" />
-    <Content Include="tests\async.express.ts" />
-    <Content Include="tests\async.iterable.cps.ts" />
-    <Content Include="tests\async.iterable.result.ts" />
-    <Content Include="tests\async.iterable.thunk.ts" />
-    <Content Include="tests\async.iterable.ts" />
-    <Content Include="tests\async.result.ts" />
-    <Content Include="tests\async.stream.ts" />
-    <Content Include="tests\async.thunk.ts" />
-    <Content Include="tests\async.ts" />
-    <Content Include="tests\await.ts" />
+    <TypeScriptCompile Include="references.d.ts" />
+    <TypeScriptCompile Include="tests\async.cps.ts" />
+    <TypeScriptCompile Include="tests\async.express.ts" />
+    <TypeScriptCompile Include="tests\async.iterable.promise.ts" />
+    <TypeScriptCompile Include="tests\async.iterable.cps.ts" />
+    <TypeScriptCompile Include="tests\async.iterable.thunk.ts" />
+    <TypeScriptCompile Include="tests\async.iterable.ts" />
+    <TypeScriptCompile Include="tests\async.ts" />
+    <TypeScriptCompile Include="tests\async.stream.ts" />
+    <TypeScriptCompile Include="tests\async.thunk.ts" />
+    <TypeScriptCompile Include="tests\async.promise.ts" />
+    <TypeScriptCompile Include="tests\await.ts" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />
     <Content Include="typings\chai\chai.d.ts" />
@@ -79,7 +81,7 @@
     <Content Include="typings\mocha\mocha.d.ts" />
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
-    <Content Include="yield\index.ts" />
+    <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="comparison\benchmark.js" />
@@ -117,7 +119,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="async\" />
-    <Folder Include="async\patterns\" />
+    <Folder Include="async\impl\" />
+    <Folder Include="async\iterable\" />
     <Folder Include="await\" />
     <Folder Include="comparison\" />
     <Folder Include="comparison\countFiles\" />

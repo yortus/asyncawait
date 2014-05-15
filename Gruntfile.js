@@ -5,14 +5,18 @@ module.exports = function(grunt) {
 
         pkg: grunt.file.readJSON('package.json'),
 
-        ts: {
+        clean: {
             main: {
                 src: [
-                    'async/**/*.ts',
-                    'await/**/*.ts',
-                    'yield/**/*.ts',
-                    'tests/**/*.ts'
-                ],
+                    'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'tests/**/*.js',
+                    'async/**/*.js.map', 'await/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map'
+                ]
+            }
+        },
+
+        ts: {
+            main: {
+                src: ['async/**/*.ts', 'await/**/*.ts', 'yield/**/*.ts', 'tests/**/*.ts'],
                 outDir: '.',
                 options: {
                     target: 'es5',
@@ -43,6 +47,7 @@ module.exports = function(grunt) {
 
 
     // Load grunt tasks
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-mocha-test');

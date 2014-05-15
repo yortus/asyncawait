@@ -4,14 +4,14 @@
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var NodebackCoro = require('./nodeback');
+var CPSProtocol = require('./cps');
 
-var ThunkCoro = (function (_super) {
-    __extends(ThunkCoro, _super);
-    function ThunkCoro() {
+var ThunkProtocol = (function (_super) {
+    __extends(ThunkProtocol, _super);
+    function ThunkProtocol() {
         _super.call(this);
     }
-    ThunkCoro.prototype.invoke = function (func, this_, args) {
+    ThunkProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
         return function (callback) {
             args.push(callback || nullFunc);
@@ -19,13 +19,13 @@ var ThunkCoro = (function (_super) {
         };
     };
 
-    ThunkCoro.arityFor = function (func) {
+    ThunkProtocol.arityFor = function (func) {
         return func.length;
     };
-    return ThunkCoro;
-})(NodebackCoro);
+    return ThunkProtocol;
+})(CPSProtocol);
 
 function nullFunc() {
 }
-module.exports = ThunkCoro;
+module.exports = ThunkProtocol;
 //# sourceMappingURL=thunk.js.map

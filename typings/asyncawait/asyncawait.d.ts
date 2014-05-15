@@ -6,34 +6,28 @@ declare module AsyncAwait {
 
     //------------------------- Async -------------------------
     export interface Async extends AsyncReturnsPromise {
+        promise: AsyncReturnsPromise;
         cps: AsyncAcceptsCallbackReturnsNothing;
         thunk: AsyncReturnsThunk;
-        result: AsyncReturnsResult;
         stream: AsyncReturnsStream;
-        iterable: AsyncIterableReturnsPromise;
         express: AsyncAcceptsCallbackReturnsNothing;
+        iterable: AsyncIterable;
         maxConcurrency(n?: number): number;
+    }
+
+    export interface AsyncIterable extends AsyncIterableReturnsPromise {
+        promise: AsyncIterableReturnsPromise;
+        cps: AsyncIterableAcceptsCallbackReturnsNothing;
+        thunk: AsyncIterableReturnsThunk;
     }
 
     export interface AsyncFunction {
         (fn: Function): Function;
-        // These overloads provide enhanced type information to TypeScript users. The strings must match exactly.
-        mod(options: 'returns: promise, callback: false, iterable: false'   , maxConcurrency?: number): AsyncReturnsPromise;
-        mod(options: 'returns: thunk, callback: false, iterable: false'     , maxConcurrency?: number): AsyncReturnsThunk;
-        mod(options: 'returns: result, callback: false, iterable: false'    , maxConcurrency?: number): AsyncReturnsResult;
-        mod(options: 'returns: promise, callback: true, iterable: false'    , maxConcurrency?: number): AsyncAcceptsCallbackReturnsPromise;
-        mod(options: 'returns: thunk, callback: true, iterable: false'      , maxConcurrency?: number): AsyncAcceptsCallbackReturnsThunk;
-        mod(options: 'returns: result, callback: true, iterable: false'     , maxConcurrency?: number): AsyncAcceptsCallbackReturnsResult;
-        mod(options: 'returns: none, callback: true, iterable: false'       , maxConcurrency?: number): AsyncAcceptsCallbackReturnsNothing;
-        mod(options: 'returns: promise, callback: false, iterable: true'    , maxConcurrency?: number): AsyncIterableReturnsPromise;
-        mod(options: 'returns: thunk, callback: false, iterable: true'      , maxConcurrency?: number): AsyncIterableReturnsThunk;
-        mod(options: 'returns: result, callback: false, iterable: true'     , maxConcurrency?: number): AsyncIterableReturnsResult;
-        mod(options: 'returns: promise, callback: true, iterable: true'     , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsPromise;
-        mod(options: 'returns: thunk, callback: true, iterable: true'       , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsThunk;
-        mod(options: 'returns: result, callback: true, iterable: true'      , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsResult;
-        mod(options: 'returns: none, callback: true, iterable: true'        , maxConcurrency?: number): AsyncIterableAcceptsCallbackReturnsNothing;
-        mod(options: string, maxConcurrency?: number): AsyncFunction;
+
+        //TODO:...
         mod(options: AsyncOptions): AsyncFunction;
+
+        protocol: ProtocolStatic;
     }
 
     export interface AsyncOptions {
@@ -186,47 +180,19 @@ declare module AsyncAwait {
         (callback?: (err, result?) => void): void;
     }
 
-    //TODO: cleanup...
-    export interface RunContextBase {
-        suspendable: Function;
-    }
-    export interface RunContext extends RunContextBase {
-        thisArg: any;
-        argsAsArray: any[];
-        done: () => void;
-        resolver: Promise.Resolver<any>;
-        callback: (err, val?) => void;
-    }
 
 
-    //TODO: testing...
-    export interface Coroutine {
-        func: Function;
-        this: any;
-        args: any[];
-        resume(): void;
-        suspend(): void;
-    }
-    export interface AsyncPattern {
-        //TODO: runs *outside* coro
-        invoke(coro: Coroutine): any;
-        //TODO: runs *inside* coro
-        return(coro: Coroutine, result: any): void;
-        //TODO: runs *inside* coro
-        throw(coro: Coroutine, error: any): void;
-        //TODO: runs *inside* coro
-        yield(coro: Coroutine, item: any): void;
-        //TODO: runs *inside* coro
-        cleanup(coro: Coroutine): void;
-    }
 
-    export interface CoroStatic {
-        new(): Coro;
+
+
+    export interface ProtocolStatic {
+        new(): Protocol;
         maxConcurrency(n?: number): number;
         arityFor(func: Function): number;
     }
 
-    export interface Coro {
+
+    export interface Protocol {
         invoke(func: Function, this_: any, args: any[]): any; //outside
         resume(): void;             // outside
         suspend(): void;            // inside

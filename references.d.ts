@@ -15,15 +15,16 @@ interface Fiber {
     yield(value?: any): any;
     //idiom: AsyncAwait.Idiom;
 
-    /** The RunContext associated with this fiber. */
-    runContext: AsyncAwait.RunContextBase;//TODO: testing, was... RunContext
+    //TODO: was.. remove now...
+    ///** The RunContext associated with this fiber. */
+    //runContext: AsyncAwait.RunContextBase;//TODO: testing, was... RunContext
 
-    /**
-     * Executes the wrapped function specified in the RunContext instance. The final
-     * return/throw value of the wrapped function is used to notify the promise resolver
-     * and/or callback specified in the RunContext.
-     */
-    start(): any;
+    ///**
+    // * Executes the wrapped function specified in the RunContext instance. The final
+    // * return/throw value of the wrapped function is used to notify the promise resolver
+    // * and/or callback specified in the RunContext.
+    // */
+    //start(): any;
 }
 
 

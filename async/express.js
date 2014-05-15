@@ -4,14 +4,14 @@
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var NodebackCoro = require('./nodeback');
+var CPSPRotocol = require('./cps');
 
-var ExpressCoro = (function (_super) {
-    __extends(ExpressCoro, _super);
-    function ExpressCoro() {
+var ExpressProtocol = (function (_super) {
+    __extends(ExpressProtocol, _super);
+    function ExpressProtocol() {
         _super.call(this);
     }
-    ExpressCoro.prototype.return = function (result) {
+    ExpressProtocol.prototype.return = function (result) {
         if (result === 'next')
             return _super.prototype.return.call(this, null);
         if (result === 'route')
@@ -19,7 +19,7 @@ var ExpressCoro = (function (_super) {
         if (!!result)
             return _super.prototype.throw.call(this, new Error('unexpected return value: ' + result));
     };
-    return ExpressCoro;
-})(NodebackCoro);
-module.exports = ExpressCoro;
+    return ExpressProtocol;
+})(CPSPRotocol);
+module.exports = ExpressProtocol;
 //# sourceMappingURL=express.js.map

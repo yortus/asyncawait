@@ -6,20 +6,20 @@
 };
 var _ = require('lodash');
 var Promise = require('bluebird');
-var Coro = require('../coro');
+var Protocol = require('../impl/protocol');
 
-var IterableCoro = (function (_super) {
-    __extends(IterableCoro, _super);
-    function IterableCoro() {
+var IterablePromiseProtocol = (function (_super) {
+    __extends(IterablePromiseProtocol, _super);
+    function IterablePromiseProtocol() {
         _super.call(this);
         this.nextResolver = null;
     }
-    IterableCoro.prototype.invoke = function (func, this_, args) {
+    IterablePromiseProtocol.prototype.invoke = function (func, this_, args) {
         _super.prototype.invoke.call(this, func, this_, args);
         return new AsyncIterator(this);
     };
 
-    IterableCoro.prototype.invokeNext = function () {
+    IterablePromiseProtocol.prototype.invokeNext = function () {
         var _this = this;
         var res = this.nextResolver = Promise.defer();
         setImmediate(function () {
@@ -28,22 +28,22 @@ var IterableCoro = (function (_super) {
         return this.nextResolver.promise;
     };
 
-    IterableCoro.prototype.return = function (result) {
+    IterablePromiseProtocol.prototype.return = function (result) {
         this.done = true;
         this.nextResolver.resolve({ done: true, value: result });
     };
 
-    IterableCoro.prototype.throw = function (error) {
+    IterablePromiseProtocol.prototype.throw = function (error) {
         this.nextResolver.reject(error);
     };
 
-    IterableCoro.prototype.yield = function (value) {
+    IterablePromiseProtocol.prototype.yield = function (value) {
         var result = { done: false, value: value };
         this.nextResolver.resolve(result);
         this.suspend();
     };
-    return IterableCoro;
-})(Coro);
+    return IterablePromiseProtocol;
+})(Protocol);
 
 var AsyncIterator = (function () {
     function AsyncIterator(iterable) {
@@ -78,5 +78,5 @@ var AsyncIterator = (function () {
     };
     return AsyncIterator;
 })();
-module.exports = IterableCoro;
-//# sourceMappingURL=iterable.js.map
+module.exports = IterablePromiseProtocol;
+//# sourceMappingURL=promise.js.map

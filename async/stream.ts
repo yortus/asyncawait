@@ -1,11 +1,11 @@
 ﻿import references = require('references');
 import stream = require('stream');
 import Promise = require('bluebird');
-import Coro = require('../coro');
-export = StreamCoro;
+import Protocol = require('./impl/protocol');
+export = StreamProtocol;
 
 
-class StreamCoro extends Coro {
+class StreamProtocol extends Protocol {
     constructor() { super(); }
 
     invoke(func: Function, this_: any, args: any[]): stream.Readable {

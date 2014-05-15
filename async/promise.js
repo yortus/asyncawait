@@ -5,14 +5,14 @@
     d.prototype = new __();
 };
 var Promise = require('bluebird');
-var Coro = require('../coro');
+var Protocol = require('./impl/protocol');
 
-var PromiseCoro = (function (_super) {
-    __extends(PromiseCoro, _super);
-    function PromiseCoro() {
+var PromiseProtocol = (function (_super) {
+    __extends(PromiseProtocol, _super);
+    function PromiseProtocol() {
         _super.call(this);
     }
-    PromiseCoro.prototype.invoke = function (func, this_, args) {
+    PromiseProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
         this.resolver = Promise.defer();
         _super.prototype.invoke.call(this, func, this_, args);
@@ -22,18 +22,18 @@ var PromiseCoro = (function (_super) {
         return this.resolver.promise;
     };
 
-    PromiseCoro.prototype.return = function (result) {
+    PromiseProtocol.prototype.return = function (result) {
         this.resolver.resolve(result);
     };
 
-    PromiseCoro.prototype.throw = function (error) {
+    PromiseProtocol.prototype.throw = function (error) {
         this.resolver.reject(error);
     };
 
-    PromiseCoro.prototype.yield = function (value) {
+    PromiseProtocol.prototype.yield = function (value) {
         this.resolver.progress(value);
     };
-    return PromiseCoro;
-})(Coro);
-module.exports = PromiseCoro;
+    return PromiseProtocol;
+})(Protocol);
+module.exports = PromiseProtocol;
 //# sourceMappingURL=promise.js.map

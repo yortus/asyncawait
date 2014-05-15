@@ -4,7 +4,8 @@ var async = require('asyncawait/async');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
-function runTestsFor(variant) {
+function runTestsFor(variant, arityDelta) {
+    if (typeof arityDelta === "undefined") { arityDelta = 0; }
     var name = 'async' + (variant ? ('.' + variant) : '');
     var func = async;
     if (variant)
@@ -12,7 +13,7 @@ function runTestsFor(variant) {
             return func = func[prop];
         });
     var arityFor = function (fn) {
-        return fn.length + (variant === 'cps' ? 1 : 0);
+        return fn.length + arityDelta;
     };
 
     describe('The ' + name + '(...) function', function () {
@@ -57,14 +58,15 @@ function runTestsFor(variant) {
     });
 }
 runTestsFor(null);
-runTestsFor('cps');
+runTestsFor('promise');
+runTestsFor('cps', 1);
 runTestsFor('thunk');
-runTestsFor('result');
 runTestsFor('stream');
+runTestsFor('express', 1);
 runTestsFor('iterable');
+runTestsFor('iterable.promise');
 runTestsFor('iterable.cps');
 runTestsFor('iterable.thunk');
-runTestsFor('iterable.result');
 
 describe('A suspendable function returned by async(...)', function () {
     it('synchronously returns a promise', function () {

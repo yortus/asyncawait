@@ -1,10 +1,10 @@
 ﻿var Fiber = require('fibers');
 var Semaphore = require('./semaphore');
 
-var Coro = (function () {
-    function Coro() {
+var Protocol = (function () {
+    function Protocol() {
     }
-    Coro.prototype.invoke = function (func, this_, args) {
+    Protocol.prototype.invoke = function (func, this_, args) {
         this.semaphore = semaphore;
         this.func = function () {
             return func.apply(this_, args);
@@ -12,7 +12,7 @@ var Coro = (function () {
         return this;
     };
 
-    Coro.prototype.resume = function () {
+    Protocol.prototype.resume = function () {
         var _this = this;
         if (!this.fiber) {
             // This fiber is starting now.
@@ -36,38 +36,38 @@ var Coro = (function () {
         }
     };
 
-    Coro.prototype.suspend = function () {
+    Protocol.prototype.suspend = function () {
         Fiber.yield();
     };
 
-    Coro.prototype.return = function (result) {
+    Protocol.prototype.return = function (result) {
     };
 
-    Coro.prototype.throw = function (error) {
+    Protocol.prototype.throw = function (error) {
     };
 
-    Coro.prototype.yield = function (value) {
+    Protocol.prototype.yield = function (value) {
     };
 
-    Coro.prototype.dispose = function () {
+    Protocol.prototype.dispose = function () {
         this.fiber = null;
         this.func = null;
         this.semaphore.leave();
         this.semaphore = null;
     };
 
-    Coro.maxConcurrency = function (n) {
+    Protocol.maxConcurrency = function (n) {
         if (arguments.length === 0)
             return maxConcurrency;
         maxConcurrency = n;
         semaphore = new Semaphore(n);
     };
 
-    Coro.arityFor = function (func) {
+    Protocol.arityFor = function (func) {
         return func.length;
     };
 
-    Coro.prototype.fiberBody = function () {
+    Protocol.prototype.fiberBody = function () {
         try  {
             this.try();
         } catch (err) {
@@ -77,7 +77,7 @@ var Coro = (function () {
         }
     };
 
-    Coro.prototype.try = function () {
+    Protocol.prototype.try = function () {
         // Maintain an accurate count of currently active fibers, for pool management.
         adjustFiberCount(+1);
 
@@ -85,18 +85,18 @@ var Coro = (function () {
         this.return(result);
     };
 
-    Coro.prototype.catch = function (err) {
+    Protocol.prototype.catch = function (err) {
         this.throw(err);
     };
 
-    Coro.prototype.finally = function () {
+    Protocol.prototype.finally = function () {
         // Maintain an accurate count of currently active fibers, for pool management.
         adjustFiberCount(-1);
 
         //TODO:... Fiber.poolSize mgmt, user hook(s)?
         this.dispose();
     };
-    return Coro;
+    return Protocol;
 })();
 
 //TODO:...
@@ -116,5 +116,5 @@ function adjustFiberCount(delta) {
 }
 var fiberPoolSize = Fiber.poolSize;
 var activeFiberCount = 0;
-module.exports = Coro;
-//# sourceMappingURL=coro.js.map
+module.exports = Protocol;
+//# sourceMappingURL=protocol.js.map

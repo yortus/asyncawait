@@ -1,52 +1,60 @@
 {
-  "name": "asyncawait",
-  "description": "async/await for node.js",
-  "version": "0.7.1",
-  "keywords": [
-    "async",
-    "await",
-    "blocking",
-    "callback",
-    "control flow",
-    "fiber",
-    "yield",
-    "generator",
-    "coroutine",
-    "typescript",
-    "coffeescript"
-  ],
-  "main": "index.js",
-  "homepage": "https://github.com/yortus/asyncawait",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/yortus/asyncawait.git"
-  },
-  "bugs": {
-    "url": "http://github.com/yortus/asyncawait/issues"
-  },
-  "license": "MIT",
-  "author": {
-    "name": "Troy Gerwien",
-    "email": "yortus@gmail.com",
-    "url": "http://github.com/yortus/"
-  },
-  "readmeFilename": "README.md",
-  "dependencies": {
-    "bluebird": "~1.1.1",
-    "fibers": "~1.0.1",
-    "lodash": "~2.4.1"
-  },
-  "devDependencies": {
-    "mocha": "~1.18.2",
-    "chai": "~1.9.1",
-    "grunt": "~0.4.4",
-    "grunt-ts": "~1.11.2",
-    "async": "*",
-    "co": "*",
-    "memwatch": "*",
-    "rewire": "*",
-    "mock-fs": "*",
-    "grunt-contrib-copy": "~0.5.0",
-    "grunt-mocha-test": "~0.10.2"
-  }
+    "name": "asyncawait",
+    "description": "async/await for node.js",
+    "version": "0.7.1",
+    "keywords": [
+        "async/await",
+        "async",
+        "await",
+        "yield",
+        "control flow",
+        "coroutine",
+        "generator",
+        "callback",
+        "callback hell",
+        "fiber",
+        "typescript",
+        "coffeescript",
+        "asynchronous",
+        "synchronous"
+    ],
+    "main": "index.js",
+    "homepage": "https://github.com/yortus/asyncawait",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/yortus/asyncawait.git"
+    },
+    "bugs": {
+        "url": "http://github.com/yortus/asyncawait/issues"
+    },
+    "license": "MIT",
+    "author": {
+        "name": "Troy Gerwien",
+        "email": "yortus@gmail.com",
+        "url": "http://github.com/yortus/"
+    },
+    "readmeFilename": "README.md",
+    "dependencies": {
+        "bluebird": "~1.1.1",
+        "fibers": "~1.0.1",
+        "lodash": "~2.4.1"
+    },
+    "devDependencies": {
+        "mocha": "~1.18.2",
+        "chai": "~1.9.1",
+        "grunt": "~0.4.4",
+        "grunt-ts": "~1.11.2",
+        "async": "*",
+        "co": "*",
+        "memwatch": "*",
+        "rewire": "*",
+        "mock-fs": "*",
+        "grunt-contrib-copy": "~0.5.0",
+        "grunt-mocha-test": "~0.10.2",
+        "grunt-contrib-clean": "~0.5.0"
+    },
+    "scripts":  {
+        "test": "grunt test",
+        "prepublish": "grunt build"
+    }
 }

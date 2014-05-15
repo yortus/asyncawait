@@ -6,14 +6,14 @@
 };
 var _ = require('lodash');
 
-var IterableCpsCoro = require('./iterable.cps');
+var IterableCPSProtocol = require('./cps');
 
-var IterableThunkCoro = (function (_super) {
-    __extends(IterableThunkCoro, _super);
-    function IterableThunkCoro() {
+var IterableThunkProtocol = (function (_super) {
+    __extends(IterableThunkProtocol, _super);
+    function IterableThunkProtocol() {
         _super.call(this);
     }
-    IterableThunkCoro.prototype.invoke = function (func, this_, args) {
+    IterableThunkProtocol.prototype.invoke = function (func, this_, args) {
         var iter = _super.prototype.invoke.call(this, func, this_, args);
         return {
             next: function () {
@@ -35,7 +35,7 @@ var IterableThunkCoro = (function (_super) {
             }
         };
     };
-    return IterableThunkCoro;
-})(IterableCpsCoro);
-module.exports = IterableThunkCoro;
-//# sourceMappingURL=iterable.thunk.js.map
+    return IterableThunkProtocol;
+})(IterableCPSProtocol);
+module.exports = IterableThunkProtocol;
+//# sourceMappingURL=thunk.js.map

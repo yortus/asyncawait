@@ -6,20 +6,20 @@
 };
 var _ = require('lodash');
 var Promise = require('bluebird');
-var Coro = require('../coro');
+var Protocol = require('../impl/protocol');
 
-var IterableCpsCoro = (function (_super) {
-    __extends(IterableCpsCoro, _super);
-    function IterableCpsCoro() {
+var IterableCPSProtocol = (function (_super) {
+    __extends(IterableCPSProtocol, _super);
+    function IterableCPSProtocol() {
         _super.call(this);
         this.nextCallback = null;
     }
-    IterableCpsCoro.prototype.invoke = function (func, this_, args) {
+    IterableCPSProtocol.prototype.invoke = function (func, this_, args) {
         _super.prototype.invoke.call(this, func, this_, args);
         return new AsyncIterator(this);
     };
 
-    IterableCpsCoro.prototype.invokeNext = function (callback) {
+    IterableCPSProtocol.prototype.invokeNext = function (callback) {
         var _this = this;
         this.nextCallback = callback;
         setImmediate(function () {
@@ -27,22 +27,22 @@ var IterableCpsCoro = (function (_super) {
         });
     };
 
-    IterableCpsCoro.prototype.return = function (result) {
+    IterableCPSProtocol.prototype.return = function (result) {
         this.done = true;
         this.nextCallback(null, { done: true, value: result });
     };
 
-    IterableCpsCoro.prototype.throw = function (error) {
+    IterableCPSProtocol.prototype.throw = function (error) {
         this.nextCallback(error);
     };
 
-    IterableCpsCoro.prototype.yield = function (value) {
+    IterableCPSProtocol.prototype.yield = function (value) {
         var result = { done: false, value: value };
         this.nextCallback(null, result);
         this.suspend();
     };
-    return IterableCpsCoro;
-})(Coro);
+    return IterableCPSProtocol;
+})(Protocol);
 
 var AsyncIterator = (function () {
     function AsyncIterator(iterable) {
@@ -80,5 +80,5 @@ var AsyncIterator = (function () {
 
 function nullFunc() {
 }
-module.exports = IterableCpsCoro;
-//# sourceMappingURL=iterable.cps.js.map
+module.exports = IterableCPSProtocol;
+//# sourceMappingURL=cps.js.map
