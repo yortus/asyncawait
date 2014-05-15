@@ -1,4 +1,4 @@
-﻿///<reference path="../src/_refs.d.ts" />
+﻿///<reference path="../src/references.ts" />
 import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');

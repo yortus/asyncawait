@@ -1,4 +1,4 @@
-﻿///<reference path="../src/_refs.d.ts" />
+﻿////<reference path="../src/references.ts" />
 var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
@@ -92,7 +92,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         }).then(function (result) {
             return expect(result).to.equal(444);
         }).then(function () {
-            return expect(yields).to.deep.equal([]);
+            return expect(yields).to.be.empty;
         }).then(function () {
             return done();
         }).catch(done);

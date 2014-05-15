@@ -1,4 +1,4 @@
-﻿///<reference path="../src/_refs.d.ts" />
+﻿///<reference path="../src/references.ts" />
 var stream = require('stream');
 var chai = require('chai');
 

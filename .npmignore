@@ -1,6 +1,7 @@
 *.suo
+*.sln
 *.user
+*.js.map
 obj/
-/node_modules/*
-!/node_modules/asyncawait
-/*/node_modules/
+node_modules/
+.tscache/

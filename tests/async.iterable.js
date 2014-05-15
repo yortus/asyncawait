@@ -1,4 +1,4 @@
-﻿///<reference path="../src/_refs.d.ts" />
+﻿///<reference path="../src/references.ts" />
 var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
@@ -27,7 +27,7 @@ describe('async.iterable(...)', function () {
         });
     });
 
-    describe('provides an AsyncIterator whose next() method', function () {
+    describe('provides an iterator whose next() method', function () {
         it('synchronously returns a promise', function () {
             var iter = foo(3);
             expect(iter.next()).instanceOf(Promise);
@@ -68,7 +68,7 @@ describe('async.iterable(...)', function () {
         }));
     });
 
-    describe('provides an AsyncIterator whose forEach() method', function () {
+    describe('provides an iterator whose forEach() method', function () {
         function nullFunc() {
         }
 

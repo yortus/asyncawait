@@ -1,4 +1,4 @@
-﻿///<reference path="../src/_refs.d.ts" />
+﻿///<reference path="../src/references.ts" />
 import stream = require('stream');
 import chai = require('chai');
 import Promise = require('bluebird');

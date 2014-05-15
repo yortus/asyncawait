@@ -38,6 +38,13 @@
   },
   "devDependencies": {
     "mocha": "~1.18.2",
-    "chai": "~1.9.1"
+    "chai": "~1.9.1",
+    "grunt": "~0.4.4",
+    "grunt-ts": "~1.11.2",
+    "async": "*",
+    "co": "*",
+    "memwatch": "*",
+    "rewire": "*",
+    "mock-fs": "*"
   }
 }
