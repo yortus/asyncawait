@@ -1,4 +1,5 @@
-﻿import _ = require('lodash');
+﻿import references = require('references');
+import _ = require('lodash');
 export = makeAsyncFunc;
 
 

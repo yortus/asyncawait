@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
-import Semaphore = require('./semaphore');
+import Semaphore = require('../semaphore');
 export = Protocol;
 
 

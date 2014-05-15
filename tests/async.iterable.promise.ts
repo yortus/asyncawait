@@ -39,7 +39,7 @@ describe('async.iterable.promise(...)', () => {
 
         it('executes its definition asynchronously', done => {
             var arr = [], iter = foo(3, arr);
-            (<Promise<any>> iter.next())
+            iter.next()
             .then(result => expect(arr).to.deep.equal([111]))
             .then(() => done())
             .catch(done);
@@ -85,7 +85,7 @@ describe('async.iterable.promise(...)', () => {
 
         it('executes its definition asynchronously', done => {
             var arr = [], iter = foo(3, arr);
-            (<Promise<any>> iter.forEach(nullFunc))
+            iter.forEach(nullFunc)
             .then(result => expect(arr).to.deep.equal([111, 222, 333]))
             .then(() => done())
             .catch(done);

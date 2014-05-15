@@ -22,7 +22,7 @@ var descendentFilePaths = async.iterable (function self(dir, recursive) {
 
 var program = async (function(dir) {
     var paths = descendentFilePaths(dir, true);
-    paths.forEach(console.log);
+    await (paths.forEach(console.log));
     return 'Finished!';
 });
 

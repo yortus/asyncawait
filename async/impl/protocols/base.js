@@ -1,5 +1,5 @@
 ﻿var Fiber = require('fibers');
-var Semaphore = require('./semaphore');
+var Semaphore = require('../semaphore');
 
 var Protocol = (function () {
     function Protocol() {
@@ -117,4 +117,4 @@ function adjustFiberCount(delta) {
 var fiberPoolSize = Fiber.poolSize;
 var activeFiberCount = 0;
 module.exports = Protocol;
-//# sourceMappingURL=protocol.js.map
+//# sourceMappingURL=base.js.map

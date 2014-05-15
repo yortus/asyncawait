@@ -137,4 +137,3 @@ describe('A suspendable function returned by async(...)', function () {
         }).catch(done);
     });
 });
-//# sourceMappingURL=async.js.map

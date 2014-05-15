@@ -17,7 +17,7 @@ describe('A suspendable function returned by async.promise(...)', () => {
     it('executes its definition asynchronously', done => {
         var x = 5;
         var foo = async.promise (() => { x = 7; });
-        (<Promise<any>> foo())
+        foo()
         .then(result => expect(x).to.equal(7))
         .then(() => done())
         .catch(done);
@@ -26,7 +26,7 @@ describe('A suspendable function returned by async.promise(...)', () => {
 
     it('eventually resolves with its definition\'s returned value', done => {
         var foo = async.promise (() => { return 'blah'; });
-        (<Promise<any>> foo())
+        foo()
         .then(result => expect(result).to.equal('blah'))
         .then(() => done())
         .catch(done);
@@ -35,7 +35,7 @@ describe('A suspendable function returned by async.promise(...)', () => {
     it('eventually rejects with its definition\'s thrown value', done => {
         var act, exp = new Error('Expected thrown value to match rejection value');
         var foo = async.promise (() => { throw exp; return 'blah'; });
-        (<Promise<any>> foo())
+        foo()
         .catch(err => act = err)
         .then(() => {
             if (!act) done(new Error("Expected function to throw"))
@@ -47,7 +47,7 @@ describe('A suspendable function returned by async.promise(...)', () => {
     it('emits progress with each yielded value', done => {
         var foo = async.promise (() => { yield_(111); yield_(222); yield_(333); return 444; });
         var yields = [];
-        (<Promise<any>> foo())
+        foo()
         .progressed(value => yields.push(value))
         .then(result => expect(result).to.equal(444))
         .then(() => expect(yields).to.deep.equal([111,222,333]))

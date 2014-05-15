@@ -2,23 +2,28 @@
 // Project: https://github.com/yortus/asyncawait
 // Definitions by: Troy Gerwien <https://github.com/yortus>
 
+
 declare module AsyncAwait {
 
     //------------------------- Async -------------------------
-    export interface Async extends AsyncReturnsPromise {
-        promise: AsyncReturnsPromise;
-        cps: AsyncAcceptsCallbackReturnsNothing;
-        thunk: AsyncReturnsThunk;
-        stream: AsyncReturnsStream;
-        express: AsyncAcceptsCallbackReturnsNothing;
+    export interface Async extends AsyncPromise {
+        promise: AsyncPromise;
+        cps: AsyncCPS;
+        thunk: AsyncThunk;
+        stream: AsyncStream;
+        express: AsyncCPS;
         iterable: AsyncIterable;
         maxConcurrency(n?: number): number;
     }
 
-    export interface AsyncIterable extends AsyncIterableReturnsPromise {
-        promise: AsyncIterableReturnsPromise;
-        cps: AsyncIterableAcceptsCallbackReturnsNothing;
-        thunk: AsyncIterableReturnsThunk;
+    export interface AsyncIterable extends AsyncIterablePromise {
+        promise: AsyncIterablePromise;
+        cps: AsyncIterableCPS;
+        thunk: AsyncIterableThunk;
+    }
+
+    export interface AsyncOptions {
+        protocol: ProtocolStatic;
     }
 
     export interface AsyncFunction {
@@ -26,70 +31,18 @@ declare module AsyncAwait {
 
         //TODO:...
         mod(options: AsyncOptions): AsyncFunction;
-
         protocol: ProtocolStatic;
     }
 
-    export interface AsyncOptions {
-        returnValue?: string; // Recognised values: 'none', 'promise', 'thunk', 'result'
-        acceptsCallback?: boolean;
-        isIterable?: boolean;
-        maxConcurrency?: number;
+    export interface AsyncPromise extends AsyncFunction {
+        <TResult>(fn: () => TResult): () => Promise<TResult>;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Promise<TResult>;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
     }
 
-    export interface AsyncReturnsPromise extends AsyncFunction {
-        <TResult>(fn: () => TResult): () => Thenable<TResult>;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thenable<TResult>;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thenable<TResult>;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thenable<TResult>;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thenable<TResult>;
-    }
-
-    export interface AsyncReturnsThunk extends AsyncFunction {
-        <TResult>(fn: () => TResult): () => Thunk<TResult>;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
-    }
-
-    export interface AsyncReturnsResult extends AsyncFunction {
-        <TResult>(fn: () => TResult): () => TResult;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => TResult;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => TResult;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => TResult;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult;
-    }
-
-    export interface AsyncReturnsStream extends AsyncFunction {//TODO: require stream
-        (fn: Function): (...args: any[]) => any;
-    }
-
-    export interface AsyncAcceptsCallbackReturnsPromise extends AsyncFunction {
-        <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => Thenable<TResult>;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => Thenable<TResult>;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => Thenable<TResult>;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => Thenable<TResult>;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => Thenable<TResult>;
-    }
-
-    export interface AsyncAcceptsCallbackReturnsThunk extends AsyncFunction {
-        <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => Thunk<TResult>;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => Thunk<TResult>;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => Thunk<TResult>;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => Thunk<TResult>;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => Thunk<TResult>;
-    }
-
-    export interface AsyncAcceptsCallbackReturnsResult extends AsyncFunction {
-        <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => TResult;
-        <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => TResult;
-        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => TResult;
-        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => TResult;
-        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => TResult;
-    }
-
-    export interface AsyncAcceptsCallbackReturnsNothing extends AsyncFunction {
+    export interface AsyncCPS extends AsyncFunction {
         <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
@@ -97,56 +50,36 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
     }
 
-    export interface AsyncIterableReturnsPromise extends AsyncFunction {
-        (fn: Function): (...args: any[]) => {
-            next(): Thenable<{ done: boolean; value?: any; }>;
-            forEach(callback: (value) => void): Thenable<void>;
-        };
-
-        cps: AsyncIterableAcceptsCallbackReturnsNothing;
-        thunk: AsyncIterableReturnsThunk;
-        result: AsyncIterableReturnsResult;
+    export interface AsyncThunk extends AsyncFunction {
+        <TResult>(fn: () => TResult): () => Thunk<TResult>;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
 
-    export interface AsyncIterableReturnsThunk extends AsyncFunction {
-        (fn: Function): (...args: any[]) => {
-            next(): Thunk<{ done: boolean; value?: any; }>;
-            forEach(callback: (value) => void): Thunk<void>;
-        };
+    export interface AsyncStream extends AsyncFunction {//TODO: require stream
+        (fn: Function): (...args: any[]) => any;
     }
 
-    export interface AsyncIterableReturnsResult extends AsyncFunction {
+    export interface AsyncIterablePromise extends AsyncFunction {
         (fn: Function): (...args: any[]) => {
-            next(): { done: boolean; value?: any; };
-            forEach(callback: (value) => void): void;
+            next(): Promise<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void): Promise<void>;
         };
     }
 
-    export interface AsyncIterableAcceptsCallbackReturnsPromise extends AsyncFunction {
-        (fn: Function): (...args: any[]) => {
-            next(callback?: Callback<any>): Thenable<{ done: boolean; value?: any; }>;
-            forEach(callback: (value) => void, doneCallback?: Callback<void>): Thenable<void>;
-        };
-    }
-
-    export interface AsyncIterableAcceptsCallbackReturnsThunk extends AsyncFunction {
-        (fn: Function): (...args: any[]) => {
-            next(callback?: Callback<any>): Thunk<{ done: boolean; value?: any; }>;
-            forEach(callback: (value) => void, doneCallback?: Callback<void>): Thunk<void>;
-        };
-    }
-
-    export interface AsyncIterableAcceptsCallbackReturnsResult extends AsyncFunction {
-        (fn: Function): (...args: any[]) => {
-            next(callback?: Callback<any>): { done: boolean; value?: any; };
-            forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
-        };
-    }
-
-    export interface AsyncIterableAcceptsCallbackReturnsNothing extends AsyncFunction {
+    export interface AsyncIterableCPS extends AsyncFunction {
         (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): void;
             forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
+        };
+    }
+
+    export interface AsyncIterableThunk extends AsyncFunction {
+        (fn: Function): (...args: any[]) => {
+            next(): Thunk<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void): Thunk<void>;
         };
     }
 
@@ -170,6 +103,18 @@ declare module AsyncAwait {
         then<U>(onResolved: (value: T) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
         then<U>(onResolved: (value: T) => U, onRejected: (error: any) => Thenable<U>): Thenable<U>;
         then<U>(onResolved?: (value: T) => U, onRejected?: (error: any) => U): Thenable<U>;
+    }
+
+    export interface Promise<T> extends Thenable<T> {
+        then<U>(onResolved: (value: T) => Thenable<U>, onRejected: (error: any) => Thenable<U>): Promise<U>;
+        then<U>(onResolved: (value: T) => Thenable<U>, onRejected?: (error: any) => U): Promise<U>;
+        then<U>(onResolved: (value: T) => U, onRejected: (error: any) => Thenable<U>): Promise<U>;
+        then<U>(onResolved?: (value: T) => U, onRejected?: (error: any) => U): Promise<U>;
+        catch<U>(onReject?: (error: any) => Thenable<U>): Promise<U>;
+        catch<U>(onReject?: (error: any) => U): Promise<U>;
+        finally(handler: (value: T) => Thenable<T>): Promise<T>;
+        finally(handler: (value: T) => T): Promise<T>;
+        progressed(handler: (note: any) => any): Promise<T>;
     }
 
     export interface Callback<TResult> {

@@ -1,6 +1,7 @@
 ﻿import references = require('references');
 import makeAsyncFunc = require('./impl/makeAsyncFunc');
-import Protocol = require('./impl/protocol');
+import Protocol = require('./impl/protocols/base');
+import PromiseProtocol = require('./impl/protocols/promise');
 import Promise = require('./promise');
 import CPS = require('./cps');
 import Thunk = require('./thunk');
@@ -10,11 +11,11 @@ import Iterable = require('./iterable/index');
 export = async;
 
 
-var async: AsyncAwait.Async = <any> makeAsyncFunc(Promise);
-async.promise = <any> makeAsyncFunc(Promise);
-async.cps = <any> makeAsyncFunc(CPS);
-async.thunk = <any> makeAsyncFunc(Thunk);
-async.stream = <any> makeAsyncFunc(Stream);
-async.express = <any> makeAsyncFunc(Express);
+var async: AsyncAwait.Async = <any> makeAsyncFunc(PromiseProtocol);
+async.promise = Promise;
+async.cps = CPS;
+async.thunk = Thunk;
+async.stream = Stream;
+async.express = Express;
 async.iterable = Iterable;
-async.maxConcurrency = Protocol.maxConcurrency;
+async.maxConcurrency = Protocol.maxConcurrency; //TODO: move to config({...}) method
