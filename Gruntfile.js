@@ -6,11 +6,12 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         ts: {
-            build: {
+            main: {
                 src: [
                     'async/**/*.ts',
                     'await/**/*.ts',
-                    'yield/**/*.ts'
+                    'yield/**/*.ts',
+                    'tests/**/*.ts'
                 ],
                 outDir: '.',
                 options: {
@@ -21,16 +22,33 @@ module.exports = function(grunt) {
                     removeComments: false
                 }
             }
+        },
+
+        copy: {
+            main: {
+                expand: true,
+                src: ['async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'index.js'],
+                dest: 'node_modules/asyncawait'
+            }
+        },
+
+        mochaTest: {
+            main: {
+                options: { reporter: 'list' },
+                src: ['tests/**/*.js']
+            }
         }
 
     });
 
 
+    // Load grunt tasks
     grunt.loadNpmTasks('grunt-ts');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-mocha-test');
 
-
-    grunt.registerTask('build', ['ts:build']);
-    grunt.registerTask('default', ['build']);
-
-
+    // Register task aliases and the default task
+    grunt.registerTask('build', ['ts:main', 'copy:main']);
+    grunt.registerTask('test', ['mochaTest:main']);
+    grunt.registerTask('default', ['build', 'test']);
 };

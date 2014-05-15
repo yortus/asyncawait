@@ -1,5 +1,4 @@
-﻿///<reference path="../src/references.ts" />
-var chai = require('chai');
+﻿var chai = require('chai');
 
 var async = require('asyncawait/async');
 var yield_ = require('asyncawait/yield');

@@ -1,5 +1,4 @@
-﻿///<reference path="../src/references.ts" />
-var stream = require('stream');
+﻿var stream = require('stream');
 var chai = require('chai');
 
 var async = require('asyncawait/async');

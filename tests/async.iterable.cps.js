@@ -1,5 +1,4 @@
-﻿///<reference path="../src/references.ts" />
-var chai = require('chai');
+﻿var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');

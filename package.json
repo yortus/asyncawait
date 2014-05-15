@@ -45,6 +45,8 @@
     "co": "*",
     "memwatch": "*",
     "rewire": "*",
-    "mock-fs": "*"
+    "mock-fs": "*",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-mocha-test": "~0.10.2"
   }
 }

@@ -1,4 +1,4 @@
-﻿////<reference path="../src/references.ts" />
+﻿import references = require('references');
 import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
