@@ -4,4 +4,4 @@ import IterableCPSProtocol = require('../impl/protocols/iterableCps');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: IterableCPSProtocol });
+var async = asyncBase.mod({ constructor: IterableCPSProtocol });

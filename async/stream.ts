@@ -4,4 +4,4 @@ import StreamProtocol = require('./impl/protocols/stream');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: StreamProtocol });
+var async = asyncBase.mod({ constructor: StreamProtocol });

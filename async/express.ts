@@ -4,4 +4,4 @@ import ExpressProtocol = require('./impl/protocols/express');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: ExpressProtocol });
+var async = asyncBase.mod({ constructor: ExpressProtocol });

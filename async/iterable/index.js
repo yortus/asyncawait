@@ -4,7 +4,7 @@ var Promise = require('./promise');
 var CPS = require('./cps');
 var Thunk = require('./thunk');
 
-var asyncIterable = asyncBase.mod({ protocol: IterablePromiseProtocol });
+var asyncIterable = asyncBase.mod({ constructor: IterablePromiseProtocol });
 asyncIterable.promise = Promise;
 asyncIterable.cps = CPS;
 asyncIterable.thunk = Thunk;

@@ -2,10 +2,10 @@
 var Protocol = require('./protocols/base');
 
 // Create an abstract async function from which all others can be bootstrapped using mod(...)
-var async = makeAsyncFunc(Protocol);
+var async = makeAsyncFunc({ constructor: Protocol });
 
 /** Creates an async function using the specified protocol. */
-function makeAsyncFunc(protocolClass) {
+function makeAsyncFunc(options) {
     // Create and return an async(...) variant that uses the given coroutine class.
     var result = function async(suspendableDefn) {
         // Ensure that a single argument has been supplied, which is a function.
@@ -13,6 +13,13 @@ function makeAsyncFunc(protocolClass) {
             throw new Error('async(): expected a single argument');
         if (!_.isFunction(suspendableDefn))
             throw new Error('async(): expected argument to be a function');
+
+        // Prepare a function that constructs the protocol instance
+        var protocolClass = options.constructor;
+        var newProtocol = function () {
+            return new protocolClass(options);
+        };
+        var acceptsCallback = newProtocol().options().acceptsCallback;
 
         // The following function is the 'template' for the returned suspendable function.
         function asyncRunner($ARGS) {
@@ -22,12 +29,12 @@ function makeAsyncFunc(protocolClass) {
                 args[i] = arguments[i];
 
             // Begin execution of the suspendable function definition in a coroutine.
-            var protocol = new protocolClass();
+            var protocol = newProtocol();
             return protocol.invoke(suspendableDefn, this, args);
         }
 
         // Create the suspendable function from the template function above, giving it the correct arity.
-        var result, args = [], arity = suspendableDefn.length + (protocolClass.acceptsCallback ? 1 : 0);
+        var result, args = [], arity = suspendableDefn.length + (acceptsCallback ? 1 : 0);
         for (var i = 0; i < arity; ++i)
             args.push('a' + i);
         var funcDefn, funcCode = eval('funcDefn = ' + asyncRunner.toString().replace('$ARGS', args.join(', ')));
@@ -35,12 +42,11 @@ function makeAsyncFunc(protocolClass) {
     };
 
     //TODO:...
-    result.protocol = protocolClass;
     result.mod = function (options) {
         // Create a new async function from the current one
-        var protocol = options.protocol;
+        var protocol = options.constructor;
         if (_.isFunction(protocol)) {
-            var result = makeAsyncFunc(protocol);
+            var result = makeAsyncFunc(options);
         } else if (_.isObject(protocol)) {
             //TODO:... create derived class
             result = null;

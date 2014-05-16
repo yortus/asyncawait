@@ -4,4 +4,4 @@ import ThunkProtocol = require('./impl/protocols/thunk');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: ThunkProtocol });
+var async = asyncBase.mod({ constructor: ThunkProtocol });

@@ -5,6 +5,10 @@ var fiberPool = require('../fiberPool');
 var Protocol = (function () {
     function Protocol() {
     }
+    Protocol.prototype.options = function (value) {
+        return { constructor: this.constructor, acceptsCallback: false };
+    };
+
     Protocol.prototype.invoke = function (func, this_, args) {
         this._func = function () {
             return func.apply(this_, args);
@@ -75,7 +79,6 @@ var Protocol = (function () {
             }
         };
     };
-    Protocol.acceptsCallback = false;
     return Protocol;
 })();
 module.exports = Protocol;

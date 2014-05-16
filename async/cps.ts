@@ -4,4 +4,4 @@ import CPSProtocol = require('./impl/protocols/cps');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: CPSProtocol });
+var async = asyncBase.mod({ constructor: CPSProtocol });

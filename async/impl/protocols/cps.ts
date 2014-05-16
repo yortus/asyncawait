@@ -8,6 +8,10 @@ export = CPSProtocol;
 class CPSProtocol extends Protocol {
     constructor() { super(); }
 
+    options(value?: AsyncAwait.ProtocolOptions<any>): AsyncAwait.ProtocolOptions<any> {
+        return { constructor: <any> this.constructor, acceptsCallback: true };
+    }
+
     invoke(func: Function, this_: any, args: any[]) {
         //TODO: allow callback to be omitted if arity is known (need option for this?)
         this.callback = args.pop();
@@ -25,8 +29,6 @@ class CPSProtocol extends Protocol {
     }
 
     static SuspendableType: AsyncAwait.AsyncCPS;
-
-    static acceptsCallback = true;
 
     private callback: Function;
 }

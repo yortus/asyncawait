@@ -8,7 +8,7 @@ var Stream = require('./stream');
 var Express = require('./express');
 var Iterable = require('./iterable/index');
 
-var async = asyncBase.mod({ protocol: PromiseProtocol });
+var async = asyncBase.mod({ constructor: PromiseProtocol });
 async.config = config;
 async.promise = Promise;
 async.cps = CPS;

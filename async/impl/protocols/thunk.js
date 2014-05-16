@@ -11,6 +11,10 @@ var ThunkProtocol = (function (_super) {
     function ThunkProtocol() {
         _super.call(this);
     }
+    ThunkProtocol.prototype.options = function (value) {
+        return { constructor: this.constructor, acceptsCallback: false };
+    };
+
     ThunkProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
         return function (callback) {
@@ -18,8 +22,6 @@ var ThunkProtocol = (function (_super) {
             _super.prototype.invoke.call(_this, func, this_, args);
         };
     };
-
-    ThunkProtocol.acceptsCallback = false;
     return ThunkProtocol;
 })(CPSProtocol);
 

@@ -4,4 +4,4 @@ import PromiseProtocol = require('./impl/protocols/promise');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: PromiseProtocol });
+var async = asyncBase.mod({ constructor: PromiseProtocol });

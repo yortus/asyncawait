@@ -11,7 +11,7 @@ import Iterable = require('./iterable/index');
 export = async;
 
 
-var async: AsyncAwait.Async = <any> asyncBase.mod({ protocol: PromiseProtocol });
+var async: AsyncAwait.Async = <any> asyncBase.mod({ constructor: PromiseProtocol });
 async.config = config;
 async.promise = Promise;
 async.cps = CPS;

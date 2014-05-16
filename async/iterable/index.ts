@@ -7,7 +7,7 @@ import Thunk = require('./thunk');
 export = asyncIterable;
 
 
-var asyncIterable: AsyncAwait.AsyncIterable = <any> asyncBase.mod({ protocol: IterablePromiseProtocol });
+var asyncIterable: AsyncAwait.AsyncIterable = <any> asyncBase.mod({ constructor: IterablePromiseProtocol });
 asyncIterable.promise = Promise;
 asyncIterable.cps = CPS;
 asyncIterable.thunk = Thunk;

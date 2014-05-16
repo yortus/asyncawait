@@ -12,6 +12,10 @@ var CPSProtocol = (function (_super) {
     function CPSProtocol() {
         _super.call(this);
     }
+    CPSProtocol.prototype.options = function (value) {
+        return { constructor: this.constructor, acceptsCallback: true };
+    };
+
     CPSProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
         this.callback = args.pop();
@@ -30,8 +34,6 @@ var CPSProtocol = (function (_super) {
     CPSProtocol.prototype.throw = function (error) {
         this.callback(error);
     };
-
-    CPSProtocol.acceptsCallback = true;
     return CPSProtocol;
 })(Protocol);
 module.exports = CPSProtocol;

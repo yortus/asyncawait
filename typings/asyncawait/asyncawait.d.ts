@@ -89,29 +89,30 @@ declare module AsyncAwait {
 
     export interface Suspendable {
         (fn: Function): Function;
+        mod<TSuspendable extends Suspendable>(protocolOptions: ProtocolOptions<TSuspendable>): TSuspendable;
+    }
 
-        //TODO:...
-        mod<TSuspendable extends Suspendable>(options: { protocol: ProtocolStatic<TSuspendable>; }): TSuspendable;
-        protocol: ProtocolStatic<Suspendable>;
+    export interface ProtocolOptions<TSuspendable extends Suspendable> {
+        constructor?: ProtocolStatic<TSuspendable>;
+        overrides? : { };//TODO: ...
+        acceptsCallback?: boolean;
     }
 
     export interface ProtocolStatic<TSuspendable extends Suspendable> {
-        new(): Protocol;
+        new(options?: ProtocolOptions<TSuspendable>): Protocol;
         SuspendableType: TSuspendable; // Provides type info at compile-time only.
-        acceptsCallback: boolean;
     }
-
 
     export interface Protocol {
-        invoke(func: Function, this_: any, args: any[]): any; //outside
-        resume(): void;             // outside
-        suspend(): void;            // inside
-        return(result: any): void;  // inside
-        throw(error: any): void;    // inside
-        yield(value: any): void;    // inside
-        dispose(): void;            // ???
+        options(value?: ProtocolOptions<Suspendable>): ProtocolOptions<Suspendable>;
+        invoke(func: Function, this_: any, args: any[]): any;
+        resume(): void;
+        suspend(): void;
+        return(result: any): void;
+        throw(error: any): void;
+        yield(value: any): void;
+        dispose(): void;
     }
-
 
     //------------------------- Await -------------------------
     export interface Await extends AwaitFunction {
@@ -157,7 +158,7 @@ declare module AsyncAwait {
     }
 
     export interface Thunk<TResult> {
-        (callback?: Callback<TResult>): void; //TODO: does this work?
+        (callback?: Callback<TResult>): void;
     }
 }
 

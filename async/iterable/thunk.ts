@@ -4,4 +4,4 @@ import IterableThunkProtocol = require('../impl/protocols/iterableThunk');
 export = async;
 
 
-var async = asyncBase.mod({ protocol: IterableThunkProtocol });
+var async = asyncBase.mod({ constructor: IterableThunkProtocol });
