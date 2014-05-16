@@ -33,7 +33,7 @@ var SELECTED_FUNCTION = functions.largest;
 
 var SELECTED_VARIANT = variants.asyncawait;
 
-var SAMPLES_PER_RUN = 100;   // How many times the function will be called per run.
+var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run.
 
 var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark.
 
@@ -217,7 +217,7 @@ function createSampleFunction() {
             break;
 
         case functions.largest:
-            var dirToCheck = path.join(__dirname, '..');
+            var dirToCheck = path.join(__dirname, '.');
             var options = { recurse: true, preview: true };
             var sample = function (callback) {
                 selectedFunction(dirToCheck, options, function (err, result) {

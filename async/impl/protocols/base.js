@@ -1,11 +1,12 @@
 ﻿var Fiber = require('fibers');
 var semaphore = require('../semaphore');
+var fiberPool = require('../fiberPool');
 
 var Protocol = (function () {
     function Protocol() {
     }
     Protocol.prototype.invoke = function (func, this_, args) {
-        this.func = function () {
+        this._func = function () {
             return func.apply(this_, args);
         };
         return this;
@@ -13,23 +14,23 @@ var Protocol = (function () {
 
     Protocol.prototype.resume = function () {
         var _this = this;
-        if (!this.fiber) {
-            var fiber = Fiber(function () {
-                return _this.fiberBody();
-            });
-            fiber.yield = function (value) {
-                _this.yield(value);
-            };
-            this.fiber = fiber;
+        var doResume = function () {
+            if (!_this._fiber) {
+                fiberPool.inc();
+                var fiber = Fiber(_this.makeFiberBody());
+                fiber.yield = function (value) {
+                    _this.yield(value);
+                };
+                _this._fiber = fiber;
+            }
+            _this._fiber.run();
+        };
 
-            if (Fiber.current)
-                return fiber.run();
-            semaphore.enter(function () {
-                return fiber.run();
-            });
-        } else {
-            this.fiber.run();
-        }
+        var isTopLevelInitial = !this._fiber && !Fiber.current;
+        if (isTopLevelInitial)
+            semaphore.enter(doResume);
+        else
+            doResume();
     };
 
     Protocol.prototype.suspend = function () {
@@ -46,49 +47,36 @@ var Protocol = (function () {
     };
 
     Protocol.prototype.dispose = function () {
-        this.fiber = null;
-        this.func = null;
+        fiberPool.dec();
+        this._fiber = null;
+        this._func = null;
         semaphore.leave();
     };
 
-    Protocol.prototype.fiberBody = function () {
-        try  {
-            this.try();
-        } catch (err) {
-            this.catch(err);
-        } finally {
-            this.finally();
-        }
-    };
+    Protocol.prototype.makeFiberBody = function () {
+        var _this = this;
+        var tryBlock = function () {
+            return _this.return(_this._func());
+        };
+        var catchBlock = function (err) {
+            return _this.throw(err);
+        };
+        var finallyBlock = function () {
+            return _this.dispose();
+        };
 
-    Protocol.prototype.try = function () {
-        adjustFiberCount(+1);
-
-        var result = this.func();
-        this.return(result);
-    };
-
-    Protocol.prototype.catch = function (err) {
-        this.throw(err);
-    };
-
-    Protocol.prototype.finally = function () {
-        adjustFiberCount(-1);
-
-        this.dispose();
+        return function fiberBody() {
+            try  {
+                tryBlock();
+            } catch (err) {
+                catchBlock(err);
+            } finally {
+                finallyBlock();
+            }
+        };
     };
     Protocol.acceptsCallback = false;
     return Protocol;
 })();
-
-function adjustFiberCount(delta) {
-    activeFiberCount += delta;
-    if (activeFiberCount >= fiberPoolSize) {
-        fiberPoolSize += 100;
-        Fiber.poolSize = fiberPoolSize;
-    }
-}
-var fiberPoolSize = Fiber.poolSize;
-var activeFiberCount = 0;
 module.exports = Protocol;
 //# sourceMappingURL=base.js.map

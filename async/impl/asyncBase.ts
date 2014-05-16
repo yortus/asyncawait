@@ -4,16 +4,11 @@ import Protocol = require('./protocols/base');
 export = async;
 
 
-//TODO:... testing...
+// Create an abstract async function from which all others can be bootstrapped using mod(...)
 var async = makeAsyncFunc(Protocol);
 
 
-
-
-
-
-
-//TODO:...
+/** Creates an async function using the specified protocol. */
 function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(protocolClass: AsyncAwait.ProtocolStatic<TSuspendable>) {
 
     // Create and return an async(...) variant that uses the given coroutine class.

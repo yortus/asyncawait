@@ -1,32 +1,33 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
 import semaphore = require('../semaphore');
+import fiberPool = require('../fiberPool');
 export = Protocol;
 
 
 class Protocol implements AsyncAwait.Protocol {
 
     invoke(func: Function, this_: any, args: any[]): any {
-        this.func = () => func.apply(this_, args);
+        this._func = () => func.apply(this_, args);
         return this;
     }
 
     resume() {
-        if (!this.fiber) {
 
-            // This fiber is starting now.
-            var fiber = Fiber(() => this.fiberBody());
-            fiber.yield = value => { this.yield(value); };
-            this.fiber = fiber;
-
-            //TODO: ...
-            if (Fiber.current) return fiber.run();
-            semaphore.enter(() => fiber.run());
-        } else {
-
-            // This fiber is resuming after a prior call to suspend().
-            this.fiber.run();
+        // Define a function to resume the fiber, lazily creating it on the initial call.
+        var doResume = () => {
+            if (!this._fiber) {
+                fiberPool.inc();
+                var fiber = Fiber(this.makeFiberBody());
+                fiber.yield = value => { this.yield(value); };
+                this._fiber = fiber;
+            }
+            this._fiber.run();
         }
+
+        // Route all top-level initial resume()s through the global semaphore.
+        var isTopLevelInitial = !this._fiber && !Fiber.current;
+        if (isTopLevelInitial) semaphore.enter(doResume); else doResume();
     }
 
     suspend() {
@@ -40,8 +41,9 @@ class Protocol implements AsyncAwait.Protocol {
     yield(value: any) { }
 
     dispose() {
-        this.fiber = null;
-        this.func = null;
+        fiberPool.dec();
+        this._fiber = null;
+        this._func = null;
         semaphore.leave();
     }
 
@@ -50,56 +52,22 @@ class Protocol implements AsyncAwait.Protocol {
 
     static acceptsCallback = false;
 
-    private fiberBody() {
+    private makeFiberBody() {
+        var tryBlock = () => this.return(this._func());
+        var catchBlock = err => this.throw(err);
+        var finallyBlock = () => this.dispose();
 
-        // NB: V8 may not optimise functions containing try/catch/finally,
-        // so split the functionality into separate optimisable functions.
-        try { this.try(); } catch (err) { this.catch(err); } finally { this.finally(); }
+        // V8 may not optimise the following function due to the presence of
+        // try/catch/finally. Therefore it does as little as possible, only
+        // referencing the optimisable closures prepared above.
+        return function fiberBody() {
+            try { tryBlock(); }
+            catch (err) { catchBlock(err); }
+            finally { finallyBlock(); }
+        };
     }
 
-    private try() {
+    private _fiber: Fiber;
 
-        // Maintain an accurate count of currently active fibers, for pool management.
-        adjustFiberCount(+1);
-
-        var result = this.func();
-        this.return(result);
-    }
-
-    private catch(err) {
-        this.throw(err);
-    }
-
-    private finally() {
-        // Maintain an accurate count of currently active fibers, for pool management.
-        adjustFiberCount(-1);
-
-        //TODO:... Fiber.poolSize mgmt, user hook(s)?
-        this.dispose();
-    }
-
-    private fiber: Fiber;
-    private func: Function;
+    private _func: Function;
 }
-
-
-
-
-
-
-
-
-
-/**
- * The following functionality prevents memory leaks in node-fibers by actively managing Fiber.poolSize.
- * For more information, see https://github.com/laverdet/node-fibers/issues/169.
- */
-function adjustFiberCount(delta: number) {
-    activeFiberCount += delta;
-    if (activeFiberCount >= fiberPoolSize) {
-        fiberPoolSize += 100;
-        Fiber.poolSize = fiberPoolSize;
-    }
-}
-var fiberPoolSize = Fiber.poolSize;
-var activeFiberCount = 0;

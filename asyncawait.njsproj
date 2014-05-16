@@ -45,6 +45,7 @@
     <Content Include=".npmignore" />
     <TypeScriptCompile Include="async\impl\asyncBase.ts" />
     <TypeScriptCompile Include="async\impl\config.ts" />
+    <TypeScriptCompile Include="async\impl\fiberPool.ts" />
     <TypeScriptCompile Include="async\impl\protocols\base.ts" />
     <TypeScriptCompile Include="async\impl\protocols\cps.ts" />
     <TypeScriptCompile Include="async\impl\protocols\express.ts" />
