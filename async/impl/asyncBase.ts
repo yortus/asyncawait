@@ -11,22 +11,19 @@ var async = makeAsyncFunc({ constructor: Protocol });
 /** Creates an async function using the specified protocol. */
 function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(options: AsyncAwait.ProtocolOptions<TSuspendable>) {
 
-    // Create and return an async(...) variant that uses the given coroutine class.
+    // Parse the protocol options.
+    if (!options) throw new Error('async(): expected options to be specified');
+    var protocolClass = options.constructor;
+    if (!protocolClass) throw new Error('async(): expected options.constructor to be specified');
+    var newProtocol = () => new protocolClass(options);
+    var acceptsCallback = newProtocol().options().acceptsCallback;
+
+    // Create the async function.
     var result: TSuspendable = <any> function async(suspendableDefn: Function) {
 
         // Ensure that a single argument has been supplied, which is a function.
         if (arguments.length !== 1) throw new Error('async(): expected a single argument');
         if (!_.isFunction(suspendableDefn)) throw new Error('async(): expected argument to be a function');
-
-        // Prepare a function that constructs the protocol instance
-        var protocolClass = options.constructor; //TODO: or use 'override'...
-        if (!protocolClass) {
-
-            //TODO: use the one this was made from... until no more turtles...
-            
-        }
-        var newProtocol = () => new protocolClass(options);
-        var acceptsCallback = newProtocol().options().acceptsCallback;
 
         // The following function is the 'template' for the returned suspendable function.
         function asyncRunner($ARGS) {
@@ -35,7 +32,7 @@ function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(options: Asy
             var nargs = arguments.length, args = new Array(nargs);
             for (var i = 0; i < nargs; ++i) args[i] = arguments[i];
 
-            // Begin execution of the suspendable function definition in a coroutine.
+            // Begin execution of the suspendable function definition in a new coroutine.
             var protocol = newProtocol();
             return protocol.invoke(suspendableDefn, this, args);
         }
@@ -47,26 +44,14 @@ function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(options: Asy
         return funcDefn;
     };
 
+    // Tack on the mod(...) method.
+    result.mod = function<T extends AsyncAwait.Suspendable>(options_: AsyncAwait.ProtocolOptions<T>) {
 
+        // Create a new options object with appropriate fallback values.
+        var opts = _.assign({ constructor: protocolClass }, options_);
 
-    //TODO:...
-    result.mod = function(options) {
-
-        // Create a new async function from the current one
-        var protocol = options.constructor;
-        if (_.isFunction(protocol)) {
-            var result = makeAsyncFunc(options);
-        } else if (_.isObject(protocol)) {
-
-            //TODO:... create derived class
-            result = null;
-
-
-        } else {
-            throw new Error('mod(): Expected a constructor function or an object');
-        }
-
-        return result;
+        // Create a new async function from the current one.
+        return makeAsyncFunc(<any> opts);
     }
     return result;
 }
