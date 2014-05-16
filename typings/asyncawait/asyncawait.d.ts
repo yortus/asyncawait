@@ -16,7 +16,8 @@ declare module AsyncAwait {
         stream: AsyncStream;
         express: AsyncCPS;
         iterable: AsyncIterable;
-        maxConcurrency(n?: number): number; //TODO: put in config({...})
+//TODO: put in config({...})
+maxConcurrency(n?: number): number;
     }
 
     export interface AsyncIterable extends AsyncIterablePromise {
@@ -30,15 +31,15 @@ declare module AsyncAwait {
 
         //TODO:...
         mod<TSuspendable extends Suspendable>(options: { protocol: ProtocolStatic<TSuspendable>; }): TSuspendable;
-        xxx<T extends Suspendable>(p: ProtocolStatic<T>): T;
         protocol: ProtocolStatic<Suspendable>;
     }
 
     export interface ProtocolStatic<TSuspendable extends Suspendable> {
         new(): Protocol;
-        maxConcurrency(n?: number): number;
-        arityFor(func: Function): number;
+//TODO: move elsewhere (global option)
+maxConcurrency(n?: number): number;
         SuspendableType: TSuspendable; // Provides type info at compile-time only.
+        acceptsCallback: boolean;
     }
 
 

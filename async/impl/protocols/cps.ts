@@ -26,9 +26,7 @@ class CPSProtocol extends Protocol {
 
     static SuspendableType: AsyncAwait.AsyncCPS;
 
-    static arityFor(func: Function) {
-        return func.length + 1;
-    }
+    static acceptsCallback = true;
 
     private callback: Function;
 }

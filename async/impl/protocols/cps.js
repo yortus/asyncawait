@@ -31,9 +31,7 @@ var CPSProtocol = (function (_super) {
         this.callback(error);
     };
 
-    CPSProtocol.arityFor = function (func) {
-        return func.length + 1;
-    };
+    CPSProtocol.acceptsCallback = true;
     return CPSProtocol;
 })(Protocol);
 module.exports = CPSProtocol;

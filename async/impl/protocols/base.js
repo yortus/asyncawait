@@ -53,10 +53,6 @@ var Protocol = (function () {
         this.semaphore = null;
     };
 
-    Protocol.arityFor = function (func) {
-        return func.length;
-    };
-
     Protocol.maxConcurrency = function (n) {
         if (arguments.length === 0)
             return maxConcurrency;
@@ -90,6 +86,7 @@ var Protocol = (function () {
 
         this.dispose();
     };
+    Protocol.acceptsCallback = false;
     return Protocol;
 })();
 

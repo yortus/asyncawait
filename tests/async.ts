@@ -6,11 +6,11 @@ import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
 
-function runTestsFor(variant?: string, arityDelta: number = 0) {
+function runTestsFor(variant?: string, acceptsCallback = false) {
     var name = 'async' + (variant ? ('.' + variant) : '');
     var func = async;
     if (variant) variant.split('.').forEach(prop => func = func[prop]);
-    var arityFor = fn => fn.length + arityDelta;
+    var arity = fn => fn.length + (acceptsCallback ? 1 : 0);
 
     describe('The ' + name + '(...) function', () => {
 
@@ -34,17 +34,17 @@ function runTestsFor(variant?: string, arityDelta: number = 0) {
             ];
             for (var i = 0; i < defns.length; ++i) {
                 var foo = func(defns[i]);
-                expect(foo.length).to.equal(arityFor(defns[i]));
+                expect(foo.length).to.equal(arity(defns[i]));
             }
         });
     });
 }
 runTestsFor(null);
 runTestsFor('promise');
-runTestsFor('cps', 1);
+runTestsFor('cps', true);
 runTestsFor('thunk');
 runTestsFor('stream');
-runTestsFor('express', 1);
+runTestsFor('express', true);
 runTestsFor('iterable');
 runTestsFor('iterable.promise');
 runTestsFor('iterable.cps');

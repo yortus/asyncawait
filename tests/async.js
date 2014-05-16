@@ -4,16 +4,16 @@ var async = require('asyncawait/async');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
-function runTestsFor(variant, arityDelta) {
-    if (typeof arityDelta === "undefined") { arityDelta = 0; }
+function runTestsFor(variant, acceptsCallback) {
+    if (typeof acceptsCallback === "undefined") { acceptsCallback = false; }
     var name = 'async' + (variant ? ('.' + variant) : '');
     var func = async;
     if (variant)
         variant.split('.').forEach(function (prop) {
             return func = func[prop];
         });
-    var arityFor = function (fn) {
-        return fn.length + arityDelta;
+    var arity = function (fn) {
+        return fn.length + (acceptsCallback ? 1 : 0);
     };
 
     describe('The ' + name + '(...) function', function () {
@@ -52,17 +52,17 @@ function runTestsFor(variant, arityDelta) {
             ];
             for (var i = 0; i < defns.length; ++i) {
                 var foo = func(defns[i]);
-                expect(foo.length).to.equal(arityFor(defns[i]));
+                expect(foo.length).to.equal(arity(defns[i]));
             }
         });
     });
 }
 runTestsFor(null);
 runTestsFor('promise');
-runTestsFor('cps', 1);
+runTestsFor('cps', true);
 runTestsFor('thunk');
 runTestsFor('stream');
-runTestsFor('express', 1);
+runTestsFor('express', true);
 runTestsFor('iterable');
 runTestsFor('iterable.promise');
 runTestsFor('iterable.cps');

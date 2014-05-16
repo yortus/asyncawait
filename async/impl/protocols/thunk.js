@@ -19,9 +19,7 @@ var ThunkProtocol = (function (_super) {
         };
     };
 
-    ThunkProtocol.arityFor = function (func) {
-        return func.length;
-    };
+    ThunkProtocol.acceptsCallback = false;
     return ThunkProtocol;
 })(CPSProtocol);
 

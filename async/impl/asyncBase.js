@@ -15,11 +15,11 @@ function makeAsyncFunc(protocolClass) {
             for (var i = 0; i < nargs; ++i)
                 args[i] = arguments[i];
 
-            var coro = new protocolClass();
-            return coro.invoke(suspendableDefn, this, args);
+            var protocol = new protocolClass();
+            return protocol.invoke(suspendableDefn, this, args);
         }
 
-        var result, args = [], arity = protocolClass.arityFor(suspendableDefn);
+        var result, args = [], arity = suspendableDefn.length + (protocolClass.acceptsCallback ? 1 : 0);
         for (var i = 0; i < arity; ++i)
             args.push('a' + i);
         var funcDefn, funcCode = eval('funcDefn = ' + asyncRunner.toString().replace('$ARGS', args.join(', ')));

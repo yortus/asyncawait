@@ -17,7 +17,7 @@ var async = makeAsyncFunc(Protocol);
 function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(protocolClass: AsyncAwait.ProtocolStatic<TSuspendable>) {
 
     // Create and return an async(...) variant that uses the given coroutine class.
-    var result: AsyncAwait.Suspendable = <any> function async(suspendableDefn: Function) {
+    var result: TSuspendable = <any> function async(suspendableDefn: Function) {
 
         // Ensure that a single argument has been supplied, which is a function.
         if (arguments.length !== 1) throw new Error('async(): expected a single argument');
@@ -31,12 +31,12 @@ function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(protocolClas
             for (var i = 0; i < nargs; ++i) args[i] = arguments[i];
 
             // Begin execution of the suspendable function definition in a coroutine.
-            var coro = new protocolClass();
-            return coro.invoke(suspendableDefn, this, args);
+            var protocol = new protocolClass();
+            return protocol.invoke(suspendableDefn, this, args);
         }
 
         // Create the suspendable function from the template function above, giving it the correct arity.
-        var result, args = [], arity = protocolClass.arityFor(suspendableDefn);
+        var result, args = [], arity = suspendableDefn.length + (protocolClass.acceptsCallback ? 1 : 0);
         for (var i = 0; i < arity; ++i) args.push('a' + i);
         var funcDefn, funcCode = eval('funcDefn = ' + asyncRunner.toString().replace('$ARGS', args.join(', ')));
         return funcDefn;

@@ -16,9 +16,7 @@ class ThunkProtocol extends CPSProtocol {
 
     static SuspendableType: AsyncAwait.AsyncThunk;
 
-    static arityFor(func: Function) {
-        return func.length;
-    }
+    static acceptsCallback = false;
 }
 
 
