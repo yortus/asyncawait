@@ -2,8 +2,8 @@ var path = require('path');
 var async = require('async'); // NB: async is used here in the benchmarking code, in case co or
                               // asyncawait won't run on the version of node being benchmarked.
 var _ = require('lodash');
-var memwatch = require('memwatch');
 var rewire = require('rewire');
+try { var memwatch = require('memwatch'); } catch(e){}
 
 
 // Functions available for benchmarking.
@@ -37,19 +37,20 @@ var SAMPLES_PER_RUN = 100;   // How many times the function will be called per r
 
 var RUNS_PER_BENCHMARK = 10;  // How many runs make up the whole benchmark.
 
-var CONCURRENCY_FACTOR = 100;  // Max number of concurrent invocations of the function.
+var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
 
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
-var USE_MOCK_FS = false;                         // If true, uses a mocked 'fs' module returning fixed in-memory results.
-var OUTPUT_GC_STATS = true;                     // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
+var USE_MOCK_FS = false;                        // If true, uses a mocked 'fs' module returning fixed in-memory results.
+var OUTPUT_GC_STATS = false;                    // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = false;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
 
 // ================================================================================
 
 
 // Set up memory diagnostics
+OUTPUT_GC_STATS = OUTPUT_GC_STATS && memwatch;
 var fullGCs = 0;
 var incrGCs = 0;
 var leaked = 0;
@@ -216,7 +217,7 @@ function createSampleFunction() {
             break;
 
         case functions.largest:
-            var dirToCheck = path.join(__dirname, '.');
+            var dirToCheck = path.join(__dirname, '..');
             var options = { recurse: true, preview: true };
             var sample = function (callback) {
                 selectedFunction(dirToCheck, options, function (err, result) {

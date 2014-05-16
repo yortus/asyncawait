@@ -1,11 +1,10 @@
 ﻿var Fiber = require('fibers');
-var Semaphore = require('../semaphore');
+var semaphore = require('../semaphore');
 
 var Protocol = (function () {
     function Protocol() {
     }
     Protocol.prototype.invoke = function (func, this_, args) {
-        this.semaphore = semaphore;
         this.func = function () {
             return func.apply(this_, args);
         };
@@ -25,7 +24,7 @@ var Protocol = (function () {
 
             if (Fiber.current)
                 return fiber.run();
-            this.semaphore.enter(function () {
+            semaphore.enter(function () {
                 return fiber.run();
             });
         } else {
@@ -49,15 +48,7 @@ var Protocol = (function () {
     Protocol.prototype.dispose = function () {
         this.fiber = null;
         this.func = null;
-        this.semaphore.leave();
-        this.semaphore = null;
-    };
-
-    Protocol.maxConcurrency = function (n) {
-        if (arguments.length === 0)
-            return maxConcurrency;
-        maxConcurrency = n;
-        semaphore = new Semaphore(n);
+        semaphore.leave();
     };
 
     Protocol.prototype.fiberBody = function () {
@@ -89,9 +80,6 @@ var Protocol = (function () {
     Protocol.acceptsCallback = false;
     return Protocol;
 })();
-
-var maxConcurrency = 1000000;
-var semaphore = new Semaphore(maxConcurrency);
 
 function adjustFiberCount(delta) {
     activeFiberCount += delta;

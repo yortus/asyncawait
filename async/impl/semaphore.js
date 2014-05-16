@@ -1,29 +1,35 @@
-﻿
-var Semaphore = (function () {
-    function Semaphore(n) {
-        this.n = n;
-        this._queued = [];
-        this._avail = n;
+﻿function enter(fn) {
+    if (_avail > 0) {
+        --_avail;
+        fn();
+    } else {
+        _queued.push(fn);
     }
-    Semaphore.prototype.enter = function (fn) {
-        if (this._avail > 0) {
-            --this._avail;
-            fn();
-        } else {
-            this._queued.push(fn);
-        }
-    };
+}
+exports.enter = enter;
 
-    Semaphore.prototype.leave = function () {
-        if (this._queued.length > 0) {
-            var fn = this._queued.pop();
-            fn();
-        } else {
-            ++this._avail;
-        }
-    };
-    Semaphore.unlimited = new Semaphore(10000000);
-    return Semaphore;
-})();
-module.exports = Semaphore;
+function leave() {
+    if (_queued.length > 0) {
+        var fn = _queued.pop();
+        fn();
+    } else {
+        ++_avail;
+    }
+}
+exports.leave = leave;
+
+function size(n) {
+    if (n) {
+        _avail += (n - _size);
+        _size = n;
+    }
+    return this._size;
+}
+exports.size = size;
+
+var _size = 1000000;
+
+var _avail = 1000000;
+
+var _queued = [];
 //# sourceMappingURL=semaphore.js.map

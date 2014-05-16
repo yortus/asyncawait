@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import asyncBase = require('./impl/asyncBase');
-import Protocol = require('./impl/protocols/base');
+import config = require('./impl/config');
 import PromiseProtocol = require('./impl/protocols/promise');
 import Promise = require('./promise');
 import CPS = require('./cps');
@@ -12,10 +12,10 @@ export = async;
 
 
 var async: AsyncAwait.Async = <any> asyncBase.mod({ protocol: PromiseProtocol });
+async.config = config;
 async.promise = Promise;
 async.cps = CPS;
 async.thunk = Thunk;
 async.stream = Stream;
 async.express = Express;
 async.iterable = Iterable;
-async.maxConcurrency = Protocol.maxConcurrency; //TODO: move to config({...}) method

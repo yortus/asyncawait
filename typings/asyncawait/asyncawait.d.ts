@@ -10,47 +10,17 @@ declare module AsyncAwait {
 
     //------------------------- Async -------------------------
     export interface Async extends AsyncPromise {
+        config(value?: AsyncConfig): AsyncConfig;
         promise: AsyncPromise;
         cps: AsyncCPS;
         thunk: AsyncThunk;
         stream: AsyncStream;
         express: AsyncCPS;
         iterable: AsyncIterable;
-//TODO: put in config({...})
-maxConcurrency(n?: number): number;
     }
 
-    export interface AsyncIterable extends AsyncIterablePromise {
-        promise: AsyncIterablePromise;
-        cps: AsyncIterableCPS;
-        thunk: AsyncIterableThunk;
-    }
-
-    export interface Suspendable {
-        (fn: Function): Function;
-
-        //TODO:...
-        mod<TSuspendable extends Suspendable>(options: { protocol: ProtocolStatic<TSuspendable>; }): TSuspendable;
-        protocol: ProtocolStatic<Suspendable>;
-    }
-
-    export interface ProtocolStatic<TSuspendable extends Suspendable> {
-        new(): Protocol;
-//TODO: move elsewhere (global option)
-maxConcurrency(n?: number): number;
-        SuspendableType: TSuspendable; // Provides type info at compile-time only.
-        acceptsCallback: boolean;
-    }
-
-
-    export interface Protocol {
-        invoke(func: Function, this_: any, args: any[]): any; //outside
-        resume(): void;             // outside
-        suspend(): void;            // inside
-        return(result: any): void;  // inside
-        throw(error: any): void;    // inside
-        yield(value: any): void;    // inside
-        dispose(): void;            // ???
+    export interface AsyncConfig {
+        maxConcurrency?: number;
     }
 
     export interface AsyncPromise extends Suspendable {
@@ -81,6 +51,12 @@ maxConcurrency(n?: number): number;
         (fn: Function): (...args: any[]) => ReadableStream;
     }
 
+    export interface AsyncIterable extends AsyncIterablePromise {
+        promise: AsyncIterablePromise;
+        cps: AsyncIterableCPS;
+        thunk: AsyncIterableThunk;
+    }
+
     export interface AsyncIterablePromise extends Suspendable {
         (fn: Function): (...args: any[]) => {
             next(): Promise<{ done: boolean; value?: any; }>;
@@ -101,6 +77,41 @@ maxConcurrency(n?: number): number;
             forEach(callback: (value) => void): Thunk<void>;
         };
     }
+
+
+
+
+
+
+    //TODO: ...
+
+
+
+    export interface Suspendable {
+        (fn: Function): Function;
+
+        //TODO:...
+        mod<TSuspendable extends Suspendable>(options: { protocol: ProtocolStatic<TSuspendable>; }): TSuspendable;
+        protocol: ProtocolStatic<Suspendable>;
+    }
+
+    export interface ProtocolStatic<TSuspendable extends Suspendable> {
+        new(): Protocol;
+        SuspendableType: TSuspendable; // Provides type info at compile-time only.
+        acceptsCallback: boolean;
+    }
+
+
+    export interface Protocol {
+        invoke(func: Function, this_: any, args: any[]): any; //outside
+        resume(): void;             // outside
+        suspend(): void;            // inside
+        return(result: any): void;  // inside
+        throw(error: any): void;    // inside
+        yield(value: any): void;    // inside
+        dispose(): void;            // ???
+    }
+
 
     //------------------------- Await -------------------------
     export interface Await extends AwaitFunction {

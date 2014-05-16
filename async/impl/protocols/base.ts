@@ -1,13 +1,12 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
-import Semaphore = require('../semaphore');
+import semaphore = require('../semaphore');
 export = Protocol;
 
 
 class Protocol implements AsyncAwait.Protocol {
 
     invoke(func: Function, this_: any, args: any[]): any {
-        this.semaphore = semaphore;
         this.func = () => func.apply(this_, args);
         return this;
     }
@@ -22,7 +21,7 @@ class Protocol implements AsyncAwait.Protocol {
 
             //TODO: ...
             if (Fiber.current) return fiber.run();
-            this.semaphore.enter(() => fiber.run());
+            semaphore.enter(() => fiber.run());
         } else {
 
             // This fiber is resuming after a prior call to suspend().
@@ -43,20 +42,13 @@ class Protocol implements AsyncAwait.Protocol {
     dispose() {
         this.fiber = null;
         this.func = null;
-        this.semaphore.leave();
-        this.semaphore = null;
+        semaphore.leave();
     }
 
     /** Provides type info at compile-time only. */
     static SuspendableType: AsyncAwait.Suspendable;
 
     static acceptsCallback = false;
-
-    static maxConcurrency(n?: number) {
-        if (arguments.length === 0) return maxConcurrency;
-        maxConcurrency = n;
-        semaphore = new Semaphore(n);
-    }
 
     private fiberBody() {
 
@@ -88,14 +80,10 @@ class Protocol implements AsyncAwait.Protocol {
 
     private fiber: Fiber;
     private func: Function;
-    private semaphore: Semaphore;
 }
 
 
 
-//TODO:...
-var maxConcurrency = 1000000;
-var semaphore = new Semaphore(maxConcurrency);
 
 
 

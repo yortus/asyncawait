@@ -34,6 +34,10 @@
     "url": "http://github.com/yortus/"
   },
   "readmeFilename": "README.md",
+  "scripts": {
+    "test": "grunt test",
+    "prepublish": "grunt build"
+  },
   "dependencies": {
     "bluebird": "~1.1.1",
     "fibers": "~1.0.1",
@@ -45,7 +49,6 @@
     "grunt": "~0.4.4",
     "async": "*",
     "co": "*",
-    "memwatch": "*",
     "rewire": "*",
     "mock-fs": "*",
     "grunt-contrib-copy": "~0.5.0",
@@ -54,8 +57,7 @@
     "grunt-execute": "~0.2.1",
     "grunt-typescript": "~0.3.6"
   },
-  "scripts": {
-    "test": "grunt test",
-    "prepublish": "grunt build"
+  "optionalDependencies": {
+    "memwatch": "*"
   }
 }

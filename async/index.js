@@ -1,5 +1,5 @@
 ﻿var asyncBase = require('./impl/asyncBase');
-var Protocol = require('./impl/protocols/base');
+var config = require('./impl/config');
 var PromiseProtocol = require('./impl/protocols/promise');
 var Promise = require('./promise');
 var CPS = require('./cps');
@@ -9,12 +9,12 @@ var Express = require('./express');
 var Iterable = require('./iterable/index');
 
 var async = asyncBase.mod({ protocol: PromiseProtocol });
+async.config = config;
 async.promise = Promise;
 async.cps = CPS;
 async.thunk = Thunk;
 async.stream = Stream;
 async.express = Express;
 async.iterable = Iterable;
-async.maxConcurrency = Protocol.maxConcurrency;
 module.exports = async;
 //# sourceMappingURL=index.js.map
