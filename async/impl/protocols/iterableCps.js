@@ -53,7 +53,6 @@ var AsyncIterator = (function () {
 
     AsyncIterator.prototype.forEach = function (callback, done_) {
         var _this = this;
-        // Ensure at least one argument has been supplied, which is a function.
         if (arguments.length < 1)
             throw new Error('forEach(): expected at least one argument');
         if (!_.isFunction(callback))

@@ -16,7 +16,7 @@ declare module AsyncAwait {
         stream: AsyncStream;
         express: AsyncCPS;
         iterable: AsyncIterable;
-        maxConcurrency(n?: number): number;
+        maxConcurrency(n?: number): number; //TODO: put in config({...})
     }
 
     export interface AsyncIterable extends AsyncIterablePromise {
@@ -25,19 +25,34 @@ declare module AsyncAwait {
         thunk: AsyncIterableThunk;
     }
 
-    export interface AsyncOptions {
-        protocol: ProtocolStatic;
-    }
-
-    export interface AsyncFunction {
+    export interface Suspendable {
         (fn: Function): Function;
 
         //TODO:...
-        mod(options: AsyncOptions): AsyncFunction;
-        protocol: ProtocolStatic;
+        mod<TSuspendable extends Suspendable>(options: { protocol: ProtocolStatic<TSuspendable>; }): TSuspendable;
+        xxx<T extends Suspendable>(p: ProtocolStatic<T>): T;
+        protocol: ProtocolStatic<Suspendable>;
     }
 
-    export interface AsyncPromise extends AsyncFunction {
+    export interface ProtocolStatic<TSuspendable extends Suspendable> {
+        new(): Protocol;
+        maxConcurrency(n?: number): number;
+        arityFor(func: Function): number;
+        SuspendableType: TSuspendable; // Provides type info at compile-time only.
+    }
+
+
+    export interface Protocol {
+        invoke(func: Function, this_: any, args: any[]): any; //outside
+        resume(): void;             // outside
+        suspend(): void;            // inside
+        return(result: any): void;  // inside
+        throw(error: any): void;    // inside
+        yield(value: any): void;    // inside
+        dispose(): void;            // ???
+    }
+
+    export interface AsyncPromise extends Suspendable {
         <TResult>(fn: () => TResult): () => Promise<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
@@ -45,7 +60,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
     }
 
-    export interface AsyncCPS extends AsyncFunction {
+    export interface AsyncCPS extends Suspendable {
         <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
@@ -53,7 +68,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
     }
 
-    export interface AsyncThunk extends AsyncFunction {
+    export interface AsyncThunk extends Suspendable {
         <TResult>(fn: () => TResult): () => Thunk<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
@@ -61,25 +76,25 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
 
-    export interface AsyncStream extends AsyncFunction {
+    export interface AsyncStream extends Suspendable {
         (fn: Function): (...args: any[]) => ReadableStream;
     }
 
-    export interface AsyncIterablePromise extends AsyncFunction {
+    export interface AsyncIterablePromise extends Suspendable {
         (fn: Function): (...args: any[]) => {
             next(): Promise<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Promise<void>;
         };
     }
 
-    export interface AsyncIterableCPS extends AsyncFunction {
+    export interface AsyncIterableCPS extends Suspendable {
         (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): void;
             forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
         };
     }
 
-    export interface AsyncIterableThunk extends AsyncFunction {
+    export interface AsyncIterableThunk extends Suspendable {
         (fn: Function): (...args: any[]) => {
             next(): Thunk<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Thunk<void>;
@@ -130,31 +145,8 @@ declare module AsyncAwait {
     }
 
     export interface Thunk<TResult> {
-        (callback?: (err, result?) => void): void;
+        (callback?: Callback<TResult>): void; //TODO: does this work?
     }
-
-
-
-
-
-
-    export interface ProtocolStatic {
-        new(): Protocol;
-        maxConcurrency(n?: number): number;
-        arityFor(func: Function): number;
-    }
-
-
-    export interface Protocol {
-        invoke(func: Function, this_: any, args: any[]): any; //outside
-        resume(): void;             // outside
-        suspend(): void;            // inside
-        return(result: any): void;  // inside
-        throw(error: any): void;    // inside
-        yield(value: any): void;    // inside
-        dispose(): void;            // ???
-    }
-
 }
 
 declare module "asyncawait" {

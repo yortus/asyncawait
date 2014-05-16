@@ -21,13 +21,11 @@ var IterableThunkProtocol = (function (_super) {
                 };
             },
             forEach: function (callback) {
-                // Ensure that a single argument has been supplied, which is a function.
                 if (arguments.length !== 1)
                     throw new Error('forEach(): expected a single argument');
                 if (!_.isFunction(callback))
                     throw new Error('forEach(): expected argument to be a function');
 
-                // Return a thunk
                 return function (done) {
                     return iter.forEach(callback, done);
                 };

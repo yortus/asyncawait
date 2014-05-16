@@ -27,6 +27,8 @@ class StreamProtocol extends Protocol {
         this.suspend();
     }
 
+    static SuspendableType: AsyncAwait.AsyncStream;
+
     private stream: Stream;
 }
 

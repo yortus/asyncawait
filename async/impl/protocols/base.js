@@ -15,7 +15,6 @@ var Protocol = (function () {
     Protocol.prototype.resume = function () {
         var _this = this;
         if (!this.fiber) {
-            // This fiber is starting now.
             var fiber = Fiber(function () {
                 return _this.fiberBody();
             });
@@ -24,14 +23,12 @@ var Protocol = (function () {
             };
             this.fiber = fiber;
 
-            //TODO: ...
             if (Fiber.current)
                 return fiber.run();
             this.semaphore.enter(function () {
                 return fiber.run();
             });
         } else {
-            // This fiber is resuming after a prior call to suspend().
             this.fiber.run();
         }
     };
@@ -56,15 +53,15 @@ var Protocol = (function () {
         this.semaphore = null;
     };
 
+    Protocol.arityFor = function (func) {
+        return func.length;
+    };
+
     Protocol.maxConcurrency = function (n) {
         if (arguments.length === 0)
             return maxConcurrency;
         maxConcurrency = n;
         semaphore = new Semaphore(n);
-    };
-
-    Protocol.arityFor = function (func) {
-        return func.length;
     };
 
     Protocol.prototype.fiberBody = function () {
@@ -78,7 +75,6 @@ var Protocol = (function () {
     };
 
     Protocol.prototype.try = function () {
-        // Maintain an accurate count of currently active fibers, for pool management.
         adjustFiberCount(+1);
 
         var result = this.func();
@@ -90,23 +86,16 @@ var Protocol = (function () {
     };
 
     Protocol.prototype.finally = function () {
-        // Maintain an accurate count of currently active fibers, for pool management.
         adjustFiberCount(-1);
 
-        //TODO:... Fiber.poolSize mgmt, user hook(s)?
         this.dispose();
     };
     return Protocol;
 })();
 
-//TODO:...
 var maxConcurrency = 1000000;
 var semaphore = new Semaphore(maxConcurrency);
 
-/**
-* The following functionality prevents memory leaks in node-fibers by actively managing Fiber.poolSize.
-* For more information, see https://github.com/laverdet/node-fibers/issues/169.
-*/
 function adjustFiberCount(delta) {
     activeFiberCount += delta;
     if (activeFiberCount >= fiberPoolSize) {

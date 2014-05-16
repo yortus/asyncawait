@@ -14,10 +14,10 @@ module.exports = function(grunt) {
             }
         },
 
-        ts: {
+        typescript: {
             main: {
                 src: ['async/**/*.ts', 'await/**/*.ts', 'yield/**/*.ts', 'tests/**/*.ts'],
-                outDir: '.',
+                dest: '.',
                 options: {
                     target: 'es5',
                     module: 'commonjs',
@@ -54,13 +54,13 @@ module.exports = function(grunt) {
 
     // Load grunt tasks
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-ts');
+    grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-execute');
 
     // Register task aliases and the default task
-    grunt.registerTask('build', ['ts:main', 'copy:main']);
+    grunt.registerTask('build', ['typescript:main', 'copy:main']);
     grunt.registerTask('test', ['mochaTest:main']);
     grunt.registerTask('bench', ['execute:bench']);
     grunt.registerTask('default', ['build', 'test']);

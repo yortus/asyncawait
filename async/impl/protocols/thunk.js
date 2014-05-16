@@ -6,7 +6,6 @@
 };
 var CPSProtocol = require('./cps');
 
-/** Protocol for a suspendable function which returns a thunk. */
 var ThunkProtocol = (function (_super) {
     __extends(ThunkProtocol, _super);
     function ThunkProtocol() {

@@ -1,6 +1,6 @@
-﻿var makeAsyncFunc = require('./impl/makeAsyncFunc');
+﻿var asyncBase = require('./impl/asyncBase');
 var StreamProtocol = require('./impl/protocols/stream');
 
-var async = makeAsyncFunc(StreamProtocol);
+var async = asyncBase.mod({ protocol: StreamProtocol });
 module.exports = async;
 //# sourceMappingURL=stream.js.map

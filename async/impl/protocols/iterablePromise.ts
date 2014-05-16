@@ -34,6 +34,8 @@ class IterablePromiseProtocol extends Protocol {
         this.suspend();
     }
 
+    static SuspendableType: AsyncAwait.AsyncIterablePromise;
+
     private nextResolver: Promise.Resolver<any> = null;
     private done: boolean;
 }

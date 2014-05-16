@@ -47,14 +47,17 @@ class Protocol implements AsyncAwait.Protocol {
         this.semaphore = null;
     }
 
+    /** Provides type info at compile-time only. */
+    static SuspendableType: AsyncAwait.Suspendable;
+
+    static arityFor(func: Function) {
+        return func.length;
+    }
+
     static maxConcurrency(n?: number) {
         if (arguments.length === 0) return maxConcurrency;
         maxConcurrency = n;
         semaphore = new Semaphore(n);
-    }
-
-    static arityFor(func: Function) {
-        return func.length;
     }
 
     private fiberBody() {

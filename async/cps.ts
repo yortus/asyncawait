@@ -1,7 +1,7 @@
 ﻿import references = require('references');
-import makeAsyncFunc = require('./impl/makeAsyncFunc');
+import asyncBase = require('./impl/asyncBase');
 import CPSProtocol = require('./impl/protocols/cps');
 export = async;
 
 
-var async: AsyncAwait.AsyncCPS = <any> makeAsyncFunc(CPSProtocol);
+var async = asyncBase.mod({ protocol: CPSProtocol });

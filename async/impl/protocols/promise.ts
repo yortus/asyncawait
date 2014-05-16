@@ -27,5 +27,7 @@ class PromiseProtocol extends Protocol {
         this.resolver.progress(value);
     }
 
+    static SuspendableType: AsyncAwait.AsyncPromise;
+
     private resolver: Promise.Resolver<any>;
 }

@@ -1,7 +1,7 @@
 ﻿import references = require('references');
-import makeAsyncFunc = require('../impl/makeAsyncFunc');
+import asyncBase = require('../impl/asyncBase');
 import IterableThunkProtocol = require('../impl/protocols/iterableThunk');
 export = async;
 
 
-var async: AsyncAwait.AsyncIterableThunk = <any> makeAsyncFunc(IterableThunkProtocol);
+var async = asyncBase.mod({ protocol: IterableThunkProtocol });

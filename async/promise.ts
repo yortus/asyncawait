@@ -1,7 +1,7 @@
 ﻿import references = require('references');
-import makeAsyncFunc = require('./impl/makeAsyncFunc');
+import asyncBase = require('./impl/asyncBase');
 import PromiseProtocol = require('./impl/protocols/promise');
 export = async;
 
 
-var async: AsyncAwait.AsyncPromise = <any> makeAsyncFunc(PromiseProtocol);
+var async = asyncBase.mod({ protocol: PromiseProtocol });

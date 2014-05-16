@@ -43,7 +43,7 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
-    <TypeScriptCompile Include="async\impl\makeAsyncFunc.ts" />
+    <TypeScriptCompile Include="async\impl\asyncBase.ts" />
     <TypeScriptCompile Include="async\impl\protocols\base.ts" />
     <TypeScriptCompile Include="async\impl\protocols\cps.ts" />
     <TypeScriptCompile Include="async\impl\protocols\express.ts" />
@@ -70,6 +70,8 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="examples\ts\express.ts" />
+    <TypeScriptCompile Include="examples\ts\mocha.ts" />
     <TypeScriptCompile Include="references.d.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
     <TypeScriptCompile Include="tests\async.express.ts" />
@@ -136,6 +138,7 @@
     <Folder Include="comparison\fibonacci\" />
     <Folder Include="comparison\largest\" />
     <Folder Include="examples\" />
+    <Folder Include="examples\ts\" />
     <Folder Include="tests\" />
     <Folder Include="typings\" />
     <Folder Include="typings\asyncawait\" />

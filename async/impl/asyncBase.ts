@@ -1,13 +1,23 @@
 ﻿import references = require('references');
 import _ = require('lodash');
-export = makeAsyncFunc;
+import Protocol = require('./protocols/base');
+export = async;
+
+
+//TODO:... testing...
+var async = makeAsyncFunc(Protocol);
+
+
+
+
+
 
 
 //TODO:...
-function makeAsyncFunc(protocolClass: AsyncAwait.ProtocolStatic) {
+function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(protocolClass: AsyncAwait.ProtocolStatic<TSuspendable>) {
 
     // Create and return an async(...) variant that uses the given coroutine class.
-    var result: AsyncAwait.AsyncFunction = <any> function async(suspendableDefn: Function) {
+    var result: AsyncAwait.Suspendable = <any> function async(suspendableDefn: Function) {
 
         // Ensure that a single argument has been supplied, which is a function.
         if (arguments.length !== 1) throw new Error('async(): expected a single argument');
@@ -37,8 +47,22 @@ function makeAsyncFunc(protocolClass: AsyncAwait.ProtocolStatic) {
     //TODO:...
     result.protocol = protocolClass;
     result.mod = function(options) {
-        throw new Error('Not implemented!');
-        return null;
+
+        // Create a new async function from the current one
+        var protocol = options.protocol;
+        if (_.isFunction(protocol)) {
+            var result = makeAsyncFunc(protocol);
+        } else if (_.isObject(protocol)) {
+
+            //TODO:... create derived class
+            result = null;
+
+
+        } else {
+            throw new Error('mod(): Expected a constructor function or an object');
+        }
+
+        return result;
     }
     return result;
 }

@@ -43,7 +43,6 @@
     "mocha": "~1.18.2",
     "chai": "~1.9.1",
     "grunt": "~0.4.4",
-    "grunt-ts": "~1.11.2",
     "async": "*",
     "co": "*",
     "memwatch": "*",
@@ -52,7 +51,8 @@
     "grunt-contrib-copy": "~0.5.0",
     "grunt-mocha-test": "~0.10.2",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-execute": "~0.2.1"
+    "grunt-execute": "~0.2.1",
+    "grunt-typescript": "~0.3.6"
   },
   "scripts": {
     "test": "grunt test",

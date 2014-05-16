@@ -1,6 +1,6 @@
-﻿var makeAsyncFunc = require('./impl/makeAsyncFunc');
+﻿var asyncBase = require('./impl/asyncBase');
 var CPSProtocol = require('./impl/protocols/cps');
 
-var async = makeAsyncFunc(CPSProtocol);
+var async = asyncBase.mod({ protocol: CPSProtocol });
 module.exports = async;
 //# sourceMappingURL=cps.js.map

@@ -1,4 +1,4 @@
-﻿var makeAsyncFunc = require('./impl/makeAsyncFunc');
+﻿var asyncBase = require('./impl/asyncBase');
 var Protocol = require('./impl/protocols/base');
 var PromiseProtocol = require('./impl/protocols/promise');
 var Promise = require('./promise');
@@ -8,13 +8,13 @@ var Stream = require('./stream');
 var Express = require('./express');
 var Iterable = require('./iterable/index');
 
-var async = makeAsyncFunc(PromiseProtocol);
+var async = asyncBase.mod({ protocol: PromiseProtocol });
 async.promise = Promise;
 async.cps = CPS;
 async.thunk = Thunk;
 async.stream = Stream;
 async.express = Express;
 async.iterable = Iterable;
-async.maxConcurrency = Protocol.maxConcurrency; //TODO: move to config({...}) method
+async.maxConcurrency = Protocol.maxConcurrency;
 module.exports = async;
 //# sourceMappingURL=index.js.map

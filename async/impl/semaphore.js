@@ -1,5 +1,4 @@
 ﻿
-/** A simple abstraction for limiting concurrent function calls to a specific upper bound. */
 var Semaphore = (function () {
     function Semaphore(n) {
         this.n = n;

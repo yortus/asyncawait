@@ -22,4 +22,6 @@ class IterableThunkProtocol extends IterableCPSProtocol {
             }
         };
     }
+
+    static SuspendableType: AsyncAwait.AsyncIterableThunk;
 }

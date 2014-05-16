@@ -32,6 +32,8 @@ class IterableCPSProtocol extends Protocol {
         this.suspend();
     }
 
+    static SuspendableType: AsyncAwait.AsyncIterableCPS;
+
     private nextCallback: (err, item?: { done: boolean; value?: any; }) => void = null;
     private done: boolean;
 }

@@ -7,7 +7,6 @@
 var _ = require('lodash');
 var Protocol = require('./base');
 
-/** Protocol for a suspendable function which accepts a node-style callback. */
 var CPSProtocol = (function (_super) {
     __extends(CPSProtocol, _super);
     function CPSProtocol() {
@@ -15,7 +14,6 @@ var CPSProtocol = (function (_super) {
     }
     CPSProtocol.prototype.invoke = function (func, this_, args) {
         var _this = this;
-        //TODO: allow callback to be omitted if arity is known (need option for this?)
         this.callback = args.pop();
         if (!_.isFunction(this.callback))
             throw new Error('Expected final argument to be a callback');

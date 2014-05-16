@@ -1,7 +1,7 @@
 ﻿import references = require('references');
-import makeAsyncFunc = require('./impl/makeAsyncFunc');
+import asyncBase = require('./impl/asyncBase');
 import StreamProtocol = require('./impl/protocols/stream');
 export = async;
 
 
-var async: AsyncAwait.AsyncStream = <any> makeAsyncFunc(StreamProtocol);
+var async = asyncBase.mod({ protocol: StreamProtocol });
