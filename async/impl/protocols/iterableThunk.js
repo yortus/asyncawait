@@ -9,7 +9,7 @@ var IterableCPSProtocol = require('./iterableCps');
 
 var IterableThunkProtocol = (function (_super) {
     __extends(IterableThunkProtocol, _super);
-    function IterableThunkProtocol() {
+    function IterableThunkProtocol(options) {
         _super.call(this);
     }
     IterableThunkProtocol.prototype.invoke = function (func, this_, args) {

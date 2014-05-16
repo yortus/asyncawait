@@ -8,7 +8,7 @@ var CPSProtocol = require('./cps');
 
 var ExpressProtocol = (function (_super) {
     __extends(ExpressProtocol, _super);
-    function ExpressProtocol() {
+    function ExpressProtocol(options) {
         _super.call(this);
     }
     ExpressProtocol.prototype.return = function (result) {

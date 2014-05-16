@@ -6,7 +6,7 @@ export = PromiseProtocol;
 
 /** Protocol for a suspendable function which returns a promise. */
 class PromiseProtocol extends Protocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncPromise>) { super(); }
 
     invoke(func: Function, this_: any, args: any[]) {
         this.resolver = Promise.defer<any>();
@@ -26,8 +26,6 @@ class PromiseProtocol extends Protocol {
     yield(value) {
         this.resolver.progress(value);
     }
-
-    static SuspendableType: AsyncAwait.AsyncPromise;
 
     private resolver: Promise.Resolver<any>;
 }

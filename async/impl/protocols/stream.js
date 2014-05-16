@@ -10,7 +10,7 @@ var Protocol = require('./base');
 
 var StreamProtocol = (function (_super) {
     __extends(StreamProtocol, _super);
-    function StreamProtocol() {
+    function StreamProtocol(options) {
         _super.call(this);
     }
     StreamProtocol.prototype.invoke = function (func, this_, args) {

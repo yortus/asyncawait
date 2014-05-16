@@ -4,7 +4,7 @@ export = ExpressProtocol;
 
 
 class ExpressProtocol extends CPSProtocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncCPS>) { super(); }
 
     return(result) {
         if (result === 'next') return super.return(null);

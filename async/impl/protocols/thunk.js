@@ -8,7 +8,7 @@ var CPSProtocol = require('./cps');
 
 var ThunkProtocol = (function (_super) {
     __extends(ThunkProtocol, _super);
-    function ThunkProtocol() {
+    function ThunkProtocol(options) {
         _super.call(this);
     }
     ThunkProtocol.prototype.options = function (value) {

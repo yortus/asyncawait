@@ -5,7 +5,7 @@ export = ThunkProtocol;
 
 /** Protocol for a suspendable function which returns a thunk. */
 class ThunkProtocol extends CPSProtocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncThunk>) { super(); }
 
     options(value?: AsyncAwait.ProtocolOptions<any>): AsyncAwait.ProtocolOptions<any> {
         return { constructor: <any> this.constructor, acceptsCallback: false };
@@ -17,8 +17,6 @@ class ThunkProtocol extends CPSProtocol {
             super.invoke(func, this_, args);
         };
     }
-
-    static SuspendableType: AsyncAwait.AsyncThunk;
 }
 
 

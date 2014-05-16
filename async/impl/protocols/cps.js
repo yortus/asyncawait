@@ -9,7 +9,7 @@ var Protocol = require('./base');
 
 var CPSProtocol = (function (_super) {
     __extends(CPSProtocol, _super);
-    function CPSProtocol() {
+    function CPSProtocol(options) {
         _super.call(this);
     }
     CPSProtocol.prototype.options = function (value) {

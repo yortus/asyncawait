@@ -5,8 +5,9 @@ import Protocol = require('./base');
 export = StreamProtocol;
 
 
+/** Protocol for a suspendable function which returns a stream. */
 class StreamProtocol extends Protocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncStream>) { super(); }
 
     invoke(func: Function, this_: any, args: any[]): stream.Readable {
         super.invoke(func, this_, args);
@@ -26,8 +27,6 @@ class StreamProtocol extends Protocol {
         this.stream.push(value);
         this.suspend();
     }
-
-    static SuspendableType: AsyncAwait.AsyncStream;
 
     private stream: Stream;
 }

@@ -51,9 +51,6 @@ class Protocol implements AsyncAwait.Protocol {
         semaphore.leave();
     }
 
-    /** Provides type info at compile-time only. */
-    static SuspendableType: AsyncAwait.Suspendable;
-
     private makeFiberBody() {
         var tryBlock = () => this.return(this._func());
         var catchBlock = err => this.throw(err);

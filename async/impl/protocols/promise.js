@@ -9,7 +9,7 @@ var Protocol = require('./base');
 
 var PromiseProtocol = (function (_super) {
     __extends(PromiseProtocol, _super);
-    function PromiseProtocol() {
+    function PromiseProtocol(options) {
         _super.call(this);
     }
     PromiseProtocol.prototype.invoke = function (func, this_, args) {

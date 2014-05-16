@@ -6,7 +6,7 @@ export = CPSProtocol;
 
 /** Protocol for a suspendable function which accepts a node-style callback. */
 class CPSProtocol extends Protocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncCPS>) { super(); }
 
     options(value?: AsyncAwait.ProtocolOptions<any>): AsyncAwait.ProtocolOptions<any> {
         return { constructor: <any> this.constructor, acceptsCallback: true };
@@ -27,8 +27,6 @@ class CPSProtocol extends Protocol {
     throw(error) {
         this.callback(error);
     }
-
-    static SuspendableType: AsyncAwait.AsyncCPS;
 
     private callback: Function;
 }

@@ -20,6 +20,11 @@ function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(options: Asy
 
         // Prepare a function that constructs the protocol instance
         var protocolClass = options.constructor; //TODO: or use 'override'...
+        if (!protocolClass) {
+
+            //TODO: use the one this was made from... until no more turtles...
+            
+        }
         var newProtocol = () => new protocolClass(options);
         var acceptsCallback = newProtocol().options().acceptsCallback;
 

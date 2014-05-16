@@ -4,8 +4,9 @@ import IterableCPSProtocol = require('./iterableCps');
 export = IterableThunkProtocol;
 
 
+/** Protocol for a suspendable function which returns an async iterator. */
 class IterableThunkProtocol extends IterableCPSProtocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncIterableThunk>) { super(); }
 
     invoke(func: Function, this_: any, args: any[]): any {
         var iter = super.invoke(func, this_, args);
@@ -22,6 +23,4 @@ class IterableThunkProtocol extends IterableCPSProtocol {
             }
         };
     }
-
-    static SuspendableType: AsyncAwait.AsyncIterableThunk;
 }

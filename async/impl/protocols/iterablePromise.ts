@@ -5,8 +5,9 @@ import Protocol = require('./base');
 export = IterablePromiseProtocol;
 
 
+/** Protocol for a suspendable function which returns an async iterator. */
 class IterablePromiseProtocol extends Protocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncIterablePromise>) { super(); }
 
     invoke(func: Function, this_: any, args: any[]): any {
         super.invoke(func, this_, args);
@@ -34,9 +35,8 @@ class IterablePromiseProtocol extends Protocol {
         this.suspend();
     }
 
-    static SuspendableType: AsyncAwait.AsyncIterablePromise;
-
     private nextResolver: Promise.Resolver<any> = null;
+
     private done: boolean;
 }
 

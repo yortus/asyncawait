@@ -10,7 +10,7 @@ var Protocol = require('./base');
 
 var IterablePromiseProtocol = (function (_super) {
     __extends(IterablePromiseProtocol, _super);
-    function IterablePromiseProtocol() {
+    function IterablePromiseProtocol(options) {
         _super.call(this);
         this.nextResolver = null;
     }

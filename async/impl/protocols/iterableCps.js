@@ -9,7 +9,7 @@ var Protocol = require('./base');
 
 var IterableCPSProtocol = (function (_super) {
     __extends(IterableCPSProtocol, _super);
-    function IterableCPSProtocol() {
+    function IterableCPSProtocol(options) {
         _super.call(this);
         this.nextCallback = null;
     }

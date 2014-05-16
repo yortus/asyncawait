@@ -94,13 +94,11 @@ declare module AsyncAwait {
 
     export interface ProtocolOptions<TSuspendable extends Suspendable> {
         constructor?: ProtocolStatic<TSuspendable>;
-        overrides? : { };//TODO: ...
         acceptsCallback?: boolean;
     }
 
     export interface ProtocolStatic<TSuspendable extends Suspendable> {
         new(options?: ProtocolOptions<TSuspendable>): Protocol;
-        SuspendableType: TSuspendable; // Provides type info at compile-time only.
     }
 
     export interface Protocol {

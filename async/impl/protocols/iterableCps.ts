@@ -4,8 +4,9 @@ import Protocol = require('./base');
 export = IterableCPSProtocol;
 
 
+/** Protocol for a suspendable function which returns an async iterator. */
 class IterableCPSProtocol extends Protocol {
-    constructor() { super(); }
+    constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncIterableCPS>) { super(); }
 
     invoke(func: Function, this_: any, args: any[]): any {
         super.invoke(func, this_, args);
@@ -32,9 +33,8 @@ class IterableCPSProtocol extends Protocol {
         this.suspend();
     }
 
-    static SuspendableType: AsyncAwait.AsyncIterableCPS;
-
     private nextCallback: (err, item?: { done: boolean; value?: any; }) => void = null;
+
     private done: boolean;
 }
 
