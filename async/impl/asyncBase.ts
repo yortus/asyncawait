@@ -48,7 +48,8 @@ function makeAsyncFunc<TSuspendable extends AsyncAwait.Suspendable>(options: Asy
     result.mod = function<T extends AsyncAwait.Suspendable>(options_: AsyncAwait.ProtocolOptions<T>) {
 
         // Create a new options object with appropriate fallback values.
-        var opts = _.assign({ constructor: protocolClass }, options_);
+        var opts = _.assign({}, options_);
+        opts.constructor = opts.constructor || protocolClass;
 
         // Create a new async function from the current one.
         return makeAsyncFunc(<any> opts);

@@ -75,6 +75,8 @@
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
     <TypeScriptCompile Include="references.d.ts" />
+    <TypeScriptCompile Include="tests\async.mod.ts" />
+    <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
     <TypeScriptCompile Include="tests\async.express.ts" />
     <TypeScriptCompile Include="tests\async.iterable.promise.ts" />

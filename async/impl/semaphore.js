@@ -10,7 +10,7 @@ exports.enter = enter;
 
 function leave() {
     if (_queued.length > 0) {
-        var fn = _queued.pop();
+        var fn = _queued.shift();
         fn();
     } else {
         ++_avail;
@@ -23,7 +23,7 @@ function size(n) {
         _avail += (n - _size);
         _size = n;
     }
-    return this._size;
+    return _size;
 }
 exports.size = size;
 

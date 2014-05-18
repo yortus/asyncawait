@@ -14,7 +14,7 @@ export function enter(fn: () => void) {
 /** Leave the global semaphore. */
 export function leave() {
     if (_queued.length > 0) {
-        var fn = _queued.pop();
+        var fn = _queued.shift();
         fn();
     } else {
         ++_avail;
@@ -27,7 +27,7 @@ export function size(n?: number): number {
         _avail += (n - _size);
         _size = n;
     }
-    return this._size;
+    return _size;
 }
 
 var _size: number = 1000000;
