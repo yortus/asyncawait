@@ -13,9 +13,9 @@ var StreamProtocol = (function (_super) {
     function StreamProtocol(options) {
         _super.call(this);
     }
-    StreamProtocol.prototype.invoke = function (func, this_, args) {
+    StreamProtocol.prototype.invoke = function () {
         var _this = this;
-        _super.prototype.invoke.call(this, func, this_, args);
+        _super.prototype.invoke.call(this);
         var stream = this.stream = new Stream(function () {
             return setImmediate(function () {
                 return _this.resume();

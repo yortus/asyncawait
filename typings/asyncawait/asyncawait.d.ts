@@ -23,7 +23,7 @@ declare module AsyncAwait {
         maxConcurrency?: number;
     }
 
-    export interface AsyncPromise extends Suspendable {
+    export interface AsyncPromise extends AsyncFunction {
         <TResult>(fn: () => TResult): () => Promise<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
@@ -31,7 +31,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
     }
 
-    export interface AsyncCPS extends Suspendable {
+    export interface AsyncCPS extends AsyncFunction {
         <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
@@ -39,7 +39,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
     }
 
-    export interface AsyncThunk extends Suspendable {
+    export interface AsyncThunk extends AsyncFunction {
         <TResult>(fn: () => TResult): () => Thunk<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
         <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
@@ -47,7 +47,7 @@ declare module AsyncAwait {
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
 
-    export interface AsyncStream extends Suspendable {
+    export interface AsyncStream extends AsyncFunction {
         (fn: Function): (...args: any[]) => ReadableStream;
     }
 
@@ -57,21 +57,21 @@ declare module AsyncAwait {
         thunk: AsyncIterableThunk;
     }
 
-    export interface AsyncIterablePromise extends Suspendable {
+    export interface AsyncIterablePromise extends AsyncFunction {
         (fn: Function): (...args: any[]) => {
             next(): Promise<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Promise<void>;
         };
     }
 
-    export interface AsyncIterableCPS extends Suspendable {
+    export interface AsyncIterableCPS extends AsyncFunction {
         (fn: Function): (...args: any[]) => {
             next(callback?: Callback<any>): void;
             forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
         };
     }
 
-    export interface AsyncIterableThunk extends Suspendable {
+    export interface AsyncIterableThunk extends AsyncFunction {
         (fn: Function): (...args: any[]) => {
             next(): Thunk<{ done: boolean; value?: any; }>;
             forEach(callback: (value) => void): Thunk<void>;
@@ -87,23 +87,22 @@ declare module AsyncAwait {
 
 
 
-    export interface Suspendable {
+    export interface AsyncFunction {
         (fn: Function): Function;
-        mod<TSuspendable extends Suspendable>(protocolOptions: ProtocolOptions<TSuspendable>): TSuspendable;
+        mod<TAsyncFunc extends AsyncFunction>(protocolOptions: ProtocolOptions<TAsyncFunc>): TAsyncFunc;
     }
 
-    export interface ProtocolOptions<TSuspendable extends Suspendable> {
-        constructor?: ProtocolStatic<TSuspendable>;
+    export interface ProtocolOptions<TAsyncFunc extends AsyncFunction> {
+        constructor?: ProtocolStatic<TAsyncFunc>;
         acceptsCallback?: boolean;
     }
 
-    export interface ProtocolStatic<TSuspendable extends Suspendable> {
-        new(options?: ProtocolOptions<TSuspendable>): Protocol;
+    export interface ProtocolStatic<TAsyncFunc extends AsyncFunction> {
+        new(options?: ProtocolOptions<TAsyncFunc>): Protocol;
     }
 
     export interface Protocol {
-        options(value?: ProtocolOptions<Suspendable>): ProtocolOptions<Suspendable>;
-        invoke(func: Function, this_: any, args: any[]): any;
+        invoke(...args): any;
         resume(): void;
         suspend(): void;
         return(result: any): void;

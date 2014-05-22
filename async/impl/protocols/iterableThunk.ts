@@ -8,8 +8,8 @@ export = IterableThunkProtocol;
 class IterableThunkProtocol extends IterableCPSProtocol {
     constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncIterableThunk>) { super(); }
 
-    invoke(func: Function, this_: any, args: any[]): any {
-        var iter = super.invoke(func, this_, args);
+    invoke(): any {
+        var iter = super.invoke();
         return {
             next: () => (callback) => iter.next(callback),
             forEach: callback => {

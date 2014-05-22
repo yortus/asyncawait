@@ -12,8 +12,8 @@ var IterableThunkProtocol = (function (_super) {
     function IterableThunkProtocol(options) {
         _super.call(this);
     }
-    IterableThunkProtocol.prototype.invoke = function (func, this_, args) {
-        var iter = _super.prototype.invoke.call(this, func, this_, args);
+    IterableThunkProtocol.prototype.invoke = function () {
+        var iter = _super.prototype.invoke.call(this);
         return {
             next: function () {
                 return function (callback) {

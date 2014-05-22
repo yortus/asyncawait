@@ -12,16 +12,12 @@ var CPSProtocol = (function (_super) {
     function CPSProtocol(options) {
         _super.call(this);
     }
-    CPSProtocol.prototype.options = function (value) {
-        return { constructor: this.constructor, acceptsCallback: true };
-    };
-
-    CPSProtocol.prototype.invoke = function (func, this_, args) {
+    CPSProtocol.prototype.invoke = function (callback_) {
         var _this = this;
-        this.callback = args.pop();
-        if (!_.isFunction(this.callback))
+        if (!_.isFunction(callback_))
             throw new Error('Expected final argument to be a callback');
-        _super.prototype.invoke.call(this, func, this_, args);
+        this.callback = callback_;
+        _super.prototype.invoke.call(this);
         setImmediate(function () {
             return _super.prototype.resume.call(_this);
         });

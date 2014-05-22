@@ -7,12 +7,7 @@ export = Protocol;
 
 class Protocol implements AsyncAwait.Protocol {
 
-    options(value?: AsyncAwait.ProtocolOptions<any>): AsyncAwait.ProtocolOptions<any> {
-        return { constructor: <any> this.constructor, acceptsCallback: false };
-    }
-
-    invoke(func: Function, this_: any, args: any[]): any {
-        this._func = () => func.apply(this_, args);
+    invoke(...args): any {
         return this;
     }
 

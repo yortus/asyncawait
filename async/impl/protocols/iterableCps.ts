@@ -8,8 +8,8 @@ export = IterableCPSProtocol;
 class IterableCPSProtocol extends Protocol {
     constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncIterableCPS>) { super(); }
 
-    invoke(func: Function, this_: any, args: any[]): any {
-        super.invoke(func, this_, args);
+    invoke(): any {
+        super.invoke();//TODO: this is a no-op. Remove?
         return new AsyncIterator(this);
     }
 

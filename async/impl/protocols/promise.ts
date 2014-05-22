@@ -8,9 +8,9 @@ export = PromiseProtocol;
 class PromiseProtocol extends Protocol {
     constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncPromise>) { super(); }
 
-    invoke(func: Function, this_: any, args: any[]) {
+    invoke() {
         this.resolver = Promise.defer<any>();
-        super.invoke(func, this_, args);
+        super.invoke();//TODO: this is a no-op. Remove?
         setImmediate(() => super.resume());
         return this.resolver.promise;
     }

@@ -11,15 +11,10 @@ var ThunkProtocol = (function (_super) {
     function ThunkProtocol(options) {
         _super.call(this);
     }
-    ThunkProtocol.prototype.options = function (value) {
-        return { constructor: this.constructor, acceptsCallback: false };
-    };
-
-    ThunkProtocol.prototype.invoke = function (func, this_, args) {
+    ThunkProtocol.prototype.invoke = function () {
         var _this = this;
         return function (callback) {
-            args.push(callback || nullFunc);
-            _super.prototype.invoke.call(_this, func, this_, args);
+            _super.prototype.invoke.call(_this, callback || nullFunc);
         };
     };
     return ThunkProtocol;

@@ -13,8 +13,8 @@ var IterableCPSProtocol = (function (_super) {
         _super.call(this);
         this.nextCallback = null;
     }
-    IterableCPSProtocol.prototype.invoke = function (func, this_, args) {
-        _super.prototype.invoke.call(this, func, this_, args);
+    IterableCPSProtocol.prototype.invoke = function () {
+        _super.prototype.invoke.call(this);
         return new AsyncIterator(this);
     };
 

@@ -14,8 +14,8 @@ var IterablePromiseProtocol = (function (_super) {
         _super.call(this);
         this.nextResolver = null;
     }
-    IterablePromiseProtocol.prototype.invoke = function (func, this_, args) {
-        _super.prototype.invoke.call(this, func, this_, args);
+    IterablePromiseProtocol.prototype.invoke = function () {
+        _super.prototype.invoke.call(this);
         return new AsyncIterator(this);
     };
 

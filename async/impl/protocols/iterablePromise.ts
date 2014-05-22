@@ -9,8 +9,8 @@ export = IterablePromiseProtocol;
 class IterablePromiseProtocol extends Protocol {
     constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncIterablePromise>) { super(); }
 
-    invoke(func: Function, this_: any, args: any[]): any {
-        super.invoke(func, this_, args);
+    invoke(): any {
+        super.invoke();//TODO: this is a no-op. Remove?
         return new AsyncIterator(this);
     }
 

@@ -9,8 +9,8 @@ export = StreamProtocol;
 class StreamProtocol extends Protocol {
     constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncStream>) { super(); }
 
-    invoke(func: Function, this_: any, args: any[]): stream.Readable {
-        super.invoke(func, this_, args);
+    invoke(): stream.Readable {
+        super.invoke();//TODO: this is a no-op. Remove?
         var stream = this.stream = new Stream(() => setImmediate(() => this.resume()));
         return stream;
     }

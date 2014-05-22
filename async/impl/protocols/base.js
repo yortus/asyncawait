@@ -5,14 +5,11 @@ var fiberPool = require('../fiberPool');
 var Protocol = (function () {
     function Protocol() {
     }
-    Protocol.prototype.options = function (value) {
-        return { constructor: this.constructor, acceptsCallback: false };
-    };
-
-    Protocol.prototype.invoke = function (func, this_, args) {
-        this._func = function () {
-            return func.apply(this_, args);
-        };
+    Protocol.prototype.invoke = function () {
+        var args = [];
+        for (var _i = 0; _i < (arguments.length - 0); _i++) {
+            args[_i] = arguments[_i + 0];
+        }
         return this;
     };
 

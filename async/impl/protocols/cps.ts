@@ -8,15 +8,11 @@ export = CPSProtocol;
 class CPSProtocol extends Protocol {
     constructor(options?: AsyncAwait.ProtocolOptions<AsyncAwait.AsyncCPS>) { super(); }
 
-    options(value?: AsyncAwait.ProtocolOptions<any>): AsyncAwait.ProtocolOptions<any> {
-        return { constructor: <any> this.constructor, acceptsCallback: true };
-    }
-
-    invoke(func: Function, this_: any, args: any[]) {
+    invoke(callback_: AsyncAwait.Callback<any>) {
         //TODO: allow callback to be omitted if arity is known (need option for this?)
-        this.callback = args.pop();
-        if (!_.isFunction(this.callback)) throw new Error('Expected final argument to be a callback');
-        super.invoke(func, this_, args);
+        if (!_.isFunction(callback_)) throw new Error('Expected final argument to be a callback');
+        this.callback = callback_;
+        super.invoke();//TODO: this is a no-op. Remove?
         setImmediate(() => super.resume());
     }
 

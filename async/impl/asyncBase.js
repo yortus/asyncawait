@@ -12,7 +12,7 @@ function makeAsyncFunc(options) {
     var newProtocol = function () {
         return new protocolClass(options);
     };
-    var acceptsCallback = newProtocol().options().acceptsCallback;
+    var protocolArgCount = newProtocol().invoke.length;
 
     var result = function async(suspendableDefn) {
         if (arguments.length !== 1)
@@ -21,15 +21,23 @@ function makeAsyncFunc(options) {
             throw new Error('async(): expected argument to be a function');
 
         function asyncRunner($ARGS) {
-            var nargs = arguments.length, args = new Array(nargs);
-            for (var i = 0; i < nargs; ++i)
-                args[i] = arguments[i];
+            var _this = this;
+            var argCount = arguments.length, suspendableArgCount = argCount - protocolArgCount;
+            var sArgs = new Array(suspendableArgCount), pArgs = new Array(protocolArgCount);
+            for (var i = 0; i < suspendableArgCount; ++i)
+                sArgs[i] = arguments[i];
+            for (var i = 0; i < protocolArgCount; ++i)
+                pArgs[i] = arguments[i + suspendableArgCount];
 
+            var invoke = function () {
+                return suspendableDefn.apply(_this, sArgs);
+            };
             var protocol = newProtocol();
-            return protocol.invoke(suspendableDefn, this, args);
+            protocol['_func'] = invoke;
+            return protocol.invoke.apply(protocol, pArgs);
         }
 
-        var result, args = [], arity = suspendableDefn.length + (acceptsCallback ? 1 : 0);
+        var result, args = [], arity = suspendableDefn.length + protocolArgCount;
         for (var i = 0; i < arity; ++i)
             args.push('a' + i);
         var funcDefn, funcCode = eval('funcDefn = ' + asyncRunner.toString().replace('$ARGS', args.join(', ')));
@@ -42,6 +50,7 @@ function makeAsyncFunc(options) {
 
         return makeAsyncFunc(opts);
     };
+
     return result;
 }
 module.exports = async;
