@@ -18,3 +18,9 @@ interface Fiber {
 interface Function {
     name: string;
 }
+
+
+/** V8 supports Object.setProtoyypeOf. */ 
+interface Object {
+    setPrototypeOf(obj, prototype): void;
+}

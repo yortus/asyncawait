@@ -1,36 +1,37 @@
-﻿var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var chai = require('chai');
-
+﻿var chai = require('chai');
+var Promise = require('bluebird');
 var async = require('asyncawait/async');
 
-var PromiseProtocol = require('../async/impl/protocols/promise');
 var expect = chai.expect;
 
-var XProtocol = (function (_super) {
-    __extends(XProtocol, _super);
-    function XProtocol(opts) {
-        _super.call(this);
-        this.opts = opts;
-        this.prefix = opts.prefix || '';
-        this.suffix = opts.suffix || '';
-    }
-    XProtocol.prototype.return = function (value) {
-        _super.prototype.return.call(this, this.prefix + value + this.suffix);
+var XProtocol = function (resume, suspend, options) {
+    options = options || {};
+    var prefix = options.prefix || '';
+    var suffix = options.suffix || '';
+    var resolver = Promise.defer();
+    var result = {
+        create: function () {
+            setImmediate(resume);
+            return resolver.promise;
+        },
+        delete: function () {
+        },
+        return: function (result) {
+            return resolver.resolve(prefix + result + suffix);
+        },
+        throw: function (error) {
+            return resolver.reject(prefix + error.message + suffix);
+        },
+        yield: function (value) {
+            return resolver.progress(value);
+        }
     };
-    XProtocol.prototype.throw = function (err) {
-        _super.prototype.throw.call(this, new Error(this.prefix + err.message + this.suffix));
-    };
-    return XProtocol;
-})(PromiseProtocol);
+    return result;
+};
 
 describe('async.mod(...)', function () {
     it('returns a new async function defaulting to the same protocol', function (done) {
-        var a2 = async.mod({ constructor: null });
+        var a2 = async.mod();
         expect(a2).to.exist;
         expect(a2).to.not.equal(async);
         var fn = a2(function (n) {
@@ -44,7 +45,7 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol', function (done) {
-        var asyncX = async.mod({ constructor: XProtocol });
+        var asyncX = async.mod(XProtocol);
         var fn = asyncX(function (msg) {
             return msg;
         });
@@ -56,7 +57,7 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol options', function (done) {
-        var asyncX = async.mod({ constructor: XProtocol, prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.mod(XProtocol, { prefix: '<<<', suffix: '>>>' });
         var fn = asyncX(function (msg) {
             return msg;
         });

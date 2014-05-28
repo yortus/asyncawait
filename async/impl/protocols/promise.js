@@ -7,7 +7,6 @@
 var Promise = require('bluebird');
 var Protocol = require('./base');
 
-/** Protocol for a suspendable function which returns a promise. */
 var PromiseProtocol = (function (_super) {
     __extends(PromiseProtocol, _super);
     function PromiseProtocol(options) {
@@ -16,7 +15,7 @@ var PromiseProtocol = (function (_super) {
     PromiseProtocol.prototype.invoke = function () {
         var _this = this;
         this.resolver = Promise.defer();
-        _super.prototype.invoke.call(this); //TODO: this is a no-op. Remove?
+        _super.prototype.invoke.call(this);
         setImmediate(function () {
             return _super.prototype.resume.call(_this);
         });

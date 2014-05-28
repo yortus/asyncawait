@@ -89,20 +89,21 @@ declare module AsyncAwait {
 
     export interface AsyncFunction {
         (fn: Function): Function;
-        mod<TAsyncFunc extends AsyncFunction>(protocolOptions: ProtocolOptions<TAsyncFunc>): TAsyncFunc;
+        mod<TSuspendable extends AsyncFunction>(protocolOptions: ProtocolOptions<TSuspendable>): TSuspendable;
     }
 
-    export interface ProtocolOptions<TAsyncFunc extends AsyncFunction> {
-        constructor?: ProtocolStatic<TAsyncFunc>;
+    export interface ProtocolOptions<TSuspendable extends AsyncFunction> {
+        constructor?: ProtocolStatic<TSuspendable>;
         acceptsCallback?: boolean;
     }
 
-    export interface ProtocolStatic<TAsyncFunc extends AsyncFunction> {
-        new(options?: ProtocolOptions<TAsyncFunc>): Protocol;
+    export interface ProtocolStatic<TSuspendable extends AsyncFunction> {
+        new(options?: ProtocolOptions<TSuspendable>): Protocol;
     }
 
     export interface Protocol {
-        invoke(...args): any;
+        //options(value?: ProtocolOptions<AsyncFunction>): ProtocolOptions<AsyncFunction>;
+        invoke(func: Function, this_: any, args: any[]): any;
         resume(): void;
         suspend(): void;
         return(result: any): void;
@@ -110,6 +111,25 @@ declare module AsyncAwait {
         yield(value: any): void;
         dispose(): void;
     }
+
+
+
+
+
+    //TODO...
+    export interface AsyncFunction2 {
+        (fn: Function): Function;
+        mod(factory: (resume: () => void, suspend: () => void, options?: any) => AsyncAwait.Protocol2): AsyncFunction2;
+    }
+    export interface Protocol2 {
+        create(...args): any;
+        delete(): void;
+        return(result: any): void;
+        throw(error: Error): void;
+        yield(value: any): void;
+    }
+
+
 
     //------------------------- Await -------------------------
     export interface Await extends AwaitFunction {

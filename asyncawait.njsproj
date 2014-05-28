@@ -43,6 +43,7 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
+    <TypeScriptCompile Include="async\impl\asyncBase2.ts" />
     <TypeScriptCompile Include="async\impl\asyncBase.ts" />
     <TypeScriptCompile Include="async\impl\config.ts" />
     <TypeScriptCompile Include="async\impl\fiberPool.ts" />
