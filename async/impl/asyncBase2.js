@@ -1,33 +1,17 @@
 ﻿var _ = require('lodash');
 
-var Promise = require('bluebird');
 var Fiber = require('fibers');
 var semaphore = require('./semaphore');
 var fiberPool = require('./fiberPool');
 
 
 var async = makeAsyncFunc(function (resume, suspend, options) {
-    var resolver = Promise.defer();
-    var result = {
-        create: function () {
-        },
-        delete: function () {
-        },
-        return: function (result) {
-        },
-        throw: function (error) {
-        },
-        yield: function (value) {
-        }
-    };
-    return result;
+    return null;
 });
 
 function makeAsyncFunc(factory, options) {
-    var newProtocol = factory(function () {
-    }, function () {
-    }, options);
-    var protocolArgCount = newProtocol.create.length;
+    var newProtocol = factory(nullFunc, nullFunc, options) || {};
+    var protocolArgCount = (newProtocol.create || nullFunc).length;
 
     var result = function async(suspendableDefn) {
         if (arguments.length !== 1)
@@ -54,19 +38,11 @@ function makeAsyncFunc(factory, options) {
             }, function () {
                 return co.suspend();
             }, options);
-            co._return = function (v) {
-                return protocol.return(v);
-            };
-            co._throw = function (v) {
-                return protocol.throw(v);
-            };
-            co._yield = function (v) {
-                return protocol.yield(v);
-            };
-            co._delete = function () {
-                return protocol.delete();
-            };
-            return protocol.create.apply(protocol, pArgs);
+            co._return = protocol.return || nullFunc;
+            co._throw = protocol.throw || nullFunc;
+            co._yield = protocol.yield || nullFunc;
+            co._delete = protocol.delete || nullFunc;
+            return (protocol.create || nullFunc).apply(protocol, pArgs);
         }
 
         var result, args = [], arity = suspendableDefn.length + protocolArgCount;
@@ -144,5 +120,8 @@ var Co = (function () {
     };
     return Co;
 })();
+
+function nullFunc() {
+}
 module.exports = async;
 //# sourceMappingURL=asyncBase2.js.map

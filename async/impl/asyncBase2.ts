@@ -14,25 +14,15 @@ export = async;
 
 
 // Create an abstract async function from which all others can be bootstrapped using mod(...)
-var async = makeAsyncFunc((resume, suspend, options) => {
-    var resolver = Promise.defer<any>();
-    var result =  {
-        create: () => {},
-        delete: () => {},
-        return: result => {},
-        throw: error => {},
-        yield: value => {}
-    };
-    return result;
-});
+var async = makeAsyncFunc((resume, suspend, options) => null);
 
 
 /** Creates an async function using the specified protocol. */
 function makeAsyncFunc(factory: (resume: () => void, suspend: () => void, options?: any) => AsyncAwait.Protocol2, options?: any) {
 
     //TODO: ...
-    var newProtocol = factory(() => {}, () => {}, options);
-    var protocolArgCount = newProtocol.create.length;
+    var newProtocol = factory(nullFunc, nullFunc, options) || {};
+    var protocolArgCount = (newProtocol.create || nullFunc).length;
 
 
 
@@ -59,57 +49,6 @@ function makeAsyncFunc(factory: (resume: () => void, suspend: () => void, option
             // TODO...------------------------------------------
             var _run = () => suspendableDefn.apply(this, sArgs);
             var co = new Co(_run);
-            //var _fiber: Fiber;
-            //var _delete: () => void;
-            //var _return: (result: any) => void;
-            //var _throw: (error: Error) => void;
-            //var _yield: (value: any) => void;
-
-            //function _dispose() {
-            //    fiberPool.dec();
-            //    _fiber = null;
-            //    _run = null;
-            //    semaphore.leave();
-            //    _delete();
-            //}
-
-            //function _makeFiberBody() {
-            //    var tryBlock = () => _return(_run());
-            //    var catchBlock = err => _throw(err);
-            //    var finallyBlock = () => _dispose();
-
-            //    // V8 may not optimise the following function due to the presence of
-            //    // try/catch/finally. Therefore it does as little as possible, only
-            //    // referencing the optimisable closures prepared above.
-            //    return function fiberBody() {
-            //        try { tryBlock(); }
-            //        catch (err) { catchBlock(err); }
-            //        finally { finallyBlock(); }
-            //    };
-            //}
-
-            //function resume() {
-
-            //    // Define a function to resume the fiber, lazily creating it on the initial call.
-            //    var doResume = () => {
-            //        if (!_fiber) {
-            //            fiberPool.inc();
-            //            var fiber = Fiber(_makeFiberBody());
-            //            fiber.yield = value => { _yield(value); };
-            //            _fiber = fiber;
-            //        }
-            //        _fiber.run();
-            //    }
-
-            //    // Route all top-level initial resume()s through the global semaphore.
-            //    var isTopLevelInitial = !_fiber && !Fiber.current;
-            //    if (isTopLevelInitial) semaphore.enter(doResume); else doResume();
-            //}
-
-            //function suspend() {
-            //    //TODO: ensure _fiber === Fiber.current ?!
-            //    Fiber.yield();
-            //}
             // TODO...------------------------------------------
 
 
@@ -117,11 +56,11 @@ function makeAsyncFunc(factory: (resume: () => void, suspend: () => void, option
 
             // TODO: temp testing...!!!!
             var protocol = factory(() => co.resume(), () => co.suspend(), options);
-            co._return = v => protocol.return(v);
-            co._throw = v => protocol.throw(v);
-            co._yield = v => protocol.yield(v);
-            co._delete = () => protocol.delete();
-            return protocol.create.apply(protocol, pArgs); // TODO: optimise in empty array case
+            co._return = protocol.return || nullFunc;
+            co._throw = protocol.throw || nullFunc;
+            co._yield = protocol.yield || nullFunc;
+            co._delete = protocol.delete || nullFunc
+            return (protocol.create || nullFunc).apply(protocol, pArgs); // TODO: optimise in empty array case
         }
 
         // Create the suspendable function from the template function above, giving it the correct arity.
@@ -202,3 +141,6 @@ class Co {
         Fiber.yield();
     }
 }
+
+
+function nullFunc() { }

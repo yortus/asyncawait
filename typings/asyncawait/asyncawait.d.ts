@@ -122,11 +122,11 @@ declare module AsyncAwait {
         mod(factory: (resume: () => void, suspend: () => void, options?: any) => AsyncAwait.Protocol2): AsyncFunction2;
     }
     export interface Protocol2 {
-        create(...args): any;
-        delete(): void;
-        return(result: any): void;
-        throw(error: Error): void;
-        yield(value: any): void;
+        create?: (...args) => any;
+        delete?: () => void;
+        return?: (result: any) => void;
+        throw?: (error: Error) => void;
+        yield?: (value: any) => void;
     }
 
 
