@@ -1,6 +1,17 @@
-﻿var asyncBase = require('./impl/asyncBase');
-var ThunkProtocol = require('./impl/protocols/thunk');
+﻿var asyncCps = require('./cps');
 
-var async = asyncBase.mod({ constructor: ThunkProtocol });
+var async = asyncCps.mod(function (base) {
+    var baseCreate = base.create;
+    return {
+        create: function () {
+            return function (callback) {
+                baseCreate.call(base, callback || nullFunc);
+            };
+        }
+    };
+});
+
+function nullFunc() {
+}
 module.exports = async;
 //# sourceMappingURL=thunk.js.map

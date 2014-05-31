@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
 import asyncBase = require('./impl/asyncBase2');
-import PromiseProtocol = require('./impl/protocols/promise');
+//import PromiseProtocol = require('./impl/protocols/promise');
 export = async;
 
 
@@ -16,12 +16,11 @@ export = async;
 //}
 
 
-var async: AsyncAwait.AsyncPromise = <any> asyncBase.mod((resume, suspend) => {
+var async: AsyncAwait.AsyncPromise = <any> asyncBase.mod(base => {
     //return new P(resume, suspend);
     var resolver = Promise.defer<any>();
     var result =  {
-        create: () => { setImmediate(resume); return resolver.promise; },
-        delete: () => {},
+        create: () => { setImmediate(() => base.resume()); return resolver.promise; },
         return: result => resolver.resolve(result),
         throw: error => resolver.reject(error),
         yield: value => resolver.progress(value)

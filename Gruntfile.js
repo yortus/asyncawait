@@ -39,7 +39,15 @@ module.exports = function(grunt) {
         mochaTest: {
             main: {
                 options: { reporter: 'list' },
-                src: ['tests/**/*.js']
+                //TODO: was... src: ['tests/**/*.js']
+                src: [
+                    'tests/async.js',
+                    'tests/async.promise.js',
+                    'tests/async.cps.js',
+                    'tests/async.thunk.js',
+                    'tests/async.mod.js',
+                    'tests/async.config.js'
+                ]
             }
         },
 
@@ -63,5 +71,5 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['typescript:main', 'copy:main']);
     grunt.registerTask('test', ['mochaTest:main']);
     grunt.registerTask('bench', ['execute:bench']);
-    grunt.registerTask('default', ['build', 'test']);
+    grunt.registerTask('default', ['build']);//TODO: was... , 'test']);
 };

@@ -1,6 +1,1 @@
-﻿var asyncBase = require('../impl/asyncBase');
-var IterablePromiseProtocol = require('../impl/protocols/iterablePromise');
-
-var async = asyncBase.mod({ constructor: IterablePromiseProtocol });
-module.exports = async;
-//# sourceMappingURL=promise.js.map
+﻿//# sourceMappingURL=promise.js.map

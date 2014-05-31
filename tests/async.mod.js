@@ -4,14 +4,16 @@ var async = require('asyncawait/async');
 
 var expect = chai.expect;
 
-var XProtocol = function (resume, suspend, options) {
+var overrideMethod1 = function (base, options) {
     options = options || {};
     var prefix = options.prefix || '';
     var suffix = options.suffix || '';
     var resolver = Promise.defer();
     var result = {
         create: function () {
-            setImmediate(resume);
+            setImmediate(function () {
+                return base.resume();
+            });
             return resolver.promise;
         },
         delete: function () {
@@ -45,10 +47,12 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol', function (done) {
-        var asyncX = async.mod(XProtocol);
+        var asyncX = async.cps.mod(overrideMethod1);
+
         var fn = asyncX(function (msg) {
             return msg;
         });
+
         fn('BLAH!').then(function (r) {
             return expect(r).to.equal('BLAH!');
         }).then(function () {
@@ -57,10 +61,12 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol options', function (done) {
-        var asyncX = async.mod(XProtocol, { prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.mod(overrideMethod1).mod({ prefix: '<<<', suffix: '>>>' });
+
         var fn = asyncX(function (msg) {
             return msg;
         });
+
         fn('BLAH!').then(function (r) {
             return expect(r).to.equal('<<<BLAH!>>>');
         }).then(function () {

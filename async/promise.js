@@ -2,14 +2,14 @@
 var asyncBase = require('./impl/asyncBase2');
 
 
-var async = asyncBase.mod(function (resume, suspend) {
+var async = asyncBase.mod(function (base) {
     var resolver = Promise.defer();
     var result = {
         create: function () {
-            setImmediate(resume);
+            setImmediate(function () {
+                return base.resume();
+            });
             return resolver.promise;
-        },
-        delete: function () {
         },
         return: function (result) {
             return resolver.resolve(result);

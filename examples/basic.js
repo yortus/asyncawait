@@ -23,7 +23,7 @@ var longCalculation = async (function (seconds, result) {
 });
 
 // Another synchronous-looking function written in async/await style.
-var program = async (function () {
+var program = async.thunk (function () {
     try  {
         console.log('zero...');
 
@@ -47,9 +47,12 @@ var program = async (function () {
 });
 
 // Execute program() and print the result.
-program().then(function (result) {
-    console.log(result);
+program()(function (err, result) {
+    console.log(err || result);
 });
+//program().then(function (result) {
+//    console.log(result);
+//});
 
 // Outputs (with one second delays between the numbers):
 // zero...

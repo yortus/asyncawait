@@ -81,54 +81,31 @@ declare module AsyncAwait {
 
 
 
-
-
-    //TODO: ...
-
-
-
     export interface AsyncFunction {
         (fn: Function): Function;
-        mod<TSuspendable extends AsyncFunction>(protocolOptions: ProtocolOptions<TSuspendable>): TSuspendable;
-    }
-
-    export interface ProtocolOptions<TSuspendable extends AsyncFunction> {
-        constructor?: ProtocolStatic<TSuspendable>;
-        acceptsCallback?: boolean;
-    }
-
-    export interface ProtocolStatic<TSuspendable extends AsyncFunction> {
-        new(options?: ProtocolOptions<TSuspendable>): Protocol;
+        mod<TAsyncFunction extends AsyncFunction>(override: ProtocolOverride, options?: {}): TAsyncFunction;
+        mod<TAsyncFunction extends AsyncFunction>(options?: {}): TAsyncFunction;
     }
 
     export interface Protocol {
-        //options(value?: ProtocolOptions<AsyncFunction>): ProtocolOptions<AsyncFunction>;
-        invoke(func: Function, this_: any, args: any[]): any;
-        resume(): void;
-        suspend(): void;
-        return(result: any): void;
-        throw(error: any): void;
-        yield(value: any): void;
-        dispose(): void;
+        resume: () => void;
+        suspend: () => void;
+        create: (...args) => any;
+        delete: () => void;
+        return: (result: any) => void;
+        throw: (error: Error) => void;
+        yield: (value: any) => void;
     }
 
-
-
-
-
-    //TODO...
-    export interface AsyncFunction2 {
-        (fn: Function): Function;
-        mod(factory: (resume: () => void, suspend: () => void, options?: any) => AsyncAwait.Protocol2): AsyncFunction2;
+    export interface ProtocolOverride {
+        (base: Protocol, options?: {}): {
+            create?: (...args) => any;
+            delete?: () => void;
+            return?: (result: any) => void;
+            throw?: (error: Error) => void;
+            yield?: (value: any) => void;
+        };
     }
-    export interface Protocol2 {
-        create?: (...args) => any;
-        delete?: () => void;
-        return?: (result: any) => void;
-        throw?: (error: Error) => void;
-        yield?: (value: any) => void;
-    }
-
 
 
     //------------------------- Await -------------------------
@@ -189,13 +166,13 @@ declare module "asyncawait/await" { var await: AsyncAwait.Await; export = await;
 declare module "asyncawait/yield" { var yield_: AsyncAwait.Yield; export = yield_; }
 declare module "asyncawait/async/promise" { var async: AsyncAwait.AsyncPromise; export = async; }
 declare module "asyncawait/async/cps" { var async: AsyncAwait.AsyncCPS; export = async; }
-declare module "asyncawait/async/thunk" { var async: AsyncAwait.AsyncThunk; export = async; }
-declare module "asyncawait/async/stream" { var async: AsyncAwait.AsyncStream; export = async; }
-declare module "asyncawait/async/express" { var async: AsyncAwait.AsyncCPS; export = async; }
-declare module "asyncawait/async/iterable" { var async: AsyncAwait.AsyncIterable; export = async; }
-declare module "asyncawait/async/iterable/promise" { var async: AsyncAwait.AsyncIterablePromise; export = async; }
-declare module "asyncawait/async/iterable/cps" { var async: AsyncAwait.AsyncIterableCPS; export = async; }
-declare module "asyncawait/async/iterable/thunk" { var async: AsyncAwait.AsyncIterableThunk; export = async; }
+//declare module "asyncawait/async/thunk" { var async: AsyncAwait.AsyncThunk; export = async; }
+//declare module "asyncawait/async/stream" { var async: AsyncAwait.AsyncStream; export = async; }
+//declare module "asyncawait/async/express" { var async: AsyncAwait.AsyncCPS; export = async; }
+//declare module "asyncawait/async/iterable" { var async: AsyncAwait.AsyncIterable; export = async; }
+//declare module "asyncawait/async/iterable/promise" { var async: AsyncAwait.AsyncIterablePromise; export = async; }
+//declare module "asyncawait/async/iterable/cps" { var async: AsyncAwait.AsyncIterableCPS; export = async; }
+//declare module "asyncawait/async/iterable/thunk" { var async: AsyncAwait.AsyncIterableThunk; export = async; }
 
 
 

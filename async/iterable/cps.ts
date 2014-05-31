@@ -1,7 +1,7 @@
-﻿import references = require('references');
-import asyncBase = require('../impl/asyncBase');
-import IterableCPSProtocol = require('../impl/protocols/iterableCps');
-export = async;
+﻿//import references = require('references');
+//import asyncBase = require('../impl/asyncBase');
+//import IterableCPSProtocol = require('../impl/protocols/iterableCps');
+//export = async;
 
 
-var async = asyncBase.mod({ constructor: IterableCPSProtocol });
+//var async = asyncBase.mod({ constructor: IterableCPSProtocol });
