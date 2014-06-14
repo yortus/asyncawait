@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>examples\basic.js</StartupFile>
+    <StartupFile>examples\deriveTEMP.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -124,6 +124,7 @@
     <Compile Include="examples\awaitTop.js" />
     <Compile Include="examples\basic.js" />
     <Compile Include="examples\countFiles.js" />
+    <Compile Include="examples\deriveTEMP.js" />
     <Compile Include="examples\descendentFilePaths.js" />
     <Compile Include="examples\interleaved.js" />
     <Compile Include="examples\iteration.js" />

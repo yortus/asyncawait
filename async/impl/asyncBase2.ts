@@ -112,10 +112,10 @@ var async = makeAsyncFunc(() => {
 
 
 /** Creates an async function using the specified protocol. */
-function makeAsyncFunc(protocolFactory: (optionsOverride?: {}) => AsyncAwait.Protocol) {
+function makeAsyncFunc(protocolOverride: AsyncAwait.ProtocolOverride) {
 
     //TODO: ...
-    var newProtocol = protocolFactory();
+    var newProtocol = protocolOverride( new Co();
     var protocolArgCount = newProtocol.create.length;
 
 

@@ -2,7 +2,17 @@
 var asyncBase = require('./impl/asyncBase2');
 
 
+//class P {
+//    constructor(private resume, private suspend) {}
+//    create() { setImmediate(this.resume); return this.resolver.promise; }
+//    delete() {}
+//    return(result) { this.resolver.resolve(result); }
+//    throw(error) { this.resolver.reject(error); }
+//    yield(value) { this.resolver.progress(value); }
+//    private resolver = Promise.defer<any>();
+//}
 var async = asyncBase.mod(function (base) {
+    //return new P(resume, suspend);
     var resolver = Promise.defer();
     var result = {
         create: function () {

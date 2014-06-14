@@ -98,7 +98,7 @@ declare module AsyncAwait {
     }
 
     export interface ProtocolOverride {
-        (base: Protocol, options?: {}): {
+        (base: ProtocolOverride, options?: {}): {
             create?: (...args) => any;
             delete?: () => void;
             return?: (result: any) => void;
