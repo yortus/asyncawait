@@ -76,6 +76,11 @@
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
     <TypeScriptCompile Include="references.d.ts" />
+    <TypeScriptCompile Include="src\coroCtors\base.ts" />
+    <TypeScriptCompile Include="src\coroCtors\promise.ts" />
+    <TypeScriptCompile Include="src\fiberPool.ts" />
+    <TypeScriptCompile Include="src\semaphore.ts" />
+    <TypeScriptCompile Include="src\transfer.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
@@ -145,6 +150,8 @@
     <Folder Include="comparison\largest\" />
     <Folder Include="examples\" />
     <Folder Include="examples\ts\" />
+    <Folder Include="src\" />
+    <Folder Include="src\coroCtors\" />
     <Folder Include="tests\" />
     <Folder Include="typings\" />
     <Folder Include="typings\asyncawait\" />
