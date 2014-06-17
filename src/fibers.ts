@@ -22,6 +22,11 @@ export = result;
 // node-fibers instance globally on first require(), and reusing that instance
 // for all subsequent require()s.
 
+// NB: This is a workaround, not a complete fix! If modules other than asyncawait
+// use node-fibers, then the process may still end up using multiple instances of
+// node-fibers during execution. This needs investigating in node-fibers itself.
+// I intend to create a cut-down repro and raise an issue in the node-fibers project.
+
 if (!global.asyncawait) global.asyncawait = {};
 if (!global.asyncawait.Fiber) global.asyncawait.Fiber = Fiber;
 var result: typeof Fiber = global.asyncawait.Fiber;
