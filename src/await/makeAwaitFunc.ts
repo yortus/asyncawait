@@ -1,5 +1,5 @@
 ﻿import _refs = require('_refs');
-import Fiber = require('fibers');
+import Fiber = require('../fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
 export = makeAwaitFunc;

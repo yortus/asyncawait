@@ -1,4 +1,4 @@
-﻿var Fiber = require('fibers');
+﻿var Fiber = require('../fibers');
 
 
 /** Helpers for Fiber management. */

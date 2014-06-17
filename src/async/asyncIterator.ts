@@ -1,5 +1,4 @@
 ﻿import _refs = require('_refs');
-import Fiber = require('fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
 import FiberMgr = require('./fiberManager');

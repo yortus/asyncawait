@@ -1,4 +1,4 @@
-﻿var Fiber = require('fibers');
+﻿var Fiber = require('../fibers');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var Config = require('./config');
