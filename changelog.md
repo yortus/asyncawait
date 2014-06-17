@@ -1,3 +1,9 @@
+# 0.7.2 (2014-06-17)
+
+#### Bug Fixes
+
+ - Workaround problem if multiple node-fibers instances in process ([more info](./src/fibers.ts)).
+
 # 0.7.1 (2014-04-22)
 
 #### Bug Fixes
