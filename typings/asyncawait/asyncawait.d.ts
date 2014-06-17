@@ -89,10 +89,10 @@ declare module AsyncAwait {
 
         export interface Coroutine {
             invoke: (...coroArgs) => any;
-            dispose: () => void;
             return: (result: any) => void;
             throw: (error: Error) => void;
             yield: (value: any) => void;
+            finally: () => void;
         }
     }
 

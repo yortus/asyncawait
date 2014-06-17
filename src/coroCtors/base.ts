@@ -16,14 +16,14 @@ class CoroutineBase implements Coroutine {
         return this;
     }
 
-    dispose() {
-    }
-
     return(result: any) { }
 
     throw(error: any) { }
 
     yield(value: any) { }
+
+    finally() {
+    }
 
     _proc: Function;
 

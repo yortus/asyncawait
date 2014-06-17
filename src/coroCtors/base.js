@@ -8,9 +8,6 @@ var CoroutineBase = (function () {
         return this;
     };
 
-    CoroutineBase.prototype.dispose = function () {
-    };
-
     CoroutineBase.prototype.return = function (result) {
     };
 
@@ -18,6 +15,9 @@ var CoroutineBase = (function () {
     };
 
     CoroutineBase.prototype.yield = function (value) {
+    };
+
+    CoroutineBase.prototype.finally = function () {
     };
     return CoroutineBase;
 })();
