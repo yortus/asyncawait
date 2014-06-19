@@ -1,35 +1,12 @@
-﻿var asyncBase = require('./impl/asyncBase2');
-var config = require('./impl/config');
+﻿var createAsyncBuilder = require('../src/createAsyncBuilder');
 
-var Promise = require('./promise');
-var CPS = require('./cps');
-var Thunk = require('./thunk');
+var promiseProtocol = require('../src/protocols/promise');
+var promise = require('./promise');
+var cps = require('./cps');
 
 
-var async = asyncBase.mod(function (base) {
-    var resolver = require('bluebird').defer();
-    var result = {
-        create: function () {
-            setImmediate(function () {
-                return base.resume();
-            });
-            return resolver.promise;
-        },
-        return: function (result) {
-            return resolver.resolve(result);
-        },
-        throw: function (error) {
-            return resolver.reject(error);
-        },
-        yield: function (value) {
-            return resolver.progress(value);
-        }
-    };
-    return result;
-});
-async.config = config;
-async.promise = Promise;
-async.cps = CPS;
-async.thunk = Thunk;
+var async = createAsyncBuilder(promiseProtocol);
+async.promise = promise;
+async.cps = cps;
 module.exports = async;
 //# sourceMappingURL=index.js.map

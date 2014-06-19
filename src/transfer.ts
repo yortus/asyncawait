@@ -2,31 +2,31 @@
 import Fiber = require('fibers');
 import semaphore = require('./semaphore');
 import fiberPool = require('./fiberPool');
-import Coroutine = require('./coroCtors/base');
+import Coroutine = AsyncAwait.Async.Coroutine;
 export = transfer;
 
 
 /** TODO: doc... */
 var transfer: {
     (): any;
-    (coro: Coroutine): any;
+    (co: Coroutine): any;
     withValue: {
-        (value: any): any;
-        (coro: Coroutine, value: any): any;
+        (value): any;
+        (co: Coroutine, value): any;
     }
 };
 
 
 // Transfer without value
-transfer = <any> function (coro: Coroutine) {
-    if (coro) {
+transfer = <any> function (co: Coroutine) {
+    if (co) {
 
         // Transfer to the specified coroutine.
         //TODO:...
         //TODO PERF: only use semaphore if maxConcurrency is specified
-        var isTopLevelInitial = !coro._fiber && !Fiber.current;
-        if (isTopLevelInitial) return semaphore.enter(() => startOrResume(coro));
-        else startOrResume(coro);
+        var isTopLevelInitial = !co.fiber && !Fiber.current;
+        if (isTopLevelInitial) return semaphore.enter(() => startOrResume(co));
+        else startOrResume(co);
 
 
 
@@ -41,15 +41,15 @@ transfer = <any> function (coro: Coroutine) {
 
 
 // Transfer with value
-transfer.withValue = <any> function (coro: Coroutine, value: any) {
+transfer.withValue = <any> function (co, value) {
     if (arguments.length > 1) {
 
         // Transfer to the specified coroutine.
         //TODO:...
         //TODO PERF: only use semaphore if maxConcurrency is specified
-        var isTopLevelInitial = !coro._fiber && !Fiber.current;
-        if (isTopLevelInitial) return semaphore.enter(() => startOrResume(coro));
-        else startOrResume(coro);
+        var isTopLevelInitial = !co._fiber && !Fiber.current;
+        if (isTopLevelInitial) return semaphore.enter(() => startOrResume(co));
+        else startOrResume(co);
 
 
 
@@ -57,7 +57,7 @@ transfer.withValue = <any> function (coro: Coroutine, value: any) {
     else {
 
         // Yield from the current coroutine.
-        return Fiber.yield(coro); // coro actually holds the value to yield
+        return Fiber.yield(co); // coro actually holds the value to yield
     }
 };
 
@@ -65,29 +65,30 @@ transfer.withValue = <any> function (coro: Coroutine, value: any) {
 
 
 
-
-function startOrResume(coro: Coroutine) {
-    if (!coro._fiber) {
+//TODO: cleanup, optimise....
+function startOrResume(co) {
+    if (!co.fiber) {
         fiberPool.inc();
-        var fiber = Fiber(makeFiberBody(coro));
-        fiber.yield = value => { coro.yield(value); };
-        coro._fiber = fiber;
+        var fiber = Fiber(makeFiberBody(co));
+        fiber.yield = value => co.protocol.yield(co, value); //TODO: improve?
+        co.fiber = fiber;
     }
-    coro._fiber.run();
+    setImmediate(() => co.fiber.run()); //TODO: best place for setImmediate?
 }
 
 
-function dispose(coro: Coroutine) {
+function dispose(co: Coroutine) {
     fiberPool.dec();
-    coro._proc = null;
-    coro._fiber = null;
+    co.protocol = null;
+    co.body = null;
+    co.fiber = null;
     semaphore.leave();
 }
 
-function makeFiberBody(coro: Coroutine) {
-    var tryBlock = () => coro.return(coro._proc());
-    var catchBlock = err => coro.throw(err);
-    var finallyBlock = () => dispose(coro);
+function makeFiberBody(co: Coroutine) {
+    var tryBlock = () => co.protocol.return(co, co.body());
+    var catchBlock = err => co.protocol.throw(co, err);
+    var finallyBlock = () => dispose(co);
 
     // V8 may not optimise the following function due to the presence of
     // try/catch/finally. Therefore it does as little as possible, only
@@ -98,6 +99,3 @@ function makeFiberBody(coro: Coroutine) {
         finally { finallyBlock(); }
     };
 }
-
-
-

@@ -16,7 +16,13 @@ module.exports = function(grunt) {
 
         typescript: {
             main: {
-                src: ['async/**/*.ts', 'await/**/*.ts', 'yield/**/*.ts', 'tests/**/*.ts'],
+                src: [
+                    'src/**/*.ts',
+                    'async/**/*.ts',
+                    'await/**/*.ts',
+                    'yield/**/*.ts',
+                    'tests/**/*.ts'
+                ],
                 dest: '.',
                 options: {
                     target: 'es5',
@@ -31,7 +37,7 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 expand: true,
-                src: ['async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'index.js'],
+                src: ['src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'index.js'],
                 dest: 'node_modules/asyncawait'
             }
         },
@@ -41,12 +47,13 @@ module.exports = function(grunt) {
                 options: { reporter: 'list' },
                 //TODO: was... src: ['tests/**/*.js']
                 src: [
+                    //TODO:...
                     'tests/async.js',
                     'tests/async.promise.js',
                     'tests/async.cps.js',
-                    'tests/async.thunk.js',
-                    'tests/async.mod.js',
-                    'tests/async.config.js'
+                    //'tests/async.thunk.js',
+                    //'tests/async.mod.js',
+                    //'tests/async.config.js'
                 ]
             }
         },

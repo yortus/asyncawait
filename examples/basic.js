@@ -1,7 +1,9 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
-var async = require('..').async;
-var await = require('..').await;
+//var async = require('asyncawait/async');
+//var await = require('asyncawait/await');
+var async = require('../async');
+var await = require('../await');
 
 
 // A function that returns a promise.
@@ -17,13 +19,13 @@ function readFile(filename) {
 }
 
 // A slow asynchronous function, written in async/await style.
-var longCalculation = async (function (seconds, result) {
+var longCalculation = async (function calc(seconds, result) {
     await (delay(seconds * 1000));
     return result;
 });
 
 // Another synchronous-looking function written in async/await style.
-var program = async.thunk (function () {
+var program = async.cps (function prog() {
     try  {
         console.log('zero...');
 
@@ -47,9 +49,12 @@ var program = async.thunk (function () {
 });
 
 // Execute program() and print the result.
-program()(function (err, result) {
+program(function (err, result) {
     console.log(err || result);
 });
+//program()(function (err, result) {
+//    console.log(err || result);
+//});
 //program().then(function (result) {
 //    console.log(result);
 //});

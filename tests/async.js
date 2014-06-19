@@ -60,7 +60,6 @@ function runTestsFor(variant, acceptsCallback) {
 runTestsFor(null);
 runTestsFor('promise');
 runTestsFor('cps', true);
-runTestsFor('thunk');
 
 describe('A suspendable function returned by async(...)', function () {
     it('synchronously returns a promise', function () {

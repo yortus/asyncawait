@@ -83,16 +83,23 @@ declare module AsyncAwait {
 
         export interface Builder {
             (fn: Function): Function;
-            mod(): { coroCtor: new(options?: any) => Coroutine; coroOpts: any; };
-            mod<TBuilder extends Builder>(options: { coroCtor?: new(options?: any) => Coroutine; coroOpts?: any; }): TBuilder;
+            mod(): Protocol;
+            mod<TBuilder extends Builder>(protocol: Protocol): TBuilder;
+        }
+
+        export interface Protocol {
+            invoke?: (co: Coroutine, ...protocolArgs) => any;
+            return?: (co: Coroutine, result: any) => void;
+            throw?: (co: Coroutine, error: Error) => void;
+            yield?: (co: Coroutine, value: any) => void;
+            finally?: (co: Coroutine) => void;
         }
 
         export interface Coroutine {
-            invoke: (...coroArgs) => any;
-            return: (result: any) => void;
-            throw: (error: Error) => void;
-            yield: (value: any) => void;
-            finally: () => void;
+            //TODO: ???
+            protocol: Protocol;
+            body?: Function;
+            fiber?: any;
         }
     }
 

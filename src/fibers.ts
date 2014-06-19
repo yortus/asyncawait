@@ -3,7 +3,7 @@ import Fiber = require('fibers');
 export = result;
 
 
-BROKEN to get attention!
+//BROKEN to get attention!
 // TODO: need to merge this from master hotfix...
 // ie, reroute all require('fibers') to here
 

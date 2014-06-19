@@ -5,7 +5,7 @@ export = config;
 
 
 /** Get or set global configuration values for async(...). */
-function config(value?: AsyncAwait.AsyncConfig): AsyncAwait.AsyncConfig {
+function config(value?: AsyncAwait.Async.Config): AsyncAwait.Async.Config {
 
     // Update config using the specified value(s).
     if (value) {

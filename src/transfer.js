@@ -3,80 +3,69 @@ var semaphore = require('./semaphore');
 var fiberPool = require('./fiberPool');
 
 
-/** TODO: doc... */
 var transfer;
 
-// Transfer without value
-transfer = function (coro) {
-    if (coro) {
-        // Transfer to the specified coroutine.
-        //TODO:...
-        //TODO PERF: only use semaphore if maxConcurrency is specified
-        var isTopLevelInitial = !coro._fiber && !Fiber.current;
+transfer = function (co) {
+    if (co) {
+        var isTopLevelInitial = !co.fiber && !Fiber.current;
         if (isTopLevelInitial)
             return semaphore.enter(function () {
-                return startOrResume(coro);
+                return startOrResume(co);
             });
         else
-            startOrResume(coro);
+            startOrResume(co);
     } else {
-        // Yield from the current coroutine.
         return Fiber.yield();
     }
 };
 
-// Transfer with value
-transfer.withValue = function (coro, value) {
+transfer.withValue = function (co, value) {
     if (arguments.length > 1) {
-        // Transfer to the specified coroutine.
-        //TODO:...
-        //TODO PERF: only use semaphore if maxConcurrency is specified
-        var isTopLevelInitial = !coro._fiber && !Fiber.current;
+        var isTopLevelInitial = !co._fiber && !Fiber.current;
         if (isTopLevelInitial)
             return semaphore.enter(function () {
-                return startOrResume(coro);
+                return startOrResume(co);
             });
         else
-            startOrResume(coro);
+            startOrResume(co);
     } else {
-        // Yield from the current coroutine.
-        return Fiber.yield(coro);
+        return Fiber.yield(co);
     }
 };
 
-function startOrResume(coro) {
-    if (!coro._fiber) {
+function startOrResume(co) {
+    if (!co.fiber) {
         fiberPool.inc();
-        var fiber = Fiber(makeFiberBody(coro));
+        var fiber = Fiber(makeFiberBody(co));
         fiber.yield = function (value) {
-            coro.yield(value);
+            return co.protocol.yield(co, value);
         };
-        coro._fiber = fiber;
+        co.fiber = fiber;
     }
-    coro._fiber.run();
+    setImmediate(function () {
+        return co.fiber.run();
+    });
 }
 
-function dispose(coro) {
+function dispose(co) {
     fiberPool.dec();
-    coro._proc = null;
-    coro._fiber = null;
+    co.protocol = null;
+    co.body = null;
+    co.fiber = null;
     semaphore.leave();
 }
 
-function makeFiberBody(coro) {
+function makeFiberBody(co) {
     var tryBlock = function () {
-        return coro.return(coro._proc());
+        return co.protocol.return(co, co.body());
     };
     var catchBlock = function (err) {
-        return coro.throw(err);
+        return co.protocol.throw(co, err);
     };
     var finallyBlock = function () {
-        return dispose(coro);
+        return dispose(co);
     };
 
-    // V8 may not optimise the following function due to the presence of
-    // try/catch/finally. Therefore it does as little as possible, only
-    // referencing the optimisable closures prepared above.
     return function fiberBody() {
         try  {
             tryBlock();
