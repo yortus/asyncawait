@@ -53,9 +53,6 @@ function createAsyncBuilder<TBuilder extends Builder>(protocol: Protocol) {
         return funcDefn;
     };
 
-    // Tack on the protocol property.
-    builder.protocol = protocol;
-
     // Tack on the mod(...) method.
     builder.mod = <any> function mod(options) {
 
