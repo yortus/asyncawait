@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Fiber = require('fibers');
+import Fiber = require('./fibers');
 import semaphore = require('./semaphore');
 import fiberPool = require('./fiberPool');
 import Coroutine = AsyncAwait.Async.Coroutine;

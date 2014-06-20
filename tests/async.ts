@@ -42,7 +42,7 @@ function runTestsFor(variant?: string, acceptsCallback = false) {
 runTestsFor(null);
 runTestsFor('promise');
 runTestsFor('cps', true);
-//runTestsFor('thunk');
+runTestsFor('thunk');
 //runTestsFor('stream');
 //runTestsFor('express', true);
 //runTestsFor('iterable');

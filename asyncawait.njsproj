@@ -43,20 +43,12 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
-    <TypeScriptCompile Include="async\impl\asyncBase2.ts" />
-    <TypeScriptCompile Include="async\impl\asyncBase.ts" />
-    <TypeScriptCompile Include="async\impl\config.ts" />
-    <TypeScriptCompile Include="async\impl\fiberPool.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\base.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\cps.ts" />
+    <TypeScriptCompile Include="src\config.ts" />
     <TypeScriptCompile Include="async\impl\protocols\express.ts" />
     <TypeScriptCompile Include="async\impl\protocols\iterableCps.ts" />
     <TypeScriptCompile Include="async\impl\protocols\iterablePromise.ts" />
     <TypeScriptCompile Include="async\impl\protocols\iterableThunk.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\promise.ts" />
     <TypeScriptCompile Include="async\impl\protocols\stream.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\thunk.ts" />
-    <TypeScriptCompile Include="async\impl\semaphore.ts" />
     <TypeScriptCompile Include="async\index.ts" />
     <TypeScriptCompile Include="async\cps.ts" />
     <TypeScriptCompile Include="async\promise.ts" />
@@ -76,12 +68,13 @@
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
     <TypeScriptCompile Include="references.d.ts" />
-    <TypeScriptCompile Include="src\createAsyncBuilder.ts" />
-    <TypeScriptCompile Include="src\protocols\base.ts" />
+    <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\protocols\cps.ts" />
+    <TypeScriptCompile Include="src\protocols\noop.ts" />
     <TypeScriptCompile Include="src\protocols\promise.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
+    <TypeScriptCompile Include="src\protocols\thunk.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
     <TypeScriptCompile Include="src\transfer.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />

@@ -83,11 +83,15 @@ declare module AsyncAwait {
 
         export interface Builder {
             (fn: Function): Function;
-            mod(): Protocol;
-            mod<TBuilder extends Builder>(protocol: Protocol): TBuilder;
+            protocol: Protocol
+            mod<TBuilder extends Builder>(options: any): TBuilder;
         }
 
         export interface Protocol {
+            methods?: (options, fallback?: ProtocolMethods) => ProtocolMethods;
+        }
+
+        export interface ProtocolMethods {
             invoke?: (co: Coroutine, ...protocolArgs) => any;
             return?: (co: Coroutine, result: any) => void;
             throw?: (co: Coroutine, error: Error) => void;
@@ -97,7 +101,7 @@ declare module AsyncAwait {
 
         export interface Coroutine {
             //TODO: ???
-            protocol: Protocol;
+            protocol: ProtocolMethods;
             body?: Function;
             fiber?: any;
         }

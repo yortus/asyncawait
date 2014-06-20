@@ -1,6 +1,6 @@
-﻿var createAsyncBuilder = require('../src/createAsyncBuilder');
+﻿var oldBuilder = require('../src/asyncBuilder');
 var promiseProtocol = require('../src/protocols/promise');
 
-var async = createAsyncBuilder(promiseProtocol);
-module.exports = async;
+var newBuilder = oldBuilder.mod(promiseProtocol);
+module.exports = newBuilder;
 //# sourceMappingURL=promise.js.map

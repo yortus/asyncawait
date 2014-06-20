@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         clean: {
             main: {
                 src: [
-                    'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'tests/**/*.js',
-                    'async/**/*.js.map', 'await/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map'
+                    'src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'tests/**/*.js',
+                    'src/**/*.js.map', 'async/**/*.js.map', 'await/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map'
                 ]
             }
         },
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
                     module: 'commonjs',
                     sourceMap: true,
                     declaration: false,
-                    removeComments: false
+                    comments: true
                 }
             }
         },
@@ -51,9 +51,9 @@ module.exports = function(grunt) {
                     'tests/async.js',
                     'tests/async.promise.js',
                     'tests/async.cps.js',
-                    //'tests/async.thunk.js',
-                    //'tests/async.mod.js',
-                    //'tests/async.config.js'
+                    'tests/async.thunk.js',
+                    'tests/async.mod.js',
+                    'tests/async.config.js'
                 ]
             }
         },

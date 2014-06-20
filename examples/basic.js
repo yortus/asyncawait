@@ -25,7 +25,7 @@ var longCalculation = async (function calc(seconds, result) {
 });
 
 // Another synchronous-looking function written in async/await style.
-var program = async.cps (function prog() {
+var program = async (function prog() {
     try  {
         console.log('zero...');
 
@@ -48,16 +48,11 @@ var program = async.cps (function prog() {
     return 'Finished!';
 });
 
+
 // Execute program() and print the result.
-program(function (err, result) {
-    console.log(err || result);
+program().then(function (result) {
+    console.log(result);
 });
-//program()(function (err, result) {
-//    console.log(err || result);
-//});
-//program().then(function (result) {
-//    console.log(result);
-//});
 
 // Outputs (with one second delays between the numbers):
 // zero...

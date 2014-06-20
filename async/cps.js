@@ -1,6 +1,6 @@
-﻿var createAsyncBuilder = require('../src/createAsyncBuilder');
+﻿var oldBuilder = require('../src/asyncBuilder');
 var cpsProtocol = require('../src/protocols/cps');
 
-var async = createAsyncBuilder(cpsProtocol);
-module.exports = async;
+var newBuilder = oldBuilder.mod(cpsProtocol);
+module.exports = newBuilder;
 //# sourceMappingURL=cps.js.map

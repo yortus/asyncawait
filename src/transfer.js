@@ -1,12 +1,17 @@
-﻿var Fiber = require('fibers');
+﻿var Fiber = require('./fibers');
 var semaphore = require('./semaphore');
 var fiberPool = require('./fiberPool');
 
 
+/** TODO: doc... */
 var transfer;
 
+// Transfer without value
 transfer = function (co) {
     if (co) {
+        // Transfer to the specified coroutine.
+        //TODO:...
+        //TODO PERF: only use semaphore if maxConcurrency is specified
         var isTopLevelInitial = !co.fiber && !Fiber.current;
         if (isTopLevelInitial)
             return semaphore.enter(function () {
@@ -15,12 +20,17 @@ transfer = function (co) {
         else
             startOrResume(co);
     } else {
+        // Yield from the current coroutine.
         return Fiber.yield();
     }
 };
 
+// Transfer with value
 transfer.withValue = function (co, value) {
     if (arguments.length > 1) {
+        // Transfer to the specified coroutine.
+        //TODO:...
+        //TODO PERF: only use semaphore if maxConcurrency is specified
         var isTopLevelInitial = !co._fiber && !Fiber.current;
         if (isTopLevelInitial)
             return semaphore.enter(function () {
@@ -29,22 +39,24 @@ transfer.withValue = function (co, value) {
         else
             startOrResume(co);
     } else {
+        // Yield from the current coroutine.
         return Fiber.yield(co);
     }
 };
 
+//TODO: cleanup, optimise....
 function startOrResume(co) {
     if (!co.fiber) {
         fiberPool.inc();
         var fiber = Fiber(makeFiberBody(co));
         fiber.yield = function (value) {
             return co.protocol.yield(co, value);
-        };
+        }; //TODO: improve?
         co.fiber = fiber;
     }
     setImmediate(function () {
         return co.fiber.run();
-    });
+    }); //TODO: best place for setImmediate?
 }
 
 function dispose(co) {
@@ -66,6 +78,9 @@ function makeFiberBody(co) {
         return dispose(co);
     };
 
+    // V8 may not optimise the following function due to the presence of
+    // try/catch/finally. Therefore it does as little as possible, only
+    // referencing the optimisable closures prepared above.
     return function fiberBody() {
         try  {
             tryBlock();

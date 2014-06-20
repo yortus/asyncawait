@@ -1,4 +1,5 @@
-﻿function enter(fn) {
+﻿/** Enter the global semaphore. */
+function enter(fn) {
     if (_avail > 0) {
         --_avail;
         fn();
@@ -8,6 +9,7 @@
 }
 exports.enter = enter;
 
+/** Leave the global semaphore. */
 function leave() {
     if (_queued.length > 0) {
         var fn = _queued.shift();
@@ -18,6 +20,7 @@ function leave() {
 }
 exports.leave = leave;
 
+/** Get or set the size of the global semaphore. */
 function size(n) {
     if (n) {
         _avail += (n - _size);

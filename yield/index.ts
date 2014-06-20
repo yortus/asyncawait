@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Fiber = require('fibers');
+import Fiber = require('../src/fibers');
 export = yield_;
 
 
@@ -12,6 +12,7 @@ function yield_(expr) {
             'functions may only be called from inside a suspendable function. '
         );
     }
+
 
     Fiber.current.yield(expr);
 };

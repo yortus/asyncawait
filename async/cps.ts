@@ -1,7 +1,7 @@
 ﻿import references = require('references');
-import createAsyncBuilder = require('../src/createAsyncBuilder');
+import oldBuilder = require('../src/asyncBuilder');
 import cpsProtocol = require('../src/protocols/cps');
-export = async;
+export = newBuilder;
 
 
-var async = createAsyncBuilder<AsyncAwait.Async.CPSBuilder>(cpsProtocol);
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.CPSBuilder>(cpsProtocol);

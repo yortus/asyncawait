@@ -1,5 +1,9 @@
-﻿var Fiber = require('fibers');
+﻿var Fiber = require('./fibers');
 
+// The following functionality prevents memory leaks in node-fibers
+// by actively managing Fiber.poolSize. For more information, see
+// https://github.com/laverdet/node-fibers/issues/169.
+/** Increment the number of active fibers. */
 function inc() {
     ++_activeFiberCount;
     if (_activeFiberCount >= _fiberPoolSize) {
@@ -9,6 +13,7 @@ function inc() {
 }
 exports.inc = inc;
 
+/** Decrement the number of active fibers. */
 function dec() {
     --_activeFiberCount;
 }

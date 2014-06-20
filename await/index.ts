@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Fiber = require('fibers');
+import Fiber = require('../src/fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
 export = await;
