@@ -7,7 +7,7 @@ import promise = require('./promise');
 import cps = require('./cps');
 import thunk = require('./thunk');
 import express = require('./express');
-//import Stream = require('./stream');
+import stream = require('./stream');
 //import Iterable = require('./iterable/index');
 export = async;
 
@@ -18,3 +18,4 @@ async.promise = promise;
 async.cps = cps;
 async.thunk = thunk;
 async.express = express;
+async.stream = stream;

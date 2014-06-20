@@ -44,11 +44,9 @@
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
     <TypeScriptCompile Include="src\config.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\express.ts" />
     <TypeScriptCompile Include="async\impl\protocols\iterableCps.ts" />
     <TypeScriptCompile Include="async\impl\protocols\iterablePromise.ts" />
     <TypeScriptCompile Include="async\impl\protocols\iterableThunk.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\stream.ts" />
     <TypeScriptCompile Include="async\index.ts" />
     <TypeScriptCompile Include="async\cps.ts" />
     <TypeScriptCompile Include="async\promise.ts" />

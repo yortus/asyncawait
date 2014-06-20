@@ -1,7 +1,7 @@
-﻿//import references = require('references');
-//import asyncBase = require('./impl/asyncBase');
-//import StreamProtocol = require('./impl/protocols/stream');
-//export = async;
+﻿import references = require('references');
+import oldBuilder = require('../src/asyncBuilder');
+import protocol = require('../src/protocols/stream');
+export = newBuilder;
 
 
-//var async = asyncBase.mod({ constructor: StreamProtocol });
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.StreamBuilder>(protocol);

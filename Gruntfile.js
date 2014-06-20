@@ -54,7 +54,8 @@ module.exports = function(grunt) {
                     'tests/async.thunk.js',
                     'tests/async.mod.js',
                     'tests/async.config.js',
-                    'tests/async.express.js'
+                    'tests/async.express.js',
+                    'tests/async.stream.js'
                 ]
             }
         },

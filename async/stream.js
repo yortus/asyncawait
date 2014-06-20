@@ -1,6 +1,6 @@
-﻿//import references = require('references');
-//import asyncBase = require('./impl/asyncBase');
-//import StreamProtocol = require('./impl/protocols/stream');
-//export = async;
-//var async = asyncBase.mod({ constructor: StreamProtocol });
+﻿var oldBuilder = require('../src/asyncBuilder');
+var protocol = require('../src/protocols/stream');
+
+var newBuilder = oldBuilder.mod(protocol);
+module.exports = newBuilder;
 //# sourceMappingURL=stream.js.map
