@@ -53,7 +53,8 @@ module.exports = function(grunt) {
                     'tests/async.cps.js',
                     'tests/async.thunk.js',
                     'tests/async.mod.js',
-                    'tests/async.config.js'
+                    'tests/async.config.js',
+                    'tests/async.express.js'
                 ]
             }
         },

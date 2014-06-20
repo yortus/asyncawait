@@ -1,7 +1,7 @@
-﻿//import references = require('references');
-//import asyncBase = require('./impl/asyncBase');
-//import ExpressProtocol = require('./impl/protocols/express');
-//export = async;
+﻿import references = require('references');
+import oldBuilder = require('../src/asyncBuilder');
+import protocol = require('../src/protocols/express');
+export = newBuilder;
 
 
-//var async = asyncBase.mod({ constructor: ExpressProtocol });
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.CPSBuilder>(protocol);

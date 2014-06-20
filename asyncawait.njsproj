@@ -70,10 +70,12 @@
     <TypeScriptCompile Include="references.d.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\protocols\cps.ts" />
+    <TypeScriptCompile Include="src\protocols\express.ts" />
     <TypeScriptCompile Include="src\protocols\noop.ts" />
     <TypeScriptCompile Include="src\protocols\promise.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
+    <TypeScriptCompile Include="src\protocols\stream.ts" />
     <TypeScriptCompile Include="src\protocols\thunk.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
     <TypeScriptCompile Include="src\transfer.ts" />

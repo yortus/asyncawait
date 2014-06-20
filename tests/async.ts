@@ -44,7 +44,7 @@ runTestsFor('promise');
 runTestsFor('cps', true);
 runTestsFor('thunk');
 //runTestsFor('stream');
-//runTestsFor('express', true);
+runTestsFor('express', true);
 //runTestsFor('iterable');
 //runTestsFor('iterable.promise');
 //runTestsFor('iterable.cps');

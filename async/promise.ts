@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/asyncBuilder');
-import promiseProtocol = require('../src/protocols/promise');
+import protocol = require('../src/protocols/promise');
 export = newBuilder;
 
 
-var newBuilder = oldBuilder.mod<AsyncAwait.Async.PromiseBuilder>(promiseProtocol);
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.PromiseBuilder>(protocol);

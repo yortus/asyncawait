@@ -1,5 +1,4 @@
 ﻿import references = require('references');
-import _ = require('lodash');
 import cpsProtocol = require('./cps');
 import Protocol = AsyncAwait.Async.Protocol;
 export = protocol;
