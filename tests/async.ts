@@ -45,10 +45,10 @@ runTestsFor('cps', true);
 runTestsFor('thunk');
 runTestsFor('stream');
 runTestsFor('express', true);
-//runTestsFor('iterable');
-//runTestsFor('iterable.promise');
-//runTestsFor('iterable.cps');
-//runTestsFor('iterable.thunk');
+runTestsFor('iterable');
+runTestsFor('iterable.promise');
+runTestsFor('iterable.cps');
+runTestsFor('iterable.thunk');
 
 
 describe('A suspendable function returned by async(...)', () => {

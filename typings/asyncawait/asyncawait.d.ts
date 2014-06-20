@@ -18,11 +18,11 @@ declare module AsyncAwait {
             thunk: ThunkBuilder;
             stream: StreamBuilder;
             express: CPSBuilder;
-            iterable: IterableBuilder;
+            iterable: IterableAPI;
         }
 
         //TODO: LEAVE OPEN (ie in internal module)
-        export interface IterableBuilder extends IterablePromiseBuilder {
+        export interface IterableAPI extends IterablePromiseBuilder {
             promise: IterablePromiseBuilder;
             cps: IterableCPSBuilder;
             thunk: IterableThunkBuilder;

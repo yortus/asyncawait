@@ -1,6 +1,6 @@
-﻿//import references = require('references');
-//import asyncBase = require('../impl/asyncBase');
-//import IterableCPSProtocol = require('../impl/protocols/iterableCps');
-//export = async;
-//var async = asyncBase.mod({ constructor: IterableCPSProtocol });
+﻿var oldBuilder = require('../../src/asyncBuilder');
+var protocol = require('../../src/protocols/iterableCps');
+
+var newBuilder = oldBuilder.mod(protocol);
+module.exports = newBuilder;
 //# sourceMappingURL=cps.js.map

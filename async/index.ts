@@ -1,6 +1,5 @@
 ﻿import references = require('references');
 import asyncBuilder = require('../src/asyncBuilder');
-import transfer = require('../src/transfer');
 import promiseProtocol = require('../src/protocols/promise');
 import config = require('../src/config');
 import promise = require('./promise');
@@ -8,7 +7,7 @@ import cps = require('./cps');
 import thunk = require('./thunk');
 import express = require('./express');
 import stream = require('./stream');
-//import Iterable = require('./iterable/index');
+import iterable = require('./iterable/index');
 export = async;
 
 
@@ -19,3 +18,4 @@ async.cps = cps;
 async.thunk = thunk;
 async.express = express;
 async.stream = stream;
+async.iterable = iterable;

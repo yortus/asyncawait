@@ -1,5 +1,4 @@
 ﻿var asyncBuilder = require('../src/asyncBuilder');
-
 var promiseProtocol = require('../src/protocols/promise');
 var config = require('../src/config');
 var promise = require('./promise');
@@ -7,7 +6,7 @@ var cps = require('./cps');
 var thunk = require('./thunk');
 var express = require('./express');
 var stream = require('./stream');
-
+var iterable = require('./iterable/index');
 
 var async = asyncBuilder.mod(promiseProtocol);
 async.config = config;
@@ -16,5 +15,6 @@ async.cps = cps;
 async.thunk = thunk;
 async.express = express;
 async.stream = stream;
+async.iterable = iterable;
 module.exports = async;
 //# sourceMappingURL=index.js.map

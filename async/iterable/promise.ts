@@ -1,7 +1,7 @@
-﻿//import references = require('references');
-//import asyncBase = require('../impl/asyncBase');
-//import IterablePromiseProtocol = require('../impl/protocols/iterablePromise');
-//export = async;
+﻿import references = require('references');
+import oldBuilder = require('../../src/asyncBuilder');
+import protocol = require('../../src/protocols/iterablePromise');
+export = newBuilder;
 
 
-//var async = asyncBase.mod({ constructor: IterablePromiseProtocol });
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.IterablePromiseBuilder>(protocol);

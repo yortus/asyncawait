@@ -1,7 +1,7 @@
-﻿//import references = require('references');
-//import asyncBase = require('../impl/asyncBase');
-//import IterableThunkProtocol = require('../impl/protocols/iterableThunk');
-//export = async;
+﻿import references = require('references');
+import oldBuilder = require('../../src/asyncBuilder');
+import protocol = require('../../src/protocols/iterableThunk');
+export = newBuilder;
 
 
-//var async = asyncBase.mod({ constructor: IterableThunkProtocol });
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.IterableThunkBuilder>(protocol);

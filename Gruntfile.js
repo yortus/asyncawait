@@ -45,18 +45,7 @@ module.exports = function(grunt) {
         mochaTest: {
             main: {
                 options: { reporter: 'list' },
-                //TODO: was... src: ['tests/**/*.js']
-                src: [
-                    //TODO:...
-                    'tests/async.js',
-                    'tests/async.promise.js',
-                    'tests/async.cps.js',
-                    'tests/async.thunk.js',
-                    'tests/async.mod.js',
-                    'tests/async.config.js',
-                    'tests/async.express.js',
-                    'tests/async.stream.js'
-                ]
+                src: ['tests/**/*.js']
             }
         },
 

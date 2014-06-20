@@ -1,6 +1,6 @@
-﻿//import references = require('references');
-//import asyncBase = require('../impl/asyncBase');
-//import IterablePromiseProtocol = require('../impl/protocols/iterablePromise');
-//export = async;
-//var async = asyncBase.mod({ constructor: IterablePromiseProtocol });
+﻿var oldBuilder = require('../../src/asyncBuilder');
+var protocol = require('../../src/protocols/iterablePromise');
+
+var newBuilder = oldBuilder.mod(protocol);
+module.exports = newBuilder;
 //# sourceMappingURL=promise.js.map

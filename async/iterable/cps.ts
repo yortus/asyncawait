@@ -1,7 +1,7 @@
-﻿//import references = require('references');
-//import asyncBase = require('../impl/asyncBase');
-//import IterableCPSProtocol = require('../impl/protocols/iterableCps');
-//export = async;
+﻿import references = require('references');
+import oldBuilder = require('../../src/asyncBuilder');
+import protocol = require('../../src/protocols/iterableCps');
+export = newBuilder;
 
 
-//var async = asyncBase.mod({ constructor: IterableCPSProtocol });
+var newBuilder = oldBuilder.mod<AsyncAwait.Async.IterableCPSBuilder>(protocol);

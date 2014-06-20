@@ -44,9 +44,6 @@
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
     <TypeScriptCompile Include="src\config.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\iterableCps.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\iterablePromise.ts" />
-    <TypeScriptCompile Include="async\impl\protocols\iterableThunk.ts" />
     <TypeScriptCompile Include="async\index.ts" />
     <TypeScriptCompile Include="async\cps.ts" />
     <TypeScriptCompile Include="async\promise.ts" />
@@ -69,6 +66,9 @@
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\protocols\cps.ts" />
     <TypeScriptCompile Include="src\protocols\express.ts" />
+    <TypeScriptCompile Include="src\protocols\iterableCps.ts" />
+    <TypeScriptCompile Include="src\protocols\iterablePromise.ts" />
+    <TypeScriptCompile Include="src\protocols\iterableThunk.ts" />
     <TypeScriptCompile Include="src\protocols\noop.ts" />
     <TypeScriptCompile Include="src\protocols\promise.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
@@ -136,8 +136,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="async\" />
-    <Folder Include="async\impl\" />
-    <Folder Include="async\impl\protocols\" />
     <Folder Include="async\iterable\" />
     <Folder Include="await\" />
     <Folder Include="comparison\" />
