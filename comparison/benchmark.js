@@ -35,7 +35,7 @@ var SELECTED_VARIANT = variants.asyncawait;
 
 var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run.
 
-var RUNS_PER_BENCHMARK = 40;  // How many runs make up the whole benchmark.
+var RUNS_PER_BENCHMARK = 5;  // How many runs make up the whole benchmark.
 
 var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
 
@@ -43,6 +43,7 @@ var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the fun
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
 var USE_MOCK_FS = false;                        // If true, uses a mocked 'fs' module returning fixed in-memory results.
+var COMPARE_WITH_VARIANT = variants.callbacks;  // If non-null, re-run the benchmark with the given variant and show the relative results.
 var OUTPUT_GC_STATS = false;                    // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = true;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
 
@@ -79,12 +80,32 @@ if (JUST_CHECK_THE_FUNCTION) {
             console.log("========== Leaked: " + leaked + " ==========");
         }
     });
-} else {
-    benchmark();
+}
+else if (COMPARE_WITH_VARIANT) {
+    benchmark(function (err, result1) {
+        if (err) return;
+        SELECTED_VARIANT = COMPARE_WITH_VARIANT;
+        console.log('\n\n\n');
+        benchmark(function (err, result2) {
+            if (err) return;
+            console.log('\n\n========== Comparison ==========');
+            console.log('1st: ' + result1.samplesPerSec + ' sampes/sec   2nd: ' + result2.samplesPerSec + 'sampes/sec');
+            if (result1.samplesPerSec > result2.samplesPerSec) {
+                console.log('100% vs ' + Math.round(100 * result2.samplesPerSec / result1.samplesPerSec) + '%');
+            }
+            else {
+                console.log(Math.round(100 * result1.samplesPerSec / result2.samplesPerSec) + '% vs 100%');
+            }
+
+        });
+    });
+}
+else {
+    benchmark(function () {});
 }
 
 
-function benchmark() {
+function benchmark(callback) {
     var name = SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
     var sample = createSampleFunction();
     var allSamplesPerSec = [];
@@ -125,7 +146,7 @@ function benchmark() {
         function (err) {
             if (err) {
                 console.log(err);
-                process.exit();
+                return callback(err);
             } else {
                 totalTime = _.reduce(times, function (sum, time) { return sum + time; });
                 var averageTime = totalTime / RUNS_PER_BENCHMARK;
@@ -143,6 +164,12 @@ function benchmark() {
                     console.log("========== Summary of samples/sec for all runs: ==========");
                     console.log(allSamplesPerSec.join(', '));
                 }
+                return callback(null, {
+                    times: times,
+                    totalTime: totalTime,
+                    averageTime: averageTime / 1000.0,
+                    samplesPerSec: SAMPLES_PER_RUN * 1000.0 / averageTime
+                });
             }
         });
 }
