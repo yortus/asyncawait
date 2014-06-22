@@ -43,7 +43,11 @@
   <ItemGroup>
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
-    <TypeScriptCompile Include="src\config.ts" />
+    <Content Include="changelog.md" />
+    <Content Include="comparison\README.md" />
+    <Content Include="LICENSE" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
     <TypeScriptCompile Include="async\index.ts" />
     <TypeScriptCompile Include="async\cps.ts" />
     <TypeScriptCompile Include="async\promise.ts" />
@@ -55,15 +59,14 @@
     <TypeScriptCompile Include="async\iterable\thunk.ts" />
     <TypeScriptCompile Include="async\iterable\promise.ts" />
     <TypeScriptCompile Include="await\index.ts" />
-    <Content Include="changelog.md" />
-    <Content Include="comparison\README.md" />
-    <Content Include="LICENSE" />
-    <Content Include="package.json" />
-    <Content Include="README.md" />
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
-    <TypeScriptCompile Include="references.d.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
+    <TypeScriptCompile Include="src\asyncConfig.ts" />
+    <TypeScriptCompile Include="src\fiberPool.ts" />
+    <TypeScriptCompile Include="src\fibers.ts" />
+    <TypeScriptCompile Include="src\semaphore.ts" />
+    <TypeScriptCompile Include="src\transfer.ts" />
     <TypeScriptCompile Include="src\protocols\cps.ts" />
     <TypeScriptCompile Include="src\protocols\express.ts" />
     <TypeScriptCompile Include="src\protocols\iterableCps.ts" />
@@ -71,12 +74,8 @@
     <TypeScriptCompile Include="src\protocols\iterableThunk.ts" />
     <TypeScriptCompile Include="src\protocols\noop.ts" />
     <TypeScriptCompile Include="src\protocols\promise.ts" />
-    <TypeScriptCompile Include="src\fiberPool.ts" />
-    <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\protocols\stream.ts" />
     <TypeScriptCompile Include="src\protocols\thunk.ts" />
-    <TypeScriptCompile Include="src\semaphore.ts" />
-    <TypeScriptCompile Include="src\transfer.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
@@ -90,6 +89,7 @@
     <TypeScriptCompile Include="tests\async.thunk.ts" />
     <TypeScriptCompile Include="tests\async.promise.ts" />
     <TypeScriptCompile Include="tests\await.ts" />
+    <Content Include="references.d.ts" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />
     <Content Include="typings\chai\chai.d.ts" />

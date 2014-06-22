@@ -1,6 +1,6 @@
 ﻿var asyncBuilder = require('../src/asyncBuilder');
 var promiseProtocol = require('../src/protocols/promise');
-var config = require('../src/config');
+var config = require('../src/asyncConfig');
 var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');

@@ -12,4 +12,4 @@ function config(value) {
     return { maxConcurrency: semaphore.size() };
 }
 module.exports = config;
-//# sourceMappingURL=config.js.map
+//# sourceMappingURL=asyncConfig.js.map
