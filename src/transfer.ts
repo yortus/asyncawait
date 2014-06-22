@@ -47,7 +47,7 @@ transfer.withValue = <any> function (co, value) {
         // Transfer to the specified coroutine.
         //TODO:...
         //TODO PERF: only use semaphore if maxConcurrency is specified
-        var isTopLevelInitial = !co._fiber && !Fiber.current;
+        var isTopLevelInitial = !co.fiber && !Fiber.current;
         if (isTopLevelInitial) return semaphore.enter(() => startOrResume(co));
         else startOrResume(co);
 
@@ -78,11 +78,17 @@ function startOrResume(co) {
 
 
 function dispose(co: Coroutine) {
+
+    //TODO: right place?
+    co.protocol.finally(co);
+
+    //TODO: temp testing...
     fiberPool.dec();
     co.protocol = null;
     co.body = null;
     co.fiber = null;
     semaphore.leave();
+    //co.pool.push(co);//TODO: temp testing...
 }
 
 function makeFiberBody(co: Coroutine) {

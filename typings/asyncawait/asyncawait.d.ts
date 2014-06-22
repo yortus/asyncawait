@@ -103,6 +103,7 @@ declare module AsyncAwait {
             protocol: ProtocolMethods;
             body?: Function;
             fiber?: any;
+            //pool?: Coroutine[];
         }
     }
 
