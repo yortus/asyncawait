@@ -1,10 +1,24 @@
 ﻿var assert = require('assert');
 var _ = require('lodash');
-var noopProtocol = require('./protocols/noop');
 
 
-// Bootstrap a basic async builder using the noop protocol.
-var asyncBuilder = createAsyncBuilder(noopProtocol);
+// Bootstrap a basic async builder using a no-op protocol.
+var asyncBuilder = createAsyncBuilder({
+    methods: function () {
+        return ({
+            invoke: function (co) {
+            },
+            return: function (co, result) {
+            },
+            throw: function (co, error) {
+            },
+            yield: function (co, value) {
+            },
+            finally: function (co) {
+            }
+        });
+    }
+});
 
 /** Create a new async builder function using the specified protocol. */
 function createAsyncBuilder(protocol) {

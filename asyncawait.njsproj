@@ -68,15 +68,9 @@
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
     <TypeScriptCompile Include="src\transfer.ts" />
-    <TypeScriptCompile Include="src\protocols\cps.ts" />
-    <TypeScriptCompile Include="src\protocols\express.ts" />
     <TypeScriptCompile Include="src\protocols\iterableCps.ts" />
     <TypeScriptCompile Include="src\protocols\iterablePromise.ts" />
     <TypeScriptCompile Include="src\protocols\iterableThunk.ts" />
-    <TypeScriptCompile Include="src\protocols\noop.ts" />
-    <TypeScriptCompile Include="src\protocols\promise.ts" />
-    <TypeScriptCompile Include="src\protocols\stream.ts" />
-    <TypeScriptCompile Include="src\protocols\thunk.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />

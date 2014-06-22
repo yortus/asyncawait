@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import _ = require('lodash');
-import noopProtocol = require('./protocols/noop');
 import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
 import ProtocolMethods = AsyncAwait.Async.ProtocolMethods;
@@ -9,8 +8,16 @@ import Coroutine = AsyncAwait.Async.Coroutine;
 export = asyncBuilder;
 
 
-// Bootstrap a basic async builder using the noop protocol.
-var asyncBuilder = createAsyncBuilder<Builder>(noopProtocol);
+// Bootstrap a basic async builder using a no-op protocol.
+var asyncBuilder = createAsyncBuilder<Builder>({
+    methods: () => ({
+        invoke: (co) => { },
+        return: (co, result) => { },
+        throw: (co, error) => { },
+        yield: (co, value) => { },
+        finally: (co) => { }
+    })
+});
 
 
 /** Create a new async builder function using the specified protocol. */

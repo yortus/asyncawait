@@ -81,6 +81,7 @@ declare module AsyncAwait {
             };
         }
 
+        // TODO: try to improve type inference for mod()
         export interface Builder {
             (fn: Function): Function;
             mod<TBuilder extends Builder>(options: any): TBuilder;

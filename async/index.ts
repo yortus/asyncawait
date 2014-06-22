@@ -1,6 +1,4 @@
 ﻿import references = require('references');
-import asyncBuilder = require('../src/asyncBuilder');
-import promiseProtocol = require('../src/protocols/promise');
 import config = require('../src/asyncConfig');
 import promise = require('./promise');
 import cps = require('./cps');
@@ -11,9 +9,9 @@ import iterable = require('./iterable/index');
 export = api;
 
 
-var api: AsyncAwait.Async.API = <any> asyncBuilder.mod(promiseProtocol);
+var api: AsyncAwait.Async.API = <any> promise;
 api.config = config;
-api.promise = promise;
+api.promise = promise.mod<AsyncAwait.Async.PromiseBuilder>({});
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;
