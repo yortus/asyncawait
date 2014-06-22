@@ -27,63 +27,28 @@ function createAsyncBuilder<TBuilder extends Builder>(protocol: Protocol) {
         assert(arguments.length === 1, 'async builder: expected a single argument');
         assert(_.isFunction(bodyFunc), 'async builder: expected argument to be a function');
 
-        //TODO: temp testing...
-        //var coPool = [];
-
-
         // The following function is the 'template' for the returned suspendable function.
         function suspendable($ARGS) {
 
             // Distribute arguments between the suspendable function and the protocol's invoke() function.
-            // TODO PERF: option for varargs functions and fixed args function (below impl is for varargs, fixed could be made faster).
             var argCount = arguments.length, suspendableArgCount = argCount - protocolArgCount;
             var sArgs = new Array(suspendableArgCount), pArgs = new Array(protocolArgCount + 1);
             for (var i = 0; i < suspendableArgCount; ++i) sArgs[i] = arguments[i];
             for (var i = 0; i < protocolArgCount; ++i) pArgs[i + 1] = arguments[i + suspendableArgCount];
 
-
-            ////TODO: if in pool...
-            //if (coPool.length > 0) {
-            //    //var co = pool.acquire();
-            //    var co: Coroutine = coPool.pop();
-            //    pArgs[0] = co;
-            //    co.body = () => bodyFunc.apply(this, sArgs); // TODO: can eliminate this closure too
-            //    return protocolMethods.invoke.apply(null, pArgs);
-            //}
-
-
-            //TODO: if not in pool...
-
-
-
-
-            //TODO: try new'ing a Coroutine class
-
-
-
             // Create a coroutine instance to hold context information for this call.
-            var co: Coroutine = { protocol: protocolMethods/*, pool: coPool*/ };
+            var co: Coroutine = <any> new Object();
+            co.protocol = protocolMethods;
+            co.body = () => bodyFunc.apply(this, sArgs);
             pArgs[0] = co;
 
             // Pass execution control over to the protocol.
-            co.body = () => bodyFunc.apply(this, sArgs);
             return protocolMethods.invoke.apply(null, pArgs); // TODO: optimise in empty array case
         }
 
         // Create the suspendable function from the template function above, giving it the correct arity.
         var result, args = [], arity = bodyFunc.length + protocolArgCount;
         for (var i = 0; i < arity; ++i) args.push('a' + i);
-
-        //TODO: temp testing fixedargs version...
-        //var funcSource =
-        //    'function suspendable(' + args.join(', ') + ') {' +
-        //    '    var self = this;' +
-        //    '    var co = { protocol: protocolMethods };' +
-        //    '    co.body = function () { return bodyFunc.call(self' + (bodyFunc.length ? ', ' + args.slice(0, bodyFunc.length).join(', ') : '') + '); };' +
-        //    '    return protocolMethods.invoke(co' + (protocolArgCount ? ', ' + args.slice(bodyFunc.length).join(', ') : '') + ');' +
-        //    '}';
-
-
         var funcSource = suspendable.toString().replace('$ARGS', args.join(', '));
         var funcDefn, funcCode = eval('funcDefn = ' + funcSource);
         return funcDefn;

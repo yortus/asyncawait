@@ -60,16 +60,11 @@ function startOrResume(co) {
 }
 
 function dispose(co) {
-    //TODO: right place?
-    co.protocol.finally(co);
-
-    //TODO: temp testing...
     fiberPool.dec();
     co.protocol = null;
     co.body = null;
     co.fiber = null;
     semaphore.leave();
-    //co.pool.push(co);//TODO: temp testing...
 }
 
 function makeFiberBody(co) {
@@ -80,7 +75,8 @@ function makeFiberBody(co) {
         return co.protocol.throw(co, err);
     };
     var finallyBlock = function () {
-        return dispose(co);
+        co.protocol.finally(co);
+        dispose(co);
     };
 
     // V8 may not optimise the following function due to the presence of

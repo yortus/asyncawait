@@ -78,23 +78,17 @@ function startOrResume(co) {
 
 
 function dispose(co: Coroutine) {
-
-    //TODO: right place?
-    co.protocol.finally(co);
-
-    //TODO: temp testing...
     fiberPool.dec();
     co.protocol = null;
     co.body = null;
     co.fiber = null;
     semaphore.leave();
-    //co.pool.push(co);//TODO: temp testing...
 }
 
 function makeFiberBody(co: Coroutine) {
     var tryBlock = () => co.protocol.return(co, co.body());
     var catchBlock = err => co.protocol.throw(co, err);
-    var finallyBlock = () => dispose(co);
+    var finallyBlock = () => { co.protocol.finally(co); dispose(co); }
 
     // V8 may not optimise the following function due to the presence of
     // try/catch/finally. Therefore it does as little as possible, only
