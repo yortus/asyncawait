@@ -4,10 +4,10 @@ import iterablePromiseProtocol = require('../../src/protocols/iterablePromise');
 import promise = require('./promise');
 import cps = require('./cps');
 import thunk = require('./thunk');
-export = asyncIterable;
+export = iterableAPI;
 
 
-var asyncIterable: AsyncAwait.Async.IterableAPI = <any> asyncBuilder.mod(iterablePromiseProtocol);
-asyncIterable.promise = promise;
-asyncIterable.cps = cps;
-asyncIterable.thunk = thunk;
+var iterableAPI: AsyncAwait.Async.IterableAPI = <any> asyncBuilder.mod(iterablePromiseProtocol);
+iterableAPI.promise = promise;
+iterableAPI.cps = cps;
+iterableAPI.thunk = thunk;

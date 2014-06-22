@@ -69,5 +69,5 @@ module.exports = function(grunt) {
     grunt.registerTask('build', ['typescript:main', 'copy:main']);
     grunt.registerTask('test', ['mochaTest:main']);
     grunt.registerTask('bench', ['execute:bench']);
-    grunt.registerTask('default', ['build']);//TODO: was... , 'test']);
+    grunt.registerTask('default', ['build', 'test']);
 };

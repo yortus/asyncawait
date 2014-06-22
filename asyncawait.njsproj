@@ -61,6 +61,7 @@
     <TypeScriptCompile Include="await\index.ts" />
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
+    <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\asyncConfig.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />

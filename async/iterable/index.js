@@ -4,9 +4,9 @@ var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
 
-var asyncIterable = asyncBuilder.mod(iterablePromiseProtocol);
-asyncIterable.promise = promise;
-asyncIterable.cps = cps;
-asyncIterable.thunk = thunk;
-module.exports = asyncIterable;
+var iterableAPI = asyncBuilder.mod(iterablePromiseProtocol);
+iterableAPI.promise = promise;
+iterableAPI.cps = cps;
+iterableAPI.thunk = thunk;
+module.exports = iterableAPI;
 //# sourceMappingURL=index.js.map

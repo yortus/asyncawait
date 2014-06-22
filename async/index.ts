@@ -8,14 +8,14 @@ import thunk = require('./thunk');
 import express = require('./express');
 import stream = require('./stream');
 import iterable = require('./iterable/index');
-export = async;
+export = api;
 
 
-var async: AsyncAwait.Async.API = <any> asyncBuilder.mod(promiseProtocol);
-async.config = config;
-async.promise = promise;
-async.cps = cps;
-async.thunk = thunk;
-async.express = express;
-async.stream = stream;
-async.iterable = iterable;
+var api: AsyncAwait.Async.API = <any> asyncBuilder.mod(promiseProtocol);
+api.config = config;
+api.promise = promise;
+api.cps = cps;
+api.thunk = thunk;
+api.express = express;
+api.stream = stream;
+api.iterable = iterable;
