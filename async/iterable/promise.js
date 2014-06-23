@@ -1,7 +1,6 @@
 ﻿var oldBuilder = require('../../src/asyncBuilder');
 var assert = require('assert');
 var Promise = require('bluebird');
-var _ = require('lodash');
 var transfer = require('../../src/transfer');
 
 var builder = oldBuilder.mod({
@@ -44,7 +43,7 @@ var AsyncIterator = (function () {
         var _this = this;
         // Ensure that a single argument has been supplied, which is a function.
         assert(arguments.length === 1, 'forEach(): expected a single argument');
-        assert(_.isFunction(callback), 'forEach(): expected argument to be a function');
+        assert(typeof (callback) === 'function', 'forEach(): expected argument to be a function');
 
         // Asynchronously call next() until done.
         var result = Promise.defer();

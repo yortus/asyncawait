@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var _ = require('lodash');
+
 var oldBuilder = require('./cps');
 
 var builder = oldBuilder.mod({
@@ -16,7 +16,7 @@ var builder = oldBuilder.mod({
                     forEach: function (callback) {
                         // Ensure that a single argument has been supplied, which is a function.
                         assert(arguments.length === 1, 'forEach(): expected a single argument');
-                        assert(_.isFunction(callback), 'forEach(): expected argument to be a function');
+                        assert(typeof (callback) === 'function', 'forEach(): expected argument to be a function');
 
                         // Return a thunk
                         return function (done) {

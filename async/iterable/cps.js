@@ -1,5 +1,4 @@
 ﻿var assert = require('assert');
-var _ = require('lodash');
 var oldBuilder = require('../../src/asyncBuilder');
 var transfer = require('../../src/transfer');
 
@@ -42,7 +41,7 @@ var AsyncIterator = (function () {
         var _this = this;
         // Ensure at least one argument has been supplied, which is a function.
         assert(arguments.length >= 1, 'forEach(): expected at least one argument');
-        assert(_.isFunction(callback), 'forEach(): expected argument to be a function');
+        assert(typeof (callback) === 'function', 'forEach(): expected argument to be a function');
 
         // Asynchronously call next() until done.
         var done = done_ || nullFunc;
