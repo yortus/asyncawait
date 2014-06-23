@@ -34,31 +34,12 @@ function createAsyncBuilder<TBuilder extends Builder>(protocol: Protocol) {
         assert(arguments.length === 1, 'async builder: expected a single argument');
         assert(_.isFunction(bodyFunc), 'async builder: expected argument to be a function');
 
-        // The following function is the 'template' for the returned suspendable function.
-        function suspendable($ARGS) {
-
-            // Distribute arguments between the suspendable function and the protocol's invoke() function.
-            var argCount = arguments.length, suspendableArgCount = argCount - protocolArgCount;
-            var sArgs = new Array(suspendableArgCount), pArgs = new Array(protocolArgCount + 1);
-            for (var i = 0; i < suspendableArgCount; ++i) sArgs[i] = arguments[i];
-            for (var i = 0; i < protocolArgCount; ++i) pArgs[i + 1] = arguments[i + suspendableArgCount];
-
-            // Create a coroutine instance to hold context information for this call.
-            var co: Coroutine = <any> new Object();
-            co.protocol = protocolMethods;
-            co.body = () => bodyFunc.apply(this, sArgs);
-            pArgs[0] = co;
-
-            // Pass execution control over to the protocol.
-            return protocolMethods.invoke.apply(null, pArgs); // TODO: optimise in empty array case
-        }
-
         // Create the suspendable function from the template function above, giving it the correct arity.
         var result, args = [], arity = bodyFunc.length + protocolArgCount;
         for (var i = 0; i < arity; ++i) args.push('a' + i);
-        var funcSource = suspendable.toString().replace('$ARGS', args.join(', '));
-        var funcDefn, funcCode = eval('funcDefn = ' + funcSource);
-        return funcDefn;
+        var funcSource = suspendableSource.replace('$ARGS', args.join(', '));
+
+        return createSuspendableFunc(funcSource, protocolArgCount, protocolMethods, bodyFunc);
     };
 
     // Tack on the mod(...) method.
@@ -83,4 +64,45 @@ function createAsyncBuilder<TBuilder extends Builder>(protocol: Protocol) {
 
     // Return the async builder function.
     return builder;
+}
+
+
+
+
+
+//TODO:...
+var suspendableSource = (() => {
+
+    //TODO:...
+    var protocolArgCount, protocolMethods, bodyFunc;
+
+    // The following function is the 'template' for the returned suspendable function.
+    function suspendable($ARGS) {
+
+        // Distribute arguments between the suspendable function and the protocol's invoke() function.
+        var argCount = arguments.length, suspendableArgCount = argCount - protocolArgCount;
+        var sArgs = new Array(suspendableArgCount), pArgs = new Array(protocolArgCount + 1);
+        for (var i = 0; i < suspendableArgCount; ++i) sArgs[i] = arguments[i];
+        for (var i = 0; i < protocolArgCount; ++i) pArgs[i + 1] = arguments[i + suspendableArgCount];
+
+        // Create a coroutine instance to hold context information for this call.
+        var co: Coroutine = <any> new Object();
+        co.protocol = protocolMethods;
+        co.body = () => bodyFunc.apply(this, sArgs);
+        pArgs[0] = co;
+
+        // Pass execution control over to the protocol.
+        return protocolMethods.invoke.apply(null, pArgs); // TODO: optimise in empty array case
+    }
+
+    //TODO:...
+    return suspendable.toString();
+})();
+
+
+//TODO:...
+function createSuspendableFunc(source, protocolArgCount, protocolMethods, bodyFunc) {
+    var funcDefn;
+    var funcCode = eval('funcDefn = ' + source);
+    return funcDefn;
 }
