@@ -25,6 +25,21 @@ describe('A suspendable function returned by async.promise(...)', function () {
         expect(x).to.equal(5);
     });
 
+    it("preserves the 'this' context of the call", function (done) {
+        var foo = { bar: async.promise(function () {
+                return this;
+            }) }, baz = { x: 7 };
+        foo.bar().then(function (result) {
+            return expect(result).to.equal(foo);
+        }).then(function () {
+            return foo.bar.call(baz);
+        }).then(function (result) {
+            return expect(result).to.equal(baz);
+        }).then(function () {
+            return done();
+        }).catch(done);
+    });
+
     it('eventually resolves with its definition\'s returned value', function (done) {
         var foo = async.promise(function () {
             return 'blah';

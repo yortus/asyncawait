@@ -49,6 +49,21 @@ describe('A suspendable function returned by async.cps(...)', function () {
         expect(x).to.equal(5);
     });
 
+    it("preserves the 'this' context of the call", function (done) {
+        var foo = { bar: async.cps(function () {
+                return this;
+            }) }, baz = { x: 7 };
+        Promise.promisify(foo.bar.bind(foo))().then(function (result) {
+            return expect(result).to.equal(foo);
+        }).then(function () {
+            return Promise.promisify(foo.bar).call(baz);
+        }).then(function (result) {
+            return expect(result).to.equal(baz);
+        }).then(function () {
+            return done();
+        }).catch(done);
+    });
+
     it('eventually resolves with its definition\'s returned value', function (done) {
         var foo = async.cps(function () {
             return 'blah';
