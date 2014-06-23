@@ -1,5 +1,4 @@
 ﻿import references = require('references');
-import _ = require('lodash');
 import semaphore = require('./semaphore');
 export = config;
 

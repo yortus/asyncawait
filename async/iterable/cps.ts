@@ -1,6 +1,5 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import _ = require('lodash');
 import oldBuilder = require('../../src/asyncBuilder');
 import transfer = require('../../src/transfer');
 export = builder;
@@ -44,7 +43,7 @@ class AsyncIterator {
 
         // Ensure at least one argument has been supplied, which is a function.
         assert(arguments.length >= 1, 'forEach(): expected at least one argument');
-        assert(_.isFunction(callback), 'forEach(): expected argument to be a function');
+        assert(typeof(callback) === 'function', 'forEach(): expected argument to be a function');
 
         // Asynchronously call next() until done.
         var done = done_ || nullFunc;
