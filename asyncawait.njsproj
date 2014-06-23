@@ -68,9 +68,6 @@
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
     <TypeScriptCompile Include="src\transfer.ts" />
-    <TypeScriptCompile Include="src\protocols\iterableCps.ts" />
-    <TypeScriptCompile Include="src\protocols\iterablePromise.ts" />
-    <TypeScriptCompile Include="src\protocols\iterableThunk.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
@@ -140,7 +137,6 @@
     <Folder Include="examples\" />
     <Folder Include="examples\ts\" />
     <Folder Include="src\" />
-    <Folder Include="src\protocols\" />
     <Folder Include="tests\" />
     <Folder Include="typings\" />
     <Folder Include="typings\asyncawait\" />
