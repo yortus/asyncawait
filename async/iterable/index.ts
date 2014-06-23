@@ -7,7 +7,7 @@ import thunk = require('./thunk');
 export = iterableAPI;
 
 
-var iterableAPI: AsyncAwait.Async.IterableAPI = <any> asyncBuilder.mod(iterablePromiseProtocol);
-iterableAPI.promise = promise;
+var iterableAPI: AsyncAwait.Async.IterableAPI = <any> promise;
+iterableAPI.promise = promise.mod<AsyncAwait.Async.IterablePromiseBuilder>({});
 iterableAPI.cps = cps;
 iterableAPI.thunk = thunk;
