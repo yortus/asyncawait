@@ -45,10 +45,10 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         var foo = { bar: async.thunk(function () {
                 return this;
             }) }, baz = { x: 7 };
-        Promise.promisify(foo.bar().bind(foo))().then(function (result) {
+        Promise.promisify(foo.bar.call(foo))().then(function (result) {
             return expect(result).to.equal(foo);
         }).then(function () {
-            return Promise.promisify(foo.bar()).call(baz);
+            return Promise.promisify(foo.bar.call(baz))();
         }).then(function (result) {
             return expect(result).to.equal(baz);
         }).then(function () {
