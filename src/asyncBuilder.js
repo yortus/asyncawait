@@ -36,8 +36,7 @@ function createAsyncBuilder(protocol) {
         var result, args = [], arity = bodyFunc.length + protocolArgCount;
         for (var i = 0; i < arity; ++i)
             args.push('a' + i);
-        var funcSource = suspendableSource.replace('$ARGS', args.join(', '));
-
+        var funcSource = suspendableSource.replace('$ARGS', args.join(', ')).replace('$ARGCOUNT', '' + args.length).replace('$FASTPATH', 'var co = new Object(), self = this;' + 'co.protocol = protocolMethods;' + 'co.body = function () { return bodyFunc.call(self' + (bodyFunc.length ? ', ' + args.slice(0, bodyFunc.length).join(', ') : '') + '); };' + 'return protocolMethods.invoke(co' + (protocolArgCount ? ', ' + args.slice(bodyFunc.length).join(', ') : '') + ');');
         return createSuspendableFunc(funcSource, protocolArgCount, protocolMethods, bodyFunc);
     };
 
@@ -67,11 +66,15 @@ function createAsyncBuilder(protocol) {
 //TODO:...
 var suspendableSource = (function () {
     //TODO:...
-    var protocolArgCount, protocolMethods, bodyFunc;
+    var protocolArgCount, protocolMethods, bodyFunc, $ARGCOUNT, $FASTPATH;
 
     // The following function is the 'template' for the returned suspendable function.
     function suspendable($ARGS) {
         var _this = this;
+        if (arguments.length === $ARGCOUNT) {
+            $FASTPATH;
+        }
+
         // Distribute arguments between the suspendable function and the protocol's invoke() function.
         var argCount = arguments.length, suspendableArgCount = argCount - protocolArgCount;
         var sArgs = new Array(suspendableArgCount), pArgs = new Array(protocolArgCount + 1);

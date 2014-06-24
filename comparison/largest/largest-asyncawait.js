@@ -14,10 +14,13 @@ var await = require('../..').await;
   * @returns {object?} null if no files found, otherwise an object of the form
   *                    { path: string; size: number; preview?: string, searched: number; }.
   */
-var largest = async.cps (function self(dir, options, internal) {
+
+//TODO: remove 'internal' from others too (to be fair)
+
+var largest = async.cps (function self(dir, options) {
 
     // Parse arguments.
-    options = options || largest.options;
+    options = options || defaultOptions;
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
     var files = await (fs.readdirAsync(dir));
@@ -27,7 +30,7 @@ var largest = async.cps (function self(dir, options, internal) {
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = await (_.map(stats, function (stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
-        return options.recurse ? self(paths[i], options, true) : null;
+        return options.recurse ? self(paths[i], recurseOptions, true) : null;
     }));
 
     // Choose the best candidate.
@@ -39,8 +42,8 @@ var largest = async.cps (function self(dir, options, internal) {
             return best;
         });
 
-    // Add a preview if requested (but skip if this is an internal step in a recursive search).
-    if (result && options.preview && !internal) {
+    // Add a preview if requested.
+    if (result && options.preview) {
         var fd = await (fs.openAsync(result.path, 'r'));
         var buffer = new Buffer(40);
         var bytesRead = await (fs.readAsync(fd, buffer, 0, 40, 0));
@@ -49,7 +52,10 @@ var largest = async.cps (function self(dir, options, internal) {
     }
     return result;
 });
-largest.options = {};
+
+
+var defaultOptions = { recurse: false, preview: false };
+var recurseOptions = { recurse: true,  preview: false };
 
 
 module.exports = largest;
