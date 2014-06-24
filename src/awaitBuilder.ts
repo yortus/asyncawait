@@ -5,6 +5,9 @@ import _ = require('lodash');
 export = makeAwaitFunc;
 
 
+
+//TODO: update deps to newer versions
+
 function makeAwaitFunc() {
 
     //TODO: temp testing...

@@ -33,11 +33,11 @@ var SELECTED_FUNCTION = functions.largest;
 
 var SELECTED_VARIANT = variants.asyncawait;
 
-var SAMPLES_PER_RUN = 50;   // How many times the function will be called per run.
+var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run.
 
-var RUNS_PER_BENCHMARK = 1;  // How many runs make up the whole benchmark.
+var RUNS_PER_BENCHMARK = 5;  // How many runs make up the whole benchmark.
 
-var CONCURRENCY_FACTOR = 1;  // Max number of concurrent invocations of the function.
+var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
 
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.

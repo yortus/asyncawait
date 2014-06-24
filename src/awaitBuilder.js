@@ -2,6 +2,7 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
 
+//TODO: update deps to newer versions
 function makeAwaitFunc() {
     //TODO: temp testing...
     var traverse = traverseClone;
