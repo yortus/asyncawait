@@ -32,6 +32,20 @@ describe('A suspendable function returned by async.stream(...)', () => {
         expect(arr).to.be.empty;
     });
 
+    it("preserves the 'this' context of the call", done => {
+        var foo = { bar: async.stream (function () { yield_ (this); }) }, baz = {x:7};
+        var arr = [], items = foo.bar();
+        items.on('data', val => arr.push(val));
+        items.on('end', () => {
+            items = foo.bar.call(baz);
+            items.on('data', val => arr.push(val));
+            items.on('end', () => {
+                expect(arr).to.deep.equal([foo, baz]);
+                done();
+            });
+        });
+    });
+
     it('eventually emits a \'data\' event for each yielded value', done => {
         var arr = [], items = foo(4);
         items.on('data', val => arr.push(val));

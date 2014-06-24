@@ -46,6 +46,16 @@ describe('async.iterable.cps(...)', () => {
             expect(arr).to.be.empty;
         });
 
+        it("preserves the 'this' context of the call", async.cps (() => {
+            var foo = { bar: async.iterable.cps (function () { yield_ (this); return 'done'; }) }, baz = {x:7};
+            var iter = foo.bar(), next = Promise.promisify(iter.next, iter);
+            expect(await (next())).to.deep.equal({ done: false, value: foo });
+            expect(await (next())).to.deep.equal({ done: true, value: 'done' });
+            iter = foo.bar.call(baz), next = Promise.promisify(iter.next, iter);
+            expect(await (next())).to.deep.equal({ done: false, value: baz });
+            expect(await (next())).to.deep.equal({ done: true, value: 'done' });
+        }));
+
         it('eventually resolves with the definition\'s yielded value', async.cps (() => {
             var iter = foo(3), next = Promise.promisify(iter.next, iter);
             expect(await (next())).to.deep.equal({ done: false, value: 111 });

@@ -36,6 +36,17 @@ describe('A suspendable function returned by async.thunk(...)', () => {
         expect(x).to.equal(5);
     });
 
+    it("preserves the 'this' context of the call", done => {
+        //TODO: broken test, fix me
+        var foo = { bar: async.thunk (function () { return this; }) }, baz = {x:7};
+        Promise.promisify(foo.bar().bind(foo))()
+        .then(result => expect(result).to.equal(foo))
+        .then(() => Promise.promisify(foo.bar()).call(baz))
+        .then(result => expect(result).to.equal(baz))
+        .then(() => done())
+        .catch(done);
+    });
+
     it('eventually resolves with its definition\'s returned value', done => {
         var foo = async.thunk (() => { return 'blah'; });
         Promise.promisify(foo())()
