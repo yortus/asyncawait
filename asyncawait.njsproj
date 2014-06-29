@@ -59,6 +59,7 @@
     <TypeScriptCompile Include="async\iterable\thunk.ts" />
     <TypeScriptCompile Include="async\iterable\promise.ts" />
     <TypeScriptCompile Include="await\index.ts" />
+    <TypeScriptCompile Include="await\promise.ts" />
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />

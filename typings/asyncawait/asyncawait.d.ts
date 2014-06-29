@@ -101,6 +101,10 @@ declare module AsyncAwait {
 
         export interface Coroutine {
             //TODO: ???
+            // suspend
+            // resumeWith(value)
+            // throwInto(error)
+
             protocol: ProtocolMethods;
             body?: Function;
             fiber?: any;
@@ -120,7 +124,7 @@ declare module AsyncAwait {
         <T>(expr: Thenable<T>): T;
         <T>(expr: Thenable<T>[]): T[];
         <T>(expr: Thunk<T>): T;
-        <T>(expr: Thunk<T>[]): T[];
+        <T>(expr: T[]): T[];
         (expr: Object): Object;
     }
 
