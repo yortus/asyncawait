@@ -1,6 +1,10 @@
 ﻿var builder = require('../src/awaitBuilder');
+var promise = require('./promise');
+var cps = require('./cps');
 
 var api = builder.createAwaitBuilder(builder.generalHandler);
+api.promise = promise;
+api.cps = cps;
 module.exports = api;
 //var api: AsyncAwait.Await = <any> makeAwaitFunc();
 //interface AwaitHandler {

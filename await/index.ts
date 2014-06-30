@@ -1,9 +1,13 @@
 ﻿import references = require('references');
 import builder = require('../src/awaitBuilder');
+import promise = require('./promise');
+import cps = require('./cps');
 export = api;
 
 
-var api = builder.createAwaitBuilder(builder.generalHandler);
+var api: AsyncAwait.Await.API = <any> builder.createAwaitBuilder(builder.generalHandler);
+api.promise = promise;
+api.cps = <any> cps;
 
 
 

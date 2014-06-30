@@ -113,19 +113,28 @@ declare module AsyncAwait {
 
 
     //------------------------- Await -------------------------
-    //TODO: LEAVE OPEN (ie in internal module)
-    export interface Await extends AwaitFunction {
-        in: AwaitFunction;
-        top(n: number): AwaitFunction;
-    }
+    export module Await {
+        //TODO: LEAVE OPEN (ie in internal module)
+        export interface API extends AwaitFunction {
+            promise: AwaitFunction;
+            cps: {
+                (expr: any): any;
+                contd: any;
+            };
 
-    //TODO: Review this after making extensible
-    export interface AwaitFunction {
-        <T>(expr: Thenable<T>): T;
-        <T>(expr: Thenable<T>[]): T[];
-        <T>(expr: Thunk<T>): T;
-        <T>(expr: T[]): T[];
-        (expr: Object): Object;
+            //TODO: was...
+            //in: AwaitFunction;
+            //top(n: number): AwaitFunction;
+        }
+
+        //TODO: Review this after making extensible
+        export interface AwaitFunction {
+            <T>(expr: Thenable<T>): T;
+            <T>(expr: Thenable<T>[]): T[];
+            <T>(expr: Thunk<T>): T;
+            <T>(expr: T[]): T[];
+            (expr: Object): Object;
+        }
     }
 
 
@@ -170,7 +179,7 @@ declare module "asyncawait" {
     export import yield_ = require("asyncawait/yield");
 }
 declare module "asyncawait/async" { var api: AsyncAwait.Async.API; export = api; }
-declare module "asyncawait/await" { var api: AsyncAwait.Await; export = api; }
+declare module "asyncawait/await" { var api: AsyncAwait.Await.API; export = api; }
 declare module "asyncawait/yield" { var api: AsyncAwait.Yield; export = api; }
 declare module "asyncawait/async/promise" { var api: AsyncAwait.Async.PromiseBuilder; export = api; }
 declare module "asyncawait/async/cps" { var api: AsyncAwait.Async.CPSBuilder; export = api; }

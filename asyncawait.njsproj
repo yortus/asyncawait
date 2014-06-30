@@ -58,6 +58,7 @@
     <TypeScriptCompile Include="async\iterable\cps.ts" />
     <TypeScriptCompile Include="async\iterable\thunk.ts" />
     <TypeScriptCompile Include="async\iterable\promise.ts" />
+    <TypeScriptCompile Include="await\cps.ts" />
     <TypeScriptCompile Include="await\index.ts" />
     <TypeScriptCompile Include="await\promise.ts" />
     <TypeScriptCompile Include="examples\ts\express.ts" />
@@ -81,6 +82,8 @@
     <TypeScriptCompile Include="tests\async.stream.ts" />
     <TypeScriptCompile Include="tests\async.thunk.ts" />
     <TypeScriptCompile Include="tests\async.promise.ts" />
+    <TypeScriptCompile Include="tests\await.cps.ts" />
+    <TypeScriptCompile Include="tests\await.promise.ts" />
     <TypeScriptCompile Include="tests\await.ts" />
     <Content Include="references.d.ts" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
