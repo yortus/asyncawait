@@ -2,82 +2,68 @@
 var Promise = require('bluebird');
 var _ = require('lodash');
 
-//TODO: update deps to newer versions
-function makeAwaitFunc() {
+
+function createAwaitBuilder(handler) {
+    var builder = function await(expr) {
+        // Ensure this function is executing inside a fiber.
+        var fiber = Fiber.current;
+        if (!fiber) {
+            throw new Error('await functions, yield functions, and pseudo-synchronous suspendable ' + 'functions may only be called from inside a suspendable function. ');
+        }
+
+        // Handle...
+        var flag = handler(expr, function (err, result) {
+            if (err)
+                fiber.throwInto(err);
+            else
+                fiber.run(result);
+        });
+        if (flag === false) {
+            throw new Error('not handled!');
+        }
+
+        return Fiber.yield();
+    };
+
+    return builder;
+}
+exports.createAwaitBuilder = createAwaitBuilder;
+
+exports.generalHandler = function (expr, resume) {
     //TODO: temp testing...
     var traverse = traverseClone;
     var topN = null;
 
-    return function await() {
-        // Ensure this function is executing inside a fiber.
-        if (!Fiber.current) {
-            throw new Error('await functions, yield functions, and pseudo-synchronous suspendable ' + 'functions may only be called from inside a suspendable function. ');
-        }
-
-        // Parse argument(s). If not a single argument, treat it like an array was passed in.
-        if (arguments.length === 1) {
-            var expr = arguments[0];
+    // Handle each supported 'awaitable' appropriately...
+    if (expr && _.isFunction(expr.then)) {
+        // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
+        expr.then(function (val) {
+            return resume(null, val);
+        }, resume);
+    } else if (_.isFunction(expr)) {
+        // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
+        expr(resume);
+    } else if (_.isArray(expr) || _.isPlainObject(expr)) {
+        // An array or plain object: resume the coroutine with a deep clone of the array/object,
+        // where all contained promises and thunks have been replaced by their resolved values.
+        var trackedPromises = [];
+        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+        if (!topN) {
+            Promise.all(trackedPromises).then(function (val) {
+                return resume(null, val);
+            }, resume);
         } else {
-            expr = new Array(arguments.length);
-            for (var i = 0; i < arguments.length; ++i)
-                expr[i] = arguments[i];
-            traverse = traverseInPlace;
+            Promise.some(trackedPromises, topN).then(function (val) {
+                return resume(null, val);
+            }, resume);
         }
-
-        // Handle each supported 'awaitable' appropriately...
-        var fiber = Fiber.current;
-        if (expr && _.isFunction(expr.then)) {
-            // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-            expr.then(function (val) {
-                fiber.run(val);
-                fiber = null;
-            }, function (err) {
-                fiber.throwInto(err);
-                fiber = null;
-            });
-        } else if (_.isFunction(expr)) {
-            // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
-            expr(function (err, val) {
-                if (err)
-                    fiber.throwInto(err);
-                else
-                    fiber.run(val);
-                fiber = null;
-            });
-        } else if (_.isArray(expr) || _.isPlainObject(expr)) {
-            // An array or plain object: resume the coroutine with a deep clone of the array/object,
-            // where all contained promises and thunks have been replaced by their resolved values.
-            var trackedPromises = [];
-            expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
-            if (!topN) {
-                Promise.all(trackedPromises).then(function (val) {
-                    fiber.run(expr);
-                    fiber = null;
-                }, function (err) {
-                    fiber.throwInto(err);
-                    fiber = null;
-                });
-            } else {
-                Promise.some(trackedPromises, topN).then(function (val) {
-                    fiber.run(val);
-                    fiber = null;
-                }, function (err) {
-                    fiber.throwInto(err);
-                    fiber = null;
-                });
-            }
-        } else {
-            // Anything else: resume the coroutine immediately with the value.
-            setImmediate(function () {
-                fiber.run(expr);
-                fiber = null;
-            });
-        }
-
-        // Suspend the current fiber until the one of the above handlers resumes it again.
-        return Fiber.yield();
-    };
-}
+    } else {
+        // Anything else: resume the coroutine immediately with the value.
+        setImmediate(function () {
+            return resume(null, expr);
+        });
+    }
+};
 
 /** In-place (ie non-cloning) object traversal. */
 function traverseInPlace(o, visitor) {
@@ -154,5 +140,4 @@ function thunkToPromise(thunk) {
         thunk(callback);
     });
 }
-module.exports = makeAwaitFunc;
 //# sourceMappingURL=awaitBuilder.js.map

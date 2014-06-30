@@ -2,69 +2,82 @@
 import Fiber = require('./fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
-export = makeAwaitFunc;
-
-
+//export = createAwaitBuilder;
 
 //TODO: update deps to newer versions
 
-function makeAwaitFunc() {
 
-    //TODO: temp testing...
-    var traverse = traverseClone;
-    var topN = null;
 
-    return function await() {
+export interface AwaitHandler {
+    (expr: any, resume: (error?, result?) => void): any;
+}
+
+
+export function createAwaitBuilder(handler: AwaitHandler) {
+
+
+    var builder = function await(expr: any) {
 
         // Ensure this function is executing inside a fiber.
-        if (!Fiber.current) {
+        var fiber = Fiber.current;
+        if (!fiber) {
             throw new Error(
                 'await functions, yield functions, and pseudo-synchronous suspendable ' +
                 'functions may only be called from inside a suspendable function. '
             );
         }
 
-        // Parse argument(s). If not a single argument, treat it like an array was passed in.
-        if (arguments.length === 1) {
-            var expr = arguments[0];
-        } else {
-            expr = new Array(arguments.length);
-            for (var i = 0; i < arguments.length; ++i) expr[i] = arguments[i];
-            traverse = traverseInPlace;
+        // Handle...
+        var flag = handler(expr, (err, result) => {
+            if (err) fiber.throwInto(err);
+            else fiber.run(result);
+        });
+        if (flag === false) {
+            throw new Error('not handled!');
         }
 
-        // Handle each supported 'awaitable' appropriately...
-        var fiber = Fiber.current;
-        if (expr && _.isFunction(expr.then)) {
-
-            // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-            expr.then(val => { fiber.run(val); fiber = null; }, err => { fiber.throwInto(err); fiber = null; });
-        }
-        else if (_.isFunction(expr)) {
-
-            // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
-            expr((err, val) => { if (err) fiber.throwInto(err); else fiber.run(val); fiber = null; });
-        }
-        else if (_.isArray(expr) || _.isPlainObject(expr)) {
-
-            // An array or plain object: resume the coroutine with a deep clone of the array/object,
-            // where all contained promises and thunks have been replaced by their resolved values.
-            var trackedPromises = [];
-            expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
-            if (!topN) {
-                Promise.all(trackedPromises).then(val => { fiber.run(expr); fiber = null; }, err => { fiber.throwInto(err); fiber = null; });
-            } else {
-                Promise.some(trackedPromises, topN).then(val => { fiber.run(val); fiber = null; }, err => { fiber.throwInto(err); fiber = null; });
-            }
-
-        } else {
-
-            // Anything else: resume the coroutine immediately with the value.
-            setImmediate(() => { fiber.run(expr); fiber = null; });
-        }
-
-        // Suspend the current fiber until the one of the above handlers resumes it again.
         return Fiber.yield();
+    }
+
+    return builder;
+
+}
+
+
+export var generalHandler: AwaitHandler = (expr, resume) => {
+
+    //TODO: temp testing...
+    var traverse = traverseClone;
+    var topN = null;
+
+
+    // Handle each supported 'awaitable' appropriately...
+    if (expr && _.isFunction(expr.then)) {
+
+        // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
+        expr.then(val => resume(null, val), resume);
+    }
+    else if (_.isFunction(expr)) {
+
+        // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
+        expr(resume);
+    }
+    else if (_.isArray(expr) || _.isPlainObject(expr)) {
+
+        // An array or plain object: resume the coroutine with a deep clone of the array/object,
+        // where all contained promises and thunks have been replaced by their resolved values.
+        var trackedPromises = [];
+        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+        if (!topN) {
+            Promise.all(trackedPromises).then(val => resume(null, val), resume);
+        } else {
+            Promise.some(trackedPromises, topN).then(val => resume(null, val), resume);
+        }
+    }
+    else {
+
+        // Anything else: resume the coroutine immediately with the value.
+        setImmediate(() => resume(null, expr));
     }
 }
 

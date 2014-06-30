@@ -1,33 +1,26 @@
-﻿var makeAwaitFunc = require('../src/awaitBuilder');
+﻿var builder = require('../src/awaitBuilder');
 
-var api = makeAwaitFunc();
-
-var promiseHandler = function (expr, resume) {
-    if (typeof expr.then !== 'function')
-        return false;
-    var p = expr;
-    p.then(function (result) {
-        return resume(null, result);
-    }, function (error) {
-        return resume(error);
-    });
-};
-
-var thunkHandler = function (expr, resume) {
-    if (typeof expr !== 'function')
-        return false;
-    expr(resume);
-};
-
-var primitiveHandler = function (expr, resume) {
-    //TODO:...
-    if (typeof expr !== 'function')
-        return false;
-    expr(null, expr);
-};
-
-var objectHandler = function (expr, resume) {
-    //TODO:...
-};
+var api = builder.createAwaitBuilder(builder.generalHandler);
 module.exports = api;
+//var api: AsyncAwait.Await = <any> makeAwaitFunc();
+//interface AwaitHandler {
+//    (expr: any, resume: (error?, result?) => void): any;
+//}
+//var promiseHandler: AwaitHandler = (expr, resume) => {
+//    if (typeof expr.then !== 'function') return false;
+//    var p = <Promise<any>> expr;
+//    p.then(result => resume(null, result), error => resume(error));
+//};
+//var thunkHandler: AwaitHandler = (expr, resume) => {
+//    if (typeof expr !== 'function') return false;
+//    expr(resume);
+//};
+//var primitiveHandler: AwaitHandler = (expr, resume) => {
+//    //TODO:...
+//    if (typeof expr !== 'function') return false;
+//    expr(null, expr);
+//};
+//var objectHandler: AwaitHandler = (expr, resume) => {
+//    //TODO:...
+//};
 //# sourceMappingURL=index.js.map
