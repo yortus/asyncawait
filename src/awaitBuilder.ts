@@ -69,7 +69,7 @@ export var generalHandler: AwaitHandler = (expr, resume) => {
         var trackedPromises = [];
         expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
         if (!topN) {
-            Promise.all(trackedPromises).then(val => resume(null, val), resume);
+            Promise.all(trackedPromises).then(val => resume(null, expr), resume);
         } else {
             Promise.some(trackedPromises, topN).then(val => resume(null, val), resume);
         }

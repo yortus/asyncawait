@@ -4,6 +4,10 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
 var expect = chai.expect;
+if (!global.___)
+    Object.defineProperty(global, '___', { get: function () {
+            return await.cps.contd();
+        } });
 
 describe('The await.cps(...) function', function () {
     it('throws if not called within a suspendable function', function () {
@@ -18,9 +22,9 @@ describe('The await.cps(...) function', function () {
             return Promise.delay(n).nodeify(callback);
         };
         var foo = async(function () {
-            await.cps(delay(40, await.cps.contd()));
+            await.cps(delay(40, ___));
             x = 7;
-            await.cps(delay(40, await.cps.contd()));
+            await.cps(delay(40, ___));
             x = 9;
         });
         foo();
@@ -45,7 +49,7 @@ describe('The await.cps(...) function', function () {
             return Promise.delay(n).nodeify(callback);
         };
         var foo = async(function () {
-            await.cps(delay(20, await.cps.contd()));
+            await.cps(delay(20, ___));
             return 'blah';
         });
         foo().then(function (result) {

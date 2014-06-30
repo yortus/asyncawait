@@ -50,7 +50,7 @@ exports.generalHandler = function (expr, resume) {
         expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
         if (!topN) {
             Promise.all(trackedPromises).then(function (val) {
-                return resume(null, val);
+                return resume(null, expr);
             }, resume);
         } else {
             Promise.some(trackedPromises, topN).then(function (val) {
