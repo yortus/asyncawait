@@ -20,6 +20,7 @@ function createAwaitBuilder(protocol) {
 
     // Create the builder function.
     var builder = function await(expr) {
+        //TODO: don't assume single arg - pass all through to handler
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
         if (!fiber) {

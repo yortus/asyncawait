@@ -27,6 +27,8 @@ function createAwaitBuilder<TBuilder extends Builder>(protocol: Protocol) {
     // Create the builder function.
     var builder: TBuilder = <any> function await(expr: any) {
 
+        //TODO: don't assume single arg - pass all through to handler
+
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
         if (!fiber) {
