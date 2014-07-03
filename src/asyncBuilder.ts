@@ -24,7 +24,8 @@ var asyncBuilder = createAsyncBuilder<Builder>({
 function createAsyncBuilder<TBuilder extends Builder>(protocol: Protocol) {
 
     // Obtain the protocol methods.
-    var protocolMethods = protocol.methods(protocol);
+    var options = protocol; //TODO: explain this...
+    var protocolMethods = protocol.methods(options);
     var protocolArgCount = protocolMethods.invoke.length - 1;
 
     // Create the builder function.

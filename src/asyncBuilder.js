@@ -23,7 +23,8 @@ var asyncBuilder = createAsyncBuilder({
 /** Create a new async builder function using the specified protocol. */
 function createAsyncBuilder(protocol) {
     // Obtain the protocol methods.
-    var protocolMethods = protocol.methods(protocol);
+    var options = protocol;
+    var protocolMethods = protocol.methods(options);
     var protocolArgCount = protocolMethods.invoke.length - 1;
 
     // Create the builder function.

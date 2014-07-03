@@ -1,11 +1,12 @@
 ﻿import references = require('references');
 import builder = require('../src/awaitBuilder');
+import general = require('./general');
 import promise = require('./promise');
 import cps = require('./cps');
 export = api;
 
 
-var api: AsyncAwait.Await.API = <any> builder.createAwaitBuilder(builder.generalHandler);
+var api: AsyncAwait.Await.API = <any> builder.mod<AsyncAwait.Await.Builder>({ handler: () => general });
 api.promise = promise;
 api.cps = <any> cps;
 

@@ -85,11 +85,11 @@ declare module AsyncAwait {
         // TODO: try to improve type inference for mod()
         export interface Builder {
             (fn: Function): Function;
-            mod<TBuilder extends Builder>(options: any): TBuilder;
+            mod<TBuilder extends Builder>(options: any): TBuilder; //TODO:... unclear relation to Protocol
         }
 
         export interface Protocol {
-            methods?: (options, fallback?: ProtocolMethods) => ProtocolMethods;
+            methods?: (options, fallback?: ProtocolMethods) => ProtocolMethods; //TODO: unclear how this works... (several slightly different use cases)
         }
 
         export interface ProtocolMethods {
@@ -101,11 +101,6 @@ declare module AsyncAwait {
         }
 
         export interface Coroutine {
-            //TODO: ???
-            // suspend
-            // resumeWith(value)
-            // throwInto(error)
-
             protocol: ProtocolMethods;
             body?: Function;
             fiber?: any;
@@ -145,6 +140,15 @@ declare module AsyncAwait {
 
         export interface Builder {
             (expr: any): any;
+            mod<TBuilder extends Builder>(options: any): TBuilder; //TODO:... unclear relation to Protocol
+        }
+
+        export interface Protocol {
+            handler?: (options, fallback?: Handler) => Handler; //TODO: unclear how this works... (several slightly different use cases)
+        }
+
+        export interface Handler {
+            (expr: any, resume: (error?, result?) => void): any; //TODO:...
         }
     }
 

@@ -1,14 +1,18 @@
 ﻿var Fiber = require('../src/fibers');
-var builder = require('../src/awaitBuilder');
+var oldBuilder = require('../src/awaitBuilder');
 
-var cpsHandler = function (expr, resume) {
-    if (expr !== void 0)
-        return false;
-    Fiber.current.resume = resume;
-};
 
-var api = builder.createAwaitBuilder(cpsHandler);
-api.contd = function () {
+var builder = oldBuilder.mod({
+    handler: function () {
+        return function (expr, resume) {
+            if (expr !== void 0)
+                return false;
+            Fiber.current.resume = resume;
+        };
+    }
+});
+
+builder.contd = function () {
     var fiber = Fiber.current;
     return function (err, result) {
         var resume = fiber.resume;
@@ -17,5 +21,5 @@ api.contd = function () {
         resume(err, result);
     };
 };
-module.exports = api;
+module.exports = builder;
 //# sourceMappingURL=cps.js.map

@@ -1,13 +1,13 @@
 ﻿import references = require('references');
-import builder = require('../src/awaitBuilder');
-export = api;
+import oldBuilder = require('../src/awaitBuilder');
+import Promise = require('bluebird');
+export = builder;
 
 
-var promiseHandler = (expr, resume) => {
-    if (typeof expr.then !== 'function') return false;
-    var p = <Promise<any>> expr;
-    p.then(result => resume(null, result), error => resume(error));
-};
-
-
-var api = builder.createAwaitBuilder(promiseHandler);
+var builder = oldBuilder.mod<AsyncAwait.Await.PromiseBuilder>({
+    handler: () => (expr, resume) => {
+        if (typeof expr.then !== 'function') return false;
+        var p = <Promise<any>> expr;
+        p.nodeify(resume);
+    }
+});
