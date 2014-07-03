@@ -96,6 +96,6 @@ function makeFiberBody(co: Coroutine) {
     return function fiberBody() {
         try { tryBlock(); }
         catch (err) { catchBlock(err); }
-        finally { finallyBlock(); }
+        finally { setImmediate(finallyBlock); }
     };
 }

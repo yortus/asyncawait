@@ -88,7 +88,7 @@ function makeFiberBody(co) {
         } catch (err) {
             catchBlock(err);
         } finally {
-            finallyBlock();
+            setImmediate(finallyBlock);
         }
     };
 }

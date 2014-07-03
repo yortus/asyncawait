@@ -3,6 +3,9 @@ import Fiber = require('fibers');
 export = result;
 
 
+//TODO: NB repro created at https://github.com/laverdet/node-fibers/issues/177
+
+
 //BROKEN to get attention!
 // TODO: need to merge this from master hotfix...
 // ie, reroute all require('fibers') to here
