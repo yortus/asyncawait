@@ -35,7 +35,7 @@ describe('The await.promise(...) function', () => {
 
     it('resumes the suspendable function with the value of the awaited expression', done => {
         var foo = async (() => await.promise (Promise.delay(20).then(() => 'blah')));
-        (<Promise<any>> foo())
+        foo()
         .then(result => expect(result).to.equal('blah'))
         .then(() => done())
         .catch(done);

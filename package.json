@@ -39,7 +39,7 @@
     "prepublish": "grunt build"
   },
   "dependencies": {
-    "bluebird": "~1.1.1",
+    "bluebird": "2.x",
     "fibers": "~1.0.1",
     "lodash": "~2.4.1"
   },
@@ -55,7 +55,8 @@
     "grunt-mocha-test": "~0.10.2",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-typescript": "~0.3.6",
-    "grunt-shell": "~0.7.0"
+    "grunt-shell": "~0.7.0",
+    "grunt-findts": "~0.1.1"
   },
   "optionalDependencies": {
     "memwatch": "*"

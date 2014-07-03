@@ -53,6 +53,10 @@ module.exports = function(grunt) {
             bench: {
                 command: 'node comparison/benchmark.js'
             }
+        },
+
+        findts: {
+            main: { }
         }
 
     });
@@ -64,6 +68,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks('grunt-findts');
 
     // Register task aliases and the default task
     grunt.registerTask('build', ['typescript:main', 'copy:main']);

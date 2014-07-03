@@ -19,7 +19,7 @@ describe('The await.cps(...) function', function () {
     it('suspends the suspendable function until the expression produces a result', function (done) {
         var x = 5;
         var delay = function (n, callback) {
-            return Promise.delay(n).nodeify(callback);
+            Promise.delay(n).nodeify(callback);
         };
         var foo = async(function () {
             await.cps(delay(40, ___));
@@ -46,7 +46,7 @@ describe('The await.cps(...) function', function () {
 
     it('resumes the suspendable function with the value of the awaited expression', function (done) {
         var delay = function (n, callback) {
-            return Promise.delay(n).nodeify(callback);
+            Promise.delay(n).nodeify(callback);
         };
         var foo = async(function () {
             await.cps(delay(20, ___));
@@ -56,7 +56,10 @@ describe('The await.cps(...) function', function () {
             return expect(result).to.equal('blah');
         }).then(function () {
             return done();
-        }).catch(done);
+        }).catch(function (err) {
+            console.log('xxxxxxxxxxxxx');
+            done(err);
+        });
     });
 });
 //# sourceMappingURL=await.cps.js.map

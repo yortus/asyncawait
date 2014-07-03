@@ -4,7 +4,19 @@ import Promise = require('bluebird');
 import _ = require('lodash');
 //export = createAwaitBuilder;
 
-//TODO: update deps to newer versions
+
+
+//// Bootstrap a basic async builder using a no-op protocol.
+//var asyncBuilder = createAsyncBuilder<Builder>({
+//    methods: () => ({
+//        invoke: (co) => { },
+//        return: (co, result) => { },
+//        throw: (co, error) => { },
+//        yield: (co, value) => { },
+//        finally: (co) => { }
+//    })
+//});
+
 
 
 

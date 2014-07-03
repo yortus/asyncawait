@@ -18,7 +18,7 @@ describe('The await.cps(...) function', () => {
 
     it('suspends the suspendable function until the expression produces a result', done => {
         var x = 5;
-        var delay = (n, callback) => Promise.delay(n).nodeify(callback);
+        var delay = (n, callback) => { Promise.delay(n).nodeify(callback); }
         var foo = async (() => {
             await.cps (delay(40, ___));
             x = 7;
@@ -38,7 +38,7 @@ describe('The await.cps(...) function', () => {
     });
 
     it('resumes the suspendable function with the value of the awaited expression', done => {
-        var delay = (n, callback) => Promise.delay(n).nodeify(callback);
+        var delay = (n, callback) => { Promise.delay(n).nodeify(callback); }
         var foo = async (() => {
             await.cps (delay(20, ___));
             return 'blah';
@@ -46,6 +46,10 @@ describe('The await.cps(...) function', () => {
         foo()
         .then(result => expect(result).to.equal('blah'))
         .then(() => done())
-        .catch(done);
+        .catch(err => {
+            console.log('xxxxxxxxxxxxx');
+            done(err);
+            
+        });
     });
 });

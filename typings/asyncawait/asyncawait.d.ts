@@ -4,6 +4,7 @@
 
 
 ///<reference path="../node/node.d.ts" />
+///<reference path="../bluebird/bluebird.d.ts" />
 
 
 declare module AsyncAwait {
@@ -115,12 +116,9 @@ declare module AsyncAwait {
     //------------------------- Await -------------------------
     export module Await {
         //TODO: LEAVE OPEN (ie in internal module)
-        export interface API extends AwaitFunction {
-            promise: AwaitFunction;
-            cps: {
-                (expr: any): any;
-                contd: any;
-            };
+        export interface API extends Builder {
+            promise: PromiseBuilder;
+            cps: CPSBuilder;
 
             //TODO: was...
             //in: AwaitFunction;
@@ -128,12 +126,25 @@ declare module AsyncAwait {
         }
 
         //TODO: Review this after making extensible
-        export interface AwaitFunction {
-            <T>(expr: Thenable<T>): T;
-            <T>(expr: Thenable<T>[]): T[];
+        export interface PromiseBuilder extends Builder {
+            <T>(expr: Promise.Thenable<T>): T;
+        }
+
+        export interface CPSBuilder extends Builder {
+            (expr: any): any;
+            contd: any;
+        }
+
+        export interface ThunkBuilder extends Builder {
             <T>(expr: Thunk<T>): T;
-            <T>(expr: T[]): T[];
-            (expr: Object): Object;
+        }
+
+        export interface PromiseArrayBuilder extends Builder {
+            <T>(expr: Promise.Thenable<T>[]): T[];
+        }
+
+        export interface Builder {
+            (expr: any): any;
         }
     }
 
@@ -145,25 +156,6 @@ declare module AsyncAwait {
 
 
     //------------------------- Common -------------------------
-    export interface Thenable<T> {
-        then<U>(onResolved: (value: T) => Thenable<U>, onRejected: (error: any) => Thenable<U>): Thenable<U>;
-        then<U>(onResolved: (value: T) => Thenable<U>, onRejected?: (error: any) => U): Thenable<U>;
-        then<U>(onResolved: (value: T) => U, onRejected: (error: any) => Thenable<U>): Thenable<U>;
-        then<U>(onResolved?: (value: T) => U, onRejected?: (error: any) => U): Thenable<U>;
-    }
-
-    export interface Promise<T> extends Thenable<T> {
-        then<U>(onResolved: (value: T) => Thenable<U>, onRejected: (error: any) => Thenable<U>): Promise<U>;
-        then<U>(onResolved: (value: T) => Thenable<U>, onRejected?: (error: any) => U): Promise<U>;
-        then<U>(onResolved: (value: T) => U, onRejected: (error: any) => Thenable<U>): Promise<U>;
-        then<U>(onResolved?: (value: T) => U, onRejected?: (error: any) => U): Promise<U>;
-        catch<U>(onReject?: (error: any) => Thenable<U>): Promise<U>;
-        catch<U>(onReject?: (error: any) => U): Promise<U>;
-        finally(handler: (value: T) => Thenable<T>): Promise<T>;
-        finally(handler: (value: T) => T): Promise<T>;
-        progressed(handler: (note: any) => any): Promise<T>;
-    }
-
     export interface Callback<TResult> {
         (err: any, result: TResult): void;
     }
