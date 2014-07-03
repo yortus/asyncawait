@@ -73,6 +73,11 @@
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
+    <TypeScriptCompile Include="recipes\expressRouting.ts" />
+    <TypeScriptCompile Include="recipes\mochaChai.ts" />
+    <TypeScriptCompile Include="recipes\grunt.ts" />
+    <TypeScriptCompile Include="recipes\httpGetFile.ts" />
+    <TypeScriptCompile Include="recipes\controlFlow.ts" />
     <TypeScriptCompile Include="recipes\TODO.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
