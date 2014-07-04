@@ -6,6 +6,7 @@ import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
+//TODO more tests here and other await API parts (eg for thunk cf async.thunk.ts)
 
 describe('The await(...) function', () => {
 
@@ -41,3 +42,5 @@ describe('The await(...) function', () => {
         .catch(done);
     });
 });
+
+//TODO: test with: promise, thunk, array, graph, value

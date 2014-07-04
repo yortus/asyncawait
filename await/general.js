@@ -8,15 +8,15 @@ var handler = function (expr, resume) {
     var topN = null;
 
     // Handle each supported 'awaitable' appropriately...
-    if (expr && _.isFunction(expr.then)) {
-        // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-        expr.then(function (val) {
-            return resume(null, val);
-        }, resume);
-    } else if (_.isFunction(expr)) {
-        // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
-        expr(resume);
-    } else if (_.isArray(expr) || _.isPlainObject(expr)) {
+    //if (expr && _.isFunction(expr.then)) {
+    //    // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
+    //    expr.then(val => resume(null, val), resume);
+    //}
+    //else if (_.isFunction(expr)) {
+    //    // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
+    //    expr(resume);
+    //}
+    if (_.isArray(expr) || _.isPlainObject(expr)) {
         // An array or plain object: resume the coroutine with a deep clone of the array/object,
         // where all contained promises and thunks have been replaced by their resolved values.
         var trackedPromises = [];
@@ -31,10 +31,9 @@ var handler = function (expr, resume) {
             }, resume);
         }
     } else {
-        // Anything else: resume the coroutine immediately with the value.
-        setImmediate(function () {
-            return resume(null, expr);
-        });
+        return false;
+        //// Anything else: resume the coroutine immediately with the value.
+        //setImmediate(() => resume(null, expr));
     }
 };
 

@@ -10,7 +10,7 @@ var expect = chai.expect;
 describe('The await.promise(...) function', () => {
 
     it('throws if not called within a suspendable function', () => {
-        expect(() => await.promise (111)).to.throw(Error);
+        expect(() => await.promise (Promise.delay(20))).to.throw(Error);
     });
 
     it('suspends the suspendable function until the expression produces a result', done => {

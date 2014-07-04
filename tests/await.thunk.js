@@ -5,20 +5,24 @@ var await = require('asyncawait/await');
 
 var expect = chai.expect;
 
-//TODO more tests here and other await API parts (eg for thunk cf async.thunk.ts)
-describe('The await(...) function', function () {
+describe('The await.thunk(...) function', function () {
     it('throws if not called within a suspendable function', function () {
         expect(function () {
-            return await(111);
+            return await.thunk(function () {
+            });
         }).to.throw(Error);
     });
 
     it('suspends the suspendable function until the expression produces a result', function (done) {
         var x = 5;
         var foo = async(function () {
-            await(Promise.delay(40));
+            await.thunk(function (cb) {
+                return Promise.delay(40).nodeify(cb);
+            });
             x = 7;
-            await(Promise.delay(40));
+            await.thunk(function (cb) {
+                return Promise.delay(40).nodeify(cb);
+            });
             x = 9;
         });
         foo();
@@ -40,9 +44,11 @@ describe('The await(...) function', function () {
 
     it('resumes the suspendable function with the value of the awaited expression', function (done) {
         var foo = async(function () {
-            return await(Promise.delay(20).then(function () {
-                return 'blah';
-            }));
+            return await.thunk(function (cb) {
+                return Promise.delay(20).then(function () {
+                    return 'blah';
+                }).nodeify(cb);
+            });
         });
         foo().then(function (result) {
             return expect(result).to.equal('blah');
@@ -51,4 +57,4 @@ describe('The await(...) function', function () {
         }).catch(done);
     });
 });
-//# sourceMappingURL=await.js.map
+//# sourceMappingURL=await.thunk.js.map

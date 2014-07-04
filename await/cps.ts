@@ -13,7 +13,7 @@ var builder = oldBuilder.mod<AsyncAwait.Await.CPSBuilder>(
 );
 
 
-//TODO: define the '__' property as an accessor that creates and returns a callback function
+//TODO: define the '__' property as an accessor that creates and returns a callback function.
 Object.defineProperty(builder, '__', {
     get: () => {
         var fiber = Fiber.current;
@@ -25,3 +25,6 @@ Object.defineProperty(builder, '__', {
         };
     }
 });
+
+
+//TODO: putting stuff on the fiber object - better way??

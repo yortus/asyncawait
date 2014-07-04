@@ -10,7 +10,7 @@ var builder = oldBuilder.mod(function () {
     };
 });
 
-//TODO: define the '__' property as an accessor that creates and returns a callback function
+//TODO: define the '__' property as an accessor that creates and returns a callback function.
 Object.defineProperty(builder, '__', {
     get: function () {
         var fiber = Fiber.current;
@@ -23,4 +23,5 @@ Object.defineProperty(builder, '__', {
     }
 });
 module.exports = builder;
+//TODO: putting stuff on the fiber object - better way??
 //# sourceMappingURL=cps.js.map

@@ -124,6 +124,7 @@ declare module AsyncAwait {
         export interface API extends Builder {
             promise: PromiseBuilder;
             cps: CPSBuilder;
+            thunk: ThunkBuilder;
 
             //TODO: was...
             //in: AwaitFunction;

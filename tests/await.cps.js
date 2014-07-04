@@ -9,7 +9,7 @@ var __ = await.cps;
 describe('The await.cps(...) function', function () {
     it('throws if not called within a suspendable function', function () {
         expect(function () {
-            return await.cps(111);
+            return await.cps(undefined);
         }).to.throw(Error);
     });
 
