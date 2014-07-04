@@ -1,6 +1,11 @@
 ﻿import references = require('references');
 
 
+
+//TODO add explanation here
+//TODO: optimal? Is this used even if no maxConcurrency specified?
+
+
 /** Enter the global semaphore. */
 export function enter(fn: () => void) {
     if (_avail > 0) {
