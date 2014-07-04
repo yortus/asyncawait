@@ -10,7 +10,7 @@ export = asyncBuilder;
 
 
 /** Configuration for createSuspendableFunction(). See that function's comments for more details. */
-var SUSPENDBALE_DEBUG = false; //TODO: explain...
+var SUSPENDBALE_DEBUG = false;
 
 
 // Bootstrap an initial async builder using a no-op protocol.
