@@ -86,6 +86,7 @@
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
     <TypeScriptCompile Include="src\transfer.ts" />
+    <TypeScriptCompile Include="src\util.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
@@ -105,7 +106,6 @@
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />
     <Content Include="typings\chai\chai.d.ts" />
-    <Content Include="typings\lodash\lodash.d.ts" />
     <Content Include="typings\mocha\mocha.d.ts" />
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
@@ -164,7 +164,6 @@
     <Folder Include="typings\asyncawait\" />
     <Folder Include="typings\bluebird\" />
     <Folder Include="typings\chai\" />
-    <Folder Include="typings\lodash\" />
     <Folder Include="typings\mocha\" />
     <Folder Include="typings\node-fibers\" />
     <Folder Include="typings\node\" />

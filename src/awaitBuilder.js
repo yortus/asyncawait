@@ -1,7 +1,7 @@
 ﻿var assert = require('assert');
 var Fiber = require('./fibers');
+var _ = require('./util');
 
-var _ = require('lodash');
 
 // Bootstrap a basic await builder using a no-op handler.
 var awaitBuilder = createAwaitBuilder({
@@ -53,7 +53,7 @@ function createAwaitBuilder(protocol) {
         assert(arguments.length === 1, 'mod(): expected a single argument');
 
         // Create the new protocol to pass to createAwaitBuilder().
-        var newProtocol = _.assign({}, protocol, options);
+        var newProtocol = _.mergeProps({}, protocol, options);
         newProtocol.handler = protocol.handler;
         if (options && _.isFunction(options.handler)) {
             newProtocol.handler = function (opts) {

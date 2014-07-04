@@ -27,6 +27,20 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         expect(x).to.equal(5);
     });
 
+    it('executes if the thunk is invoked without a callback', function (done) {
+        var x = 5;
+        var foo = async.thunk(function () {
+            x = 7;
+        });
+        foo()();
+        Promise.delay(20).then(function (result) {
+            return expect(x).to.equal(7);
+        }).then(function () {
+            return done();
+        }).catch(done);
+        expect(x).to.equal(5);
+    });
+
     it('executes its definition asynchronously', function (done) {
         var x = 5;
         var foo = async.thunk(function () {

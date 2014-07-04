@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
 import Handler = AsyncAwait.Await.Handler;
-import _ = require('lodash');
+import _ = require('../src/util');
 export = handler;
 
 

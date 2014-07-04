@@ -2,7 +2,6 @@
 /* NB: This section is generated and maintained by grunt-findts. */
 /* NB: Any manual changes here will be overwritten whenever grunt-findts runs. */
 ///<reference path="typings/bluebird/bluebird.d.ts" />
-///<reference path="typings/lodash/lodash.d.ts" />
 ///<reference path="typings/mocha/mocha.d.ts" />
 ///<reference path="typings/chai/chai.d.ts" />
 /*----------/findts----------*/

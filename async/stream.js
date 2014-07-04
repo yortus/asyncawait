@@ -8,29 +8,27 @@ var oldBuilder = require('../src/asyncBuilder');
 var stream = require('stream');
 var transfer = require('../src/transfer');
 
-var builder = oldBuilder.mod({
-    methods: function () {
-        return ({
-            invoke: function (co) {
-                return co.stream = new Stream(function () {
-                    return transfer(co);
-                });
-            },
-            return: function (co, result) {
-                return co.stream.push(null);
-            },
-            throw: function (co, error) {
-                return co.stream.emit('error', error);
-            },
-            yield: function (co, value) {
-                co.stream.push(value);
-                transfer();
-            },
-            finally: function (co) {
-                co.stream = null;
-            }
-        });
-    }
+var builder = oldBuilder.mod(function () {
+    return ({
+        invoke: function (co) {
+            return co.stream = new Stream(function () {
+                return transfer(co);
+            });
+        },
+        return: function (co, result) {
+            return co.stream.push(null);
+        },
+        throw: function (co, error) {
+            return co.stream.emit('error', error);
+        },
+        yield: function (co, value) {
+            co.stream.push(value);
+            transfer();
+        },
+        finally: function (co) {
+            co.stream = null;
+        }
+    });
 });
 
 var Stream = (function (_super) {

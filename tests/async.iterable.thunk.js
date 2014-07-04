@@ -44,6 +44,17 @@ describe('async.iterable.thunk(...)', function () {
             expect(arr).to.be.empty;
         });
 
+        it('executes if the thunk is invoked without a callback', function (done) {
+            var arr = [], iter = foo(3, arr);
+            iter.next()();
+            Promise.delay(20).then(function (result) {
+                return expect(arr).to.deep.equal([111]);
+            }).then(function () {
+                return done();
+            }).catch(done);
+            expect(arr).to.be.empty;
+        });
+
         it('executes its definition asynchronously', function (done) {
             var arr = [], iter = foo(3, arr), next = function () {
                 return Promise.promisify(iter.next())();
@@ -127,6 +138,17 @@ describe('async.iterable.thunk(...)', function () {
             var arr = [], thunk = foo(3, arr).forEach(nullFunc);
             Promise.delay(50).then(function () {
                 return expect(arr).to.be.empty;
+            }).then(function () {
+                return done();
+            }).catch(done);
+            expect(arr).to.be.empty;
+        });
+
+        it('executes if the thunk is invoked without a callback', function (done) {
+            var arr = [], iter = foo(3, arr);
+            iter.forEach(nullFunc)();
+            Promise.delay(20).then(function (result) {
+                return expect(arr).to.deep.equal([111, 222, 333]);
             }).then(function () {
                 return done();
             }).catch(done);

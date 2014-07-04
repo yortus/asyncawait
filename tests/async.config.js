@@ -1,6 +1,5 @@
 ﻿var chai = require('chai');
 var Promise = require('bluebird');
-var _ = require('lodash');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var expect = chai.expect;
@@ -15,8 +14,10 @@ afterEach(function () {
 
 describe('Getting a config object from async.config()', function () {
     it('returns a different object on each call', function () {
-        var cfgs = [async.config(), async.config(), async.config(), async.config()];
-        expect(_.unique(cfgs).length).to.equal(cfgs.length);
+        var cfgs = [async.config(), async.config(), async.config()];
+        expect(cfgs[0]).to.not.equal(cfgs[1]);
+        expect(cfgs[0]).to.not.equal(cfgs[2]);
+        expect(cfgs[1]).to.not.equal(cfgs[2]);
     });
 
     it('returns an object that is a detached copy of config', function () {

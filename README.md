@@ -326,7 +326,6 @@ Variant of `await` that returns the original array/object, rather than a cloned 
 - [node-fibers](https://github.com/laverdet/node-fibers): This implementation of coroutines is unfortunately limited to Node.js. ES6 generators may be simpler, but fibers are more flexible and support a far broader space of design possibilities. It would be great if ES6 generators were this open and flexible.
 - [bluebird](https://github.com/petkaantonov/bluebird): this promise library is both a core component of `asyncawait` and a great source of inspiration for writing high-performance JavaScript code.
 - [TypeScript](http://www.typescriptlang.org/): `asyncawait` is written in TypeScript (look in the [src folder](./src)), and includes a [type declaration file](./asyncawait.d.ts). TypeScript makes JavaScript development faster, less error-prone, more scaleable, and generally more pleasant.
-- [lodash](http://lodash.com/): underscore, but better.
 
 
 # 12. License

@@ -1,6 +1,6 @@
 ﻿var Promise = require('bluebird');
 
-var _ = require('lodash');
+var _ = require('../src/util');
 
 var handler = function (expr, resume) {
     //TODO: temp testing...

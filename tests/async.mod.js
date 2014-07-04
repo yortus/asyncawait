@@ -4,19 +4,17 @@ var async = require('asyncawait/async');
 
 var expect = chai.expect;
 
-var customProtocol = {
-    methods: function (options, fallback) {
-        var prefix = options.prefix || '';
-        var suffix = options.suffix || '';
-        return {
-            return: function (co, result) {
-                return fallback.return(co, prefix + result + suffix);
-            },
-            throw: function (co, error) {
-                return fallback.throw(co, new Error(prefix + error.message + suffix));
-            }
-        };
-    }
+var customProtocolFactory = function (options, baseProtocol) {
+    var prefix = options.prefix || '';
+    var suffix = options.suffix || '';
+    return {
+        return: function (co, result) {
+            return baseProtocol.return(co, prefix + result + suffix);
+        },
+        throw: function (co, error) {
+            return baseProtocol.throw(co, new Error(prefix + error.message + suffix));
+        }
+    };
 };
 
 describe('async.mod(...)', function () {
@@ -35,7 +33,7 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol', function (done) {
-        var asyncX = async.mod(customProtocol);
+        var asyncX = async.mod(customProtocolFactory);
         var fn = asyncX(function (msg) {
             return msg;
         });
@@ -47,7 +45,7 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol options', function (done) {
-        var asyncX = async.mod(customProtocol).mod({ prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.mod(customProtocolFactory).mod({ prefix: '<<<', suffix: '>>>' });
         var fn = asyncX(function (msg) {
             return msg;
         });

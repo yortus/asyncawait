@@ -9,9 +9,10 @@
 
 declare module AsyncAwait {
 
+
+    //------------------------- Async -------------------------
     export module Async {
         
-        //TODO: LEAVE OPEN (ie in internal module)
         export interface API extends PromiseBuilder {
             config(value?: Config): Config;
             promise: PromiseBuilder;
@@ -22,7 +23,6 @@ declare module AsyncAwait {
             iterable: IterableAPI;
         }
 
-        //TODO: LEAVE OPEN (ie in internal module)
         export interface IterableAPI extends IterablePromiseBuilder {
             promise: IterablePromiseBuilder;
             cps: IterableCPSBuilder;
@@ -82,17 +82,27 @@ declare module AsyncAwait {
             };
         }
 
-        // TODO: try to improve type inference for mod()
         export interface Builder {
             (fn: Function): Function;
-            mod<TBuilder extends Builder>(options: any): TBuilder; //TODO:... unclear relation to Protocol
+            protocol: Protocol;
+            options: Options;
+            mod<TBuilder extends Builder>(protocolFactory: (options: Options, baseProtocol: Protocol) => ProtocolOverrides, options?: Options): TBuilder;
+            mod<TBuilder extends Builder>(options: Options): TBuilder;
+        }
+
+        export interface Options {
+            canDiscardContext?: boolean;
         }
 
         export interface Protocol {
-            methods?: (options, fallback?: ProtocolMethods) => ProtocolMethods; //TODO: unclear how this works... (several slightly different use cases)
+            invoke: (co: Coroutine, ...protocolArgs) => any;
+            return: (co: Coroutine, result: any) => void;
+            throw: (co: Coroutine, error: Error) => void;
+            yield: (co: Coroutine, value: any) => void;
+            finally: (co: Coroutine) => void;
         }
 
-        export interface ProtocolMethods {
+        export interface ProtocolOverrides {
             invoke?: (co: Coroutine, ...protocolArgs) => any;
             return?: (co: Coroutine, result: any) => void;
             throw?: (co: Coroutine, error: Error) => void;
@@ -101,7 +111,7 @@ declare module AsyncAwait {
         }
 
         export interface Coroutine {
-            protocol: ProtocolMethods;
+            protocol: Protocol;
             body?: Function;
             fiber?: any;
         }
@@ -110,7 +120,7 @@ declare module AsyncAwait {
 
     //------------------------- Await -------------------------
     export module Await {
-        //TODO: LEAVE OPEN (ie in internal module)
+
         export interface API extends Builder {
             promise: PromiseBuilder;
             cps: CPSBuilder;

@@ -1,120 +1,168 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import _ = require('lodash');
+import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
-import ProtocolMethods = AsyncAwait.Async.ProtocolMethods;
+import Options = AsyncAwait.Async.Options;
+import ProtocolOverrides = AsyncAwait.Async.ProtocolOverrides;
 import Coroutine = AsyncAwait.Async.Coroutine;
 export = asyncBuilder;
 
 
-// Bootstrap a basic async builder using a no-op protocol.
-var asyncBuilder = createAsyncBuilder<Builder>({
-    methods: () => ({
-        invoke: (co) => { },
-        return: (co, result) => { },
-        throw: (co, error) => { },
-        yield: (co, value) => { },
-        finally: (co) => { }
-    })
+/** Configuration for createSuspendableFunction(). See that function's comments for more details. */
+var SUSPENDBALE_DEBUG = false; //TODO: explain...
+
+
+// Bootstrap an initial async builder using a no-op protocol.
+var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
+    invoke: (co) => { },
+    return: (co, result) => { },
+    throw: (co, error) => { },
+    yield: (co, value) => { },
+    finally: (co) => { }
 });
 
 
-/** Create a new async builder function using the specified protocol. */
-function createAsyncBuilder<TBuilder extends Builder>(protocol: Protocol) {
+/** Create a new async builder function using the specified protocol settings. */
+function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options: Options, baseProtocol: Protocol) => ProtocolOverrides, options: Options, baseProtocol: Protocol) {
 
-    // Obtain the protocol methods.
-    var options = protocol; //TODO: explain this...
-    var protocolMethods = protocol.methods(options);
-    var protocolArgCount = protocolMethods.invoke.length - 1;
+    // Instantiate the protocol by calling the provided factory function.
+    var protocol: Protocol = <any> _.mergeProps({}, baseProtocol, protocolFactory(options, baseProtocol));
 
     // Create the builder function.
-    var builder: TBuilder = <any> function asyncBuilder(bodyFunc: Function) {
+    var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
 
-        // Validate the argument.
+        // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');
-        assert(_.isFunction(bodyFunc), 'async builder: expected argument to be a function');
+        assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
-        // Create the suspendable function from the template function above, giving it the correct arity.
-        var result, args = [], arity = bodyFunc.length + protocolArgCount;
-        for (var i = 0; i < arity; ++i) args.push('a' + i);
-        var funcSource = suspendableSource
-            .replace('$ARGS', args.join(', '))
-            .replace('$ARGCOUNT', '' + args.length)
-            .replace('$FASTPATH',
-                'var co = new Object(), self = this;' +
-                'co.protocol = protocolMethods;' +
-                'co.body = function () { return bodyFunc.call(self' + (bodyFunc.length ? ', ' + args.slice(0, bodyFunc.length).join(', ') : '') + '); };' +
-                //TODO: perf option (no preserve "this"): 'co.body = function () { return bodyFunc(' + args.slice(0, bodyFunc.length).join(', ') + '); };' +
-                'return protocolMethods.invoke(co' + (protocolArgCount ? ', ' + args.slice(bodyFunc.length).join(', ') : '') + ');'
-            );
-        return createSuspendableFunc(funcSource, protocolArgCount, protocolMethods, bodyFunc);
+        // Create and return an appropriately configured suspendable function for the given protocol and body.
+        return createSuspendableFunction(protocol, invokee, options);
     };
 
-    // Tack on the mod(...) method.
-    builder.mod = <any> function mod(options) {
-
-        // Validate the argument.
-        assert(arguments.length === 1, 'mod(): expected a single argument');
-
-        // Create the new protocol to pass to createAsyncBuilder().
-        var newProtocol: Protocol = _.assign({}, protocol, options);
-        newProtocol.methods = protocol.methods;
-        if (options && _.isFunction(options.methods)) {
-            newProtocol.methods = (opts) => {
-                var newMethods = options.methods(opts, protocolMethods);
-                return _.assign({}, protocolMethods, newMethods);
-            };
-        }
-
-        // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder(newProtocol);
-    }
+    // Tack on the protocol and options properties, and the mod() method.
+    builder.protocol = protocol;
+    builder.options = options;
+    builder.mod = createModMethod(protocol, protocolFactory, options, baseProtocol);
 
     // Return the async builder function.
     return builder;
 }
 
 
+/** Create a mod method appropriate to the given protocol settings. */
+function createModMethod(protocol, protocolFactory, options, baseProtocol) {
+    return function mod() {
+
+        // Validate the arguments.
+        var len = arguments.length;
+        assert(len > 0, 'mod(): expected at least one argument');
+        var arg0 = arguments[0], hasProtocolFactory = _.isFunction(arg0);
+        assert(hasProtocolFactory || len === 1, 'mod(): invalid argument combination');
+
+        // Determine the appropriate options to pass to createAsyncBuilder.
+        var opts = {};
+        if (!hasProtocolFactory) _.mergeProps(opts, options);
+        _.mergeProps(opts, hasProtocolFactory ? arguments[1] : arg0);
+
+        // Determine the appropriate protocolFactory and baseProtocol to pass to createAsyncBuilder.
+        if (hasProtocolFactory) {
+            protocolFactory = arg0;
+            baseProtocol = protocol;
+        }
+
+        // Delegate to createAsyncBuilder to return a new async builder function.
+        return createAsyncBuilder(protocolFactory, opts, baseProtocol);
+    }
+}
 
 
+/**
+ *  Create a suspendable function configured for the given protocol and invokee.
+ *  This function is way off the hot path, but the suspendable function it returns
+ *  can be hot, so here we trade some time (off the hot path) to make the suspendable
+ *  function as fast as possible. This includes safe use of eval (safe because the
+ *  input to eval is completely known and safe). By using eval, the resulting function
+ *  can be made more optimisable for the V8 JITer, as well as having the expected
+ *  arity and even preserving the invokee's name and parameter names (to help debugging).
+ *  NB: By setting SUSPENDBALE_DEBUG to true, a less optimised non-eval'd function
+ *  will be returned, which is helpful for step-through debugging sessions.
+ */
+function createSuspendableFunction(protocol, invokee, options: Options) {
 
-//TODO:...
-var suspendableSource = (() => {
+    // Declare the general shape of the suspendable function.
+    function $SUSPENDABLE_TEMPLATE($ARGS) {
 
-    //TODO:...
-    var protocolArgCount, protocolMethods, bodyFunc, $ARGCOUNT, $FASTPATH;
-
-    // The following function is the 'template' for the returned suspendable function.
-    function suspendable($ARGS) {
+        // Code for the fast path will be injected here.
         if (arguments.length === $ARGCOUNT) {
             $FASTPATH
         }
 
-        // Distribute arguments between the suspendable function and the protocol's invoke() function.
-        var argCount = arguments.length, suspendableArgCount = argCount - protocolArgCount;
-        var sArgs = new Array(suspendableArgCount), pArgs = new Array(protocolArgCount + 1);
-        for (var i = 0; i < suspendableArgCount; ++i) sArgs[i] = arguments[i];
-        for (var i = 0; i < protocolArgCount; ++i) pArgs[i + 1] = arguments[i + suspendableArgCount];
+        // Distribute arguments between the invoker and invokee functions, according to their arities.
+        var invokeeArgCount = arguments.length - invokerArgCount;
+        var invokeeArgs = new Array(invokeeArgCount), invokerArgs = new Array(invokerArgCount + 1);
+        for (var i = 0; i < invokeeArgCount; ++i) invokeeArgs[i] = arguments[i];
+        for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
         var co: Coroutine = <any> new Object();
-        co.protocol = protocolMethods;
-        co.body = () => bodyFunc.apply(this, sArgs);
-        pArgs[0] = co;
+        co.protocol = protocol;
+        co.body = () => invokee.apply(this, invokeeArgs);
+        invokerArgs[0] = co;
 
-        // Pass execution control over to the protocol.
-        return protocolMethods.invoke.apply(null, pArgs); // TODO: optimise in empty array case
+        // Pass execution control over to the invoker.
+        return protocol.invoke.apply(null, invokerArgs);
     }
 
-    //TODO:...
-    return suspendable.toString();
-})();
+    // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in SUSPENDBALE_DEBUG mode.
+    // The initial values ensure the that fast path in the template is never hit.
+    var $ARGCOUNT = -1, $FASTPATH = null;
 
+    // Get the invoker's arity, which is needed inside the suspendable function.
+    var invokerArgCount = protocol.invoke.length - 1;
 
-//TODO:...
-function createSuspendableFunc(source, protocolArgCount, protocolMethods, bodyFunc) {
-    var funcDefn;
-    var funcCode = eval('funcDefn = ' + source);
-    return funcDefn;
+    // At this point, the un-eval'd $SUSPENDABLE_TEMPLATE can be returned directly if in SUSPENDBALE_DEBUG mode.
+    if (SUSPENDBALE_DEBUG) return $SUSPENDABLE_TEMPLATE;
+
+    // Get all parameter names of the invoker and invokee.
+    var invokerParamNames = _.getParamNames(protocol.invoke).slice(1); // Skip the 'co' parameter.
+    var invokeeParamNames = _.getParamNames(invokee);
+
+    // Ensure there are no clashes between invoker/invokee parameter names.
+    for (var i = 0; i < invokeeParamNames.length; ++i) {
+        var paramName = invokeeParamNames[i];
+        if (invokerParamNames.indexOf(paramName) === -1) continue;
+        throw new Error("async builder: invoker and invokee both have a parameter named '" + paramName + "'");
+    }
+
+    // The two parameter lists together form the parameter list of the suspendable function.
+    var allParamNames = invokeeParamNames.concat(invokerParamNames);
+
+    // Stringify $SUSPENDABLE_TEMPLATE just once and cache the result in a module variable.
+    suspendableTemplateSource = suspendableTemplateSource || $SUSPENDABLE_TEMPLATE.toString(); 
+
+    // Assemble the source code for the suspendable function's fast path.
+    // NB: If the calling context need not be preserved, we can avoid using the slower Function.call().
+    var fastpath = 'var co = new Object(), self = this; co.protocol = protocol;';
+    fastpath += 'co.body = function () { return invokee';
+    if (options.canDiscardContext) fastpath += '(' + invokeeParamNames.join(', ');
+    else fastpath += '.call(self' + (invokeeParamNames.length ? ', ' + invokeeParamNames.join(', ') : '');
+    fastpath += '); }; return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');'
+
+    // Substitute all placeholders in the template function to get the final source code.
+    var source = suspendableTemplateSource
+        .replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name)
+        .replace('$ARGS', allParamNames.join(', '))
+        .replace('$ARGCOUNT', '' + allParamNames.length)
+        .replace('$FASTPATH', fastpath);
+
+    // Eval the source code into a function, and return it. It must be eval'd inside
+    // this function to close over the variables defined here.
+    var result;
+    eval('result = ' + source);
+    return result;
 }
+
+
+// This module variable holds the cached source of $SUSPENDABLE_TEMPLATE, defined above.
+var suspendableTemplateSource;

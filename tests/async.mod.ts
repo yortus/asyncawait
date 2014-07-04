@@ -6,22 +6,20 @@ import await = require('asyncawait/await');
 var expect = chai.expect;
 
 
-var customProtocol: AsyncAwait.Async.Protocol = {
-    methods: (options, fallback) => {
-        var prefix = options.prefix || '';
-        var suffix = options.suffix || '';
-        return {
-            return: (co, result) => fallback.return(co, prefix + result + suffix),
-            throw: (co, error) => fallback.throw(co, new Error(prefix + error.message + suffix))
-        };
-    }
+var customProtocolFactory = (options, baseProtocol) => {
+    var prefix = options.prefix || '';
+    var suffix = options.suffix || '';
+    return {
+        return: (co, result) => baseProtocol.return(co, prefix + result + suffix),
+        throw: (co, error) => baseProtocol.throw(co, new Error(prefix + error.message + suffix))
+    };
 };
 
 
 describe('async.mod(...)', () => {
 
     it('returns a new async function defaulting to the same protocol', done => {
-        var a2 = async.mod({ });
+        var a2 = async.mod({});
         expect(a2).to.exist;
         expect(a2).to.not.equal(async);
         var fn = a2((n: number) => 111 * n);
@@ -32,7 +30,7 @@ describe('async.mod(...)', () => {
     });
 
     it('returns an async function that uses the specified protocol', done => {
-        var asyncX = async.mod(customProtocol);
+        var asyncX = async.mod(customProtocolFactory);
         var fn = asyncX (msg => msg);
         fn('BLAH!')
         .then(r => expect(r).to.equal('BLAH!'))
@@ -41,7 +39,7 @@ describe('async.mod(...)', () => {
     });
 
     it('returns an async function that uses the specified protocol options', done => {
-        var asyncX = async.mod(customProtocol).mod({ prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.mod(customProtocolFactory).mod({ prefix: '<<<', suffix: '>>>' });
         var fn = asyncX (msg => msg);
         fn('BLAH!')
         .then(r => expect(r).to.equal('<<<BLAH!>>>'))

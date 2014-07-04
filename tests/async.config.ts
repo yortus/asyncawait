@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import chai = require('chai');
 import Promise = require('bluebird');
-import _ = require('lodash');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 var expect = chai.expect;
@@ -15,8 +14,10 @@ afterEach(() => async.config({ maxConcurrency: origConcurrency }));
 describe('Getting a config object from async.config()', () => {
 
     it('returns a different object on each call', () => {
-        var cfgs = [async.config(), async.config(), async.config(), async.config()];
-        expect(_.unique(cfgs).length).to.equal(cfgs.length);
+        var cfgs = [async.config(), async.config(), async.config()];
+        expect(cfgs[0]).to.not.equal(cfgs[1]);
+        expect(cfgs[0]).to.not.equal(cfgs[2]);
+        expect(cfgs[1]).to.not.equal(cfgs[2]);
     });
 
     it('returns an object that is a detached copy of config', () => {

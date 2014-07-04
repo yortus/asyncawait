@@ -1,11 +1,10 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import Fiber = require('./fibers');
-import Promise = require('bluebird');
+import _ = require('./util');
 import Builder = AsyncAwait.Await.Builder;
 import Protocol = AsyncAwait.Await.Protocol;
 import Handler = AsyncAwait.Await.Handler;
-import _ = require('lodash');
 export = awaitBuilder;
 
 
@@ -60,7 +59,7 @@ function createAwaitBuilder<TBuilder extends Builder>(protocol: Protocol) {
         assert(arguments.length === 1, 'mod(): expected a single argument');
 
         // Create the new protocol to pass to createAwaitBuilder().
-        var newProtocol: Protocol = _.assign({}, protocol, options);
+        var newProtocol: Protocol = _.mergeProps({}, protocol, options);
         newProtocol.handler = protocol.handler;
         if (options && _.isFunction(options.handler)) {
             newProtocol.handler = (opts) => {

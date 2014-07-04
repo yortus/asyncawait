@@ -48,6 +48,16 @@ describe('async.iterable.thunk(...)', () => {
             expect(arr).to.be.empty;
         });
 
+        it('executes if the thunk is invoked without a callback', done => {
+            var arr = [], iter = foo(3, arr);
+            iter.next()();
+            Promise.delay(20)
+            .then(result => expect(arr).to.deep.equal([111]))
+            .then(() => done())
+            .catch(done);
+            expect(arr).to.be.empty;
+        });
+
         it('executes its definition asynchronously', done => {
             var arr = [], iter = foo(3, arr), next = () => Promise.promisify(iter.next())();
             next()
@@ -110,6 +120,16 @@ describe('async.iterable.thunk(...)', () => {
             var arr = [], thunk = foo(3, arr).forEach(nullFunc);
             Promise.delay(50)
             .then(() => expect(arr).to.be.empty)
+            .then(() => done())
+            .catch(done);
+            expect(arr).to.be.empty;
+        });
+
+        it('executes if the thunk is invoked without a callback', done => {
+            var arr = [], iter = foo(3, arr);
+            iter.forEach(nullFunc)();
+            Promise.delay(20)
+            .then(result => expect(arr).to.deep.equal([111, 222, 333]))
             .then(() => done())
             .catch(done);
             expect(arr).to.be.empty;
