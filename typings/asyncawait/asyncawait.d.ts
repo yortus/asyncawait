@@ -137,7 +137,7 @@ declare module AsyncAwait {
 
         export interface CPSBuilder extends Builder {
             (expr: any): any;
-            contd: any;
+            __: Callback<any>;
         }
 
         export interface ThunkBuilder extends Builder {

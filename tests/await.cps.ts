@@ -5,8 +5,7 @@ import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
-if (!global.___) Object.defineProperty(global, '___', { get: () => await.cps.contd() });
-declare var ___;
+var __ = await.cps;
 
 
 
@@ -20,9 +19,9 @@ describe('The await.cps(...) function', () => {
         var x = 5;
         var delay = (n, callback) => { Promise.delay(n).nodeify(callback); }
         var foo = async (() => {
-            await.cps (delay(40, ___));
+            await.cps (delay(40, __.__));
             x = 7;
-            await.cps (delay(40, ___));
+            await.cps (delay(40, __.__));
             x = 9;
         });
         foo();
@@ -40,7 +39,7 @@ describe('The await.cps(...) function', () => {
     it('resumes the suspendable function with the value of the awaited expression', done => {
         var delay = (n, callback) => { Promise.delay(n).nodeify(callback); }
         var foo = async (() => {
-            await.cps (delay(20, ___));
+            await.cps (delay(20, __.__));
             return 'blah';
         });
         foo()
