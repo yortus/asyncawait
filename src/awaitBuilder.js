@@ -31,9 +31,13 @@ function createAwaitBuilder(protocol) {
         var handlerResult = handler(expr, function (err, result) {
             // TODO: explain...
             if (err)
-                fiber.throwInto(err);
+                setImmediate(function () {
+                    return fiber.throwInto(err);
+                });
             else
-                fiber.run(result);
+                setImmediate(function () {
+                    return fiber.run(result);
+                });
         });
         if (handlerResult === false) {
             throw new Error('not handled!');

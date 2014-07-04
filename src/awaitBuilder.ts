@@ -42,8 +42,8 @@ function createAwaitBuilder<TBuilder extends Builder>(protocol: Protocol) {
         var handlerResult = handler(expr, (err, result) => {
 
             // TODO: explain...
-            if (err) fiber.throwInto(err);
-            else fiber.run(result);
+            if (err) setImmediate(() => fiber.throwInto(err));
+            else setImmediate(() => fiber.run(result));
         });
         if (handlerResult === false) { //TODO: explain sentinel value...
             throw new Error('not handled!');
