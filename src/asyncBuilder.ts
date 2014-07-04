@@ -66,13 +66,11 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
         _.mergeProps(opts, hasProtocolFactory ? arguments[1] : arg0);
 
         // Determine the appropriate protocolFactory and baseProtocol to pass to createAsyncBuilder.
-        if (hasProtocolFactory) {
-            protocolFactory = arg0;
-            baseProtocol = protocol;
-        }
+        var newProtocolFactory = hasProtocolFactory ? arg0 : protocolFactory;
+        var newBaseProtocol = hasProtocolFactory ? protocol : baseProtocol;
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder(protocolFactory, opts, baseProtocol);
+        return createAsyncBuilder(newProtocolFactory, opts, newBaseProtocol);
     }
 }
 

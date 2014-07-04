@@ -37,6 +37,25 @@ function runTestsFor(variant?: string, acceptsCallback = false) {
                 expect(foo.length).to.equal(arity(defns[i]));
             }
         });
+
+        it('has an options property that matches the passed-in options', () => {
+            var func2 = func.mod({ special: 777 });
+            expect(func2.options).to.exist;
+            expect(func2.options['special']).to.equal(777);
+            var func2 = func.mod({ other: 'blah' });
+            expect(func2.options['special']).to.not.exist;
+        });
+
+        it('has a protocol property that matches the passed-in protocol', () => {
+            var invoke = (co, arg) => 'blah';
+            var func2 = func.mod(() => ({ invoke: invoke }));
+            expect(func2.protocol).to.exist;
+            expect(func2.protocol.invoke).to.equal(invoke);
+            var func3 = func.mod({ a:1 });
+            expect(func3.protocol).to.exist;
+            expect(func3.protocol.invoke).to.not.equal(invoke);
+
+        });
     });
 }
 runTestsFor(null);
