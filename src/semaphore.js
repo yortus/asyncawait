@@ -1,4 +1,6 @@
-﻿/** Enter the global semaphore. */
+﻿//TODO add explanation here
+//TODO: optimal? Is this used even if no maxConcurrency specified?
+/** Enter the global semaphore. */
 function enter(fn) {
     if (_avail > 0) {
         --_avail;

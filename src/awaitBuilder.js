@@ -15,28 +15,39 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
 
     // Create the builder function.
     var builder = function await() {
-        //TODO: don't assume single arg - pass all through to handler
+        //TODO: can this be optimised more, eg like async builder's eval?
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
         if (!fiber) {
             throw new Error('await functions, yield functions, and pseudo-synchronous suspendable ' + 'functions may only be called from inside a suspendable function.');
         }
 
-        // TODO: Execute handler...
-        var len = arguments.length, args = new Array(len);
-        for (var i = 0; i < len; ++i)
-            args[i] = arguments[i];
-        var handlerResult = handler(args, function (err, result) {
+        var resume = function (err, result) {
             // TODO: explain...
             if (err)
                 setImmediate(function () {
-                    return fiber.throwInto(err);
+                    fiber.throwInto(err);
                 });
             else
                 setImmediate(function () {
-                    return fiber.run(result);
+                    fiber.run(result);
                 });
-        });
+        };
+
+        // TODO: explain...
+        var len = arguments.length;
+        if (len === 1) {
+            //TODO: fast path
+            var handlerResult = handler([arguments[0]], resume);
+        } else {
+            var args = new Array(len);
+            for (var i = 0; i < len; ++i)
+                args[i] = arguments[i];
+
+            // TODO: Execute handler...
+            var handlerResult = handler(args, resume);
+        }
+
         if (handlerResult === false) {
             throw new Error('not handled!');
         }

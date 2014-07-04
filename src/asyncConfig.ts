@@ -14,3 +14,6 @@ function config(value?: AsyncAwait.Async.Config): AsyncAwait.Async.Config {
     // Create and return a Config object.
     return { maxConcurrency: semaphore.size() };
 }
+
+
+//TODO: set and get methods?

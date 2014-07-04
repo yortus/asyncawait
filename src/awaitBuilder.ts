@@ -32,15 +32,29 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
             );
         }
 
-        // TODO: Execute handler...
-        var len = arguments.length, args = new Array(len);
-        for (var i = 0; i < len; ++i) args[i] = arguments[i];
-        var handlerResult = handler(args, (err, result) => {
+        var resume = (err, result) => {
 
             // TODO: explain...
-            if (err) setImmediate(() => fiber.throwInto(err));
-            else setImmediate(() => fiber.run(result));
-        });
+            if (err) setImmediate(() => { fiber.throwInto(err); });
+            else setImmediate(() => { fiber.run(result); });
+        }
+
+        // TODO: explain...
+        var len = arguments.length;
+        if (len === 1) {
+        
+            //TODO: fast path
+            var handlerResult = handler([arguments[0]], resume);
+                
+        }
+        else {
+            var args = new Array(len);
+            for (var i = 0; i < len; ++i) args[i] = arguments[i];
+
+            // TODO: Execute handler...
+            var handlerResult = handler(args, resume);
+        }
+
         if (handlerResult === false) { //TODO: explain sentinel value...
             throw new Error('not handled!');
         }
