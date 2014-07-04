@@ -20,7 +20,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
     // Create the builder function.
     var builder: TBuilder = <any> function await() {
 
-        //TODO: don't assume single arg - pass all through to handler
+        //TODO: can this be optimised more, eg like async builder's eval?
 
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
