@@ -1,24 +1,24 @@
 ﻿var assert = require('assert');
 
-//TODO: ...
+/** Determines whether the given object is a function. */
 function isFunction(obj) {
     return typeof obj === 'function';
 }
 exports.isFunction = isFunction;
 
-//TODO: ... find all refs, remove?
+/** Determines whether the given object is an array. */
 function isArray(obj) {
     return Array.isArray(obj);
 }
 exports.isArray = isArray;
 
-//TODO: ... find all refs, remove?
+/** Determines whether the given object is a plain object (i.e., it's constructor is Object). */
 function isPlainObject(obj) {
     return typeof obj === 'object' && obj.constructor == Object;
 }
 exports.isPlainObject = isPlainObject;
 
-//TODO: ...
+/** Performs the same operation as lodash's _.assign() function. */
 function mergeProps() {
     var args = [];
     for (var _i = 0; _i < (arguments.length - 0); _i++) {
@@ -41,13 +41,16 @@ function mergeProps() {
 }
 exports.mergeProps = mergeProps;
 
-//TODO: ...
+/** An empty, no-op function. */
 function empty() {
 }
 exports.empty = empty;
 
-//TODO:...
-// Source: http://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically-from-javascript
+/**
+*  Returns an array containing the declared parameter names of the given function.
+*  NB: Not for use on hot paths! The operation uses [function].toString and regexes.
+*  Source: http://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically-from-javascript
+*/
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 var ARGUMENT_NAMES = /([^\s,]+)/g;
 function getParamNames(func) {
