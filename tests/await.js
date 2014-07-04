@@ -51,4 +51,5 @@ describe('The await(...) function', function () {
         }).catch(done);
     });
 });
+//TODO: test with: promise, thunk, array, graph, value
 //# sourceMappingURL=await.js.map

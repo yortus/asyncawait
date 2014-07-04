@@ -5,24 +5,16 @@ import _ = require('../src/util');
 export = handler;
 
 
-var handler: Handler = (expr, resume) => {
+var handler: Handler = (args, resume) => {
 
     //TODO: temp testing...
     var traverse = traverseClone;
     var topN = null;
 
 
-    // Handle each supported 'awaitable' appropriately...
-    //if (expr && _.isFunction(expr.then)) {
+    var expr = args[0];
 
-    //    // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-    //    expr.then(val => resume(null, val), resume);
-    //}
-    //else if (_.isFunction(expr)) {
 
-    //    // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
-    //    expr(resume);
-    //}
     if (_.isArray(expr) || _.isPlainObject(expr)) {
 
         // An array or plain object: resume the coroutine with a deep clone of the array/object,
@@ -37,9 +29,6 @@ var handler: Handler = (expr, resume) => {
     }
     else {
         return false;
-
-        //// Anything else: resume the coroutine immediately with the value.
-        //setImmediate(() => resume(null, expr));
     }
 }
 

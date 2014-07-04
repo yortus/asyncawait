@@ -3,8 +3,8 @@ var oldBuilder = require('../src/awaitBuilder');
 
 
 var builder = oldBuilder.mod(function () {
-    return function (expr, resume) {
-        if (expr !== void 0)
+    return function (args, resume) {
+        if (args.length !== 1 || args[0] !== void 0)
             return false;
         Fiber.current.resume = resume;
     };

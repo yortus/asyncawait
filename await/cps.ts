@@ -6,8 +6,8 @@ export = builder;
 
 
 var builder = oldBuilder.mod<AsyncAwait.Await.CPSBuilder>(
-    () => (expr, resume) => {
-        if (expr !== void 0) return false;
+    () => (args, resume) => {
+        if (args.length !== 1 || args[0] !== void 0) return false;
         Fiber.current.resume = resume;
     }
 );

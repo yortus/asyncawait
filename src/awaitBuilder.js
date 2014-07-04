@@ -4,8 +4,8 @@ var _ = require('./util');
 
 
 // Bootstrap a basic await builder using a no-op handler.
-var awaitBuilder = createAwaitBuilder(_.empty, {}, function (expr, resume) {
-    return resume(null, expr);
+var awaitBuilder = createAwaitBuilder(_.empty, {}, function (args, resume) {
+    return resume(null, args[0]);
 });
 
 /** Create a new await builder function using the specified handler settings. */
@@ -14,7 +14,7 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
     var handler = handlerFactory(options, baseHandler);
 
     // Create the builder function.
-    var builder = function await(expr) {
+    var builder = function await() {
         //TODO: don't assume single arg - pass all through to handler
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
@@ -23,7 +23,10 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
         }
 
         // TODO: Execute handler...
-        var handlerResult = handler(expr, function (err, result) {
+        var len = arguments.length, args = new Array(len);
+        for (var i = 0; i < len; ++i)
+            args[i] = arguments[i];
+        var handlerResult = handler(args, function (err, result) {
             // TODO: explain...
             if (err)
                 setImmediate(function () {

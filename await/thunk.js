@@ -1,10 +1,10 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
 
 var builder = oldBuilder.mod(function () {
-    return function (expr, resume) {
-        if (typeof expr !== 'function')
+    return function (args, resume) {
+        if (args.length !== 1 || typeof args[0] !== 'function')
             return false;
-        expr(resume);
+        args[0](resume);
     };
 });
 module.exports = builder;

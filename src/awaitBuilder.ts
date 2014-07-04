@@ -8,7 +8,7 @@ export = awaitBuilder;
 
 
 // Bootstrap a basic await builder using a no-op handler.
-var awaitBuilder = createAwaitBuilder<Builder>(_.empty, {}, (expr, resume) => resume(null, expr));
+var awaitBuilder = createAwaitBuilder<Builder>(_.empty, {}, (args, resume) => resume(null, args[0]));
 
 
 /** Create a new await builder function using the specified handler settings. */
@@ -18,7 +18,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
     var handler = handlerFactory(options, baseHandler);
 
     // Create the builder function.
-    var builder: TBuilder = <any> function await(expr: any) {
+    var builder: TBuilder = <any> function await() {
 
         //TODO: don't assume single arg - pass all through to handler
 
@@ -33,7 +33,9 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
         }
 
         // TODO: Execute handler...
-        var handlerResult = handler(expr, (err, result) => {
+        var len = arguments.length, args = new Array(len);
+        for (var i = 0; i < len; ++i) args[i] = arguments[i];
+        var handlerResult = handler(args, (err, result) => {
 
             // TODO: explain...
             if (err) setImmediate(() => fiber.throwInto(err));
