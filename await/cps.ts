@@ -5,12 +5,12 @@ import Promise = require('bluebird');
 export = builder;
 
 
-var builder = oldBuilder.mod<AsyncAwait.Await.CPSBuilder>({
-    handler: () => (expr, resume) => {
+var builder = oldBuilder.mod<AsyncAwait.Await.CPSBuilder>(
+    () => (expr, resume) => {
         if (expr !== void 0) return false;
         Fiber.current.resume = resume;
     }
-});
+);
 
 
 builder.contd = () => {

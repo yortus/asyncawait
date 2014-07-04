@@ -2,14 +2,12 @@
 var oldBuilder = require('../src/awaitBuilder');
 
 
-var builder = oldBuilder.mod({
-    handler: function () {
-        return function (expr, resume) {
-            if (expr !== void 0)
-                return false;
-            Fiber.current.resume = resume;
-        };
-    }
+var builder = oldBuilder.mod(function () {
+    return function (expr, resume) {
+        if (expr !== void 0)
+            return false;
+        Fiber.current.resume = resume;
+    };
 });
 
 builder.contd = function () {

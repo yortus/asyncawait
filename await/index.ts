@@ -6,7 +6,7 @@ import cps = require('./cps');
 export = api;
 
 
-var api: AsyncAwait.Await.API = <any> builder.mod<AsyncAwait.Await.Builder>({ handler: () => general });
+var api: AsyncAwait.Await.API = <any> builder.mod<AsyncAwait.Await.Builder>(() => general);
 api.promise = promise;
 api.cps = <any> cps;
 

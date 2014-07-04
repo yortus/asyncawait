@@ -144,21 +144,22 @@ declare module AsyncAwait {
             <T>(expr: Thunk<T>): T;
         }
 
+        //TODO: ...?
         export interface PromiseArrayBuilder extends Builder {
             <T>(expr: Promise.Thenable<T>[]): T[];
         }
 
         export interface Builder {
             (expr: any): any;
-            mod<TBuilder extends Builder>(options: any): TBuilder; //TODO:... unclear relation to Protocol
+            handler: Handler;
+            options: {};
+            mod<TBuilder extends Builder>(handlerFactory: (options: {}, baseHandler: Handler) => Handler, options?: {}): TBuilder;
+            mod<TBuilder extends Builder>(options: {}): TBuilder;
         }
 
-        export interface Protocol {
-            handler?: (options, fallback?: Handler) => Handler; //TODO: unclear how this works... (several slightly different use cases)
-        }
-
+        // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
         export interface Handler {
-            (expr: any, resume: (error?, result?) => void): any; //TODO:...
+            (expr: any, resume: (error?, result?) => void): any;
         }
     }
 

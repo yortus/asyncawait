@@ -3,9 +3,9 @@ var general = require('./general');
 var promise = require('./promise');
 var cps = require('./cps');
 
-var api = builder.mod({ handler: function () {
-        return general;
-    } });
+var api = builder.mod(function () {
+    return general;
+});
 api.promise = promise;
 api.cps = cps;
 module.exports = api;

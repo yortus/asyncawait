@@ -4,19 +4,14 @@ var _ = require('./util');
 
 
 // Bootstrap a basic await builder using a no-op handler.
-var awaitBuilder = createAwaitBuilder({
-    handler: function () {
-        return function (expr, resume) {
-            return resume(null, expr);
-        };
-    }
+var awaitBuilder = createAwaitBuilder(_.empty, {}, function (expr, resume) {
+    return resume(null, expr);
 });
 
-/** Create a new await builder function using the specified handler. */
-function createAwaitBuilder(protocol) {
-    // Obtain the handler.
-    var options = protocol;
-    var handler = protocol.handler(options);
+/** Create a new await builder function using the specified handler settings. */
+function createAwaitBuilder(handlerFactory, options, baseHandler) {
+    // Instantiate the handler by calling the provided factory function.
+    var handler = handlerFactory(options, baseHandler);
 
     // Create the builder function.
     var builder = function await(expr) {
@@ -47,26 +42,37 @@ function createAwaitBuilder(protocol) {
         return Fiber.yield();
     };
 
-    // Tack on the mod(...) method.
-    builder.mod = function mod(options) {
-        // Validate the argument.
-        assert(arguments.length === 1, 'mod(): expected a single argument');
-
-        // Create the new protocol to pass to createAwaitBuilder().
-        var newProtocol = _.mergeProps({}, protocol, options);
-        newProtocol.handler = protocol.handler;
-        if (options && _.isFunction(options.handler)) {
-            newProtocol.handler = function (opts) {
-                return options.handler(opts, handler);
-            };
-        }
-
-        // Delegate to createAwaitBuilder to return a new await builder function.
-        return createAwaitBuilder(newProtocol);
-    };
+    // Tack on the handler and options properties, and the mod() method.
+    builder.handler = handler;
+    builder.options = options;
+    builder.mod = createModMethod(handler, handlerFactory, options, baseHandler);
 
     // Return the await builder function.
     return builder;
+}
+
+/** Create a mod method appropriate to the given handler settings. */
+function createModMethod(handler, handlerFactory, options, baseHandler) {
+    return function mod() {
+        // Validate the arguments.
+        var len = arguments.length;
+        assert(len > 0, 'mod(): expected at least one argument');
+        var arg0 = arguments[0], hasHandlerFactory = _.isFunction(arg0);
+        assert(hasHandlerFactory || len === 1, 'mod(): invalid argument combination');
+
+        // Determine the appropriate options to pass to createAwaitBuilder.
+        var opts = {};
+        if (!hasHandlerFactory)
+            _.mergeProps(opts, options);
+        _.mergeProps(opts, hasHandlerFactory ? arguments[1] : arg0);
+
+        // Determine the appropriate handlerFactory and baseHandler to pass to createAwaitBuilder.
+        var newHandlerFactory = hasHandlerFactory ? arg0 : handlerFactory;
+        var newBaseHandler = hasHandlerFactory ? handler : baseHandler;
+
+        // Delegate to createAwaitBuilder to return a new async builder function.
+        return createAwaitBuilder(newHandlerFactory, opts, newBaseHandler);
+    };
 }
 module.exports = awaitBuilder;
 //# sourceMappingURL=awaitBuilder.js.map
