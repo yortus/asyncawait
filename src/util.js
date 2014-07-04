@@ -8,7 +8,7 @@ exports.isFunction = isFunction;
 
 //TODO: ... find all refs, remove?
 function isArray(obj) {
-    return typeof obj === 'function';
+    return Array.isArray(obj);
 }
 exports.isArray = isArray;
 

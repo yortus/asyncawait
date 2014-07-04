@@ -10,7 +10,7 @@ export function isFunction(obj) {
 
 //TODO: ... find all refs, remove?
 export function isArray(obj) {
-    return typeof obj === 'function';
+    return Array.isArray(obj);
 }
 
 

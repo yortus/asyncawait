@@ -10,7 +10,7 @@ export = asyncBuilder;
 
 
 /** Configuration for createSuspendableFunction(). See that function's comments for more details. */
-var SUSPENDBALE_DEBUG = false;
+var SUSPENDABLE_DEBUG = false;
 
 
 // Bootstrap an initial async builder using a no-op protocol.
@@ -83,7 +83,7 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
  *  input to eval is completely known and safe). By using eval, the resulting function
  *  can be made more optimisable for the V8 JITer, as well as having the expected
  *  arity and even preserving the invokee's name and parameter names (to help debugging).
- *  NB: By setting SUSPENDBALE_DEBUG to true, a less optimised non-eval'd function
+ *  NB: By setting SUSPENDABLE_DEBUG to true, a less optimised non-eval'd function
  *  will be returned, which is helpful for step-through debugging sessions.
  */
 function createSuspendableFunction(protocol, invokee, options: Options) {
@@ -112,15 +112,15 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
         return protocol.invoke.apply(null, invokerArgs);
     }
 
-    // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in SUSPENDBALE_DEBUG mode.
+    // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in SUSPENDABLE_DEBUG mode.
     // The initial values ensure the that fast path in the template is never hit.
     var $ARGCOUNT = -1, $FASTPATH = null;
 
     // Get the invoker's arity, which is needed inside the suspendable function.
     var invokerArgCount = protocol.invoke.length - 1;
 
-    // At this point, the un-eval'd $SUSPENDABLE_TEMPLATE can be returned directly if in SUSPENDBALE_DEBUG mode.
-    if (SUSPENDBALE_DEBUG) return $SUSPENDABLE_TEMPLATE;
+    // At this point, the un-eval'd $SUSPENDABLE_TEMPLATE can be returned directly if in SUSPENDABLE_DEBUG mode.
+    if (SUSPENDABLE_DEBUG) return $SUSPENDABLE_TEMPLATE;
 
     // Get all parameter names of the invoker and invokee.
     var invokerParamNames = _.getParamNames(protocol.invoke).slice(1); // Skip the 'co' parameter.
