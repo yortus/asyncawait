@@ -8,7 +8,7 @@ var awaitBuilder = createAwaitBuilder(_.empty, {}, function (args, resume) {
     return resume(null, args[0]);
 });
 
-/** Create a new await builder function using the specified handler settings. */
+/** Creates a new await builder function using the specified handler settings. */
 function createAwaitBuilder(handlerFactory, options, baseHandler) {
     // Instantiate the handler by calling the provided factory function.
     var handler = handlerFactory(options, baseHandler);
@@ -65,7 +65,7 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
     return builder;
 }
 
-/** Create a mod method appropriate to the given handler settings. */
+/** Creates a mod method appropriate to the given handler settings. */
 function createModMethod(handler, handlerFactory, options, baseHandler) {
     return function mod() {
         // Validate the arguments.

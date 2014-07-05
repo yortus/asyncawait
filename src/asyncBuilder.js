@@ -2,8 +2,13 @@
 var _ = require('./util');
 
 
+//TODO: testing...
+var Fiber = require('./fibers');
+var semaphore = require('./semaphore');
+var fiberPool = require('./fiberPool');
+
 /** Configuration for createSuspendableFunction(). See that function's comments for more details. */
-var SUSPENDABLE_DEBUG = false;
+var SUSPENDABLE_DEBUG = true;
 
 // Bootstrap an initial async builder using a no-op protocol.
 var asyncBuilder = createAsyncBuilder(_.empty, {}, {
@@ -19,7 +24,7 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     }
 });
 
-/** Create a new async builder function using the specified protocol settings. */
+/** Creates a new async builder function using the specified protocol settings. */
 function createAsyncBuilder(protocolFactory, options, baseProtocol) {
     // Instantiate the protocol by calling the provided factory function.
     var protocol = _.mergeProps({}, baseProtocol, protocolFactory(options, baseProtocol));
@@ -43,7 +48,7 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
     return builder;
 }
 
-/** Create a mod method appropriate to the given protocol settings. */
+/** Creates a mod method appropriate to the given protocol settings. */
 function createModMethod(protocol, protocolFactory, options, baseProtocol) {
     return function mod() {
         // Validate the arguments.
@@ -68,15 +73,16 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
 }
 
 /**
-*  Create a suspendable function configured for the given protocol and invokee.
-*  This function is way off the hot path, but the suspendable function it returns
+*  Creates a suspendable function configured for the given protocol and invokee.
+*  This function is not on the hot path, but the suspendable function it returns
 *  can be hot, so here we trade some time (off the hot path) to make the suspendable
 *  function as fast as possible. This includes safe use of eval (safe because the
 *  input to eval is completely known and safe). By using eval, the resulting function
-*  can be made more optimisable for the V8 JITer, as well as having the expected
-*  arity and even preserving the invokee's name and parameter names (to help debugging).
+*  can be pieced together more optimally, as well as having the expected arity and
+*  preserving the invokee's function name and parameter names (to help debugging).
 *  NB: By setting SUSPENDABLE_DEBUG to true, a less optimised non-eval'd function
-*  will be returned, which is helpful for step-through debugging sessions.
+*  will be returned, which is helpful for step-through debugging sessions. However,
+*  this function will not report the correct arity (function.length) in most cases.
 */
 function createSuspendableFunction(protocol, invokee, options) {
     // Declare the general shape of the suspendable function.
@@ -97,11 +103,82 @@ function createSuspendableFunction(protocol, invokee, options) {
 
         // Create a coroutine instance to hold context information for this call.
         var co = new Object();
+        invokerArgs[0] = co;
+
+        //========================================
+        var start__ = function () {
+            var _start = function () {
+                fiberPool.inc();
+                var fiber = Fiber(makeFiberBody(co));
+                fiber.yield = function (value) {
+                    return co.protocol.yield(co, value);
+                }; //TODO: improve?
+                co.fiber = fiber;
+                setImmediate(function () {
+                    return co.fiber.run();
+                }); //TODO: best place for setImmediate?
+            };
+
+            var isTopLevel = !Fiber.current;
+            if (isTopLevel)
+                return semaphore.enter(function () {
+                    return _start();
+                });
+            else
+                _start();
+        };
+        co.yield = function (value) {
+            //TODO: assert is current...
+            Fiber.yield();
+        };
+        co.resume = function (error, value) {
+            //TODO:... merge with start
+            //TODO:... use args
+            if (!co.fiber)
+                start__();
+            else
+                setImmediate(function () {
+                    return co.fiber.run();
+                }); //TODO: best place for setImmediate?
+        };
+        function makeFiberBody(co) {
+            var tryBlock = function () {
+                return co.protocol.return(co, co.body());
+            };
+            var catchBlock = function (err) {
+                return co.protocol.throw(co, err);
+            };
+            var finallyBlock = function () {
+                co.protocol.finally(co);
+                dispose(co);
+            };
+
+            // V8 may not optimise the following function due to the presence of
+            // try/catch/finally. Therefore it does as little as possible, only
+            // referencing the optimisable closures prepared above.
+            return function fiberBody() {
+                try  {
+                    tryBlock();
+                } catch (err) {
+                    catchBlock(err);
+                } finally {
+                    setImmediate(finallyBlock);
+                }
+            };
+        }
+        function dispose(co) {
+            fiberPool.dec();
+            co.protocol = null;
+            co.body = null;
+            co.fiber = null;
+            semaphore.leave();
+        }
+
+        //========================================
         co.protocol = protocol;
         co.body = function () {
             return invokee.apply(_this, invokeeArgs);
         };
-        invokerArgs[0] = co;
 
         // Pass execution control over to the invoker.
         return protocol.invoke.apply(null, invokerArgs);

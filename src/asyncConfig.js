@@ -12,4 +12,5 @@ function config(value) {
     return { maxConcurrency: semaphore.size() };
 }
 module.exports = config;
+//TODO: set and get methods?
 //# sourceMappingURL=asyncConfig.js.map

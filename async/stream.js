@@ -6,13 +6,13 @@
 };
 var oldBuilder = require('../src/asyncBuilder');
 var stream = require('stream');
-var transfer = require('../src/transfer');
+
 
 var builder = oldBuilder.mod(function () {
     return ({
         invoke: function (co) {
             return co.stream = new Stream(function () {
-                return transfer(co);
+                return co.resume();
             });
         },
         return: function (co, result) {
@@ -23,7 +23,7 @@ var builder = oldBuilder.mod(function () {
         },
         yield: function (co, value) {
             co.stream.push(value);
-            transfer();
+            co.yield();
         },
         finally: function (co) {
             co.stream = null;

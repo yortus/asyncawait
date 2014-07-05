@@ -1,14 +1,14 @@
 ﻿var oldBuilder = require('../src/asyncBuilder');
 var assert = require('assert');
 var _ = require('../src/util');
-var transfer = require('../src/transfer');
+
 
 var builder = oldBuilder.mod(function () {
     return ({
         invoke: function (co, callback) {
             assert(_.isFunction(callback), 'Expected final argument to be a callback');
             co.callback = callback;
-            transfer(co);
+            co.resume();
         },
         return: function (co, result) {
             return co.callback(null, result);

@@ -73,6 +73,7 @@
     <TypeScriptCompile Include="await\TODO\iterator.ts" />
     <TypeScriptCompile Include="await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
+    <TypeScriptCompile Include="await\TODO\value.ts" />
     <TypeScriptCompile Include="examples\ts\express.ts" />
     <TypeScriptCompile Include="examples\ts\mocha.ts" />
     <TypeScriptCompile Include="recipes\expressRouting.ts" />
@@ -84,6 +85,7 @@
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\asyncConfig.ts" />
+    <TypeScriptCompile Include="src\awaitConfig.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />

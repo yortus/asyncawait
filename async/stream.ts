@@ -1,15 +1,15 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/asyncBuilder');
 import stream = require('stream');
-import transfer = require('../src/transfer');
+//import transfer = require('../src/transfer');
 export = builder;
 
 
 var builder = oldBuilder.mod<AsyncAwait.Async.StreamBuilder>(() => ({
-    invoke: (co) => co.stream = new Stream(() => transfer(co)),
+    invoke: (co) => co.stream = new Stream(() => co.resume()),
     return: (co, result) => co.stream.push(null),
     throw: (co, error) => co.stream.emit('error', error),
-    yield: (co, value) => { co.stream.push(value); transfer(); },
+    yield: (co, value) => { co.stream.push(value); co.yield(); },
     finally: (co) => { co.stream = null; }
 }));
 

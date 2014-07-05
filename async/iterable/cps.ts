@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import oldBuilder = require('../../src/asyncBuilder');
-import transfer = require('../../src/transfer');
+//import transfer = require('../../src/transfer');
 import _ = require('../../src/util');
 export = builder;
 
@@ -12,7 +12,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.IterableCPSBuilder>(() => ({
         co.done = false;
         var next = (callback?: (err, item?: { done: boolean; value?: any; }) => void) => {
             co.nextCallback = callback || _.empty;
-            co.done ? co.nextCallback(new Error('iterated past end')) : transfer(co);
+            co.done ? co.nextCallback(new Error('iterated past end')) : co.resume();
         }
         return new AsyncIterator(next);
     },
@@ -26,7 +26,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.IterableCPSBuilder>(() => ({
     yield: (co, value) => {
         var result = { done: false, value: value };
         co.nextCallback(null, result);
-        transfer();
+        co.yield();
     },
     finally: (co) => {
         co.nextCallback = null;

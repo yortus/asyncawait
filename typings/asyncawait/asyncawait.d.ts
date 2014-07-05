@@ -111,6 +111,14 @@ declare module AsyncAwait {
         }
 
         export interface Coroutine {
+
+
+            //TODO: testing...
+            resume: (error?: Error, value?: any) => void;
+            yield: (value: any) => void;
+
+
+            //TODO: get rid of these...
             protocol: Protocol;
             body?: Function;
             fiber?: any;
@@ -173,7 +181,7 @@ declare module AsyncAwait {
 
     //------------------------- Common -------------------------
     export interface Callback<TResult> {
-        (err: any, result: TResult): void;
+        (err: Error, result: TResult): void;
     }
 
     export interface Thunk<TResult> {

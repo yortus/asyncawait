@@ -2,7 +2,7 @@
 import oldBuilder = require('../../src/asyncBuilder');
 import assert = require('assert');
 import Promise = require('bluebird');
-import transfer = require('../../src/transfer');
+//import transfer = require('../../src/transfer');
 import _ = require('../../src/util');
 export = builder;
 
@@ -13,7 +13,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
         co.done = false;
         var next = () => {
             var res = co.nextResolver = Promise.defer<any>();
-            co.done ? res.reject(new Error('iterated past end')) : transfer(co);
+            co.done ? res.reject(new Error('iterated past end')) : co.resume();
             return co.nextResolver.promise;
         }
         return new AsyncIterator(next);
@@ -28,7 +28,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
     yield: (co, value) => {
         var result = { done: false, value: value };
         co.nextResolver.resolve(result);
-        transfer();
+        co.yield();
     },
     finally: (co) => {
         co.nextResolver = null;
