@@ -119,9 +119,7 @@ declare module AsyncAwait {
 
 
             //TODO: get rid of these...
-            protocol: Protocol;
-            body?: Function;
-            fiber?: any;
+            //fiber?: any;
         }
     }
 

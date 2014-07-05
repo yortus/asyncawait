@@ -16,7 +16,7 @@ import fiberPool = require('./fiberPool');
 
 
 /** Configuration for createSuspendableFunction(). See that function's comments for more details. */
-var SUSPENDABLE_DEBUG = true; //TODO: make fastpath work with new co, then reset this to false
+var SUSPENDABLE_DEBUG = false;
 
 
 // Bootstrap an initial async builder using a no-op protocol.
@@ -110,70 +110,10 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
         for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co: Coroutine = <any> new Object();
-        invokerArgs[0] = co;
-
-
-
-
-        //========================================
-        var start__ = () => {
-            var _start = () => {
-                fiberPool.inc();
-                var fiber = Fiber(makeFiberBody(co));
-                fiber.yield = value => co.protocol.yield(co, value); //TODO: improve?
-                co.fiber = fiber;
-                setImmediate(() => co.fiber.run()); //TODO: best place for setImmediate?
-            };
-
-            var isTopLevel = !Fiber.current;
-            if (isTopLevel)
-                return semaphore.enter(() => _start());
-            else
-                _start();
-        };
-        co.leave = (value?) => {
-            //TODO: assert is current...
-            Fiber.yield();
-        };
-        co.enter = (error?, value?) => {
-            //TODO:... merge with start
-            //TODO:... use args
-            if (!co.fiber) start__();
-            else setImmediate(() => co.fiber.run()); //TODO: best place for setImmediate?
-        };
-        function makeFiberBody(co: Coroutine) {
-            var tryBlock = () => co.protocol.return(co, co.body());
-            var catchBlock = err => co.protocol.throw(co, err);
-            var finallyBlock = () => { co.protocol.finally(co); dispose(co); }
-
-            // V8 may not optimise the following function due to the presence of
-            // try/catch/finally. Therefore it does as little as possible, only
-            // referencing the optimisable closures prepared above.
-            return function fiberBody() {
-                try { tryBlock(); }
-                catch (err) { catchBlock(err); }
-                finally { setImmediate(finallyBlock); }
-            };
-        }
-        function dispose(co: Coroutine) {
-            fiberPool.dec();
-            co.protocol = null;
-            co.body = null;
-            co.fiber = null;
-            semaphore.leave();
-        }
-        //========================================
-
-
-
-
-
-
-        co.protocol = protocol;
-        co.body = () => invokee.apply(this, invokeeArgs);
+        var co = createCoroutine(protocol, () => invokee.apply(this, invokeeArgs));
 
         // Pass execution control over to the invoker.
+        invokerArgs[0] = co;
         return protocol.invoke.apply(null, invokerArgs);
     }
 
@@ -206,11 +146,10 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
 
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function.call().
-    var fastpath = 'var co = new Object(), self = this; co.protocol = protocol;';
-    fastpath += 'co.body = function () { return invokee';
+    var fastpath = 'var self = this, co = createCoroutine(protocol, function () { return invokee';
     if (options.canDiscardContext) fastpath += '(' + invokeeParamNames.join(', ');
     else fastpath += '.call(self' + (invokeeParamNames.length ? ', ' + invokeeParamNames.join(', ') : '');
-    fastpath += '); }; return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');'
+    fastpath += '); }); return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');'
 
     // Substitute all placeholders in the template function to get the final source code.
     var source = suspendableTemplateSource
@@ -229,3 +168,77 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
 
 // This module variable holds the cached source of $SUSPENDABLE_TEMPLATE, defined above.
 var suspendableTemplateSource;
+
+
+//TODO: ...
+function createCoroutine(protocol: Protocol, body: () => void): Coroutine {
+
+    var co: Coroutine = <any> new Object();
+    var fiber = null;
+
+    //========================================
+    co.enter = (error?, value?) => {
+
+        //TODO:... use args
+
+        if (!fiber) {
+            assert(arguments.length === 0, 'enter: initial call must have no arguments');
+
+            var _start = () => {
+                fiberPool.inc();
+                fiber = Fiber(makeFiberBody());
+                fiber.yield = value => protocol.yield(co, value); //TODO: improve?
+                setImmediate(() => fiber.run()); //TODO: best place for setImmediate?
+            };
+
+            var isTopLevel = !Fiber.current;
+            if (isTopLevel)
+                return semaphore.enter(() => _start());
+            else
+                _start();
+            
+        }
+        else {
+            // TODO: explain...
+            if (error) setImmediate(() => { fiber.throwInto(error); });
+            else setImmediate(() => { fiber.run(value); });
+
+            //TODO: was...
+            //setImmediate(() => fiber.run()); //TODO: best place for setImmediate?
+        }
+    };
+
+
+
+    co.leave = (value?) => {
+        //TODO: assert is current...
+        Fiber.yield();
+    };
+
+
+
+    function makeFiberBody() {
+        var tryBlock = () => protocol.return(co, body());
+        var catchBlock = err => protocol.throw(co, err);
+        var finallyBlock = () => { protocol.finally(co); dispose(co); }
+
+        // V8 may not optimise the following function due to the presence of
+        // try/catch/finally. Therefore it does as little as possible, only
+        // referencing the optimisable closures prepared above.
+        return function fiberBody() {
+            try { tryBlock(); }
+            catch (err) { catchBlock(err); }
+            finally { setImmediate(finallyBlock); }
+        };
+    }
+    function dispose(co: Coroutine) {
+        fiberPool.dec();
+        fiber = null;
+        semaphore.leave();
+    }
+    //========================================
+
+
+
+    return co;
+}
