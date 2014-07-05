@@ -8,7 +8,7 @@ var builder = oldBuilder.mod(function () {
         invoke: function (co, callback) {
             assert(_.isFunction(callback), 'Expected final argument to be a callback');
             co.callback = callback;
-            co.resume();
+            co.enter();
         },
         return: function (co, result) {
             return co.callback(null, result);

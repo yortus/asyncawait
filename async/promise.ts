@@ -8,7 +8,7 @@ export = builder;
 var builder = oldBuilder.mod<AsyncAwait.Async.PromiseBuilder>(() => ({
     invoke: (co) => {
         co.resolver = Promise.defer<any>();
-        co.resume();
+        co.enter();
         return co.resolver.promise;
     },
     return: (co, result) => co.resolver.resolve(result),

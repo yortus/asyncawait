@@ -11,7 +11,7 @@ var builder = oldBuilder.mod(function () {
             co.done = false;
             var next = function (callback) {
                 co.nextCallback = callback || _.empty;
-                co.done ? co.nextCallback(new Error('iterated past end')) : co.resume();
+                co.done ? co.nextCallback(new Error('iterated past end')) : co.enter();
             };
             return new AsyncIterator(next);
         },
@@ -25,7 +25,7 @@ var builder = oldBuilder.mod(function () {
         yield: function (co, value) {
             var result = { done: false, value: value };
             co.nextCallback(null, result);
-            co.yield();
+            co.leave();
         },
         finally: function (co) {
             co.nextCallback = null;

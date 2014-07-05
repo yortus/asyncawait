@@ -142,7 +142,6 @@
     <Compile Include="examples\awaitTop.js" />
     <Compile Include="examples\basic.js" />
     <Compile Include="examples\countFiles.js" />
-    <Compile Include="examples\deriveTEMP.js" />
     <Compile Include="examples\descendentFilePaths.js" />
     <Compile Include="examples\interleaved.js" />
     <Compile Include="examples\iteration.js" />

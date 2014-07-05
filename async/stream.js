@@ -12,7 +12,7 @@ var builder = oldBuilder.mod(function () {
     return ({
         invoke: function (co) {
             return co.stream = new Stream(function () {
-                return co.resume();
+                return co.enter();
             });
         },
         return: function (co, result) {
@@ -23,7 +23,7 @@ var builder = oldBuilder.mod(function () {
         },
         yield: function (co, value) {
             co.stream.push(value);
-            co.yield();
+            co.leave();
         },
         finally: function (co) {
             co.stream = null;

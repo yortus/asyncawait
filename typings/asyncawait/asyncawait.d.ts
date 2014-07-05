@@ -114,8 +114,8 @@ declare module AsyncAwait {
 
 
             //TODO: testing...
-            resume: (error?: Error, value?: any) => void;
-            yield: (value: any) => void;
+            enter: (error?: Error, value?: any) => void;
+            leave: (value?: any) => void;
 
 
             //TODO: get rid of these...

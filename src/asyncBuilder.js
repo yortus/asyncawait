@@ -127,11 +127,11 @@ function createSuspendableFunction(protocol, invokee, options) {
             else
                 _start();
         };
-        co.yield = function (value) {
+        co.leave = function (value) {
             //TODO: assert is current...
             Fiber.yield();
         };
-        co.resume = function (error, value) {
+        co.enter = function (error, value) {
             //TODO:... merge with start
             //TODO:... use args
             if (!co.fiber)

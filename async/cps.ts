@@ -10,7 +10,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.CPSBuilder>(() => ({
     invoke: (co, callback: AsyncAwait.Callback<any>) => {
         assert(_.isFunction(callback), 'Expected final argument to be a callback');
         co.callback = callback;
-        co.resume();
+        co.enter();
     },
     return: (co, result) => co.callback(null, result),
     throw: (co, error) => co.callback(error),

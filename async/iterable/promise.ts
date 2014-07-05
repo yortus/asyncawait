@@ -13,7 +13,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
         co.done = false;
         var next = () => {
             var res = co.nextResolver = Promise.defer<any>();
-            co.done ? res.reject(new Error('iterated past end')) : co.resume();
+            co.done ? res.reject(new Error('iterated past end')) : co.enter();
             return co.nextResolver.promise;
         }
         return new AsyncIterator(next);
@@ -28,7 +28,7 @@ var builder = oldBuilder.mod<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
     yield: (co, value) => {
         var result = { done: false, value: value };
         co.nextResolver.resolve(result);
-        co.yield();
+        co.leave();
     },
     finally: (co) => {
         co.nextResolver = null;

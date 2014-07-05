@@ -12,7 +12,7 @@ var builder = oldBuilder.mod(function () {
             co.done = false;
             var next = function () {
                 var res = co.nextResolver = Promise.defer();
-                co.done ? res.reject(new Error('iterated past end')) : co.resume();
+                co.done ? res.reject(new Error('iterated past end')) : co.enter();
                 return co.nextResolver.promise;
             };
             return new AsyncIterator(next);
@@ -27,7 +27,7 @@ var builder = oldBuilder.mod(function () {
         yield: function (co, value) {
             var result = { done: false, value: value };
             co.nextResolver.resolve(result);
-            co.yield();
+            co.leave();
         },
         finally: function (co) {
             co.nextResolver = null;

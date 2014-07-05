@@ -6,7 +6,7 @@ var builder = oldBuilder.mod(function () {
     return ({
         invoke: function (co) {
             co.resolver = Promise.defer();
-            co.resume();
+            co.enter();
             return co.resolver.promise;
         },
         return: function (co, result) {
