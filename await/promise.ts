@@ -5,8 +5,8 @@ export = builder;
 
 
 var builder = oldBuilder.mod<AsyncAwait.Await.PromiseBuilder>(
-    () => (args, resume) => {
+    () => (co, args) => {
         if (args.length !== 1 || !args[0] || typeof args[0].then !== 'function') return false;
-        args[0].then(val => resume(null, val), resume);
+        args[0].then(val => co.enter(null, val), co.enter);
     }
 );

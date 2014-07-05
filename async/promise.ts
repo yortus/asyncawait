@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/asyncBuilder');
 import Promise = require('bluebird');
-//import transfer = require('../src/transfer');
 export = builder;
 
 

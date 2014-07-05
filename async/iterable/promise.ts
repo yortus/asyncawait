@@ -2,7 +2,6 @@
 import oldBuilder = require('../../src/asyncBuilder');
 import assert = require('assert');
 import Promise = require('bluebird');
-//import transfer = require('../../src/transfer');
 import _ = require('../../src/util');
 export = builder;
 

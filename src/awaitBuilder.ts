@@ -8,7 +8,7 @@ export = awaitBuilder;
 
 
 // Bootstrap a basic await builder using a no-op handler.
-var awaitBuilder = createAwaitBuilder<Builder>(_.empty, {}, (args, resume) => resume(null, args[0]));
+var awaitBuilder = createAwaitBuilder<Builder>(_.empty, {}, (co, args) => co.enter(null, args[0]));
 
 
 /** Creates a new await builder function using the specified handler settings. */
@@ -44,7 +44,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
         if (len === 1) {
         
             //TODO: fast path
-            var handlerResult = handler([arguments[0]], resume);
+            var handlerResult = handler(fiber.co, [arguments[0]]);
                 
         }
         else {
@@ -52,7 +52,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
             for (var i = 0; i < len; ++i) args[i] = arguments[i];
 
             // TODO: Execute handler...
-            var handlerResult = handler(args, resume);
+            var handlerResult = handler(fiber.co, args);
         }
 
         if (handlerResult === false) { //TODO: explain sentinel value...

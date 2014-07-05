@@ -109,18 +109,6 @@ declare module AsyncAwait {
             yield?: (co: Coroutine, value: any) => void;
             finally?: (co: Coroutine) => void;
         }
-
-        export interface Coroutine {
-
-
-            //TODO: testing...
-            enter: (error?: Error, value?: any) => void;
-            leave: (value?: any) => void;
-
-
-            //TODO: get rid of these...
-            //fiber?: any;
-        }
     }
 
 
@@ -166,7 +154,7 @@ declare module AsyncAwait {
 
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
         export interface Handler {
-            (args: any[], resume: (error?, result?) => void): any;
+            (co: Coroutine, args: any[]): any;
         }
     }
 
@@ -178,6 +166,11 @@ declare module AsyncAwait {
 
 
     //------------------------- Common -------------------------
+    export interface Coroutine {
+        enter: (error?: Error, value?: any) => void;
+        leave: (value?: any) => void;
+    }
+
     export interface Callback<TResult> {
         (err: Error, result: TResult): void;
     }

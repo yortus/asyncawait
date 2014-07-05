@@ -5,7 +5,7 @@ import _ = require('../src/util');
 export = handler;
 
 
-var handler: Handler = (args, resume) => {
+var handler: Handler = (co, args) => {
 
     //TODO: temp testing...
     var traverse = traverseClone;
@@ -22,9 +22,9 @@ var handler: Handler = (args, resume) => {
         var trackedPromises = [];
         expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
         if (!topN) {
-            Promise.all(trackedPromises).then(val => resume(null, expr), resume);
+            Promise.all(trackedPromises).then(val => co.enter(null, expr), co.enter);
         } else {
-            Promise.some(trackedPromises, topN).then(val => resume(null, val), resume);
+            Promise.some(trackedPromises, topN).then(val => co.enter(null, val), co.enter);
         }
     }
     else {

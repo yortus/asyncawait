@@ -4,8 +4,8 @@ export = builder;
 
 
 var builder = oldBuilder.mod<AsyncAwait.Await.ThunkBuilder>(
-    () => (args, resume) => {
+    () => (co, args) => {
         if (args.length !== 1 || typeof args[0] !== 'function') return false;
-        args[0](resume);
+        args[0](co.enter);
     }
 );

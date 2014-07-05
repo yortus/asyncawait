@@ -2,7 +2,6 @@
 import oldBuilder = require('../src/asyncBuilder');
 import assert = require('assert');
 import _ = require('../src/util');
-//import transfer = require('../src/transfer');
 export = builder;
 
 

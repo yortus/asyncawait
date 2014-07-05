@@ -10,7 +10,7 @@ export = api;
 
 //TOSO: temp testing...
 import compound = require('./compound');
-var noop = (args, resume) => resume(null, args[0]);
+var noop = (co, args) => co.enter(null, args[0]);
 
 
 

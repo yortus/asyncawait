@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import oldBuilder = require('../../src/asyncBuilder');
-//import transfer = require('../../src/transfer');
 import _ = require('../../src/util');
 export = builder;
 

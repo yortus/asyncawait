@@ -5,7 +5,7 @@ import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
 import Options = AsyncAwait.Async.Options;
 import ProtocolOverrides = AsyncAwait.Async.ProtocolOverrides;
-import Coroutine = AsyncAwait.Async.Coroutine;
+import Coroutine = AsyncAwait.Coroutine;
 export = asyncBuilder;
 
 
@@ -187,12 +187,14 @@ function createCoroutine(protocol: Protocol, body: () => void): Coroutine {
             var _start = () => {
                 fiberPool.inc();
                 fiber = Fiber(makeFiberBody());
+                fiber.co = co;
                 fiber.yield = value => protocol.yield(co, value); //TODO: improve?
                 setImmediate(() => fiber.run()); //TODO: best place for setImmediate?
             };
 
             var isTopLevel = !Fiber.current;
             if (isTopLevel)
+                //TODO PERF: only use semaphore if maxConcurrency is specified
                 return semaphore.enter(() => _start());
             else
                 _start();
@@ -233,6 +235,7 @@ function createCoroutine(protocol: Protocol, body: () => void): Coroutine {
     }
     function dispose(co: Coroutine) {
         fiberPool.dec();
+        fiber.co = null;
         fiber = null;
         semaphore.leave();
     }
