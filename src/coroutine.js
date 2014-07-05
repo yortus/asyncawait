@@ -11,11 +11,20 @@ function create(protocol, body) {
     var fiber = null;
 
     function startup() {
-        fiberPool.inc(); //TODO: make this middleware
-        fiber = createFiber(co, protocol, body, cleanup);
-        setImmediate(function () {
-            return fiber.run();
-        }); //TODO: best place for setImmediate?
+        //TODO PERF: only use semaphore if maxConcurrency is specified
+        var isTopLevel = !Fiber.current;
+        if (isTopLevel)
+            return semaphore.enter(next);
+        else
+            next();
+
+        function next() {
+            fiberPool.inc(); //TODO: make this middleware
+            fiber = createFiber(co, protocol, body, cleanup);
+            setImmediate(function () {
+                return fiber.run();
+            }); //TODO: best place for setImmediate?
+        }
     }
     function cleanup() {
         fiberPool.dec();
@@ -29,13 +38,7 @@ function create(protocol, body) {
         // On first entry
         if (!fiber) {
             assert(arguments.length === 0, 'enter: initial call must have no arguments');
-
-            //TODO PERF: only use semaphore if maxConcurrency is specified
-            var isTopLevel = !Fiber.current;
-            if (isTopLevel)
-                return semaphore.enter(startup);
-            else
-                startup();
+            startup();
         } else {
             // TODO: explain...
             if (error)

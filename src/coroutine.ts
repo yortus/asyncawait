@@ -17,9 +17,21 @@ function create(protocol: Protocol, body: () => void): Coroutine {
 
 
     function startup() {
-        fiberPool.inc();//TODO: make this middleware
-        fiber = createFiber(co, protocol, body, cleanup);
-        setImmediate(() => fiber.run()); //TODO: best place for setImmediate?
+
+        //TODO PERF: only use semaphore if maxConcurrency is specified
+        var isTopLevel = !Fiber.current;
+        if (isTopLevel)
+            return semaphore.enter(next);
+        else
+            next();
+
+
+        function next() {
+            fiberPool.inc();//TODO: make this middleware
+            fiber = createFiber(co, protocol, body, cleanup);
+            setImmediate(() => fiber.run()); //TODO: best place for setImmediate?
+        }
+
     }
     function cleanup() {
         fiberPool.dec();
@@ -35,15 +47,7 @@ function create(protocol: Protocol, body: () => void): Coroutine {
         // On first entry
         if (!fiber) {
             assert(arguments.length === 0, 'enter: initial call must have no arguments');
-
-
-            //TODO PERF: only use semaphore if maxConcurrency is specified
-            var isTopLevel = !Fiber.current;
-            if (isTopLevel)
-                return semaphore.enter(startup);//TODO: invert this with startup() - ie put semaphone.enter(...) there
-            else
-                startup();
-            
+            startup();
         }
         else {
             // TODO: explain...
