@@ -1,7 +1,7 @@
 {
   "name": "asyncawait",
   "description": "async/await for node.js",
-  "version": "0.7.1",
+  "version": "0.7.?",
   "keywords": [
     "async/await",
     "async",
@@ -12,6 +12,7 @@
     "generator",
     "callback",
     "callback hell",
+    "pyramid of doom",
     "fiber",
     "typescript",
     "coffeescript",

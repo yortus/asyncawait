@@ -3,17 +3,12 @@ import Fiber = require('../src/fibers');
 export = yield_;
 
 
-function yield_(expr) {
+function yield_(value?: any) {
 
     // Ensure this function is executing inside a fiber.
-    if (!Fiber.current) {
-        //TODO: improve message below...
-        throw new Error(
-            'await functions, yield functions, and pseudo-synchronous suspendable ' +
-            'functions may only be called from inside a suspendable function. '
-        );
-    }
+    var fiber = Fiber.current;
+    if (!fiber) throw new Error('yield: may only be called inside a suspendable function.');
 
-
-    Fiber.current.yield(expr);
+    // Delegate to the appropriate protocol's yield method, via the method attached to the fiber.
+    fiber.yield(value);
 };

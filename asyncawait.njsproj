@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>examples\basic.js</StartupFile>
+    <StartupFile>examples\iteration.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -86,6 +86,7 @@
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\asyncConfig.ts" />
     <TypeScriptCompile Include="src\awaitConfig.ts" />
+    <TypeScriptCompile Include="src\coroutine.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
