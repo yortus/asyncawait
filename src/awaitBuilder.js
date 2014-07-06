@@ -21,34 +21,16 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
         if (!fiber)
             throw new Error('await: may only be called inside a suspendable function.');
 
-        var resume = function (err, result) {
-            // TODO: explain...
-            if (err)
-                setImmediate(function () {
-                    fiber.throwInto(err);
-                });
-            else
-                setImmediate(function () {
-                    fiber.run(result);
-                });
-        };
-
         // TODO: explain...
-        var len = arguments.length;
-        if (len === 1) {
-            //TODO: fast path
-            var handlerResult = handler(fiber.co, [arguments[0]]);
-        } else {
-            var args = new Array(len);
-            for (var i = 0; i < len; ++i)
-                args[i] = arguments[i];
+        var len = arguments.length, args = new Array(len);
+        for (var i = 0; i < len; ++i)
+            args[i] = arguments[i];
 
-            // TODO: Execute handler...
-            var handlerResult = handler(fiber.co, args);
-        }
+        // TODO: Execute handler...
+        var handlerResult = handler(fiber.co, args);
 
         if (handlerResult === false) {
-            throw new Error('not handled!');
+            throw new Error('await: not handled!');
         }
 
         // TODO: explain...
