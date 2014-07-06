@@ -24,13 +24,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
 
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
-        if (!fiber) {
-            //TODO: improve message below...
-            throw new Error(
-                'await functions, yield functions, and pseudo-synchronous suspendable ' +
-                'functions may only be called from inside a suspendable function.'
-            );
-        }
+        if (!fiber) throw new Error('await: may only be called inside a suspendable function.');
 
         var resume = (err, result) => {
 

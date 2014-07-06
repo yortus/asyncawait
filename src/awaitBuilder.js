@@ -18,9 +18,8 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
         //TODO: can this be optimised more, eg like async builder's eval?
         // Ensure this function is executing inside a fiber.
         var fiber = Fiber.current;
-        if (!fiber) {
-            throw new Error('await functions, yield functions, and pseudo-synchronous suspendable ' + 'functions may only be called from inside a suspendable function.');
-        }
+        if (!fiber)
+            throw new Error('await: may only be called inside a suspendable function.');
 
         var resume = function (err, result) {
             // TODO: explain...
