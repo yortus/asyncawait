@@ -82,6 +82,8 @@ function createFiber(co: Coroutine, protocol: Protocol, body: () => void, cleanu
     return fiber;
 
     function makeFiberBody() {
+        //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
+        //TODO: setImmediate? all, some? Was on finally, what now?
         var tryBlock = () => protocol.return(co, body());
         var catchBlock = err => protocol.throw(co, err);
         var finallyBlock = () => { protocol.finally(co); setImmediate(cleanup); }
