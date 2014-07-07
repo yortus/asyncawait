@@ -90,6 +90,7 @@
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
+    <TypeScriptCompile Include="src\system.ts" />
     <TypeScriptCompile Include="src\util.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />

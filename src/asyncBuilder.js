@@ -85,6 +85,7 @@ function createSuspendableFunction(protocol, invokee, options) {
     function $SUSPENDABLE_TEMPLATE($ARGS) {
         var _this = this;
         // Code for the fast path will be injected here.
+        //TODO: also if this===void0 no need to preserve this... also no more need for canDiscardContext
         if (arguments.length === $ARGCOUNT) {
             $FASTPATH;
         }

@@ -20,7 +20,7 @@ export function isPlainObject(obj) {
 }
 
 
-/** Performs the same operation as lodash's _.assign() function. */
+/** Equivalent to lodash's _.assign() function. */
 export function mergeProps(...args) {
     var len = arguments.length, target = arguments[0];
     assert(len > 0, 'mergeProps: expected at least one argument');

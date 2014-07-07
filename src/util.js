@@ -18,7 +18,7 @@ function isPlainObject(obj) {
 }
 exports.isPlainObject = isPlainObject;
 
-/** Performs the same operation as lodash's _.assign() function. */
+/** Equivalent to lodash's _.assign() function. */
 function mergeProps() {
     var args = [];
     for (var _i = 0; _i < (arguments.length - 0); _i++) {
