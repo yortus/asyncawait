@@ -15,6 +15,7 @@ var system = {
 };
 
 function acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis) {
+    //TODO: implement optional arg handling...
     var fiber = null;
     var co = {
         enter: function (error, value) {

@@ -25,6 +25,7 @@ var system: Pipeline = {
 
 
 function acquireCoro(protocol: Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) {
+    //TODO: implement optional arg handling...
 
     var fiber: Fiber = null;
     var co: Coroutine = {

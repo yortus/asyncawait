@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import coroutine = require('./coroutine');
+import system = require('./system');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
@@ -106,7 +106,7 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
         for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co = coroutine(protocol, () => invokee.apply(this, invokeeArgs));
+        var co = system.acquireCoro(protocol, invokee, invokeeArgs, this);
 
         // Pass execution control over to the invoker.
         invokerArgs[0] = co;
@@ -142,10 +142,10 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
 
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function.call().
-    var fastpath = 'var self = this, co = coroutine(protocol, function () { return invokee';
+    var fastpath = 'var self = this, co = system.acquireCoro(protocol, function () { return invokee';
     if (options.canDiscardContext) fastpath += '(' + invokeeParamNames.join(', ');
     else fastpath += '.call(self' + (invokeeParamNames.length ? ', ' + invokeeParamNames.join(', ') : '');
-    fastpath += '); }); return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');'
+    fastpath += '); }, null, []); return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');'
 
     // Substitute all placeholders in the template function to get the final source code.
     var source = suspendableTemplateSource

@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var coroutine = require('./coroutine');
+var system = require('./system');
 var _ = require('./util');
 
 
@@ -83,7 +83,6 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
 function createSuspendableFunction(protocol, invokee, options) {
     // Declare the general shape of the suspendable function.
     function $SUSPENDABLE_TEMPLATE($ARGS) {
-        var _this = this;
         // Code for the fast path will be injected here.
         //TODO: also if this===void0 no need to preserve this... also no more need for canDiscardContext
         if (arguments.length === $ARGCOUNT) {
@@ -99,9 +98,7 @@ function createSuspendableFunction(protocol, invokee, options) {
             invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co = coroutine(protocol, function () {
-            return invokee.apply(_this, invokeeArgs);
-        });
+        var co = system.acquireCoro(protocol, invokee, invokeeArgs, this);
 
         // Pass execution control over to the invoker.
         invokerArgs[0] = co;
@@ -138,12 +135,12 @@ function createSuspendableFunction(protocol, invokee, options) {
 
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function.call().
-    var fastpath = 'var self = this, co = coroutine(protocol, function () { return invokee';
+    var fastpath = 'var self = this, co = system.acquireCoro(protocol, function () { return invokee';
     if (options.canDiscardContext)
         fastpath += '(' + invokeeParamNames.join(', ');
     else
         fastpath += '.call(self' + (invokeeParamNames.length ? ', ' + invokeeParamNames.join(', ') : '');
-    fastpath += '); }); return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
+    fastpath += '); }, null, []); return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.
     var source = suspendableTemplateSource.replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name).replace('$ARGS', allParamNames.join(', ')).replace('$ARGCOUNT', '' + allParamNames.length).replace('$FASTPATH', fastpath);
