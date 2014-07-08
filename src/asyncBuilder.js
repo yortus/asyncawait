@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var system = require('./system');
+var pipelineModule = require('./pipeline');
 var _ = require('./util');
 
 
@@ -27,6 +27,10 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
+        // TODO: best place for this?
+        // Ensure pipeline is loaded
+        pipeline = pipeline || pipelineModule.getPipeline();
+
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
@@ -97,7 +101,7 @@ function createSuspendableFunction(protocol, invokee, options) {
             invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co = system.acquireCoro(protocol, invokee, invokeeArgs, this);
+        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
 
         // Pass execution control over to the invoker.
         invokerArgs[0] = co;
@@ -135,7 +139,7 @@ function createSuspendableFunction(protocol, invokee, options) {
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function#call().
     var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = 'this === void 0 ? ' + (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') + ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
-    var fastpath = 'var self = this, co = system.acquireCoro(protocol, ' + bodyExpr + ');' + 'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
+    var fastpath = 'var self = this, co = pipeline.acquireCoro(protocol, ' + bodyExpr + ');' + 'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.
     var source = suspendableTemplateSource.replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name).replace('$ARGS', allParamNames.join(', ')).replace('$ARGCOUNT', '' + allParamNames.length).replace('$FASTPATH', fastpath);
@@ -149,5 +153,8 @@ function createSuspendableFunction(protocol, invokee, options) {
 
 // This module variable holds the cached source of $SUSPENDABLE_TEMPLATE, defined above.
 var suspendableTemplateSource;
+
+//TODO: doc...
+var pipeline;
 module.exports = asyncBuilder;
 //# sourceMappingURL=asyncBuilder.js.map

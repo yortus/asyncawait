@@ -86,10 +86,13 @@
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\asyncConfig.ts" />
     <TypeScriptCompile Include="src\awaitConfig.ts" />
+    <TypeScriptCompile Include="src\extensions\defaultPipeline.ts" />
+    <TypeScriptCompile Include="src\extensions\fiberPoolResizer.ts" />
+    <TypeScriptCompile Include="src\extensions\maxConcurrency.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
+    <TypeScriptCompile Include="src\pipeline.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />
-    <TypeScriptCompile Include="src\system.ts" />
     <TypeScriptCompile Include="src\util.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
@@ -163,6 +166,7 @@
     <Folder Include="examples\ts\" />
     <Folder Include="recipes\" />
     <Folder Include="src\" />
+    <Folder Include="src\extensions\" />
     <Folder Include="tests\" />
     <Folder Include="typings\" />
     <Folder Include="typings\asyncawait\" />
@@ -215,7 +219,7 @@
   <Target Name="PrepareForBuild" />
   <Target Name="Build">
     <Message Text="Building with grunt..." Importance="high" />
-    <Exec Command="grunt --no-color" />
+    <Exec Command="grunt build --no-color" />
   </Target>
   <Target Name="AfterBuild" />
 </Project>

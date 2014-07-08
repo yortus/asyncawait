@@ -1,21 +1,24 @@
-﻿//TODO: rename to pipeline?
-var assert = require('assert');
+﻿var assert = require('assert');
 var Promise = require('bluebird');
-var Fiber = require('fibers');
-var _ = require('./util');
-var semaphore = require('./semaphore');
-var fiberPool = require('./fiberPool');
+var Fiber = require('../fibers');
 
 
-var system = {
-    acquireCoro: acquireCoro,
-    releaseCoro: releaseCoro,
-    acquireFiber: acquireFiber,
-    releaseFiber: releaseFiber
+//TODO: doc...
+var extension = function () {
+    return ({
+        acquireCoro: acquireCoro,
+        releaseCoro: releaseCoro,
+        acquireFiber: acquireFiber,
+        releaseFiber: releaseFiber
+    });
 };
 
+//TODO: doc...
 function acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis) {
-    //TODO: implement optional arg handling...
+    //TODO: doc...
+    pipeline = pipeline || require('../pipeline').getPipeline();
+
+    //TODO: doc...
     var fiber = null;
     var co = {
         enter: function (error, value) {
@@ -36,8 +39,8 @@ function acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis) {
                     protocol.finally(co);
                     setImmediate(function () {
                         // release fiber really async? Does this make sense release fiber -> <async> -> release co?
-                        system.releaseFiber(fiber).then(function () {
-                            system.releaseCoro(co);
+                        pipeline.releaseFiber(fiber).then(function () {
+                            pipeline.releaseCoro(co);
                         });
                     });
                 };
@@ -56,7 +59,7 @@ function acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis) {
                 }
                 ;
 
-                system.acquireFiber(fiberBody).then(function (f) {
+                pipeline.acquireFiber(fiberBody).then(function (f) {
                     fiber = f;
                     fiber.co = co;
                     fiber.yield = function (value) {
@@ -84,58 +87,24 @@ function acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis) {
     return co;
 }
 
+//TODO: doc...
 function releaseCoro(co) {
     //TODO: no-op?
 }
 
+//TODO: doc...
 function acquireFiber(body) {
     return Promise.resolve(Fiber(body));
 }
 
+//TODO: doc...
 function releaseFiber(fiber) {
     fiber.co = null;
     fiber.yield = null;
     return Promise.resolve();
 }
 
-//TODO: temp testing...
-function use(middleware) {
-    var overrides = middleware(system);
-    system = _.mergeProps({}, system, overrides);
-}
-
-var maxConcurrency = function (basePipeline) {
-    return ({
-        acquireFiber: function (body) {
-            if (Fiber.current)
-                return basePipeline.acquireFiber(body);
-            return new Promise(function (resolve, reject) {
-                semaphore.enter(function () {
-                    basePipeline.acquireFiber(body).then(resolve, reject);
-                });
-            });
-        },
-        releaseFiber: function (fiber) {
-            semaphore.leave(); //TODO: only if entered...
-            return basePipeline.releaseFiber(fiber);
-        }
-    });
-};
-
-var fiberPoolBug = function (basePipeline) {
-    return ({
-        acquireFiber: function (body) {
-            fiberPool.inc();
-            return basePipeline.acquireFiber(body);
-        },
-        releaseFiber: function (fiber) {
-            fiberPool.dec();
-            return basePipeline.releaseFiber(fiber);
-        }
-    });
-};
-
-use(fiberPoolBug);
-use(maxConcurrency);
-module.exports = system;
-//# sourceMappingURL=system.js.map
+//TODO:...
+var pipeline;
+module.exports = extension;
+//# sourceMappingURL=defaultPipeline.js.map

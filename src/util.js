@@ -19,18 +19,14 @@ function isPlainObject(obj) {
 exports.isPlainObject = isPlainObject;
 
 /** Equivalent to lodash's _.assign() function. */
-function mergeProps() {
-    var args = [];
-    for (var _i = 0; _i < (arguments.length - 0); _i++) {
-        args[_i] = arguments[_i + 0];
-    }
+exports.mergeProps = function () {
     var len = arguments.length, target = arguments[0];
     assert(len > 0, 'mergeProps: expected at least one argument');
     assert(target, 'mergeProps: first argument must be an object');
     for (var i = 1; i < len; ++i) {
         var source = arguments[i];
         if (!source)
-            break;
+            continue;
         for (var prop in source) {
             if (!source.hasOwnProperty(prop))
                 break;
@@ -38,8 +34,7 @@ function mergeProps() {
         }
     }
     return target;
-}
-exports.mergeProps = mergeProps;
+};
 
 /** An empty, no-op function. */
 function empty() {

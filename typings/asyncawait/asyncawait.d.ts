@@ -25,8 +25,8 @@ declare module AsyncAwait {
         releaseFiber?: (fiber: Fiber) => Promise<void>;
     }
 
-    export interface Middleware {
-        (basePipeline: Pipeline): PipelineOverrides;
+    export interface Extension {
+        (pipeline: Pipeline): PipelineOverrides;
     }
 
 
@@ -203,12 +203,14 @@ declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
     export import yield_ = require("asyncawait/yield");
+    export function use(extension: AsyncAwait.Extension): void;
 }
 declare module "asyncawait/async" { var api: AsyncAwait.Async.API; export = api; }
 declare module "asyncawait/await" { var api: AsyncAwait.Await.API; export = api; }
 declare module "asyncawait/yield" { var api: AsyncAwait.Yield; export = api; }
 declare module "asyncawait/async/promise" { var api: AsyncAwait.Async.PromiseBuilder; export = api; }
 declare module "asyncawait/async/cps" { var api: AsyncAwait.Async.CPSBuilder; export = api; }
+//TODO: restore these...
 //declare module "asyncawait/async/thunk" { var api: AsyncAwait.AsyncThunk; export = api; }
 //declare module "asyncawait/async/stream" { var api: AsyncAwait.AsyncStream; export = api; }
 //declare module "asyncawait/async/express" { var api: AsyncAwait.AsyncCPS; export = api; }

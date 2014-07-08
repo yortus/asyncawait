@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import system = require('./system');
+import pipelineModule = require('./pipeline');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
@@ -32,6 +32,10 @@ function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options:
 
     // Create the builder function.
     var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
+
+        // TODO: best place for this?
+        // Ensure pipeline is loaded
+        pipeline = pipeline || pipelineModule.getPipeline();
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');
@@ -103,7 +107,7 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
         for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co = system.acquireCoro(protocol, invokee, invokeeArgs, this);
+        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
 
         // Pass execution control over to the invoker.
         invokerArgs[0] = co;
@@ -143,7 +147,7 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
         (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') +
         ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
     var fastpath =
-        'var self = this, co = system.acquireCoro(protocol, ' + bodyExpr + ');' +
+        'var self = this, co = pipeline.acquireCoro(protocol, ' + bodyExpr + ');' +
         'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.
@@ -163,3 +167,7 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
 
 // This module variable holds the cached source of $SUSPENDABLE_TEMPLATE, defined above.
 var suspendableTemplateSource;
+
+
+//TODO: doc...
+var pipeline: AsyncAwait.Pipeline;
