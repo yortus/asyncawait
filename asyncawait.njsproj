@@ -86,7 +86,6 @@
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
     <TypeScriptCompile Include="src\asyncConfig.ts" />
     <TypeScriptCompile Include="src\awaitConfig.ts" />
-    <TypeScriptCompile Include="src\coroutine.ts" />
     <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />

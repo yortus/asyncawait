@@ -84,7 +84,6 @@ function createSuspendableFunction(protocol, invokee, options) {
     // Declare the general shape of the suspendable function.
     function $SUSPENDABLE_TEMPLATE($ARGS) {
         // Code for the fast path will be injected here.
-        //TODO: also if this===void0 no need to preserve this... also no more need for canDiscardContext
         if (arguments.length === $ARGCOUNT) {
             $FASTPATH;
         }
@@ -134,13 +133,9 @@ function createSuspendableFunction(protocol, invokee, options) {
     suspendableTemplateSource = suspendableTemplateSource || $SUSPENDABLE_TEMPLATE.toString();
 
     // Assemble the source code for the suspendable function's fast path.
-    // NB: If the calling context need not be preserved, we can avoid using the slower Function.call().
-    var fastpath = 'var self = this, co = system.acquireCoro(protocol, function () { return invokee';
-    if (options.canDiscardContext)
-        fastpath += '(' + invokeeParamNames.join(', ');
-    else
-        fastpath += '.call(self' + (invokeeParamNames.length ? ', ' + invokeeParamNames.join(', ') : '');
-    fastpath += '); }, null, []); return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
+    // NB: If the calling context need not be preserved, we can avoid using the slower Function#call().
+    var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = 'this === void 0 ? ' + (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') + ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
+    var fastpath = 'var self = this, co = system.acquireCoro(protocol, ' + bodyExpr + ');' + 'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.
     var source = suspendableTemplateSource.replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name).replace('$ARGS', allParamNames.join(', ')).replace('$ARGCOUNT', '' + allParamNames.length).replace('$FASTPATH', fastpath);

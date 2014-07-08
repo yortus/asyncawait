@@ -26,7 +26,8 @@ function acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis) {
                 //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
                 //TODO: setImmediate? all, some? Was on finally, what now?
                 var tryBlock = function () {
-                    return protocol.return(co, bodyFunc.apply(bodyThis, bodyArgs));
+                    var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
+                    protocol.return(co, result);
                 };
                 var catchBlock = function (err) {
                     return protocol.throw(co, err);

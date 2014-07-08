@@ -111,7 +111,6 @@ declare module AsyncAwait {
         }
 
         export interface Options {
-            canDiscardContext?: boolean;
         }
 
         export interface Protocol {

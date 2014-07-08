@@ -37,7 +37,10 @@ function acquireCoro(protocol: Protocol, bodyFunc: Function, bodyArgs?: any[], b
 
                 //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
                 //TODO: setImmediate? all, some? Was on finally, what now?
-                var tryBlock = () => protocol.return(co, bodyFunc.apply(bodyThis, bodyArgs));
+                var tryBlock = () => {
+                    var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
+                    protocol.return(co, result);
+                };
                 var catchBlock = err => protocol.throw(co, err);
                 var finallyBlock = () => {
                     protocol.finally(co);
