@@ -2,38 +2,32 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var pipeline = require('asyncawait/src/pipeline');
+var maxCon = require('asyncawait/src/extensions/maxConcurrency');
 var expect = chai.expect;
 
-var origConcurrency;
-beforeEach(function () {
-    return origConcurrency = async.config().maxConcurrency;
-});
-afterEach(function () {
-    return async.config({ maxConcurrency: origConcurrency });
-});
-
-describe('Getting a config object from async.config()', function () {
-    it('returns a different object on each call', function () {
-        var cfgs = [async.config(), async.config(), async.config()];
-        expect(cfgs[0]).to.not.equal(cfgs[1]);
-        expect(cfgs[0]).to.not.equal(cfgs[2]);
-        expect(cfgs[1]).to.not.equal(cfgs[2]);
-    });
-
-    it('returns an object that is a detached copy of config', function () {
-        var cfg = async.config();
-        cfg.maxConcurrency += 6;
-        expect(async.config().maxConcurrency).to.equal(cfg.maxConcurrency - 6);
-    });
-
-    it('returns the maxConcurrency value most recently set', function () {
-        async.config({ maxConcurrency: 17 });
-        expect(async.config().maxConcurrency).to.equal(17);
-        async.config({ maxConcurrency: 1000000 });
-        expect(async.config().maxConcurrency).to.equal(1000000);
-    });
-});
-
+//var origConcurrency;
+//beforeEach(() => origConcurrency = async.config().maxConcurrency);
+//afterEach(() => async.config({ maxConcurrency: origConcurrency }));
+//describe('Getting a config object from async.config()', () => {
+//    it('returns a different object on each call', () => {
+//        var cfgs = [async.config(), async.config(), async.config()];
+//        expect(cfgs[0]).to.not.equal(cfgs[1]);
+//        expect(cfgs[0]).to.not.equal(cfgs[2]);
+//        expect(cfgs[1]).to.not.equal(cfgs[2]);
+//    });
+//    it('returns an object that is a detached copy of config', () => {
+//        var cfg = async.config();
+//        cfg.maxConcurrency += 6;
+//        expect(async.config().maxConcurrency).to.equal(cfg.maxConcurrency - 6);
+//    });
+//    it('returns the maxConcurrency value most recently set', () => {
+//        async.config({ maxConcurrency: 17 });
+//        expect(async.config().maxConcurrency).to.equal(17);
+//        async.config({ maxConcurrency: 1000000 });
+//        expect(async.config().maxConcurrency).to.equal(1000000);
+//    });
+//});
 describe('Setting config via async.config(...)', function () {
     var started = 0, finished = 0;
     var opA = async(function () {
@@ -45,26 +39,27 @@ describe('Setting config via async.config(...)', function () {
         return { started: started, finished: finished };
     });
 
-    it('updates maxConcurency to the specified value', function () {
-        async.config({ maxConcurrency: 17 });
-        expect(async.config().maxConcurrency).to.equal(17);
-        async.config({ maxConcurrency: 1000000 });
-        expect(async.config().maxConcurrency).to.equal(1000000);
-    });
-
-    it('leaves omitted config values unchanged', function () {
-        async.config({ maxConcurrency: 17 });
-        expect(async.config().maxConcurrency).to.equal(17);
-        async.config({});
-        async.config({ maxConcurrency: undefined });
-        async.config({ maxConcurrency: null });
-        expect(async.config().maxConcurrency).to.equal(17);
-    });
-
+    //it('updates maxConcurency to the specified value', () => {
+    //    async.config({ maxConcurrency: 17 });
+    //    expect(async.config().maxConcurrency).to.equal(17);
+    //    async.config({ maxConcurrency: 1000000 });
+    //    expect(async.config().maxConcurrency).to.equal(1000000);
+    //});
+    //it('leaves omitted config values unchanged', () => {
+    //    async.config({ maxConcurrency: 17 });
+    //    expect(async.config().maxConcurrency).to.equal(17);
+    //    async.config({ });
+    //    async.config({ maxConcurrency: undefined });
+    //    async.config({ maxConcurrency: null });
+    //    expect(async.config().maxConcurrency).to.equal(17);
+    //});
     it('applies the specified maxConcurrency setting to subsequent operations', function (done) {
         function doTasks(maxConcurrency) {
             started = finished = 0;
-            async.config({ maxConcurrency: maxConcurrency });
+            pipeline.reset();
+            pipeline.use(maxCon(maxConcurrency));
+
+            //async.config({ maxConcurrency: maxConcurrency });
             return Promise.all([opA(), opA(), opA(), opA(), opA(), opB()]).then(function (r) {
                 return r[5];
             });

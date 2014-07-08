@@ -1,5 +1,4 @@
 ﻿import references = require('references');
-import config = require('../src/asyncConfig');
 import promise = require('./promise');
 import cps = require('./cps');
 import thunk = require('./thunk');
@@ -10,7 +9,6 @@ export = api;
 
 
 var api: AsyncAwait.Async.API = <any> promise;
-api.config = config;
 api.promise = promise.mod<AsyncAwait.Async.PromiseBuilder>({});
 api.cps = cps;
 api.thunk = thunk;

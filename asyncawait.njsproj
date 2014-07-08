@@ -84,12 +84,10 @@
     <TypeScriptCompile Include="recipes\TODO.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
-    <TypeScriptCompile Include="src\asyncConfig.ts" />
     <TypeScriptCompile Include="src\awaitConfig.ts" />
     <TypeScriptCompile Include="src\extensions\defaultPipeline.ts" />
     <TypeScriptCompile Include="src\extensions\fiberPoolResizer.ts" />
     <TypeScriptCompile Include="src\extensions\maxConcurrency.ts" />
-    <TypeScriptCompile Include="src\fiberPool.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\pipeline.ts" />
     <TypeScriptCompile Include="src\semaphore.ts" />

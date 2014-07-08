@@ -34,7 +34,6 @@ declare module AsyncAwait {
     export module Async {
         
         export interface API extends PromiseBuilder {
-            config(value?: Config): Config;
             promise: PromiseBuilder;
             cps: CPSBuilder;
             thunk: ThunkBuilder;
@@ -47,10 +46,6 @@ declare module AsyncAwait {
             promise: IterablePromiseBuilder;
             cps: IterableCPSBuilder;
             thunk: IterableThunkBuilder;
-        }
-
-        export interface Config {
-            maxConcurrency?: number;
         }
 
         export interface PromiseBuilder extends Builder {

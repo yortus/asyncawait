@@ -11,10 +11,11 @@ import Pipeline = AsyncAwait.Pipeline;
 
 //TODO: configurable built-ins?
 //TODO: doc...
+//TODO: clear all?
 var extensions: Extension[] = [
     require('./extensions/defaultPipeline'),
-    require('./extensions/fiberPoolResizer'),
-    require('./extensions/maxConcurrency')
+    require('./extensions/fiberPoolResizer')
+    //require('./extensions/maxConcurrency')(10000)
 ];
 
 
@@ -33,6 +34,20 @@ export function use(extension: Extension) {
 export function getPipeline(): Pipeline {
     if (!pipeline) loadExensions();
     return pipeline;
+}
+
+
+//TODO: doc... used for unit testing
+export function reset() {
+    pipeline = null;
+
+    //TODO: clear all?
+    var extensions: Extension[] = [
+        require('./extensions/defaultPipeline'),
+        require('./extensions/fiberPoolResizer')
+        //require('./extensions/maxConcurrency')(10000)
+    ];
+
 }
 
 

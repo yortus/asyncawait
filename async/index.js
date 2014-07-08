@@ -1,5 +1,4 @@
-﻿var config = require('../src/asyncConfig');
-var promise = require('./promise');
+﻿var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
 var express = require('./express');
@@ -7,7 +6,6 @@ var stream = require('./stream');
 var iterable = require('./iterable/index');
 
 var api = promise;
-api.config = config;
 api.promise = promise.mod({});
 api.cps = cps;
 api.thunk = thunk;

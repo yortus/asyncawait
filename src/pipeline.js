@@ -6,10 +6,10 @@ var _ = require('./util');
 //import Coroutine = AsyncAwait.Coroutine;
 //TODO: configurable built-ins?
 //TODO: doc...
+//TODO: clear all?
 var extensions = [
     require('./extensions/defaultPipeline'),
-    require('./extensions/fiberPoolResizer'),
-    require('./extensions/maxConcurrency')
+    require('./extensions/fiberPoolResizer')
 ];
 
 //TODO: doc...
@@ -30,6 +30,18 @@ function getPipeline() {
     return pipeline;
 }
 exports.getPipeline = getPipeline;
+
+//TODO: doc... used for unit testing
+function reset() {
+    pipeline = null;
+
+    //TODO: clear all?
+    var extensions = [
+        require('./extensions/defaultPipeline'),
+        require('./extensions/fiberPoolResizer')
+    ];
+}
+exports.reset = reset;
 
 //TODO: doc...
 function loadExensions() {
