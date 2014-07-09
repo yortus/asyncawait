@@ -84,13 +84,11 @@
     <TypeScriptCompile Include="recipes\TODO.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
-    <TypeScriptCompile Include="src\awaitConfig.ts" />
-    <TypeScriptCompile Include="src\extensions\defaultPipeline.ts" />
     <TypeScriptCompile Include="src\extensions\fiberPoolResizer.ts" />
     <TypeScriptCompile Include="src\extensions\maxConcurrency.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\pipeline.ts" />
-    <TypeScriptCompile Include="src\semaphore.ts" />
+    <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\util.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.config.ts" />
@@ -115,6 +113,7 @@
     <Content Include="typings\mocha\mocha.d.ts" />
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
+    <TypeScriptCompile Include="tests\use.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>
   <ItemGroup>

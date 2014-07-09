@@ -2,6 +2,7 @@
 var Fiber = require('../fibers');
 
 
+//TODO: what if use()'d twice? Will they clash? Can we give a helpful error message?
 function factory(maxConcurrency) {
     size(maxConcurrency);
     return function (pipeline) {

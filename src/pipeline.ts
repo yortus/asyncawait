@@ -1,66 +1,114 @@
 ﻿import references = require('references');
-//import assert = require('assert');
-//import Fiber = require('fibers');
+import assert = require('assert');
+import Promise = require('bluebird');
+import Fiber = require('./fibers');
 import _ = require('./util');
-import Extension = AsyncAwait.Extension;
-import Pipeline = AsyncAwait.Pipeline;
-//import Protocol = AsyncAwait.Async.Protocol;
-//import Coroutine = AsyncAwait.Coroutine;
-
-
-
-//TODO: configurable built-ins?
-//TODO: doc...
-//TODO: clear all?
-var extensions: Extension[] = [
-    require('./extensions/defaultPipeline'),
-    require('./extensions/fiberPoolResizer')
-    //require('./extensions/maxConcurrency')(10000)
-];
+import Protocol = AsyncAwait.Async.Protocol;
+import Coroutine = AsyncAwait.Coroutine;
+export = pipeline;
 
 
 //TODO: doc...
-export function use(extension: Extension) {
-
-    //TODO: ...
-    if (pipeline) throw new Error('use: cannot add extensions after first async(...) call');
-
-    //TODO: handle ordering properly - may need to separate builtins from use-added stuff
-    extensions.push(extension);
-}
+var pipeline = {
+    acquireCoro: null,
+    releaseCoro: null,
+    acquireFiber: null,
+    releaseFiber: null,
 
 
-//TODO: doc...
-export function getPipeline(): Pipeline {
-    if (!pipeline) loadExensions();
-    return pipeline;
-}
-
-
-//TODO: doc... used for unit testing
-export function reset() {
-    pipeline = null;
-
-    //TODO: clear all?
-    var extensions: Extension[] = [
-        require('./extensions/defaultPipeline'),
-        require('./extensions/fiberPoolResizer')
-        //require('./extensions/maxConcurrency')(10000)
-    ];
-
-}
+    //TODO: doc... private use stuff below...
+    extensions: [],
+    reset: () => {
+        _.mergeProps(pipeline, defaultPipeline);
+        pipeline.extensions = [];
+        pipeline.isLocked = false;
+    },
+    isLocked: false
+};
 
 
 //TODO: doc...
-function loadExensions() {
-    var len = extensions.length;
-    //TODO: was...for (var i = len - 1; i >= 0; --i) {
-    for (var i = 0; i < len; ++i) {
-        var overrides = extensions[i](pipeline);
-        pipeline = _.mergeProps({}, pipeline, overrides);
+var defaultPipeline = {
+
+    acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => {
+
+        //TODO: doc...
+        var fiber: Fiber = null;
+        var co: Coroutine = {
+            enter: (error?, value?) => {
+
+                // On first entry
+                if (!fiber) {
+                    assert(arguments.length === 0, 'enter: initial call must have no arguments');
+
+                    //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
+                    //TODO: setImmediate? all, some? Was on finally, what now?
+                    var tryBlock = () => {
+                        var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
+                        protocol.return(co, result);
+                    };
+                    var catchBlock = err => protocol.throw(co, err);
+                    var finallyBlock = () => {
+                        protocol.finally(co);
+                        setImmediate(() => {
+                            // release fiber really async? Does this make sense release fiber -> <async> -> release co?
+                            pipeline.releaseFiber(fiber).then(() => {
+                                pipeline.releaseCoro(co);
+                            });
+                        });
+                    }
+
+                    // V8 may not optimise the following function due to the presence of
+                    // try/catch/finally. Therefore it does as little as possible, only
+                    // referencing the optimisable closures prepared above.
+                    function fiberBody() {
+                        try { tryBlock(); }
+                        catch (err) { catchBlock(err); }
+                        finally { finallyBlock(); }
+                    };
+
+                    pipeline.acquireFiber(fiberBody).then(f => {
+                        fiber = f;
+                        fiber.co = co;
+                        fiber.yield = value => protocol.yield(co, value);
+                        fiber.run();
+                    });
+                }
+                else {
+                    // TODO: explain...
+                    if (error) setImmediate(() => { fiber.throwInto(error); });
+                    else setImmediate(() => { fiber.run(value); });
+                }
+            },
+            leave: (value?) => {
+                //TODO: assert is current...
+                Fiber.yield(value);
+            }
+        };
+        return co;
+    },
+
+
+    //TODO: doc...
+    releaseCoro: (co: Coroutine) => {
+        //TODO: no-op?
+    },
+
+
+    //TODO: doc...
+    acquireFiber: (body: () => any) => {
+        return Promise.resolve(Fiber(body));
+    },
+
+
+    //TODO: doc...
+    releaseFiber: (fiber: Fiber) => {
+        fiber.co = null;
+        fiber.yield = null;
+        return Promise.resolve();
     }
 }
 
 
 //TODO: doc...
-var pipeline: Pipeline;
+pipeline.reset();

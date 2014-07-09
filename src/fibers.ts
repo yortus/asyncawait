@@ -3,6 +3,10 @@ import Fiber = require('fibers');
 export = result;
 
 
+//TODO: should work without this now! Try it in prod plugin system...
+
+
+
 //TODO: NB repro created at https://github.com/laverdet/node-fibers/issues/177
 
 

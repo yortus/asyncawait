@@ -5,6 +5,10 @@ import Extension = AsyncAwait.Extension;
 export = factory;
 
 
+//TODO: what if use()'d twice? Will they clash? Can we give a helpful error message?
+
+
+
 function factory(maxConcurrency: number) {
     size(maxConcurrency);
     return (pipeline) => ({

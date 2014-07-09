@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import pipelineModule = require('./pipeline');
+import pipeline = require('./pipeline');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
@@ -33,9 +33,8 @@ function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options:
     // Create the builder function.
     var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
 
-        // TODO: best place for this?
-        // Ensure pipeline is loaded
-        pipeline = pipeline || pipelineModule.getPipeline();
+        //TODO: doc...
+        pipeline.isLocked = true;
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');
@@ -167,7 +166,3 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
 
 // This module variable holds the cached source of $SUSPENDABLE_TEMPLATE, defined above.
 var suspendableTemplateSource;
-
-
-//TODO: doc...
-var pipeline: AsyncAwait.Pipeline;

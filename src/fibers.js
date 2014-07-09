@@ -1,5 +1,6 @@
 ﻿var Fiber = require('fibers');
 
+//TODO: should work without this now! Try it in prod plugin system...
 //TODO: NB repro created at https://github.com/laverdet/node-fibers/issues/177
 //BROKEN to get attention!
 // TODO: need to merge this from master hotfix...

@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var pipelineModule = require('./pipeline');
+var pipeline = require('./pipeline');
 var _ = require('./util');
 
 
@@ -27,9 +27,8 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
-        // TODO: best place for this?
-        // Ensure pipeline is loaded
-        pipeline = pipeline || pipelineModule.getPipeline();
+        //TODO: doc...
+        pipeline.isLocked = true;
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');
@@ -153,8 +152,5 @@ function createSuspendableFunction(protocol, invokee, options) {
 
 // This module variable holds the cached source of $SUSPENDABLE_TEMPLATE, defined above.
 var suspendableTemplateSource;
-
-//TODO: doc...
-var pipeline;
 module.exports = asyncBuilder;
 //# sourceMappingURL=asyncBuilder.js.map
