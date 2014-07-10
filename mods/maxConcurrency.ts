@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
 import Fiber = require('fibers');
-import Extension = AsyncAwait.Extension;
+import Mod = AsyncAwait.Mod;
 export = factory;
 
 

@@ -17,10 +17,10 @@ var pipeline = {
 
 
     //TODO: doc... private use stuff below...
-    extensions: [],
+    mods: [],
     reset: () => {
         _.mergeProps(pipeline, defaultPipeline);
-        pipeline.extensions = [];
+        pipeline.mods = [];
         pipeline.isLocked = false;
     },
     isLocked: false

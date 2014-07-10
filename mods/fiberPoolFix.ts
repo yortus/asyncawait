@@ -1,11 +1,11 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
-import Extension = AsyncAwait.Extension;
-export = extension;
+import Mod = AsyncAwait.Mod;
+export = mod;
 
 
 //TODO: doc...
-var extension: Extension = (pipeline) => ({
+var mod: Mod = (pipeline) => ({
     acquireFiber: body => {
         inc();
         return pipeline.acquireFiber(body);

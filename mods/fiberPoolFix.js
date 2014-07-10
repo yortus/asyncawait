@@ -2,7 +2,7 @@
 
 
 //TODO: doc...
-var extension = function (pipeline) {
+var mod = function (pipeline) {
     return ({
         acquireFiber: function (body) {
             inc();
@@ -34,5 +34,5 @@ function dec() {
 
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;
-module.exports = extension;
+module.exports = mod;
 //# sourceMappingURL=fiberPoolFix.js.map

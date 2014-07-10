@@ -25,7 +25,7 @@ declare module AsyncAwait {
         releaseFiber?: (fiber: Fiber) => Promise<void>;
     }
 
-    export interface Extension {
+    export interface Mod {
         (pipeline: Pipeline): PipelineOverrides;
     }
 
@@ -198,7 +198,7 @@ declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
     export import yield_ = require("asyncawait/yield");
-    export function use(extension: AsyncAwait.Extension): void;
+    export function use(mod: AsyncAwait.Mod): void;
 }
 declare module "asyncawait/async" { var api: AsyncAwait.Async.API; export = api; }
 declare module "asyncawait/await" { var api: AsyncAwait.Await.API; export = api; }

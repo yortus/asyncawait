@@ -5,8 +5,24 @@ import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import use = require('asyncawait/src/use');
 import pipeline = require('asyncawait/src/pipeline');
-import maxConcurrency = require('asyncawait/mods/maxConcurrency');
 var expect = chai.expect;
+
+
+//TODO: define test mods...
+// var testMod1 = (pipeline) => {...}
+// var testMod2 = (pipeline) => {...}
+
+
+//TODO: add these use(...) tests...
+// does not execute the mod function if async(...) is not called
+// applies mods in X order
+// executes the mod function on first call to async
+// applies the mods to all async calls
+// throws if use(...) called after async(...) call
+// rejects invalid mods
+
+
+
 
 
 //var origConcurrency;
@@ -36,54 +52,3 @@ var expect = chai.expect;
 //        expect(async.config().maxConcurrency).to.equal(1000000);
 //    });
 //});
-
-
-describe('Setting config via async.config(...)', () => {
-
-    var started = 0, finished = 0;
-    var opA = async (() => { ++started; await (Promise.delay(20)); ++finished; });
-    var opB = async (() => { return { started: started, finished: finished }; });
-
-    //it('updates maxConcurency to the specified value', () => {
-    //    async.config({ maxConcurrency: 17 });
-    //    expect(async.config().maxConcurrency).to.equal(17);
-    //    async.config({ maxConcurrency: 1000000 });
-    //    expect(async.config().maxConcurrency).to.equal(1000000);
-    //});
-
-    //it('leaves omitted config values unchanged', () => {
-    //    async.config({ maxConcurrency: 17 });
-    //    expect(async.config().maxConcurrency).to.equal(17);
-    //    async.config({ });
-    //    async.config({ maxConcurrency: undefined });
-    //    async.config({ maxConcurrency: null });
-    //    expect(async.config().maxConcurrency).to.equal(17);
-    //});
-
-    it('applies the specified maxConcurrency setting to subsequent operations', done => {
-
-        function doTasks(maxCon: number) {
-            try {
-                started = finished = 0;
-                pipeline.reset();
-                use(maxConcurrency(maxCon));
-                return Promise
-                    .all([opA(), opA(), opA(), opA(), opA(), opB()])
-                    .then(r => <any> r[5]);
-            }
-            catch (err) {
-                console.log(err);
-                throw err;
-            }
-        }
-
-        doTasks(10)
-        .then(r => expect(r.finished).to.equal(0))
-        .then(() => doTasks(1))
-        .then(r => expect(r.finished).to.equal(5))
-        .then(() => doTasks(5))
-        .then(r => expect(r.finished).to.be.greaterThan(0))
-        .then(() => done())
-        .catch(done);
-    });
-});

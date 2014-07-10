@@ -1,24 +1,24 @@
 ﻿import references = require('references');
 import _ = require('./util');
 import pipeline = require('./pipeline');
-import Extension = AsyncAwait.Extension;
+import Mod = AsyncAwait.Mod;
 export = use;
 
 
 //TODO: doc...
-function use(extension: Extension) {
+function use(mod: Mod) {
 
     //TODO: ...
-    if (pipeline.isLocked) throw new Error('use: cannot alter extensions after first async(...) call');
+    if (pipeline.isLocked) throw new Error('use: cannot alter mods after first async(...) call');
 
     //TODO: handle ordering properly - may need to separate builtins from use-added stuff
-    var extensions = pipeline.extensions;
-    extensions.push(extension);
+    var mods = pipeline.mods;
+    mods.push(mod);
     pipeline.reset();
-    var len = extensions.length;
+    var len = mods.length;
     for (var i = len - 1; i >= 0; --i) {
         var previous = _.mergeProps({}, pipeline);
-        var overrides = extensions[i](previous);
+        var overrides = mods[i](previous);
         _.mergeProps(pipeline, overrides);
     }
 }

@@ -11,10 +11,10 @@ var pipeline = {
     acquireFiber: null,
     releaseFiber: null,
     //TODO: doc... private use stuff below...
-    extensions: [],
+    mods: [],
     reset: function () {
         _.mergeProps(pipeline, defaultPipeline);
-        pipeline.extensions = [];
+        pipeline.mods = [];
         pipeline.isLocked = false;
     },
     isLocked: false
