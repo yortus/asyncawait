@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-var Fiber = require('../src/fibers');
+var Fiber = require('fibers');
 import oldBuilder = require('../src/awaitBuilder');
 import Promise = require('bluebird');
 export = builder;

@@ -1,4 +1,4 @@
-﻿var Fiber = require('../src/fibers');
+﻿var Fiber = require('fibers');
 var oldBuilder = require('../src/awaitBuilder');
 
 

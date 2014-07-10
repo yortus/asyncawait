@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import Fiber = require('./fibers');
+import Fiber = require('fibers');
 import _ = require('./util');
 import Builder = AsyncAwait.Await.Builder;
 import Handler = AsyncAwait.Await.Handler;

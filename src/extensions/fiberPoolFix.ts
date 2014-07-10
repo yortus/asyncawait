@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Fiber = require('../fibers');
+import Fiber = require('fibers');
 import Extension = AsyncAwait.Extension;
 export = extension;
 

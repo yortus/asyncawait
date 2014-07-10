@@ -1,4 +1,4 @@
-﻿var Fiber = require('../src/fibers');
+﻿var Fiber = require('fibers');
 
 function yield_(value) {
     // Ensure this function is executing inside a fiber.

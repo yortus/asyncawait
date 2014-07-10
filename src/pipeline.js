@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var Promise = require('bluebird');
-var Fiber = require('./fibers');
+var Fiber = require('fibers');
 var _ = require('./util');
 
 

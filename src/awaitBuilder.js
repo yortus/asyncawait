@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var Fiber = require('./fibers');
+var Fiber = require('fibers');
 var _ = require('./util');
 
 

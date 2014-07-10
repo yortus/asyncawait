@@ -1,5 +1,5 @@
 ﻿var Fiber = require('fibers');
-
+module.exports = Fiber;
 //TODO: should work without this now! Try it in prod plugin system...
 //TODO: NB repro created at https://github.com/laverdet/node-fibers/issues/177
 //BROKEN to get attention!
@@ -24,10 +24,7 @@
 // use node-fibers, then the process may still end up using multiple instances of
 // node-fibers during execution. This needs investigating in node-fibers itself.
 // I intend to create a cut-down repro and raise an issue in the node-fibers project.
-if (!global.asyncawait)
-    global.asyncawait = {};
-if (!global.asyncawait.Fiber)
-    global.asyncawait.Fiber = Fiber;
-var result = global.asyncawait.Fiber;
-module.exports = result;
+//if (!global.asyncawait) global.asyncawait = {};
+//if (!global.asyncawait.Fiber) global.asyncawait.Fiber = Fiber;
+//var result: typeof Fiber = global.asyncawait.Fiber;
 //# sourceMappingURL=fibers.js.map

@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Fiber = require('../src/fibers');
+import Fiber = require('fibers');
 export = yield_;
 
 

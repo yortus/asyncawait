@@ -1,4 +1,4 @@
-﻿var Fiber = require('../fibers');
+﻿var Fiber = require('fibers');
 
 
 //TODO: doc...
@@ -35,4 +35,4 @@ function dec() {
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;
 module.exports = extension;
-//# sourceMappingURL=fiberPoolResizer.js.map
+//# sourceMappingURL=fiberPoolFix.js.map

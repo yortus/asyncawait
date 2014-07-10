@@ -84,14 +84,12 @@
     <TypeScriptCompile Include="recipes\TODO.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
-    <TypeScriptCompile Include="src\extensions\fiberPoolResizer.ts" />
+    <TypeScriptCompile Include="src\extensions\fiberPoolFix.ts" />
     <TypeScriptCompile Include="src\extensions\maxConcurrency.ts" />
-    <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\pipeline.ts" />
     <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\util.ts" />
     <TypeScriptCompile Include="tests\async.mod.ts" />
-    <TypeScriptCompile Include="tests\async.config.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
     <TypeScriptCompile Include="tests\async.express.ts" />
     <TypeScriptCompile Include="tests\async.iterable.promise.ts" />

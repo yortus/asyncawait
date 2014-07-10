@@ -1,5 +1,5 @@
 ﻿var Promise = require('bluebird');
-var Fiber = require('../fibers');
+var Fiber = require('fibers');
 
 
 //TODO: what if use()'d twice? Will they clash? Can we give a helpful error message?
