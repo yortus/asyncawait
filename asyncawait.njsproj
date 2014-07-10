@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>examples\basic.js</StartupFile>
+    <StartupFile>support\examples\basic.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -44,7 +44,7 @@
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
     <Content Include="changelog.md" />
-    <Content Include="comparison\README.md" />
+    <Content Include="support\comparison\README.md" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -74,18 +74,18 @@
     <TypeScriptCompile Include="await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="await\TODO\value.ts" />
-    <TypeScriptCompile Include="examples\ts\express.ts" />
-    <TypeScriptCompile Include="examples\ts\mocha.ts" />
-    <TypeScriptCompile Include="recipes\expressRouting.ts" />
-    <TypeScriptCompile Include="recipes\mochaChai.ts" />
-    <TypeScriptCompile Include="recipes\grunt.ts" />
-    <TypeScriptCompile Include="recipes\httpGetFile.ts" />
-    <TypeScriptCompile Include="recipes\controlFlow.ts" />
-    <TypeScriptCompile Include="recipes\TODO.ts" />
+    <TypeScriptCompile Include="support\examples\ts\express.ts" />
+    <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
+    <TypeScriptCompile Include="support\recipes\expressRouting.ts" />
+    <TypeScriptCompile Include="support\recipes\mochaChai.ts" />
+    <TypeScriptCompile Include="support\recipes\grunt.ts" />
+    <TypeScriptCompile Include="support\recipes\httpGetFile.ts" />
+    <TypeScriptCompile Include="support\recipes\controlFlow.ts" />
+    <TypeScriptCompile Include="support\recipes\TODO.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
-    <TypeScriptCompile Include="src\extensions\fiberPoolFix.ts" />
-    <TypeScriptCompile Include="src\extensions\maxConcurrency.ts" />
+    <TypeScriptCompile Include="mods\fiberPoolFix.ts" />
+    <TypeScriptCompile Include="mods\maxConcurrency.ts" />
     <TypeScriptCompile Include="src\pipeline.ts" />
     <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\util.ts" />
@@ -105,6 +105,7 @@
     <TypeScriptCompile Include="tests\await.promise.ts" />
     <TypeScriptCompile Include="tests\await.ts" />
     <Content Include="references.d.ts" />
+    <Content Include="support\docs\index.md" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />
     <Content Include="typings\chai\chai.d.ts" />
@@ -112,39 +113,40 @@
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="tests\use.ts" />
+    <TypeScriptCompile Include="use\index.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="comparison\benchmark.js" />
-    <Compile Include="comparison\countFiles\countFiles-async.js" />
-    <Compile Include="comparison\countFiles\countFiles-asyncawait.js" />
-    <Compile Include="comparison\countFiles\countFiles-bluebird.js" />
-    <Compile Include="comparison\countFiles\countFiles-callbacks.js" />
-    <Compile Include="comparison\countFiles\countFiles-co.js" />
-    <Compile Include="comparison\countFiles\countFiles-synchronous.js" />
-    <Compile Include="comparison\fibonacci\fibonacci-async.js" />
-    <Compile Include="comparison\fibonacci\fibonacci-asyncawait.js" />
-    <Compile Include="comparison\fibonacci\fibonacci-bluebird.js" />
-    <Compile Include="comparison\fibonacci\fibonacci-callbacks.js" />
-    <Compile Include="comparison\fibonacci\fibonacci-co.js" />
-    <Compile Include="comparison\fibonacci\fibonacci-synchronous.js" />
-    <Compile Include="comparison\largest\largest-async.js" />
-    <Compile Include="comparison\largest\largest-asyncawait-iterators.js" />
-    <Compile Include="comparison\largest\largest-asyncawait.js" />
-    <Compile Include="comparison\largest\largest-bluebird.js" />
-    <Compile Include="comparison\largest\largest-callbacks.js" />
-    <Compile Include="comparison\largest\largest-co.js" />
-    <Compile Include="comparison\largest\largest-synchronous.js" />
-    <Compile Include="comparison\mockfs.js" />
-    <Compile Include="examples\asyncMod.js" />
-    <Compile Include="examples\awaitTop.js" />
-    <Compile Include="examples\basic.js" />
-    <Compile Include="examples\countFiles.js" />
-    <Compile Include="examples\descendentFilePaths.js" />
-    <Compile Include="examples\interleaved.js" />
-    <Compile Include="examples\iteration.js" />
-    <Compile Include="examples\parallel.js" />
-    <Compile Include="examples\stream.js" />
+    <Compile Include="support\comparison\benchmark.js" />
+    <Compile Include="support\comparison\countFiles\countFiles-async.js" />
+    <Compile Include="support\comparison\countFiles\countFiles-asyncawait.js" />
+    <Compile Include="support\comparison\countFiles\countFiles-bluebird.js" />
+    <Compile Include="support\comparison\countFiles\countFiles-callbacks.js" />
+    <Compile Include="support\comparison\countFiles\countFiles-co.js" />
+    <Compile Include="support\comparison\countFiles\countFiles-synchronous.js" />
+    <Compile Include="support\comparison\fibonacci\fibonacci-async.js" />
+    <Compile Include="support\comparison\fibonacci\fibonacci-asyncawait.js" />
+    <Compile Include="support\comparison\fibonacci\fibonacci-bluebird.js" />
+    <Compile Include="support\comparison\fibonacci\fibonacci-callbacks.js" />
+    <Compile Include="support\comparison\fibonacci\fibonacci-co.js" />
+    <Compile Include="support\comparison\fibonacci\fibonacci-synchronous.js" />
+    <Compile Include="support\comparison\largest\largest-async.js" />
+    <Compile Include="support\comparison\largest\largest-asyncawait-iterators.js" />
+    <Compile Include="support\comparison\largest\largest-asyncawait.js" />
+    <Compile Include="support\comparison\largest\largest-bluebird.js" />
+    <Compile Include="support\comparison\largest\largest-callbacks.js" />
+    <Compile Include="support\comparison\largest\largest-co.js" />
+    <Compile Include="support\comparison\largest\largest-synchronous.js" />
+    <Compile Include="support\comparison\mockfs.js" />
+    <Compile Include="support\examples\asyncMod.js" />
+    <Compile Include="support\examples\awaitTop.js" />
+    <Compile Include="support\examples\basic.js" />
+    <Compile Include="support\examples\countFiles.js" />
+    <Compile Include="support\examples\descendentFilePaths.js" />
+    <Compile Include="support\examples\interleaved.js" />
+    <Compile Include="support\examples\iteration.js" />
+    <Compile Include="support\examples\parallel.js" />
+    <Compile Include="support\examples\stream.js" />
     <Compile Include="Gruntfile.js" />
     <Compile Include="index.js" />
   </ItemGroup>
@@ -153,15 +155,18 @@
     <Folder Include="async\iterable\" />
     <Folder Include="await\" />
     <Folder Include="await\TODO\" />
-    <Folder Include="comparison\" />
-    <Folder Include="comparison\countFiles\" />
-    <Folder Include="comparison\fibonacci\" />
-    <Folder Include="comparison\largest\" />
-    <Folder Include="examples\" />
-    <Folder Include="examples\ts\" />
-    <Folder Include="recipes\" />
+    <Folder Include="support\comparison\" />
+    <Folder Include="support\comparison\countFiles\" />
+    <Folder Include="support\comparison\fibonacci\" />
+    <Folder Include="support\comparison\largest\" />
+    <Folder Include="support\examples\" />
+    <Folder Include="support\examples\ts\" />
+    <Folder Include="mods\" />
+    <Folder Include="support\" />
+    <Folder Include="support\docs\" />
+    <Folder Include="use\" />
+    <Folder Include="support\recipes\" />
     <Folder Include="src\" />
-    <Folder Include="src\extensions\" />
     <Folder Include="tests\" />
     <Folder Include="typings\" />
     <Folder Include="typings\asyncawait\" />

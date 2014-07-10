@@ -4,7 +4,7 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var use = require('asyncawait/src/use');
 var pipeline = require('asyncawait/src/pipeline');
-var maxConcurrency = require('asyncawait/src/extensions/maxConcurrency');
+var maxConcurrency = require('asyncawait/mods/maxConcurrency');
 var expect = chai.expect;
 
 //var origConcurrency;

@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         clean: {
             main: {
                 src: [
-                    'src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'tests/**/*.js',
-                    'src/**/*.js.map', 'async/**/*.js.map', 'await/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map'
+                    'src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'tests/**/*.js', 'mods/**.*.js',
+                    'src/**/*.js.map', 'async/**/*.js.map', 'await/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map', 'mods/**.*.js'
                 ]
             }
         },
@@ -21,6 +21,7 @@ module.exports = function(grunt) {
                     'async/**/*.ts',
                     'await/**/*.ts',
                     'yield/**/*.ts',
+                    'mods/**.*.js',
                     'tests/**/*.ts'
                 ],
                 dest: '.',
@@ -37,7 +38,7 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 expand: true,
-                src: ['src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'index.js'],
+                src: ['src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'mods/**/*.js', 'index.js'],
                 dest: 'node_modules/asyncawait'
             }
         },
