@@ -7,7 +7,7 @@
 var oldBuilder = require('../src/asyncBuilder');
 var stream = require('stream');
 
-var builder = oldBuilder.mod(function () {
+var builder = oldBuilder.derive(function () {
     return ({
         invoke: function (co) {
             return co.stream = new Stream(function () {

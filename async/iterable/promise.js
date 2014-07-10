@@ -3,7 +3,7 @@ var assert = require('assert');
 var Promise = require('bluebird');
 var _ = require('../../src/util');
 
-var builder = oldBuilder.mod(function () {
+var builder = oldBuilder.derive(function () {
     return ({
         invoke: function (co) {
             co.nextResolver = null;

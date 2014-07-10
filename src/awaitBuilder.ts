@@ -42,25 +42,25 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
         return Fiber.yield();
     }
 
-    // Tack on the handler and options properties, and the mod() method.
+    // Tack on the handler and options properties, and the derive() method.
     builder.handler = handler;
     builder.options = options;
-    builder.mod = createModMethod(handler, handlerFactory, options, baseHandler);
+    builder.derive = createDeriveMethod(handler, handlerFactory, options, baseHandler);
 
     // Return the await builder function.
     return builder;
 }
 
 
-/** Creates a mod method appropriate to the given handler settings. */
-function createModMethod(handler, handlerFactory, options, baseHandler) {
+/** Creates a derive method appropriate to the given handler settings. */
+function createDeriveMethod(handler, handlerFactory, options, baseHandler) {
     return function mod() {
 
         // Validate the arguments.
         var len = arguments.length;
-        assert(len > 0, 'mod(): expected at least one argument');
+        assert(len > 0, 'derive(): expected at least one argument');
         var arg0 = arguments[0], hasHandlerFactory = _.isFunction(arg0);
-        assert(hasHandlerFactory || len === 1, 'mod(): invalid argument combination');
+        assert(hasHandlerFactory || len === 1, 'derive(): invalid argument combination');
 
         // Determine the appropriate options to pass to createAwaitBuilder.
         var opts = {};

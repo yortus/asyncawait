@@ -1,7 +1,7 @@
 ﻿var oldBuilder = require('../src/asyncBuilder');
 var Promise = require('bluebird');
 
-var builder = oldBuilder.mod(function () {
+var builder = oldBuilder.derive(function () {
     return ({
         invoke: function (co) {
             co.resolver = Promise.defer();

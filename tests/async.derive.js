@@ -17,9 +17,9 @@ var customProtocolFactory = function (options, baseProtocol) {
     };
 };
 
-describe('async.mod(...)', function () {
+describe('async.derive(...)', function () {
     it('returns a new async function defaulting to the same protocol', function (done) {
-        var a2 = async.mod({});
+        var a2 = async.derive({});
         expect(a2).to.exist;
         expect(a2).to.not.equal(async);
         var fn = a2(function (n) {
@@ -33,7 +33,7 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol', function (done) {
-        var asyncX = async.mod(customProtocolFactory);
+        var asyncX = async.derive(customProtocolFactory);
         var fn = asyncX(function (msg) {
             return msg;
         });
@@ -45,7 +45,7 @@ describe('async.mod(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol options', function (done) {
-        var asyncX = async.mod(customProtocolFactory).mod({ prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.derive(customProtocolFactory).derive({ prefix: '<<<', suffix: '>>>' });
         var fn = asyncX(function (msg) {
             return msg;
         });
@@ -56,4 +56,4 @@ describe('async.mod(...)', function () {
         }).catch(done);
     });
 });
-//# sourceMappingURL=async.mod.js.map
+//# sourceMappingURL=async.derive.js.map

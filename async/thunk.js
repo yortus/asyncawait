@@ -1,7 +1,7 @@
 ﻿var oldBuilder = require('./cps');
 var _ = require('../src/util');
 
-var newBuilder = oldBuilder.mod(function (options, cps) {
+var newBuilder = oldBuilder.derive(function (options, cps) {
     return ({
         invoke: function (co) {
             return function (callback) {

@@ -5,7 +5,7 @@ import _ = require('../../src/util');
 export = builder;
 
 
-var builder = oldBuilder.mod<AsyncAwait.Async.IterableCPSBuilder>(() => ({
+var builder = oldBuilder.derive<AsyncAwait.Async.IterableCPSBuilder>(() => ({
     invoke: (co) => {
         co.nextCallback = <(err, item?: { done: boolean; value?: any; }) => void> null;
         co.done = false;

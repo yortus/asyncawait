@@ -9,7 +9,7 @@ export = api;
 
 
 var api: AsyncAwait.Async.API = <any> promise;
-api.promise = promise.mod<AsyncAwait.Async.PromiseBuilder>({});
+api.promise = promise.derive<AsyncAwait.Async.PromiseBuilder>({});
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;

@@ -5,7 +5,7 @@ import _ = require('../src/util');
 export = builder;
 
 
-var builder = oldBuilder.mod<AsyncAwait.Async.CPSBuilder>(() => ({
+var builder = oldBuilder.derive<AsyncAwait.Async.CPSBuilder>(() => ({
     invoke: (co, callback: AsyncAwait.Callback<any>) => {
         assert(_.isFunction(callback), 'Expected final argument to be a callback');
         co.callback = callback;

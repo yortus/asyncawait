@@ -57,10 +57,10 @@ function runTestsFor(variant, acceptsCallback) {
         });
 
         it('has an options property that matches the passed-in options', function () {
-            var func2 = func.mod({ special: 777 });
+            var func2 = func.derive({ special: 777 });
             expect(func2.options).to.exist;
             expect(func2.options['special']).to.equal(777);
-            var func2 = func.mod({ other: 'blah' });
+            var func2 = func.derive({ other: 'blah' });
             expect(func2.options['special']).to.not.exist;
         });
 
@@ -68,12 +68,12 @@ function runTestsFor(variant, acceptsCallback) {
             var invoke = function (co, arg) {
                 return 'blah';
             };
-            var func2 = func.mod(function () {
+            var func2 = func.derive(function () {
                 return ({ invoke: invoke });
             });
             expect(func2.protocol).to.exist;
             expect(func2.protocol.invoke).to.equal(invoke);
-            var func3 = func.mod({ a: 1 });
+            var func3 = func.derive({ a: 1 });
             expect(func3.protocol).to.exist;
             expect(func3.protocol.invoke).to.not.equal(invoke);
         });

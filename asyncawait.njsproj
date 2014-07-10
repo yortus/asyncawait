@@ -139,7 +139,6 @@
     <Compile Include="support\comparison\largest\largest-co.js" />
     <Compile Include="support\comparison\largest\largest-synchronous.js" />
     <Compile Include="support\comparison\mockfs.js" />
-    <Compile Include="support\examples\asyncMod.js" />
     <Compile Include="support\examples\awaitTop.js" />
     <Compile Include="support\examples\basic.js" />
     <Compile Include="support\examples\countFiles.js" />

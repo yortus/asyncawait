@@ -5,7 +5,7 @@ import Promise = require('bluebird');
 export = builder;
 
 
-var builder = oldBuilder.mod<AsyncAwait.Await.CPSBuilder>(
+var builder = oldBuilder.derive<AsyncAwait.Await.CPSBuilder>(
     () => (co, args) => {
         if (args.length !== 1 || args[0] !== void 0) return false;
         Fiber.current.resume = co.enter;

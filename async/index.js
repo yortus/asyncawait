@@ -6,7 +6,7 @@ var stream = require('./stream');
 var iterable = require('./iterable/index');
 
 var api = promise;
-api.promise = promise.mod({});
+api.promise = promise.derive({});
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;

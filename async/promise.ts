@@ -4,7 +4,7 @@ import Promise = require('bluebird');
 export = builder;
 
 
-var builder = oldBuilder.mod<AsyncAwait.Async.PromiseBuilder>(() => ({
+var builder = oldBuilder.derive<AsyncAwait.Async.PromiseBuilder>(() => ({
     invoke: (co) => {
         co.resolver = Promise.defer<any>();
         co.enter();

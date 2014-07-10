@@ -6,7 +6,7 @@ import _ = require('../../src/util');
 export = builder;
 
 
-var builder = oldBuilder.mod<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
+var builder = oldBuilder.derive<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
     invoke: (co) => {
         co.nextResolver = <Promise.Resolver<any>> null;
         co.done = false;

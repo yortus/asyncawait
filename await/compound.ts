@@ -9,7 +9,7 @@ interface CompoundOptions {
 }
 
 
-var builder = oldBuilder.mod<AsyncAwait.Await.Builder>(
+var builder = oldBuilder.derive<AsyncAwait.Await.Builder>(
     (options: any) => (co, args) => {
         var handlers = options.handlers || [], len = handlers.length, result = false;
         for (var i = 0; result === false && i < len; ++i) result = handlers[i](co, args);

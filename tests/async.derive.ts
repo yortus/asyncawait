@@ -16,10 +16,10 @@ var customProtocolFactory = (options, baseProtocol) => {
 };
 
 
-describe('async.mod(...)', () => {
+describe('async.derive(...)', () => {
 
     it('returns a new async function defaulting to the same protocol', done => {
-        var a2 = async.mod({});
+        var a2 = async.derive({});
         expect(a2).to.exist;
         expect(a2).to.not.equal(async);
         var fn = a2((n: number) => 111 * n);
@@ -30,7 +30,7 @@ describe('async.mod(...)', () => {
     });
 
     it('returns an async function that uses the specified protocol', done => {
-        var asyncX = async.mod(customProtocolFactory);
+        var asyncX = async.derive(customProtocolFactory);
         var fn = asyncX (msg => msg);
         fn('BLAH!')
         .then(r => expect(r).to.equal('BLAH!'))
@@ -39,7 +39,7 @@ describe('async.mod(...)', () => {
     });
 
     it('returns an async function that uses the specified protocol options', done => {
-        var asyncX = async.mod(customProtocolFactory).mod({ prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.derive(customProtocolFactory).derive({ prefix: '<<<', suffix: '>>>' });
         var fn = asyncX (msg => msg);
         fn('BLAH!')
         .then(r => expect(r).to.equal('<<<BLAH!>>>'))

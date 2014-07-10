@@ -9,7 +9,7 @@ var noop = function (co, args) {
     return co.enter(null, args[0]);
 };
 
-var api = compound.mod({ handlers: [promise.handler, cps.handler, thunk.handler, general, noop] });
+var api = compound.derive({ handlers: [promise.handler, cps.handler, thunk.handler, general, noop] });
 api.promise = promise;
 api.cps = cps;
 api.thunk = thunk;

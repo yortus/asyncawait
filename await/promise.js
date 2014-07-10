@@ -1,7 +1,7 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
 
 
-var builder = oldBuilder.mod(function () {
+var builder = oldBuilder.derive(function () {
     return function (co, args) {
         if (args.length !== 1 || !args[0] || typeof args[0].then !== 'function')
             return false;

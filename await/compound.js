@@ -1,7 +1,7 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
 
 
-var builder = oldBuilder.mod(function (options) {
+var builder = oldBuilder.derive(function (options) {
     return function (co, args) {
         var handlers = options.handlers || [], len = handlers.length, result = false;
         for (var i = 0; result === false && i < len; ++i)
