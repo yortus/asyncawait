@@ -5,9 +5,11 @@ var _ = require('../../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        invoke: function (co) {
+        default: function (co) {
             co.nextResolver = null;
             co.done = false;
+        },
+        invoke: function (co) {
             var next = function () {
                 var res = co.nextResolver = Promise.defer();
                 co.done ? res.reject(new Error('iterated past end')) : co.enter();
@@ -26,9 +28,6 @@ var builder = oldBuilder.derive(function () {
             var result = { done: false, value: value };
             co.nextResolver.resolve(result);
             co.leave();
-        },
-        finally: function (co) {
-            co.nextResolver = null;
         }
     });
 });

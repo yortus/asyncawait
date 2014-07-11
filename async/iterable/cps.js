@@ -4,9 +4,11 @@ var _ = require('../../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        invoke: function (co) {
+        default: function (co) {
             co.nextCallback = null;
             co.done = false;
+        },
+        invoke: function (co) {
             var next = function (callback) {
                 co.nextCallback = callback || _.empty;
                 co.done ? co.nextCallback(new Error('iterated past end')) : co.enter();
@@ -24,9 +26,6 @@ var builder = oldBuilder.derive(function () {
             var result = { done: false, value: value };
             co.nextCallback(null, result);
             co.leave();
-        },
-        finally: function (co) {
-            co.nextCallback = null;
         }
     });
 });

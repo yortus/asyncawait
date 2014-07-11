@@ -88,20 +88,21 @@ declare module AsyncAwait {
         export interface Options {
         }
 
+        //TODO: doc these methods
         export interface Protocol {
+            default: (co: Coroutine) => void;
             invoke: (co: Coroutine, ...protocolArgs) => any;
             return: (co: Coroutine, result: any) => void;
             throw: (co: Coroutine, error: Error) => void;
             yield: (co: Coroutine, value: any) => void;
-            finally: (co: Coroutine) => void;
         }
 
         export interface ProtocolOverrides {
+            default?: (co: Coroutine) => void;
             invoke?: (co: Coroutine, ...protocolArgs) => any;
             return?: (co: Coroutine, result: any) => void;
             throw?: (co: Coroutine, error: Error) => void;
             yield?: (co: Coroutine, value: any) => void;
-            finally?: (co: Coroutine) => void;
         }
     }
 

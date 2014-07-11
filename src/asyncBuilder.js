@@ -8,6 +8,8 @@ var SUSPENDABLE_DEBUG = false;
 
 // Bootstrap an initial async builder using a no-op protocol.
 var asyncBuilder = createAsyncBuilder(_.empty, {}, {
+    default: function (co) {
+    },
     invoke: function (co) {
     },
     return: function (co, result) {
@@ -15,8 +17,6 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     throw: function (co, error) {
     },
     yield: function (co, value) {
-    },
-    finally: function (co) {
     }
 });
 

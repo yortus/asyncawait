@@ -4,6 +4,9 @@ var _ = require('../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
+        default: function (co) {
+            co.callback = null;
+        },
         invoke: function (co, callback) {
             assert(_.isFunction(callback), 'Expected final argument to be a callback');
             co.callback = callback;
@@ -14,9 +17,6 @@ var builder = oldBuilder.derive(function () {
         },
         throw: function (co, error) {
             return co.callback(error);
-        },
-        finally: function (co) {
-            co.callback = null;
         }
     });
 });

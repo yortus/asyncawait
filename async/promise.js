@@ -3,6 +3,9 @@ var Promise = require('bluebird');
 
 var builder = oldBuilder.derive(function () {
     return ({
+        default: function (co) {
+            co.resolver = null;
+        },
         invoke: function (co) {
             co.resolver = Promise.defer();
             co.enter();
@@ -16,9 +19,6 @@ var builder = oldBuilder.derive(function () {
         },
         yield: function (co, value) {
             return co.resolver.progress(value);
-        },
-        finally: function (co) {
-            co.resolver = null;
         }
     });
 });

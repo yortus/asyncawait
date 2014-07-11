@@ -58,7 +58,7 @@ var defaultPipeline = {
                 };
                 var catchBlock = err => protocol.throw(co, err);
                 var finallyBlock = () => {
-                    protocol.finally(co);
+                    protocol.default(co); // here? or in releaseCoro?
                     setImmediate(() => {
                         // release fiber really async? Does this make sense release fiber -> <async> -> release co?
                         pipeline.releaseFiber(fiber).then(() => {
@@ -88,6 +88,11 @@ var defaultPipeline = {
                 Fiber.yield(value);
             }
         };
+
+        //TODO:...
+        protocol.default(co);
+
+        //TODO:...
         return co;
     },
 

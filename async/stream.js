@@ -9,6 +9,9 @@ var stream = require('stream');
 
 var builder = oldBuilder.derive(function () {
     return ({
+        default: function (co) {
+            co.stream = null;
+        },
         invoke: function (co) {
             return co.stream = new Stream(function () {
                 return co.enter();
@@ -23,9 +26,6 @@ var builder = oldBuilder.derive(function () {
         yield: function (co, value) {
             co.stream.push(value);
             co.leave();
-        },
-        finally: function (co) {
-            co.stream = null;
         }
     });
 });

@@ -7,9 +7,11 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
-    invoke: (co) => {
-        co.nextResolver = <Promise.Resolver<any>> null;
+    default: (co) => {
+        co.nextResolver = null;
         co.done = false;
+    },
+    invoke: (co) => {
         var next = () => {
             var res = co.nextResolver = Promise.defer<any>();
             co.done ? res.reject(new Error('iterated past end')) : co.enter();
@@ -28,9 +30,6 @@ var builder = oldBuilder.derive<AsyncAwait.Async.IterablePromiseBuilder>(() => (
         var result = { done: false, value: value };
         co.nextResolver.resolve(result);
         co.leave();
-    },
-    finally: (co) => {
-        co.nextResolver = null;
     }
 }));
 
