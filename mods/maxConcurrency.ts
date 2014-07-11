@@ -1,37 +1,55 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
 import Fiber = require('fibers');
+import _ = require('../src/util');
 import Mod = AsyncAwait.Mod;
-export = factory;
+export = maxConcurrency;
 
 
-//TODO: what if use()'d twice? Will they clash? Can we give a helpful error message?
+/**
+ *  Limits the number of calls to suspendable functions that can be concurrently executing.
+ *  Excess calls are queued until a slot becomes available. This only applies to calls made
+ *  from the main execution stack (i.e., not calls from other suspendable functions), to
+ *  avoid race conditions.
+ */
+function maxConcurrency(value: number) {
 
+    // Validate argument.
+    if (!_.isNumber(value) || value < 1) throw new Error('maxConcurrency: please specify a positive numeric value');
 
+    // Ensure mod is applied only once.
+    if (size() !== null) throw new Error('maxConcurrency: mod cannot be applied multiple times');
 
-function factory(maxConcurrency: number) {
-    size(maxConcurrency);
+    // Set the semaphore size.
+    size(value);
+
+    // Return the mod function.
     return (pipeline) => ({
+
         acquireFiber: body => {
 
+            // For non-top-level requests, just delegate to the existing pipeline.
             if (Fiber.current) return pipeline.acquireFiber(body);
 
+            // Route all top-level requests through the semaphore, where they will potentially wait.
             return new Promise<Fiber>((resolve: any, reject) => {
-                enter(() => {
-                    pipeline.acquireFiber(body).then(resolve, reject);
-                });
+                enter(() => pipeline.acquireFiber(body).then(fiber => { fiber.inSemaphore = true; resolve(fiber); }, reject));
             });
         },
+
         releaseFiber: fiber => {
-            leave(); //TODO: only if entered...
+
+            // If this fiber went through the semaphore, then we must leave through the semaphore.
+            if (fiber.inSemaphore) {
+                leave();
+                fiber.inSemaphore = false;
+            }
+
+            // Delegate to the existing pipeline.
             return pipeline.releaseFiber(fiber);
         }
     });
 }
-
-
-//TODO add explanation here
-//TODO: optimal? Is this used even if no maxConcurrency specified?
 
 
 /** Enter the global semaphore. */
@@ -44,6 +62,7 @@ function enter(fn: () => void) {
     }
 }
 
+
 /** Leave the global semaphore. */
 function leave() {
     if (_queued.length > 0) {
@@ -54,6 +73,7 @@ function leave() {
     }
 }
 
+
 /** Get or set the size of the global semaphore. */
 function size(n?: number): number {
     if (n) {
@@ -63,8 +83,15 @@ function size(n?: number): number {
     return _size;
 }
 
-var _size: number = 1000000;
 
-var _avail: number = 1000000;
-
+// Private semaphore state.
+var _size: number = null;
+var _avail: number = null;
 var _queued: Function[] = [];
+
+
+// Private hook for unit testing.
+(<any> maxConcurrency)._reset = () => {
+    _size = _avail = null;
+    _queued = [];
+};

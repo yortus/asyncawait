@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>support\examples\basic.js</StartupFile>
+    <StartupFile>comparison\benchmark.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -44,7 +44,6 @@
     <Content Include=".gitignore" />
     <Content Include=".npmignore" />
     <Content Include="changelog.md" />
-    <Content Include="support\comparison\README.md" />
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -74,6 +73,7 @@
     <TypeScriptCompile Include="await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="await\TODO\value.ts" />
+    <TypeScriptCompile Include="mods\continuationOperator.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
     <TypeScriptCompile Include="support\recipes\expressRouting.ts" />
@@ -89,7 +89,6 @@
     <TypeScriptCompile Include="src\pipeline.ts" />
     <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\util.ts" />
-    <TypeScriptCompile Include="tests\async.mod.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
     <TypeScriptCompile Include="tests\async.express.ts" />
     <TypeScriptCompile Include="tests\async.iterable.promise.ts" />
@@ -105,7 +104,9 @@
     <TypeScriptCompile Include="tests\await.promise.ts" />
     <TypeScriptCompile Include="tests\await.ts" />
     <Content Include="references.d.ts" />
+    <Content Include="support\comparison\README.md" />
     <Content Include="support\docs\index.md" />
+    <Content Include="tests\async.derive.ts" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />
     <Content Include="typings\chai\chai.d.ts" />

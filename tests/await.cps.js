@@ -4,7 +4,7 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
 var expect = chai.expect;
-var __ = await.cps;
+var cont = await.cps.continuation;
 
 describe('The await.cps(...) function', function () {
     it('throws if not called within a suspendable function', function () {
@@ -19,9 +19,9 @@ describe('The await.cps(...) function', function () {
             Promise.delay(n).nodeify(callback);
         };
         var foo = async(function () {
-            await.cps(delay(40, __.__));
+            await.cps(delay(40, cont()));
             x = 7;
-            await.cps(delay(40, __.__));
+            await.cps(delay(40, cont()));
             x = 9;
         });
         foo();
@@ -46,17 +46,14 @@ describe('The await.cps(...) function', function () {
             Promise.delay(n).nodeify(callback);
         };
         var foo = async(function () {
-            await.cps(delay(20, __.__));
+            await.cps(delay(20, cont()));
             return 'blah';
         });
         foo().then(function (result) {
             return expect(result).to.equal('blah');
         }).then(function () {
             return done();
-        }).catch(function (err) {
-            console.log('xxxxxxxxxxxxx');
-            done(err);
-        });
+        }).catch(done);
     });
 });
 //# sourceMappingURL=await.cps.js.map

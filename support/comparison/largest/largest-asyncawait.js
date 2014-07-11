@@ -1,12 +1,13 @@
-//var Promise = require('bluebird');
-//var fs = Promise.promisifyAll(require('fs'));
 var fs = require('fs');
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
-var async = require('../..').async;
-var await = require('../..').await;
-var __ = await.cps;
+var asyncawait = require('../../..');
+var async = asyncawait.async;
+var await = asyncawait.await;
+asyncawait.use(require('../../../mods/continuationOperator')('___'));
+
+
 
 
 /**
@@ -25,9 +26,9 @@ var largest = async.cps (function self(dir, options) {
     options = options || defaultOptions;
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
-    var files = await (fs.readdir(dir, __.__));
+    var files = await (fs.readdir(dir, await.cps.continuation()));
     var paths = _.map(files, function (file) { return path.join(dir, file); });
-    var stats = _.map(paths, function (path) { return await (fs.stat(path, __.__)); });
+    var stats = _.map(paths, function (path) { return await (fs.stat(path, ___)); });
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
     var candidates = await (_.map(stats, function (stat, i) {
@@ -46,11 +47,11 @@ var largest = async.cps (function self(dir, options) {
 
     // Add a preview if requested.
     if (result && options.preview) {
-        var fd = await (fs.open(result.path, 'r', __.__));
+        var fd = await (fs.open(result.path, 'r', ___));
         var buffer = new Buffer(40);
-        var bytesRead = await (fs.read(fd, buffer, 0, 40, 0, __.__));
+        var bytesRead = await (fs.read(fd, buffer, 0, 40, 0, ___));
         result.preview = buffer.toString('utf-8', 0, bytesRead);
-        await (fs.close(fd, __.__));
+        await (fs.close(fd, ___));
     }
     return result;
 });

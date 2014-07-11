@@ -52,7 +52,7 @@ module.exports = function(grunt) {
 
         shell: {
             bench: {
-                command: 'node comparison/benchmark.js'
+                command: 'node support/comparison/benchmark.js'
             }
         },
 

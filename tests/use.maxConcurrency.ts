@@ -9,18 +9,18 @@ import maxConcurrency = require('asyncawait/mods/maxConcurrency');
 var expect = chai.expect;
 
 
-describe('Using the maxConcurrency mod', () => {
+describe('The maxConcurrency mod', () => {
 
     var started = 0, finished = 0;
     var opA = async (() => { ++started; await (Promise.delay(20)); ++finished; });
-    var opB = async (() => { return { started: started, finished: finished }; });
-
+    var opB = async (() => ({ started: started, finished: finished }));
+    var reset = () => { pipeline.reset(); (<any> maxConcurrency)._reset(); };
 
     it('applies the specified concurrency factor to subsequent operations', done => {
 
         function doTasks(maxCon: number) {
             started = finished = 0;
-            pipeline.reset();
+            reset();
             use(maxConcurrency(maxCon));
             return Promise
                 .all([opA(), opA(), opA(), opA(), opA(), opB()])
@@ -29,11 +29,30 @@ describe('Using the maxConcurrency mod', () => {
 
         doTasks(10)
         .then(r => expect(r.finished).to.equal(0))
+        .then(() => Promise.delay(40))
         .then(() => doTasks(1))
         .then(r => expect(r.finished).to.equal(5))
+        .then(() => Promise.delay(40))
         .then(() => doTasks(5))
         .then(r => expect(r.finished).to.be.greaterThan(0))
+        .then(() => Promise.delay(40))
         .then(() => done())
         .catch(done);
+    });
+
+    it('fails if applied more than once', done => {
+        reset();
+        try {
+            var i = 1;
+            use(maxConcurrency(10));
+            i = 2;
+            use(maxConcurrency(5));
+            i = 3;
+        }
+        catch (err) { }
+        finally {
+            expect(i).to.equal(2);
+            done();
+        }
     });
 });

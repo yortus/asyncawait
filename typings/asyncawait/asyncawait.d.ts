@@ -9,26 +9,6 @@
 
 declare module AsyncAwait {
 
-    //------------------------- Extensibility -------------------------
-    //TODO: finalise these...
-    export interface Pipeline {
-        acquireCoro: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
-        releaseCoro: (co: Coroutine) => void;
-        acquireFiber: (body: () => any) => Promise<Fiber>;
-        releaseFiber: (fiber: Fiber) => Promise<void>;
-    }
-
-    export interface PipelineOverrides {
-        acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
-        releaseCoro?: (co: Coroutine) => void;
-        acquireFiber?: (body: () => any) => Promise<Fiber>;
-        releaseFiber?: (fiber: Fiber) => Promise<void>;
-    }
-
-    export interface Mod {
-        (pipeline: Pipeline): PipelineOverrides;
-    }
-
 
     //------------------------- Async -------------------------
     export module Async {
@@ -146,7 +126,7 @@ declare module AsyncAwait {
 
         export interface CPSBuilder extends Builder {
             (expr: any): any;
-            __: Callback<any>;
+            continuation: () => Callback<any>;
         }
 
         export interface ThunkBuilder extends Builder {
@@ -177,6 +157,27 @@ declare module AsyncAwait {
     export interface Yield {
         (expr?: any): void;
     }
+
+
+    //------------------------- Extensibility -------------------------
+    export interface Mod {
+        (pipeline: Pipeline): PipelineOverrides;
+    }
+
+    export interface Pipeline {
+        acquireCoro: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
+        releaseCoro: (co: Coroutine) => void;
+        acquireFiber: (body: () => any) => Promise<Fiber>;
+        releaseFiber: (fiber: Fiber) => Promise<void>;
+    }
+
+    export interface PipelineOverrides {
+        acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
+        releaseCoro?: (co: Coroutine) => void;
+        acquireFiber?: (body: () => any) => Promise<Fiber>;
+        releaseFiber?: (fiber: Fiber) => Promise<void>;
+    }
+
 
 
     //------------------------- Common -------------------------

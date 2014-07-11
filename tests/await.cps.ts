@@ -5,7 +5,7 @@ import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
-var __ = await.cps;
+var cont = await.cps.continuation;
 
 
 
@@ -19,9 +19,9 @@ describe('The await.cps(...) function', () => {
         var x = 5;
         var delay = (n, callback) => { Promise.delay(n).nodeify(callback); }
         var foo = async (() => {
-            await.cps (delay(40, __.__));
+            await.cps (delay(40, cont()));
             x = 7;
-            await.cps (delay(40, __.__));
+            await.cps (delay(40, cont()));
             x = 9;
         });
         foo();
@@ -39,16 +39,12 @@ describe('The await.cps(...) function', () => {
     it('resumes the suspendable function with the value of the awaited expression', done => {
         var delay = (n, callback) => { Promise.delay(n).nodeify(callback); }
         var foo = async (() => {
-            await.cps (delay(20, __.__));
+            await.cps (delay(20, cont()));
             return 'blah';
         });
         foo()
         .then(result => expect(result).to.equal('blah'))
         .then(() => done())
-        .catch(err => {
-            console.log('xxxxxxxxxxxxx');
-            done(err);
-            
-        });
+        .catch(done);
     });
 });

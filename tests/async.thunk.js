@@ -55,7 +55,6 @@ describe('A suspendable function returned by async.thunk(...)', function () {
     });
 
     it("preserves the 'this' context of the call", function (done) {
-        //TODO: broken test, fix me
         var foo = { bar: async.thunk(function () {
                 return this;
             }) }, baz = { x: 7 };

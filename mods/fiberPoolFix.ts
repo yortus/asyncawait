@@ -1,11 +1,18 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
 import Mod = AsyncAwait.Mod;
-export = mod;
+export = fiberPoolFix;
 
 
-//TODO: doc...
-var mod: Mod = (pipeline) => ({
+/**
+ *  Automatically manages Fiber.poolSize to work around an issue with node-fibers.
+ *  Apply this mod when the peak number of concurrently executing fibers (there is
+ *  one for each currently executing suspendable function) is likely to exceed 120.
+ *  Memory leaks and slowdowns under heavy load is symptomatic of the issue this
+ *  mod addresses.
+ *  For more details see https://github.com/laverdet/node-fibers/issues/169.
+ */
+var fiberPoolFix: Mod = (pipeline) => ({
     acquireFiber: body => {
         inc();
         return pipeline.acquireFiber(body);
@@ -15,11 +22,6 @@ var mod: Mod = (pipeline) => ({
         return pipeline.releaseFiber(fiber);
     }
 });
-
-
-// The following functionality prevents memory leaks in node-fibers
-// by actively managing Fiber.poolSize. For more information, see
-// https://github.com/laverdet/node-fibers/issues/169.
 
 
 /** Increment the number of active fibers. */
@@ -38,5 +40,6 @@ function dec() {
 }
 
 
+// Private state.
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;

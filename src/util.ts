@@ -20,6 +20,12 @@ export function isPlainObject(obj) {
 }
 
 
+/** Determines whether the given object is a number. */
+export function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
 /** Equivalent to lodash's _.assign() function. */
 export var mergeProps: (...args) => any = () => {
     var len = arguments.length, target = arguments[0];
