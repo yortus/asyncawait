@@ -44,7 +44,7 @@ var foo = async (function() {
 });
 ```
 
-which, with one [proviso](#obtaining-awaitable-versions-of-node-style-apis), is semantically equivalent to:
+which, with one [provision](#obtaining-awaitable-versions-of-node-style-apis), is semantically equivalent to:
 
 ```javascript
 function foo2(callback) {
