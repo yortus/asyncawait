@@ -5,7 +5,7 @@ var _ = require('../../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        default: function (co) {
+        clear: function (co) {
             co.nextResolver = null;
             co.done = false;
         },

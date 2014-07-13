@@ -9,7 +9,7 @@ var stream = require('stream');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        default: function (co) {
+        clear: function (co) {
             co.stream = null;
         },
         invoke: function (co) {

@@ -3,7 +3,7 @@ var Promise = require('bluebird');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        default: function (co) {
+        clear: function (co) {
             co.resolver = null;
         },
         invoke: function (co) {

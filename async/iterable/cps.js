@@ -4,7 +4,7 @@ var _ = require('../../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        default: function (co) {
+        clear: function (co) {
             co.nextCallback = null;
             co.done = false;
         },

@@ -5,7 +5,7 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.PromiseBuilder>(() => ({
-    default: (co) => { co.resolver = null; },
+    clear: (co) => { co.resolver = null; },
     invoke: (co) => {
         co.resolver = Promise.defer<any>();
         co.enter();

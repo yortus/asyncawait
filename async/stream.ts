@@ -5,7 +5,7 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.StreamBuilder>(() => ({
-    default: (co) => { co.stream = null; },
+    clear: (co) => { co.stream = null; },
     invoke: (co) => co.stream = new Stream(() => co.enter()),
     return: (co, result) => co.stream.push(null),
     throw: (co, error) => co.stream.emit('error', error),

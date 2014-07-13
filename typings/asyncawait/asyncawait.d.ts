@@ -90,7 +90,7 @@ declare module AsyncAwait {
 
         //TODO: doc these methods
         export interface Protocol {
-            default: (co: Coroutine) => void;
+            clear: (co: Coroutine) => void;
             invoke: (co: Coroutine, ...protocolArgs) => any;
             return: (co: Coroutine, result: any) => void;
             throw: (co: Coroutine, error: Error) => void;
@@ -98,7 +98,7 @@ declare module AsyncAwait {
         }
 
         export interface ProtocolOverrides {
-            default?: (co: Coroutine) => void;
+            clear?: (co: Coroutine) => void;
             invoke?: (co: Coroutine, ...protocolArgs) => any;
             return?: (co: Coroutine, result: any) => void;
             throw?: (co: Coroutine, error: Error) => void;

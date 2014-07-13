@@ -6,7 +6,7 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.IterableCPSBuilder>(() => ({
-    default: (co) => {
+    clear: (co) => {
         co.nextCallback = null;
         co.done = false;
     },

@@ -6,7 +6,7 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.CPSBuilder>(() => ({
-    default: (co) => { co.callback = null; },
+    clear: (co) => { co.callback = null; },
     invoke: (co, callback: AsyncAwait.Callback<any>) => {
         assert(_.isFunction(callback), 'Expected final argument to be a callback');
         co.callback = callback;

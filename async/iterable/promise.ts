@@ -7,7 +7,7 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
-    default: (co) => {
+    clear: (co) => {
         co.nextResolver = null;
         co.done = false;
     },

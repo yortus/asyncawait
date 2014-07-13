@@ -16,7 +16,7 @@ var SUSPENDABLE_DEBUG = false;
 
 // Bootstrap an initial async builder using a no-op protocol.
 var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
-    default: (co) => { },
+    clear: (co) => { },
     invoke: (co) => { },
     return: (co, result) => { },
     throw: (co, error) => { },
