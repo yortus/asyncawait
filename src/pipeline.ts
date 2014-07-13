@@ -85,7 +85,7 @@ var defaultPipeline = {
             },
             leave: (value?) => {
                 //TODO: assert is current...
-                Fiber.yield(value);
+                Fiber.yield(value); // TODO: need setImmediate?
             }
         };
 
