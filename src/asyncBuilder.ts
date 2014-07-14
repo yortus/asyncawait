@@ -18,9 +18,9 @@ var SUSPENDABLE_DEBUG = false;
 var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
     clear: (co) => { },
     invoke: (co) => { },
-    return: (co, result) => { },
-    throw: (co, error) => { },
-    yield: (co, value) => { }
+    return: (ctx, result) => { },
+    throw: (ctx, error) => { },
+    yield: (ctx, value) => { return true; }
 });
 
 

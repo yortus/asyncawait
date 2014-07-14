@@ -19,17 +19,16 @@ var builder = oldBuilder.derive<AsyncAwait.Async.IterablePromiseBuilder>(() => (
         }
         return new AsyncIterator(next);
     },
-    return: (co, result) => {
-        co.done = true;
-        co.nextResolver.resolve({ done: true, value: result });
+    return: (ctx, result) => {
+        ctx.done = true;
+        ctx.nextResolver.resolve({ done: true, value: result });
     },
-    throw: (co, error) => {
-        co.nextResolver.reject(error);
+    throw: (ctx, error) => {
+        ctx.nextResolver.reject(error);
     },
-    yield: (co, value) => {
+    yield: (ctx, value) => {
         var result = { done: false, value: value };
-        co.nextResolver.resolve(result);
-        co.leave();
+        ctx.nextResolver.resolve(result);
     }
 }));
 

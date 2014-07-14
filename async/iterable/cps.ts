@@ -17,17 +17,16 @@ var builder = oldBuilder.derive<AsyncAwait.Async.IterableCPSBuilder>(() => ({
         }
         return new AsyncIterator(next);
     },
-    return: (co, result) => {
-        co.done = true;
-        co.nextCallback(null, { done: true, value: result });
+    return: (ctx, result) => {
+        ctx.done = true;
+        ctx.nextCallback(null, { done: true, value: result });
     },
-    throw: (co, error) => {
-        co.nextCallback(error);
+    throw: (ctx, error) => {
+        ctx.nextCallback(error);
     },
-    yield: (co, value) => {
+    yield: (ctx, value) => {
         var result = { done: false, value: value };
-        co.nextCallback(null, result);
-        co.leave();
+        ctx.nextCallback(null, result);
     }
 }));
 

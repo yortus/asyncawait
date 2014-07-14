@@ -15,17 +15,16 @@ var builder = oldBuilder.derive(function () {
             };
             return new AsyncIterator(next);
         },
-        return: function (co, result) {
-            co.done = true;
-            co.nextCallback(null, { done: true, value: result });
+        return: function (ctx, result) {
+            ctx.done = true;
+            ctx.nextCallback(null, { done: true, value: result });
         },
-        throw: function (co, error) {
-            co.nextCallback(error);
+        throw: function (ctx, error) {
+            ctx.nextCallback(error);
         },
-        yield: function (co, value) {
+        yield: function (ctx, value) {
             var result = { done: false, value: value };
-            co.nextCallback(null, result);
-            co.leave();
+            ctx.nextCallback(null, result);
         }
     });
 });

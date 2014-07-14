@@ -12,6 +12,6 @@ var builder = oldBuilder.derive<AsyncAwait.Async.CPSBuilder>(() => ({
         co.callback = callback;
         co.enter();
     },
-    return: (co, result) => co.callback(null, result),
-    throw: (co, error) => co.callback(error)
+    return: (ctx, result) => ctx.callback(null, result),
+    throw: (ctx, error) => ctx.callback(error)
 }));

@@ -82,7 +82,8 @@ var defaultPipeline = {
                     fiber = f;
                     fiber.co = co;
                     fiber.yield = function (value) {
-                        return protocol.yield(co, value);
+                        if (!protocol.yield(co, value))
+                            co.leave();
                     };
                     fiber.run();
                 });

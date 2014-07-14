@@ -11,14 +11,15 @@ var builder = oldBuilder.derive(function () {
             co.enter();
             return co.resolver.promise;
         },
-        return: function (co, result) {
-            return co.resolver.resolve(result);
+        return: function (ctx, result) {
+            return ctx.resolver.resolve(result);
         },
-        throw: function (co, error) {
-            return co.resolver.reject(error);
+        throw: function (ctx, error) {
+            return ctx.resolver.reject(error);
         },
-        yield: function (co, value) {
-            return co.resolver.progress(value);
+        yield: function (ctx, value) {
+            ctx.resolver.progress(value);
+            return true;
         }
     });
 });

@@ -91,18 +91,18 @@ declare module AsyncAwait {
         //TODO: doc these methods
         export interface Protocol {
             clear: (co: Coroutine) => void;
-            invoke: (co: Coroutine, ...protocolArgs) => any;
-            return: (co: Coroutine, result: any) => void;
-            throw: (co: Coroutine, error: Error) => void;
-            yield: (co: Coroutine, value: any) => void;
+            invoke: (pco: Promise<Coroutine>, ...protocolArgs) => any; // TODO: calls co.enter
+            return: (ctx: any, result: any) => void;
+            throw: (ctx: any, error: Error) => void;
+            yield: (ctx: any, value: any) => any;
         }
 
         export interface ProtocolOverrides {
             clear?: (co: Coroutine) => void;
-            invoke?: (co: Coroutine, ...protocolArgs) => any;
-            return?: (co: Coroutine, result: any) => void;
-            throw?: (co: Coroutine, error: Error) => void;
-            yield?: (co: Coroutine, value: any) => void;
+            invoke?: (pco: Promise<Coroutine>, ...protocolArgs) => any;
+            return?: (ctx: any, result: any) => void;
+            throw?: (ctx: any, error: Error) => void;
+            yield?: (ctx: any, value: any) => any;
         }
     }
 

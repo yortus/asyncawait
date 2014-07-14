@@ -4,9 +4,9 @@ export = newBuilder;
 
 
 var newBuilder = oldBuilder.derive<AsyncAwait.Async.CPSBuilder>((options, cps) => ({
-    return: (co, result) => {
-        if (result === 'next') return cps.return(co, null);
-        if (result === 'route') return cps.throw(co, <any> 'route');
-        if (!!result) return cps.throw(co, new Error('unexpected return value: ' + result));
+    return: (ctx, result) => {
+        if (result === 'next') return cps.return(ctx, null);
+        if (result === 'route') return cps.throw(ctx, <any> 'route');
+        if (!!result) return cps.throw(ctx, new Error('unexpected return value: ' + result));
     }
 }));

@@ -17,15 +17,14 @@ var builder = oldBuilder.derive(function () {
                 return co.enter();
             });
         },
-        return: function (co, result) {
-            return co.stream.push(null);
+        return: function (ctx, result) {
+            return ctx.stream.push(null);
         },
-        throw: function (co, error) {
-            return co.stream.emit('error', error);
+        throw: function (ctx, error) {
+            return ctx.stream.emit('error', error);
         },
-        yield: function (co, value) {
-            co.stream.push(value);
-            co.leave();
+        yield: function (ctx, value) {
+            ctx.stream.push(value);
         }
     });
 });

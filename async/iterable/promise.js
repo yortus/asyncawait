@@ -17,17 +17,16 @@ var builder = oldBuilder.derive(function () {
             };
             return new AsyncIterator(next);
         },
-        return: function (co, result) {
-            co.done = true;
-            co.nextResolver.resolve({ done: true, value: result });
+        return: function (ctx, result) {
+            ctx.done = true;
+            ctx.nextResolver.resolve({ done: true, value: result });
         },
-        throw: function (co, error) {
-            co.nextResolver.reject(error);
+        throw: function (ctx, error) {
+            ctx.nextResolver.reject(error);
         },
-        yield: function (co, value) {
+        yield: function (ctx, value) {
             var result = { done: false, value: value };
-            co.nextResolver.resolve(result);
-            co.leave();
+            ctx.nextResolver.resolve(result);
         }
     });
 });

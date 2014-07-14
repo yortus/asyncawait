@@ -79,7 +79,7 @@ var defaultPipeline = {
                 pipeline.acquireFiber(fiberBody).then(f => {
                     fiber = f;
                     fiber.co = co;
-                    fiber.yield = value => protocol.yield(co, value);
+                    fiber.yield = value => { if (!protocol.yield(co, value)) co.leave(); };
                     fiber.run();
                 });
             },

@@ -2,13 +2,13 @@
 
 var newBuilder = oldBuilder.derive(function (options, cps) {
     return ({
-        return: function (co, result) {
+        return: function (ctx, result) {
             if (result === 'next')
-                return cps.return(co, null);
+                return cps.return(ctx, null);
             if (result === 'route')
-                return cps.throw(co, 'route');
+                return cps.throw(ctx, 'route');
             if (!!result)
-                return cps.throw(co, new Error('unexpected return value: ' + result));
+                return cps.throw(ctx, new Error('unexpected return value: ' + result));
         }
     });
 });

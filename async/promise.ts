@@ -11,7 +11,7 @@ var builder = oldBuilder.derive<AsyncAwait.Async.PromiseBuilder>(() => ({
         co.enter();
         return co.resolver.promise;
     },
-    return: (co, result) => co.resolver.resolve(result),
-    throw: (co, error) => co.resolver.reject(error),
-    yield: (co, value) => co.resolver.progress(value)
+    return: (ctx, result) => ctx.resolver.resolve(result),
+    throw: (ctx, error) => ctx.resolver.reject(error),
+    yield: (ctx, value) => { ctx.resolver.progress(value); return true; }
 }));

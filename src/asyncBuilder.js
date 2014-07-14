@@ -12,11 +12,12 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     },
     invoke: function (co) {
     },
-    return: function (co, result) {
+    return: function (ctx, result) {
     },
-    throw: function (co, error) {
+    throw: function (ctx, error) {
     },
-    yield: function (co, value) {
+    yield: function (ctx, value) {
+        return true;
     }
 });
 

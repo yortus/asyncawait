@@ -12,11 +12,11 @@ var builder = oldBuilder.derive(function () {
             co.callback = callback;
             co.enter();
         },
-        return: function (co, result) {
-            return co.callback(null, result);
+        return: function (ctx, result) {
+            return ctx.callback(null, result);
         },
-        throw: function (co, error) {
-            return co.callback(error);
+        throw: function (ctx, error) {
+            return ctx.callback(error);
         }
     });
 });
