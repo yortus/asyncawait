@@ -4,14 +4,14 @@ var _ = require('../../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        clear: function (co) {
-            co.nextCallback = null;
-            co.done = false;
-        },
         invoke: function (co) {
+            var ctx = co.context = {
+                nextCallback: null,
+                done: false
+            };
             var next = function (callback) {
-                co.nextCallback = callback || _.empty;
-                co.done ? co.nextCallback(new Error('iterated past end')) : co.enter();
+                ctx.nextCallback = callback || _.empty;
+                ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
             };
             return new AsyncIterator(next);
         },

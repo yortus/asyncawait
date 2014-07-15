@@ -6,14 +6,14 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.IterableCPSBuilder>(() => ({
-    clear: (co) => {
-        co.nextCallback = null;
-        co.done = false;
-    },
     invoke: (co) => {
+        var ctx = co.context = {
+            nextCallback: null,
+            done: false
+        };
         var next = (callback?: (err, item?: { done: boolean; value?: any; }) => void) => {
-            co.nextCallback = callback || _.empty;
-            co.done ? co.nextCallback(new Error('iterated past end')) : co.enter();
+            ctx.nextCallback = callback || _.empty;
+            ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
         }
         return new AsyncIterator(next);
     },

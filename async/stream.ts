@@ -5,11 +5,13 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.StreamBuilder>(() => ({
-    clear: (co) => { co.stream = null; },
-    invoke: (co) => co.stream = new Stream(() => co.enter()),
-    return: (ctx, result) => ctx.stream.push(null),
-    throw: (ctx, error) => ctx.stream.emit('error', error),
-    yield: (ctx, value) => { ctx.stream.push(value); }
+    invoke: (co) => {
+        var stream = co.context = new Stream(() => co.enter());
+        return stream;
+    },
+    return: (stream, result) => stream.push(null),
+    throw: (stream, error) => stream.emit('error', error),
+    yield: (stream, value) => { stream.push(value); }
 }));
 
 

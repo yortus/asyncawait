@@ -5,15 +5,15 @@ var _ = require('../../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        clear: function (co) {
-            co.nextResolver = null;
-            co.done = false;
-        },
         invoke: function (co) {
+            var ctx = co.context = {
+                nextResolver: null,
+                done: false
+            };
             var next = function () {
-                var res = co.nextResolver = Promise.defer();
-                co.done ? res.reject(new Error('iterated past end')) : co.enter();
-                return co.nextResolver.promise;
+                var res = ctx.nextResolver = Promise.defer();
+                ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
+                return ctx.nextResolver.promise;
             };
             return new AsyncIterator(next);
         },

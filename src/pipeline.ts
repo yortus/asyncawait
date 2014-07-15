@@ -54,11 +54,11 @@ var defaultPipeline = {
                 //TODO: setImmediate? all, some? Was on finally, what now?
                 var tryBlock = () => {
                     var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
-                    protocol.return(co, result);
+                    protocol.return(co.context, result);
                 };
-                var catchBlock = err => protocol.throw(co, err);
+                var catchBlock = err => protocol.throw(co.context, err);
                 var finallyBlock = () => {
-                    protocol.clear(co); // here? or in releaseCoro?
+                    // TODO: if protocol supports explicit cleanup/dispose, it goes here...
                     setImmediate(() => {
                         // release fiber really async? Does this make sense release fiber -> <async> -> release co?
                         pipeline.releaseFiber(fiber).then(() => {
@@ -79,18 +79,16 @@ var defaultPipeline = {
                 pipeline.acquireFiber(fiberBody).then(f => {
                     fiber = f;
                     fiber.co = co;
-                    fiber.yield = value => { if (!protocol.yield(co, value)) co.leave(); };
+                    fiber.yield = value => { if (!protocol.yield(co.context, value)) co.leave(); };//TODO: review this. Use sentinel?
                     fiber.run();
                 });
             },
             leave: (value?) => {
                 //TODO: assert is current...
                 Fiber.yield(value); // TODO: need setImmediate?
-            }
+            },
+            context: {}
         };
-
-        //TODO:...
-        protocol.clear(co);
 
         //TODO:...
         return co;

@@ -5,13 +5,12 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.PromiseBuilder>(() => ({
-    clear: (co) => { co.resolver = null; },
     invoke: (co) => {
-        co.resolver = Promise.defer<any>();
+        var resolver = co.context = Promise.defer<any>();
         co.enter();
-        return co.resolver.promise;
+        return resolver.promise;
     },
-    return: (ctx, result) => ctx.resolver.resolve(result),
-    throw: (ctx, error) => ctx.resolver.reject(error),
-    yield: (ctx, value) => { ctx.resolver.progress(value); return true; }
+    return: (resolver, result) => resolver.resolve(result),
+    throw: (resolver, error) => resolver.reject(error),
+    yield: (resolver, value) => { resolver.progress(value); return true; }
 }));

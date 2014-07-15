@@ -3,22 +3,19 @@ var Promise = require('bluebird');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        clear: function (co) {
-            co.resolver = null;
-        },
         invoke: function (co) {
-            co.resolver = Promise.defer();
+            var resolver = co.context = Promise.defer();
             co.enter();
-            return co.resolver.promise;
+            return resolver.promise;
         },
-        return: function (ctx, result) {
-            return ctx.resolver.resolve(result);
+        return: function (resolver, result) {
+            return resolver.resolve(result);
         },
-        throw: function (ctx, error) {
-            return ctx.resolver.reject(error);
+        throw: function (resolver, error) {
+            return resolver.reject(error);
         },
-        yield: function (ctx, value) {
-            ctx.resolver.progress(value);
+        yield: function (resolver, value) {
+            resolver.progress(value);
             return true;
         }
     });

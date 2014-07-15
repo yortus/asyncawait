@@ -9,22 +9,20 @@ var stream = require('stream');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        clear: function (co) {
-            co.stream = null;
-        },
         invoke: function (co) {
-            return co.stream = new Stream(function () {
+            var stream = co.context = new Stream(function () {
                 return co.enter();
             });
+            return stream;
         },
-        return: function (ctx, result) {
-            return ctx.stream.push(null);
+        return: function (stream, result) {
+            return stream.push(null);
         },
-        throw: function (ctx, error) {
-            return ctx.stream.emit('error', error);
+        throw: function (stream, error) {
+            return stream.emit('error', error);
         },
-        yield: function (ctx, value) {
-            ctx.stream.push(value);
+        yield: function (stream, value) {
+            stream.push(value);
         }
     });
 });

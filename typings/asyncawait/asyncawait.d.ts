@@ -90,16 +90,14 @@ declare module AsyncAwait {
 
         //TODO: doc these methods
         export interface Protocol {
-            clear: (co: Coroutine) => void;
-            invoke: (pco: Promise<Coroutine>, ...protocolArgs) => any; // TODO: calls co.enter
+            invoke: (co: Coroutine, ...protocolArgs) => any;
             return: (ctx: any, result: any) => void;
             throw: (ctx: any, error: Error) => void;
-            yield: (ctx: any, value: any) => any;
+            yield: (ctx: any, value: any) => any; //TODO: use sentinel to indicate push behaviour? use push/pull overrides instead? specify push/pull via formal param
         }
 
         export interface ProtocolOverrides {
-            clear?: (co: Coroutine) => void;
-            invoke?: (pco: Promise<Coroutine>, ...protocolArgs) => any;
+            invoke?: (co: Coroutine, ...protocolArgs) => any;
             return?: (ctx: any, result: any) => void;
             throw?: (ctx: any, error: Error) => void;
             yield?: (ctx: any, value: any) => any;
@@ -185,6 +183,7 @@ declare module AsyncAwait {
     export interface Coroutine {
         enter: (error?: Error, value?: any) => void;
         leave: (value?: any) => void;
+        context: any;
     }
 
     export interface Callback<TResult> {

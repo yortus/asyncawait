@@ -4,19 +4,16 @@ var _ = require('../src/util');
 
 var builder = oldBuilder.derive(function () {
     return ({
-        clear: function (co) {
-            co.callback = null;
-        },
         invoke: function (co, callback) {
             assert(_.isFunction(callback), 'Expected final argument to be a callback');
-            co.callback = callback;
+            co.context = callback;
             co.enter();
         },
-        return: function (ctx, result) {
-            return ctx.callback(null, result);
+        return: function (callback, result) {
+            return callback(null, result);
         },
-        throw: function (ctx, error) {
-            return ctx.callback(error);
+        throw: function (callback, error) {
+            return callback(error);
         }
     });
 });

@@ -5,5 +5,7 @@ export = newBuilder;
 
 
 var newBuilder = oldBuilder.derive<AsyncAwait.Async.ThunkBuilder>((options, cps) => ({
-    invoke: (co) => (callback: AsyncAwait.Callback<any>) => cps.invoke(co, callback || _.empty)
+    invoke: (co) => {
+        return (callback: AsyncAwait.Callback<any>) => cps.invoke(co, callback || _.empty);
+    }
 }));
