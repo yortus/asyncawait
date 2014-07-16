@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var Promise = require('bluebird');
+
 var Fiber = require('fibers');
 var _ = require('./util');
 
@@ -57,10 +57,8 @@ var defaultPipeline = {
                 var finallyBlock = function () {
                     // TODO: if protocol supports explicit cleanup/dispose, it goes here...
                     setImmediate(function () {
-                        // release fiber really async? Does this make sense release fiber -> <async> -> release co?
-                        pipeline.releaseFiber(fiber).then(function () {
-                            pipeline.releaseCoro(co);
-                        });
+                        pipeline.releaseFiber(fiber);
+                        pipeline.releaseCoro(co);
                     });
                 };
 
@@ -78,15 +76,15 @@ var defaultPipeline = {
                 }
                 ;
 
-                pipeline.acquireFiber(fiberBody).then(function (f) {
-                    fiber = f;
-                    fiber.co = co;
-                    fiber.yield = function (value) {
-                        if (!protocol.yield(co.context, value))
-                            co.leave();
-                    }; //TODO: review this. Use sentinel?
-                    fiber.run();
-                });
+                fiber = pipeline.acquireFiber(fiberBody);
+                fiber.co = co;
+                fiber.yield = function (value) {
+                    if (!protocol.yield(co.context, value))
+                        co.leave();
+                }; //TODO: review this. Use sentinel?
+                setImmediate(function () {
+                    return fiber.run();
+                }); // TODO: lots of tests fail if setImmediate is removed here
             },
             leave: function (value) {
                 //TODO: assert is current...
@@ -104,13 +102,12 @@ var defaultPipeline = {
     },
     //TODO: doc...
     acquireFiber: function (body) {
-        return Promise.resolve(Fiber(body));
+        return Fiber(body);
     },
     //TODO: doc...
     releaseFiber: function (fiber) {
         fiber.co = null;
         fiber.yield = null;
-        return Promise.resolve();
     }
 };
 

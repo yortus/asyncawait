@@ -31,10 +31,40 @@ function maxConcurrency(value: number) {
             // For non-top-level requests, just delegate to the existing pipeline.
             if (Fiber.current) return pipeline.acquireFiber(body);
 
-            // Route all top-level requests through the semaphore, where they will potentially wait.
-            return new Promise<Fiber>((resolve: any, reject) => {
-                enter(() => pipeline.acquireFiber(body).then(fiber => { fiber.inSemaphore = true; resolve(fiber); }, reject));
-            });
+
+
+
+            var fiber = {
+                run: (arg?) => {
+                    enter(() => {
+
+                        //TODO: needs more work...
+                        var f: any = Fiber(body);
+                        f.enter = fiber.enter;
+                        f.leave = fiber.leave;
+                        f.context = fiber.context;
+                        fiber.run = f.run;
+                        fiber.throwInto = f.throwInto;
+                        fiber.reset = f.reset;
+                        setImmediate(() => f.run(arg));
+                    });
+                }
+            };
+            return fiber;
+
+
+
+            //TODO: was...
+
+
+
+            //// Route all top-level requests through the semaphore, where they will potentially wait.
+            ////TODO: fix this!!!! temp...
+            //return pipeline.acquireFiber(body);
+            ////TODO: was...
+            ////return new Promise<Fiber>((resolve: any, reject) => {
+            ////    enter(() => pipeline.acquireFiber(body).then(fiber => { fiber.inSemaphore = true; resolve(fiber); }, reject));
+            ////});
         },
 
         releaseFiber: fiber => {

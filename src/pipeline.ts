@@ -60,10 +60,8 @@ var defaultPipeline = {
                 var finallyBlock = () => {
                     // TODO: if protocol supports explicit cleanup/dispose, it goes here...
                     setImmediate(() => {
-                        // release fiber really async? Does this make sense release fiber -> <async> -> release co?
-                        pipeline.releaseFiber(fiber).then(() => {
-                            pipeline.releaseCoro(co);
-                        });
+                        pipeline.releaseFiber(fiber);
+                        pipeline.releaseCoro(co);
                     });
                 }
 
@@ -76,12 +74,10 @@ var defaultPipeline = {
                     finally { finallyBlock(); }
                 };
 
-                pipeline.acquireFiber(fiberBody).then(f => {
-                    fiber = f;
-                    fiber.co = co;
-                    fiber.yield = value => { if (!protocol.yield(co.context, value)) co.leave(); };//TODO: review this. Use sentinel?
-                    fiber.run();
-                });
+                fiber = pipeline.acquireFiber(fiberBody);
+                fiber.co = co;
+                fiber.yield = value => { if (!protocol.yield(co.context, value)) co.leave(); };//TODO: review this. Use sentinel?
+                setImmediate(() => fiber.run()); // TODO: lots of tests fail if setImmediate is removed here
             },
             leave: (value?) => {
                 //TODO: assert is current...
@@ -103,7 +99,7 @@ var defaultPipeline = {
 
     //TODO: doc...
     acquireFiber: (body: () => any) => {
-        return Promise.resolve(Fiber(body));
+        return Fiber(body);
     },
 
 
@@ -111,7 +107,6 @@ var defaultPipeline = {
     releaseFiber: (fiber: Fiber) => {
         fiber.co = null;
         fiber.yield = null;
-        return Promise.resolve();
     }
 }
 
