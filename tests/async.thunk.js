@@ -98,7 +98,7 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         });
     });
 
-    it('ignores yielded values', function (done) {
+    it('fails if yield() is called', function (done) {
         var foo = async.thunk(function () {
             yield_(111);
             yield_(222);
@@ -108,13 +108,12 @@ describe('A suspendable function returned by async.thunk(...)', function () {
         var yields = [];
         Promise.promisify(foo())().progressed(function (value) {
             return yields.push(value);
-        }).then(function (result) {
-            return expect(result).to.equal(444);
         }).then(function () {
-            return expect(yields).to.deep.equal([]);
-        }).then(function () {
-            return done();
-        }).catch(done);
+            throw new Error('Expected foo to throw');
+        }).catch(function () {
+            expect(yields).to.be.empty;
+            done();
+        });
     });
 });
 //# sourceMappingURL=async.thunk.js.map

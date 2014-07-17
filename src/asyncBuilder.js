@@ -3,16 +3,19 @@ var pipeline = require('./pipeline');
 var _ = require('./util');
 
 
-// Bootstrap an initial async builder using a no-op protocol.
+// Bootstrap an initial async builder using a no-op protocol. All methods throw, to assist in protocol debugging.
 var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     invoke: function (co) {
+        throw new Error('invoke: not supported by this type of suspendable function');
     },
     return: function (ctx, result) {
+        throw new Error('return: not supported by this type of suspendable function');
     },
     throw: function (ctx, error) {
+        throw new Error('throw: not supported by this type of suspendable function');
     },
     yield: function (ctx, value) {
-        return pipeline.continueAfterYield;
+        throw new Error('yield: not supported by this type of suspendable function');
     }
 });
 
@@ -23,7 +26,7 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
-        //TODO: doc...
+        // Once an async(...) method has been called, ensure subsequent calls to asyncawait.use(...) fail.
         pipeline.isLocked = true;
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.

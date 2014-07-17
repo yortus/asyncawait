@@ -10,12 +10,12 @@ import Coroutine = AsyncAwait.Coroutine;
 export = asyncBuilder;
 
 
-// Bootstrap an initial async builder using a no-op protocol.
+// Bootstrap an initial async builder using a no-op protocol. All methods throw, to assist in protocol debugging.
 var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
-    invoke: (co) => { },
-    return: (ctx, result) => { },
-    throw: (ctx, error) => { },
-    yield: (ctx, value) => { return pipeline.continueAfterYield; } //TODO: yield: throw in default impl (and update tests accordingly)
+    invoke: (co) => { throw new Error('invoke: not supported by this type of suspendable function'); },
+    return: (ctx, result) => { throw new Error('return: not supported by this type of suspendable function'); },
+    throw: (ctx, error) => { throw new Error('throw: not supported by this type of suspendable function'); },
+    yield: (ctx, value) => { throw new Error('yield: not supported by this type of suspendable function'); }
 });
 
 
@@ -28,7 +28,7 @@ function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options:
     // Create the builder function.
     var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
 
-        //TODO: doc...
+        // Once an async(...) method has been called, ensure subsequent calls to asyncawait.use(...) fail.
         pipeline.isLocked = true;
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.

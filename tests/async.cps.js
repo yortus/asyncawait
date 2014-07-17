@@ -93,7 +93,7 @@ describe('A suspendable function returned by async.cps(...)', function () {
         });
     });
 
-    it('ignores yielded values', function (done) {
+    it('fails if yield() is called', function (done) {
         var foo = async.cps(function () {
             yield_(111);
             yield_(222);
@@ -103,13 +103,12 @@ describe('A suspendable function returned by async.cps(...)', function () {
         var yields = [];
         Promise.promisify(foo)().progressed(function (value) {
             return yields.push(value);
-        }).then(function (result) {
-            return expect(result).to.equal(444);
         }).then(function () {
-            return expect(yields).to.be.empty;
-        }).then(function () {
-            return done();
-        }).catch(done);
+            throw new Error('Expected foo to throw');
+        }).catch(function () {
+            expect(yields).to.be.empty;
+            done();
+        });
     });
 });
 //# sourceMappingURL=async.cps.js.map

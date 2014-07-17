@@ -77,14 +77,15 @@ describe('A suspendable function returned by async.thunk(...)', () => {
         });
     });
 
-    it('ignores yielded values', done => {
+    it('fails if yield() is called', done => {
         var foo = async.thunk (() => { yield_(111); yield_(222); yield_(333); return 444; });
         var yields = [];
         Promise.promisify(foo())()
         .progressed(value => yields.push(value))
-        .then(result => expect(result).to.equal(444))
-        .then(() => expect(yields).to.deep.equal([]))
-        .then(() => done())
-        .catch(done);
+        .then(() => { throw new Error('Expected foo to throw'); })
+        .catch(() => {
+            expect(yields).to.be.empty;
+            done();
+        });
     });
 });

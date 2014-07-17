@@ -12,6 +12,10 @@ describe('A suspendable function returned by async.express(...)', () => {
     var foo = async.express ((rq: any, rs: any) => {
         rs.post = rs.pre;
         if (rq instanceof Error) throw rq;
+        return rq;
+    });
+
+    var bar = async.express ((rq: any, rs: any) => {
         yield_ (rq);
         return rq;
     });
@@ -76,12 +80,14 @@ describe('A suspendable function returned by async.express(...)', () => {
         .finally(() => done(act && act.message === exp.message ? null : exp));
     });
 
-    it('ignores yielded values', done => {
+    it('fails if yield() is called', done => {
         var yields = [], rs = { pre: 'abc', post: null };
-        Promise.promisify(foo)('next', rs)
+        Promise.promisify(bar)('next', rs)
         .progressed(value => yields.push(value))
-        .then(() => expect(yields).to.be.empty)
-        .then(() => done())
-        .catch(done);
+        .then(() => { throw new Error('Expected foo to throw'); })
+        .catch(() => {
+            expect(yields).to.be.empty;
+            done();
+        });
     });
 });

@@ -2,9 +2,9 @@
 var pipeline = require('./pipeline');
 
 
-//TODO: doc...
+/** Install the specified mod to alter the global behaviour of asyncawait. */
 function use(mod) {
-    //TODO: ...
+    // Ensure all global mods are install before any async(...) calls are made.
     if (pipeline.isLocked)
         throw new Error('use: cannot alter mods after first async(...) call');
 

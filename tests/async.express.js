@@ -9,6 +9,10 @@ describe('A suspendable function returned by async.express(...)', function () {
         rs.post = rs.pre;
         if (rq instanceof Error)
             throw rq;
+        return rq;
+    });
+
+    var bar = async.express(function (rq, rs) {
         yield_(rq);
         return rq;
     });
@@ -98,15 +102,16 @@ describe('A suspendable function returned by async.express(...)', function () {
         });
     });
 
-    it('ignores yielded values', function (done) {
+    it('fails if yield() is called', function (done) {
         var yields = [], rs = { pre: 'abc', post: null };
-        Promise.promisify(foo)('next', rs).progressed(function (value) {
+        Promise.promisify(bar)('next', rs).progressed(function (value) {
             return yields.push(value);
         }).then(function () {
-            return expect(yields).to.be.empty;
-        }).then(function () {
-            return done();
-        }).catch(done);
+            throw new Error('Expected foo to throw');
+        }).catch(function () {
+            expect(yields).to.be.empty;
+            done();
+        });
     });
 });
 //# sourceMappingURL=async.express.js.map
