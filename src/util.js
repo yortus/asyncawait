@@ -1,7 +1,7 @@
 ﻿var assert = require('assert');
 
 /** Specify whether to execute in DEBUG mode. */
-exports.DEBUG = false;
+exports.DEBUG = true;
 
 /** Determines whether the given object is a function. */
 function isFunction(obj) {

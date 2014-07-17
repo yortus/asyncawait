@@ -91,19 +91,25 @@ function createSuspendableFunction(protocol, invokee, options) {
         }
 
         // Distribute arguments between the invoker and invokee functions, according to their arities.
-        var invokeeArgCount = arguments.length - invokerArgCount;
-        var invokeeArgs = new Array(invokeeArgCount), invokerArgs = new Array(invokerArgCount + 1);
+        var invokeeArgCount = arguments.length - invokerArgCount, invokeeArgs = new Array(invokeeArgCount);
         for (var i = 0; i < invokeeArgCount; ++i)
             invokeeArgs[i] = arguments[i];
-        for (var j = 1; j <= invokerArgCount; ++i, ++j)
-            invokerArgs[j] = arguments[i];
+        if (invokerArgCount > 0) {
+            var invokerArgs = new Array(invokerArgCount + 1);
+            for (var j = 1; j <= invokerArgCount; ++i, ++j)
+                invokerArgs[j] = arguments[i];
+        }
 
         // Create a coroutine instance to hold context information for this call.
         var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
 
         // Pass execution control over to the invoker.
-        invokerArgs[0] = co;
-        return protocol.invoke.apply(null, invokerArgs);
+        if (invokerArgCount > 0) {
+            invokerArgs[0] = co;
+            return protocol.invoke.apply(null, invokerArgs);
+        } else {
+            return protocol.invoke(co);
+        }
     }
 
     // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in DEBUG mode.
@@ -136,7 +142,7 @@ function createSuspendableFunction(protocol, invokee, options) {
 
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function#call().
-    var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = 'this === void 0 ? ' + (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') + ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
+    var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = '(!this || this === global) ? ' + (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') + ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
     var fastpath = 'var self = this, co = pipeline.acquireCoro(protocol, ' + bodyExpr + ');' + 'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.

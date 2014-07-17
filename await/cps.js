@@ -9,9 +9,9 @@ var builder = oldBuilder.derive(function () {
     };
 });
 
-builder.continuation = function () {
+builder.continuation = function continuation() {
     var co = pipeline.currentCoro();
-    return function (err, result) {
+    return function continue_(err, result) {
         co.enter(err, result);
         co = null;
     };

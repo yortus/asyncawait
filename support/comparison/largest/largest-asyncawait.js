@@ -6,6 +6,7 @@ var asyncawait = require('../../..');
 var async = asyncawait.async;
 var await = asyncawait.await;
 asyncawait.use(require('../../../mods/continuationOperator')('___'));
+//asyncawait.use(require('../../../mods/coroPool'));
 
 
 
@@ -27,11 +28,11 @@ var largest = async.cps (function self(dir, options) {
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
     var files = await (fs.readdir(dir, await.cps.continuation()));
-    var paths = _.map(files, function (file) { return path.join(dir, file); });
-    var stats = _.map(paths, function (path) { return await (fs.stat(path, ___)); });
+    var paths = _.map(files, function x1(file) { return path.join(dir, file); });
+    var stats = _.map(paths, function x2(path) { return await (fs.stat(path, ___)); });
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
-    var candidates = await (_.map(stats, function (stat, i) {
+    var candidates = await (_.map(stats, function x3(stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
         return options.recurse ? self(paths[i], recurseOptions, true) : null;
     }));
@@ -39,7 +40,7 @@ var largest = async.cps (function self(dir, options) {
     // Choose the best candidate.
     var result = _(candidates)
         .compact()
-        .reduce(function (best, cand) {
+        .reduce(function x4(best, cand) {
             if (cand.size > best.size) var temp = cand, cand = best, best = temp;
             best.searched += cand.searched;
             return best;

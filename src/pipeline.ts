@@ -72,7 +72,13 @@ var defaultPipeline: Pipeline = {
             co = getCo();
 
             // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
-            var result = co.bodyArgs || co.bodyThis ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+            var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
+            //TODO: use ?: operator
+            if (slowCall) {
+                var result = co.bodyFunc.apply(co.bodyThis, co.bodyArgs);
+            } else {
+                result = co.bodyFunc();
+            }
             protocol.return(co.context, result);
         };
         var catchBlock = err => {
