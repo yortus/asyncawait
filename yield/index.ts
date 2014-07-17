@@ -1,14 +1,14 @@
 ﻿import references = require('references');
-import Fiber = require('fibers');
+import pipeline = require('../src/pipeline');
 export = yield_;
 
 
 function yield_(value?: any) {
 
-    // Ensure this function is executing inside a fiber.
-    var fiber = Fiber.current; // TODO: abstract over this - _.getExecutingCoro()
-    if (!fiber) throw new Error('yield: may only be called inside a suspendable function.');
+    // Ensure this function is executing inside a coroutine.
+    var co = pipeline.currentCoro();
+    if (!co) throw new Error('yield: may only be called inside a suspendable function.');
 
-    // Delegate to the appropriate protocol's leave method.
-    fiber.leave(value);
+    // Delegate to the appropriate protocol-specific behaviour.
+    co.leave(value);
 };

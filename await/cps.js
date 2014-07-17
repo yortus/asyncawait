@@ -1,4 +1,4 @@
-﻿var Fiber = require('fibers');
+﻿var pipeline = require('../src/pipeline');
 var oldBuilder = require('../src/awaitBuilder');
 
 
@@ -10,10 +10,10 @@ var builder = oldBuilder.derive(function () {
 });
 
 builder.continuation = function () {
-    var fiber = Fiber.current;
+    var co = pipeline.currentCoro();
     return function (err, result) {
-        fiber.enter(err, result);
-        fiber = null;
+        co.enter(err, result);
+        co = null;
     };
 };
 module.exports = builder;

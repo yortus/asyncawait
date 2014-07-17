@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Fiber = require('fibers');
+import pipeline = require('../src/pipeline');
 import oldBuilder = require('../src/awaitBuilder');
 import Promise = require('bluebird');
 export = builder;
@@ -12,9 +12,9 @@ var builder = oldBuilder.derive<AsyncAwait.Await.CPSBuilder>(
 );
 
 builder.continuation = () => {
-    var fiber = Fiber.current;
+    var co = pipeline.currentCoro();
     return (err, result) => {
-        fiber.enter(err, result);
-        fiber = null;
+        co.enter(err, result);
+        co = null;
     };
 };

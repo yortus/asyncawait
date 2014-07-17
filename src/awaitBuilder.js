@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var Fiber = require('fibers');
+var pipeline = require('./pipeline');
 var _ = require('./util');
 
 
@@ -16,9 +16,9 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
     // Create the builder function.
     var builder = function await() {
         //TODO: can this be optimised more, eg like async builder's eval?
-        // Ensure this function is executing inside a fiber.
-        var fiber = Fiber.current;
-        if (!fiber)
+        // Ensure this function is executing inside a coroutine.
+        var co = pipeline.currentCoro();
+        if (!co)
             throw new Error('await: may only be called inside a suspendable function.');
 
         // TODO: explain...
@@ -27,14 +27,14 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
             args[i] = arguments[i];
 
         // TODO: Execute handler...
-        var handlerResult = handler(fiber, args);
+        var handlerResult = handler(co, args);
 
         if (handlerResult === false) {
             throw new Error('await: not handled!');
         }
 
         // TODO: explain...
-        return Fiber.yield();
+        return pipeline.suspendCoro();
     };
 
     // Tack on the handler and options properties, and the derive() method.

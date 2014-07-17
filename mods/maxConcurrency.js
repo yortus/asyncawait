@@ -1,5 +1,4 @@
-﻿var Fiber = require('fibers');
-var _ = require('../src/util');
+﻿var _ = require('../src/util');
 
 
 /**
@@ -25,7 +24,7 @@ function maxConcurrency(value) {
         return ({
             acquireFiber: function (body) {
                 // For non-top-level requests, just delegate to the existing pipeline.
-                if (Fiber.current)
+                if (pipeline.currentCoro())
                     return pipeline.acquireFiber(body);
 
                 var fiber = {
@@ -33,7 +32,7 @@ function maxConcurrency(value) {
                     run: function (arg) {
                         enter(function () {
                             //TODO: needs more work...
-                            var f = Fiber(body);
+                            var f = pipeline.acquireFiber(body);
                             f.enter = fiber.enter;
                             f.leave = fiber.leave;
                             f.context = fiber.context;
@@ -53,14 +52,6 @@ function maxConcurrency(value) {
                     }
                 };
                 return fiber;
-                //TODO: was...
-                //// Route all top-level requests through the semaphore, where they will potentially wait.
-                ////TODO: fix this!!!! temp...
-                //return pipeline.acquireFiber(body);
-                ////TODO: was...
-                ////return new Promise<Fiber>((resolve: any, reject) => {
-                ////    enter(() => pipeline.acquireFiber(body).then(fiber => { fiber.inSemaphore = true; resolve(fiber); }, reject));
-                ////});
             },
             releaseFiber: function (fiber) {
                 // If this fiber went through the semaphore, then we must leave through the semaphore.

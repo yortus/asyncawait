@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import Fiber = require('fibers');
+import pipeline = require('./pipeline');
 import _ = require('./util');
 import Builder = AsyncAwait.Await.Builder;
 import Handler = AsyncAwait.Await.Handler;
@@ -22,16 +22,16 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
 
         //TODO: can this be optimised more, eg like async builder's eval?
 
-        // Ensure this function is executing inside a fiber.
-        var fiber = Fiber.current;
-        if (!fiber) throw new Error('await: may only be called inside a suspendable function.');
+        // Ensure this function is executing inside a coroutine.
+        var co = pipeline.currentCoro();
+        if (!co) throw new Error('await: may only be called inside a suspendable function.');
 
         // TODO: explain...
         var len = arguments.length, args = new Array(len);
         for (var i = 0; i < len; ++i) args[i] = arguments[i];
 
         // TODO: Execute handler...
-        var handlerResult = handler(<any>fiber, args); //TODO: fix typing here (fi===co)
+        var handlerResult = handler(co, args);
 
         if (handlerResult === false) { //TODO: explain sentinel value...
             // TODO: Improve message...
@@ -39,7 +39,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
         }
 
         // TODO: explain...
-        return Fiber.yield();
+        return pipeline.suspendCoro();
     }
 
     // Tack on the handler and options properties, and the derive() method.

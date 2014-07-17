@@ -1,6 +1,4 @@
 ﻿import references = require('references');
-import Promise = require('bluebird');
-import Fiber = require('fibers');
 import _ = require('../src/util');
 import Mod = AsyncAwait.Mod;
 export = maxConcurrency;
@@ -29,7 +27,7 @@ function maxConcurrency(value: number) {
         acquireFiber: body => {
 
             // For non-top-level requests, just delegate to the existing pipeline.
-            if (Fiber.current) return pipeline.acquireFiber(body);
+            if (pipeline.currentCoro()) return pipeline.acquireFiber(body);
 
 
 
@@ -40,7 +38,7 @@ function maxConcurrency(value: number) {
                     enter(() => {
 
                         //TODO: needs more work...
-                        var f: any = Fiber(body);
+                        var f = pipeline.acquireFiber(body);
                         f.enter = fiber.enter;
                         f.leave = fiber.leave;
                         f.context = fiber.context;
@@ -52,20 +50,6 @@ function maxConcurrency(value: number) {
                 }
             };
             return fiber;
-
-
-
-            //TODO: was...
-
-
-
-            //// Route all top-level requests through the semaphore, where they will potentially wait.
-            ////TODO: fix this!!!! temp...
-            //return pipeline.acquireFiber(body);
-            ////TODO: was...
-            ////return new Promise<Fiber>((resolve: any, reject) => {
-            ////    enter(() => pipeline.acquireFiber(body).then(fiber => { fiber.inSemaphore = true; resolve(fiber); }, reject));
-            ////});
         },
 
         releaseFiber: fiber => {

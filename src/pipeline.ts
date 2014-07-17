@@ -45,10 +45,11 @@ var defaultPipeline: Pipeline = {
             else setImmediate(() => { co.run(value); });
         };
         co.leave = (value?) => {
-            assert(Fiber.current && Fiber.current.context === co.context, 'leave: may only be called from the currently executing coroutine');
+            var current = pipeline.currentCoro();
+            assert(current && current.context === co.context, 'leave: may only be called from the currently executing coroutine');
 
             var continueExecution = protocol.yield(co.context, value);
-            if (!continueExecution) Fiber.yield(value); // TODO: need setImmediate?
+            if (!continueExecution) pipeline.suspendCoro(value); // TODO: need setImmediate?
         };
         co.context = {};
 
@@ -71,8 +72,6 @@ var defaultPipeline: Pipeline = {
 
     //TODO: doc...
     releaseFiber: (fiber: Fiber) => {
-        //fiber.co = null;
-        //fiber.yield = null;
     }
 }
 
@@ -91,6 +90,8 @@ var pipeline = {
     releaseFiber: defaultPipeline.releaseFiber,
 
     // The remaining items are for internal use and must not be overriden.
+    currentCoro: () => Fiber.current,
+    suspendCoro: (val?) => Fiber.yield(val),
     mods: [],
     reset: <() => void> resetPipeline,
     isLocked: false
