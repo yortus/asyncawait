@@ -33,58 +33,48 @@ var defaultPipeline = {
 
     acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => {
 
-        // Declare references to the coro and its fiber, which the enter() and leave() methods below close over.
-        var fiber: Fiber = null;
-        var co: Coroutine = {
-
-            enter: (error?, value?) => {
-
-                // If this coro is already up and running, simply resume (or throw into) it.
-                if (fiber) {
-                    if (error) setImmediate(() => { fiber.throwInto(error); });
-                    else setImmediate(() => { fiber.run(value); });
-                    return;
-                }
-
-                // The fiber hasn't been created yet, so this must be the first enter() call for this coro.
-                // Ensure the first call passes no arguments. This is an internal sanity check.
-                assert(arguments.length === 0, 'enter: initial call must have no arguments');
-
-                //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
-                //TODO: setImmediate? all, some? Was on finally, what now?
-                var tryBlock = () => {
-                    var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
-                    protocol.return(co.context, result);
-                };
-                var catchBlock = err => protocol.throw(co.context, err);
-                var finallyBlock = () => {
-                    // TODO: if protocol supports explicit cleanup/dispose, it goes here...
-                    setImmediate(() => {
-                        pipeline.releaseFiber(fiber);
-                        pipeline.releaseCoro(co);
-                    });
-                }
-
-                // V8 may not optimise the following function due to the presence of
-                // try/catch/finally. Therefore it does as little as possible, only
-                // referencing the optimisable closures prepared above.
-                function fiberBody() {
-                    try { tryBlock(); }
-                    catch (err) { catchBlock(err); }
-                    finally { finallyBlock(); }
-                };
-
-                fiber = pipeline.acquireFiber(fiberBody);
-                fiber.co = co;
-                fiber.yield = value => { if (!protocol.yield(co.context, value)) co.leave(); };//TODO: review this. Use sentinel?
-                setImmediate(() => fiber.run()); // TODO: lots of tests fail if setImmediate is removed here
-            },
-            leave: (value?) => {
-                //TODO: assert is current...
-                Fiber.yield(value); // TODO: need setImmediate?
-            },
-            context: {}
+        //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
+        //TODO: setImmediate? all, some? Was on finally, what now?
+        var tryBlock = () => {
+            var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
+            protocol.return(co.context, result);
         };
+        var catchBlock = err => protocol.throw(co.context, err);
+        var finallyBlock = () => {
+            // TODO: if protocol supports explicit cleanup/dispose, it goes here...
+            setImmediate(() => {
+                pipeline.releaseFiber(fiber);
+                pipeline.releaseCoro(co);
+            });
+        }
+
+        // V8 may not optimise the following function due to the presence of
+        // try/catch/finally. Therefore it does as little as possible, only
+        // referencing the optimisable closures prepared above.
+        function fiberBody() {
+            try { tryBlock(); }
+            catch (err) { catchBlock(err); }
+            finally { finallyBlock(); }
+        };
+
+        // A coroutine is a fiber with additional properties
+        var fiber = pipeline.acquireFiber(fiberBody);
+        var co: Coroutine = fiber;
+        fiber.co = co; //TODO: retire this, no longer needed...
+        fiber.yield = value => { if (!protocol.yield(co.context, value)) co.leave(); };//TODO: review this. Use sentinel?
+
+
+        co.enter = (error?, value?) => {
+            if (error) setImmediate(() => { fiber.throwInto(error); });
+            else setImmediate(() => { fiber.run(value); });
+        };
+
+        co.leave = (value?) => {
+            assert(Fiber.current === fiber, 'leave: may only be called from the currently executing coroutine');
+            Fiber.yield(value); // TODO: need setImmediate?
+        };
+
+        co.context = {};
 
         //TODO:...
         return co;

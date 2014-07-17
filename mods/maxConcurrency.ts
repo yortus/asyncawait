@@ -35,6 +35,7 @@ function maxConcurrency(value: number) {
 
 
             var fiber = {
+                inSemaphore: true,
                 run: (arg?) => {
                     enter(() => {
 
@@ -43,9 +44,12 @@ function maxConcurrency(value: number) {
                         f.enter = fiber.enter;
                         f.leave = fiber.leave;
                         f.context = fiber.context;
-                        fiber.run = f.run;
-                        fiber.throwInto = f.throwInto;
-                        fiber.reset = f.reset;
+                        f.co = f; //TODO: temp testing...
+                        f.yield = fiber.yield; //TODO: temp testing...
+
+                        fiber.run = (arg?) => f.run(arg);
+                        fiber.throwInto = (err) => f.throwInto(err);
+                        fiber.reset = () => f.reset();
                         setImmediate(() => f.run(arg));
                     });
                 }

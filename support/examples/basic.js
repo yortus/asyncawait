@@ -3,8 +3,11 @@ var Promise = require('bluebird');
 //TODO: ...
 //var async = require('asyncawait/async');
 //var await = require('asyncawait/await');
-var async = require('../async');
-var await = require('../await');
+var async = require('../../async');
+var await = require('../../await');
+var use = require('../../src/use');
+var maxConcurrency = require('../../mods/maxConcurrency');
+use(maxConcurrency(1));
 
 
 // A function that returns a promise.
@@ -51,6 +54,9 @@ var program = async (function prog() {
 
 
 // Execute program() and print the result.
+program().then(function (result) {
+    console.log(result);
+});
 program().then(function (result) {
     console.log(result);
 });

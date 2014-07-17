@@ -29,6 +29,7 @@ function maxConcurrency(value) {
                     return pipeline.acquireFiber(body);
 
                 var fiber = {
+                    inSemaphore: true,
                     run: function (arg) {
                         enter(function () {
                             //TODO: needs more work...
@@ -36,9 +37,18 @@ function maxConcurrency(value) {
                             f.enter = fiber.enter;
                             f.leave = fiber.leave;
                             f.context = fiber.context;
-                            fiber.run = f.run;
-                            fiber.throwInto = f.throwInto;
-                            fiber.reset = f.reset;
+                            f.co = f; //TODO: temp testing...
+                            f.yield = fiber.yield; //TODO: temp testing...
+
+                            fiber.run = function (arg) {
+                                return f.run(arg);
+                            };
+                            fiber.throwInto = function (err) {
+                                return f.throwInto(err);
+                            };
+                            fiber.reset = function () {
+                                return f.reset();
+                            };
                             setImmediate(function () {
                                 return f.run(arg);
                             });

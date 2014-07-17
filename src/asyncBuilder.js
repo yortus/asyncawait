@@ -75,7 +75,7 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
 *  This function is not on the hot path, but the suspendable function it returns
 *  can be hot, so here we trade some time (off the hot path) to make the suspendable
 *  function as fast as possible. This includes safe use of eval (safe because the
-*  input to eval is completely known and safe). By using eval, the resulting function
+*  input to eval is entirely known and safe). By using eval, the resulting function
 *  can be pieced together more optimally, as well as having the expected arity and
 *  preserving the invokee's function name and parameter names (to help debugging).
 *  NB: By setting SUSPENDABLE_DEBUG to true, a less optimised non-eval'd function
