@@ -3,9 +3,6 @@ var pipeline = require('./pipeline');
 var _ = require('./util');
 
 
-/** Configuration for createSuspendableFunction(). See that function's comments for more details. */
-var SUSPENDABLE_DEBUG = false;
-
 // Bootstrap an initial async builder using a no-op protocol.
 var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     invoke: function (co) {
@@ -78,7 +75,7 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
 *  input to eval is entirely known and safe). By using eval, the resulting function
 *  can be pieced together more optimally, as well as having the expected arity and
 *  preserving the invokee's function name and parameter names (to help debugging).
-*  NB: By setting SUSPENDABLE_DEBUG to true, a less optimised non-eval'd function
+*  NB: By setting DEBUG (in src/util) to true, a less optimised non-eval'd function
 *  will be returned, which is helpful for step-through debugging sessions. However,
 *  this function will not report the correct arity (function.length) in most cases.
 */
@@ -106,15 +103,15 @@ function createSuspendableFunction(protocol, invokee, options) {
         return protocol.invoke.apply(null, invokerArgs);
     }
 
-    // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in SUSPENDABLE_DEBUG mode.
+    // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in DEBUG mode.
     // The initial values ensure the that fast path in the template is never hit.
     var $ARGCOUNT = -1, $FASTPATH = null;
 
     // Get the invoker's arity, which is needed inside the suspendable function.
     var invokerArgCount = protocol.invoke.length - 1;
 
-    // At this point, the un-eval'd $SUSPENDABLE_TEMPLATE can be returned directly if in SUSPENDABLE_DEBUG mode.
-    if (SUSPENDABLE_DEBUG)
+    // At this point, the un-eval'd $SUSPENDABLE_TEMPLATE can be returned directly if in DEBUG mode.
+    if (_.DEBUG)
         return $SUSPENDABLE_TEMPLATE;
 
     // Get all parameter names of the invoker and invokee.

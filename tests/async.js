@@ -2,6 +2,7 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var yield_ = require('asyncawait/yield');
+var _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
 function runTestsFor(variant, acceptsCallback) {
@@ -42,6 +43,10 @@ function runTestsFor(variant, acceptsCallback) {
         });
 
         it('returns a function whose arity matches that of its definition', function () {
+            // Skip this test in DEBUG mode (see comments about DEBUG in src/asyncBuilder).
+            if (_.DEBUG)
+                return;
+
             var defns = [
                 function () {
                 },

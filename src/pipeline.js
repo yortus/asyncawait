@@ -1,32 +1,61 @@
 ﻿var assert = require('assert');
-
 var Fiber = require('fibers');
 var _ = require('./util');
 
 
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline = {
+    /** Create and return a new Coroutine instance. */
     acquireCoro: function (protocol, bodyFunc, bodyArgs, bodyThis) {
-        //TODO: shouldnt finally be run, and THEN return? or rename finally to something else, like 'cleanup/epilog/after/finalize/dtor'?
-        //TODO: setImmediate? all, some? Was on finally, what now?
-        var tryBlock = function () {
-            var result = bodyArgs || bodyThis ? bodyFunc.apply(bodyThis, bodyArgs) : bodyFunc();
-            protocol.return(co.context, result);
+        var fiberBody = pipeline.createFiberBody(protocol, function () {
+            return co;
+        });
+        var co = pipeline.acquireFiber(fiberBody);
+        co.bodyFunc = bodyFunc;
+        co.bodyArgs = bodyArgs;
+        co.bodyThis = bodyThis;
+        co.context = {};
+        co.enter = function enter(error, value) {
+            if (_.DEBUG)
+                assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
+            if (error)
+                setImmediate(function () {
+                    co.throwInto(error);
+                });
+            else
+                setImmediate(function () {
+                    co.run(value);
+                });
         };
-        var catchBlock = function (err) {
-            return protocol.throw(co.context, err);
+        co.leave = function leave(value) {
+            if (_.DEBUG)
+                assert(pipeline.isCurrent(co), 'enter: may only be called from the currently executing coroutine');
+            value = protocol.yield(co.context, value);
+            if (value === pipeline.continueAfterYield)
+                return;
+            pipeline.suspendCoro(value);
         };
-        var finallyBlock = function () {
-            // TODO: if protocol supports explicit cleanup/dispose, it goes here...
-            setImmediate(function () {
-                pipeline.releaseFiber(co);
-                pipeline.releaseCoro(co);
-            });
-        };
-
+        return co;
+    },
+    /** Ensure the Coroutine instance is disposed of cleanly. */
+    releaseCoro: function (co) {
+        co.enter = null;
+        co.leave = null;
+        co.context = null;
+    },
+    /** Create and return a new Fiber instance. */
+    acquireFiber: function (body) {
+        return Fiber(body);
+    },
+    /** Ensure the Fiber instance is disposed of cleanly. */
+    releaseFiber: function (fiber) {
+        // NB: Nothing to do here in this default implementation.
+    },
+    /** Create the body function to be executed inside a fiber. */
+    createFiberBody: function (protocol, getCo) {
         // V8 may not optimise the following function due to the presence of
         // try/catch/finally. Therefore it does as little as possible, only
-        // referencing the optimisable closures prepared above.
+        // referencing the optimisable closures prepared below.
         function fiberBody() {
             try  {
                 tryBlock();
@@ -38,55 +67,48 @@ var defaultPipeline = {
         }
         ;
 
-        // A coroutine is a fiber with additional properties
-        var co = pipeline.acquireFiber(fiberBody);
-        co.enter = function (error, value) {
-            if (error)
-                setImmediate(function () {
-                    co.throwInto(error);
-                });
-            else
-                setImmediate(function () {
-                    co.run(value);
-                });
-        };
-        co.leave = function (value) {
-            var current = pipeline.currentCoro();
-            assert(current && current.context === co.context, 'leave: may only be called from the currently executing coroutine');
+        // Shared reference to coroutine, which is only available after getCo() is called.
+        var co;
 
-            value = protocol.yield(co.context, value);
-            if (value !== pipeline.continueAfterYield)
-                pipeline.suspendCoro(value); // TODO: need setImmediate?
-        };
-        co.context = {};
+        // Define the details of the body function's try/catch/finally clauses.
+        var tryBlock = function () {
+            // Lazy-load the coroutine instance to use throughout the body function. This mechanism
+            // means that the instance need not be available at the time createFiberBody() is called.
+            co = getCo();
 
-        //TODO:...
-        return co;
-    },
-    //TODO: doc...
-    releaseCoro: function (co) {
-        //TODO: no-op?
-    },
-    //TODO: doc...
-    acquireFiber: function (body) {
-        return Fiber(body);
-    },
-    //TODO: doc...
-    releaseFiber: function (fiber) {
+            // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
+            var result = co.bodyArgs || co.bodyThis ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+            protocol.return(co.context, result);
+        };
+        var catchBlock = function (err) {
+            // Handle exceptions in a protocol-defined manner.
+            protocol.throw(co.context, err);
+        };
+        var finallyBlock = function () {
+            // Ensure the fiber exits before we clean it up.
+            setImmediate(function () {
+                pipeline.releaseFiber(co);
+                pipeline.releaseCoro(co);
+            });
+        };
+
+        // Return the completed fiberBody closure.
+        return fiberBody;
     }
 };
 
 /**
-*  A hash of functions that are used internally by asyncawait at various stages
-*  of handling asynchronous functions. These can be augmented with the use(...)
-*  method on asyncawait's primary export.
+*  A hash of functions and properties that are used internally by asyncawait at
+*  various stages of handling asynchronous functions. These can be augmented with
+*  the use(...) method on asyncawait's primary export.
 */
 var pipeline = {
-    // The following four methods comprise the overridable pipeline API.
+    // The following methods comprise the overridable pipeline API.
     acquireCoro: defaultPipeline.acquireCoro,
     releaseCoro: defaultPipeline.releaseCoro,
     acquireFiber: defaultPipeline.acquireFiber,
     releaseFiber: defaultPipeline.releaseFiber,
+    createFiberBody: defaultPipeline.createFiberBody,
     // The remaining items are for internal use and must not be overriden.
     currentCoro: function () {
         return Fiber.current;
@@ -94,12 +116,14 @@ var pipeline = {
     suspendCoro: function (val) {
         return Fiber.yield(val);
     },
+    isCurrent: isCurrentCoro,
     continueAfterYield: {},
-    mods: [],
     reset: resetPipeline,
-    isLocked: false
+    isLocked: false,
+    mods: []
 };
 
+/** Reset the pipeline to its default state. This is useful for unit testing. */
 function resetPipeline() {
     // Restore the methods from the default pipeline.
     _.mergeProps(pipeline, defaultPipeline);
@@ -111,7 +135,9 @@ function resetPipeline() {
     pipeline.isLocked = false;
 }
 
-//TODO: doc...
-pipeline.reset();
+function isCurrentCoro(co) {
+    var current = Fiber.current;
+    return current && current.context === co.context;
+}
 module.exports = pipeline;
 //# sourceMappingURL=pipeline.js.map

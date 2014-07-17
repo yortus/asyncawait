@@ -169,20 +169,22 @@ declare module AsyncAwait {
         releaseCoro: (co: Coroutine) => void;
         acquireFiber: (body: () => any) => Fiber;
         releaseFiber: (fiber: Fiber) => void;
+        createFiberBody: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
     }
 
     export interface PipelineOverrides {
         acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
         releaseCoro?: (co: Coroutine) => void;
-        acquireFiber: (body: () => any) => Fiber;
-        releaseFiber: (fiber: Fiber) => void;
+        acquireFiber?: (body: () => any) => Fiber;
+        releaseFiber?: (fiber: Fiber) => void;
+        createFiberBody?: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
     }
 
 
 
     //------------------------- Common -------------------------
     export interface Coroutine {
-        id: number;//TODO: add support for this throughout (helps debugging and asserts)
+        //TODO: id: number;//TODO: add support for this throughout (helps debugging and asserts)
         enter: (error?: Error, value?: any) => void;
         leave: (value?: any) => void;
         context: any;

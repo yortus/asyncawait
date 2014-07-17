@@ -21,7 +21,9 @@ var builder = oldBuilder.derive(function () {
             return stream.emit('error', error);
         },
         yield: function (stream, value) {
-            stream.push(value);
+            setImmediate(function () {
+                return stream.push(value);
+            });
         }
     });
 });

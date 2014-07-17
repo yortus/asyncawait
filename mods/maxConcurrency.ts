@@ -41,7 +41,7 @@ function maxConcurrency(value: number) {
                     enter(() => {
 
                         // When the semaphore is ready, fill out the fiber and begin execution.
-                        var f = pipeline.acquireFiber(body);
+                        var f = <CoroFiber> pipeline.acquireFiber(body);
                         f.enter = fiber.enter;
                         f.leave = fiber.leave;
                         f.context = fiber.context;

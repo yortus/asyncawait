@@ -1,8 +1,8 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
-var async = require('..').async;
-var await = require('..').await;
-var yield_ = require('..').yield;
+var async = require('../..').async;
+var await = require('../..').await;
+var yield_ = require('../..').yield;
 
 
 var someNums = async.stream (function () {

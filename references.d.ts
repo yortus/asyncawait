@@ -12,8 +12,12 @@
 declare module "references" { }
 
 
-/** Extended Fiber interface for internal use. */
-interface Fiber extends AsyncAwait.Coroutine { }
+/** Extended Coroutine/Fiber interface for internal use. */
+interface CoroFiber extends AsyncAwait.Coroutine, Fiber {
+    bodyFunc: Function;
+    bodyThis: any;
+    bodyArgs: any[];
+}
 
 
 /** V8 supports Function.name. */ 

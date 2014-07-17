@@ -2,6 +2,10 @@
 import assert = require('assert');
 
 
+/** Specify whether to execute in DEBUG mode. */
+export var DEBUG = false;
+
+
 /** Determines whether the given object is a function. */
 export function isFunction(obj) {
     return typeof obj === 'function';
