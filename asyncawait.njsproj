@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>support\comparison\benchmark.js</StartupFile>
+    <StartupFile>support\examples\profiler.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -142,6 +142,7 @@
     <Compile Include="support\comparison\largest\largest-synchronous.js" />
     <Compile Include="support\comparison\mockfs.js" />
     <Compile Include="support\examples\awaitTop.js" />
+    <Compile Include="support\examples\profiler.js" />
     <Compile Include="support\examples\basic.js" />
     <Compile Include="support\examples\countFiles.js" />
     <Compile Include="support\examples\descendentFilePaths.js" />
