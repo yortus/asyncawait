@@ -40,16 +40,6 @@ var defaultPipeline = {
 
         // A coroutine is a fiber with additional properties
         var co = pipeline.acquireFiber(fiberBody);
-
-        //TODO: needed now that fi and co are now one and the same object?
-        co.yield = function (value) {
-            //TODO: temp testing...
-            assert(Fiber.current && Fiber.current.context === co.context, 'yield: may only be called from the currently executing coroutine');
-
-            if (!protocol.yield(co.context, value))
-                co.leave();
-        }; //TODO: review this. Use sentinel?
-
         co.enter = function (error, value) {
             if (error)
                 setImmediate(function () {
@@ -60,12 +50,13 @@ var defaultPipeline = {
                     co.run(value);
                 });
         };
-
         co.leave = function (value) {
             assert(Fiber.current && Fiber.current.context === co.context, 'leave: may only be called from the currently executing coroutine');
-            Fiber.yield(value); // TODO: need setImmediate?
-        };
 
+            var continueExecution = protocol.yield(co.context, value);
+            if (!continueExecution)
+                Fiber.yield(value); // TODO: need setImmediate?
+        };
         co.context = {};
 
         //TODO:...
@@ -82,7 +73,7 @@ var defaultPipeline = {
     //TODO: doc...
     releaseFiber: function (fiber) {
         //fiber.co = null;
-        fiber.yield = null;
+        //fiber.yield = null;
     }
 };
 

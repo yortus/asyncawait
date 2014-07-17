@@ -10,10 +10,9 @@ var stream = require('stream');
 var builder = oldBuilder.derive(function () {
     return ({
         invoke: function (co) {
-            var stream = co.context = new Stream(function () {
+            return (co.context = new Stream(function () {
                 return co.enter();
-            });
-            return stream;
+            }));
         },
         return: function (stream, result) {
             return stream.push(null);

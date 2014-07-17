@@ -5,10 +5,7 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Async.StreamBuilder>(() => ({
-    invoke: (co) => {
-        var stream = co.context = new Stream(() => co.enter());
-        return stream;
-    },
+    invoke: (co) => (co.context = new Stream(() => co.enter())),
     return: (stream, result) => stream.push(null),
     throw: (stream, error) => stream.emit('error', error),
     yield: (stream, value) => { stream.push(value); }

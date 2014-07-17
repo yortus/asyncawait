@@ -6,8 +6,8 @@ function yield_(value) {
     if (!fiber)
         throw new Error('yield: may only be called inside a suspendable function.');
 
-    // Delegate to the appropriate protocol's yield method, via the method attached to the fiber.
-    fiber.yield(value);
+    // Delegate to the appropriate protocol's leave method.
+    fiber.leave(value);
 }
 ;
 module.exports = yield_;

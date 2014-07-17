@@ -16,7 +16,7 @@ var builder = oldBuilder.derive(function () {
         },
         yield: function (resolver, value) {
             resolver.progress(value);
-            return true;
+            return true; /* keep executing after yields */ 
         }
     });
 });

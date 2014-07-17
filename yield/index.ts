@@ -6,9 +6,9 @@ export = yield_;
 function yield_(value?: any) {
 
     // Ensure this function is executing inside a fiber.
-    var fiber = Fiber.current;
+    var fiber = Fiber.current; // TODO: abstract over this - _.getExecutingCoro()
     if (!fiber) throw new Error('yield: may only be called inside a suspendable function.');
 
-    // Delegate to the appropriate protocol's yield method, via the method attached to the fiber.
-    fiber.yield(value);
+    // Delegate to the appropriate protocol's leave method.
+    fiber.leave(value);
 };

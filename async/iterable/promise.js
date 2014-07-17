@@ -45,7 +45,7 @@ var AsyncIterator = (function () {
         var result = Promise.defer();
         var stepNext = function () {
             return _this.next().then(stepResolved, function (err) {
-                result.reject(err);
+                return result.reject(err);
             });
         };
         var stepResolved = function (item) {

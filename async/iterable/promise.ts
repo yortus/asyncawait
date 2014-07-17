@@ -45,9 +45,7 @@ class AsyncIterator {
 
         // Asynchronously call next() until done.
         var result = Promise.defer<void>();
-        var stepNext = () => this.next().then(stepResolved, err => {
-            result.reject(err);
-        });
+        var stepNext = () => this.next().then(stepResolved, err => result.reject(err));
         var stepResolved = item => {
             if (item.done) return result.resolve(item.value);
             callback(item.value);
