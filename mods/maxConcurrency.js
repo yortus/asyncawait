@@ -24,14 +24,19 @@ function maxConcurrency(value) {
         return ({
             acquireFiber: function (body) {
                 // For non-top-level requests, just delegate to the existing pipeline.
+                // If coroutines invoke other coroutines and await their results, putting
+                // the nested coroutines through the semaphore could easily lead to deadlocks.
                 if (pipeline.currentCoro())
                     return pipeline.acquireFiber(body);
 
+                // This is a top-level request. Return a 'placeholder' fiber whose run() method waits
+                // on the semaphore and then fills itself out fully when a real fiber is available.
                 var fiber = {
                     inSemaphore: true,
                     run: function (arg) {
+                        // Upon execution, enter the semaphore.
                         enter(function () {
-                            //TODO: needs more work...
+                            // When the semaphore is ready, fill out the fiber and begin execution.
                             var f = pipeline.acquireFiber(body);
                             f.enter = fiber.enter;
                             f.leave = fiber.leave;
@@ -54,7 +59,7 @@ function maxConcurrency(value) {
                 return fiber;
             },
             releaseFiber: function (fiber) {
-                // If this fiber went through the semaphore, then we must leave through the semaphore.
+                // If this fiber entered the semaphore, then it must leave through the semaphore.
                 if (fiber.inSemaphore) {
                     leave();
                     fiber.inSemaphore = false;
