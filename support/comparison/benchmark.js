@@ -35,15 +35,14 @@ var SELECTED_VARIANT = variants.asyncawait;
 
 var SAMPLES_PER_RUN = 1000;   // How many times the function will be called per run.
 
-var RUNS_PER_BENCHMARK = 25;  // How many runs make up the whole benchmark.
+var RUNS_PER_BENCHMARK = 5;  // How many runs make up the whole benchmark.
 
 var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the function.
 
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
-//TODO: mockfs not working - check with largest-asyncawait with JUST_CHECK_THE_FUNCTION=true
-var USE_MOCK_FS = false;                        // If true, uses a mocked 'fs' module returning fixed in-memory results.
+var USE_MOCK_FS = true;                        // If true, uses a mocked 'fs' module returning fixed in-memory results.
 var COMPARE_WITH_VARIANT = variants.callbacks;  // If non-null, re-run the benchmark with the given variant and show the relative results.
 var OUTPUT_GC_STATS = false;                    // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = true;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
@@ -227,7 +226,7 @@ function createSampleFunction() {
     if (USE_MOCK_FS) selectedFunction.__set__('fs', require('./mockfs'));
     switch (SELECTED_FUNCTION) {
         case functions.countFiles:
-            var dirToCheck = path.join(__dirname, '.');
+            var dirToCheck = '.';
             var sample = function (callback) {
                 selectedFunction(dirToCheck, function (err, result) {
                     setImmediate(callback, err, result);
@@ -245,7 +244,7 @@ function createSampleFunction() {
             break;
 
         case functions.largest:
-            var dirToCheck = path.join(__dirname, '.');
+            var dirToCheck = '.';
             var options = { recurse: true, preview: true };
             var sample = function (callback) {
                 selectedFunction(dirToCheck, options, function (err, result) {
