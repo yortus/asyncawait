@@ -3,7 +3,7 @@ import pipeline = require('../src/pipeline');
 export = yield_;
 
 
-function yield_(value?: any) {
+var yield_: AsyncAwait.Yield = <any> function yield_(value?: any) {
 
     // Ensure this function is executing inside a coroutine.
     var co = pipeline.currentCoro();
@@ -12,3 +12,6 @@ function yield_(value?: any) {
     // Delegate to the appropriate protocol-specific behaviour.
     co.leave(value);
 };
+
+
+yield_.continue = pipeline.continueAfterYield;

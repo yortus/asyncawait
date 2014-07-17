@@ -1,6 +1,6 @@
 ﻿var pipeline = require('../src/pipeline');
 
-function yield_(value) {
+var yield_ = function yield_(value) {
     // Ensure this function is executing inside a coroutine.
     var co = pipeline.currentCoro();
     if (!co)
@@ -8,7 +8,8 @@ function yield_(value) {
 
     // Delegate to the appropriate protocol-specific behaviour.
     co.leave(value);
-}
-;
+};
+
+yield_.continue = pipeline.continueAfterYield;
 module.exports = yield_;
 //# sourceMappingURL=index.js.map

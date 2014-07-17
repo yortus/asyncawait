@@ -15,7 +15,7 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     throw: function (ctx, error) {
     },
     yield: function (ctx, value) {
-        return true;
+        return pipeline.continueAfterYield;
     }
 });
 

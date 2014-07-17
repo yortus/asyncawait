@@ -1,4 +1,5 @@
 ﻿var oldBuilder = require('../src/asyncBuilder');
+var pipeline = require('../src/pipeline');
 var Promise = require('bluebird');
 
 var builder = oldBuilder.derive(function () {
@@ -16,7 +17,7 @@ var builder = oldBuilder.derive(function () {
         },
         yield: function (resolver, value) {
             resolver.progress(value);
-            return true; /* keep executing after yields */ 
+            return pipeline.continueAfterYield;
         }
     });
 });

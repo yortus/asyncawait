@@ -19,7 +19,7 @@ var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
     invoke: (co) => { },
     return: (ctx, result) => { },
     throw: (ctx, error) => { },
-    yield: (ctx, value) => { return true; } //TODO: yield: throw in default impl (and update tests accordingly)
+    yield: (ctx, value) => { return pipeline.continueAfterYield; } //TODO: yield: throw in default impl (and update tests accordingly)
 });
 
 

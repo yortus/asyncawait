@@ -155,6 +155,7 @@ declare module AsyncAwait {
     //------------------------- Yield -------------------------
     export interface Yield {
         (expr?: any): void;
+        continue: any;
     }
 
 
