@@ -3,7 +3,7 @@ import assert = require('assert');
 
 
 /** Specify whether to execute in DEBUG mode. */
-export var DEBUG = true;
+export var DEBUG = false;
 
 
 /** Determines whether the given object is a function. */

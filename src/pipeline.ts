@@ -7,21 +7,40 @@ import Protocol = AsyncAwait.Async.Protocol;
 export = pipeline;
 
 
+
+//TODO: temp testing...
+var coroPool: CoroFiber[] = [];
+
+
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline: Pipeline = {
 
     /** Create and return a new Coroutine instance. */
     acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => {
+
+        //TODO: temp testing...
+        var p: any = protocol;
+        if (!p.coroPool) p.coroPool = [];
+        if (p.coroPool.length > 0) {
+            var co = <CoroFiber> p.coroPool.pop();
+            co.bodyFunc = bodyFunc;
+            co.bodyArgs = bodyArgs;
+            co.bodyThis = bodyThis;
+            co.context = {};
+            return co;
+        }
+
         var fiberBody = pipeline.createFiberBody(protocol, () => co);
         var co = <CoroFiber> pipeline.acquireFiber(fiberBody);
+        co.protocol = protocol;
         co.bodyFunc = bodyFunc;
         co.bodyArgs = bodyArgs;
         co.bodyThis = bodyThis;
         co.context = {};
         co.enter = function enter(error?, value?) {
             if (_.DEBUG) assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
-            if (error) setImmediate(() => { co.throwInto(error); });
-            else setImmediate(() => { co.run(value); });
+            if (error) process.nextTick(() => { co.throwInto(error); });
+            else process.nextTick(() => { co.run(value); });
         };
         co.leave = function leave(value?) {
             if (_.DEBUG) assert(pipeline.isCurrent(co), 'enter: may only be called from the currently executing coroutine');
@@ -34,6 +53,14 @@ var defaultPipeline: Pipeline = {
 
     /** Ensure the Coroutine instance is disposed of cleanly. */
     releaseCoro: (co: CoroFiber) => {
+
+        //TODO: temp testing...
+        var p: any = co.protocol;
+        p.coroPool.push(co);
+        return;
+
+
+        //TODO: was...
         co.enter = null;
         co.leave = null;
         co.context = null;
@@ -62,37 +89,33 @@ var defaultPipeline: Pipeline = {
         };
 
         // Shared reference to coroutine, which is only available after getCo() is called.
-        var co: CoroFiber;
+        var co: CoroFiber, result_, return_, finally_;
 
         // Define the details of the body function's try/catch/finally clauses.
         var tryBlock = () => {
 
             // Lazy-load the coroutine instance to use throughout the body function. This mechanism
             // means that the instance need not be available at the time createFiberBody() is called.
-            co = getCo();
+            if (!co) {
+                co = getCo();
+                return_ = () => protocol.return(co.context, result_);
+                finally_ = () => { pipeline.releaseFiber(co); pipeline.releaseCoro(co); };
+            }
 
             // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
             var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
-            //TODO: use ?: operator
-            if (slowCall) {
-                var result = co.bodyFunc.apply(co.bodyThis, co.bodyArgs);
-            } else {
-                result = co.bodyFunc();
-            }
-            protocol.return(co.context, result);
+            result_ = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+            setImmediate(return_);
         };
         var catchBlock = err => {
 
             // Handle exceptions in a protocol-defined manner.
-            protocol.throw(co.context, err);
+            setImmediate(() => protocol.throw(co.context, err));
         };
         var finallyBlock = () => {
 
             // Ensure the fiber exits before we clean it up.
-            setImmediate(() => {
-                pipeline.releaseFiber(co);
-                pipeline.releaseCoro(co);
-            });
+            setImmediate(finally_);
         };
 
         // Return the completed fiberBody closure.

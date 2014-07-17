@@ -33,7 +33,7 @@ function maxConcurrency(value: number) {
 
             // This is a top-level request. Return a 'placeholder' fiber whose run() method waits
             // on the semaphore and then fills itself out fully when a real fiber is available.
-            var fiber = {
+            var fiber: any = {
                 inSemaphore: true,
                 run: (arg?) => {
 

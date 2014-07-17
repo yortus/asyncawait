@@ -86,7 +86,33 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
  *  will be returned, which is helpful for step-through debugging sessions. However,
  *  this function will not report the correct arity (function.length) in most cases.
  */
-function createSuspendableFunction(protocol, invokee, options: Options) {
+var createSuspendableFunction = _.DEBUG ? createSuspendableFunctionSlow : createSuspendableFunctionFast;
+
+function createSuspendableFunctionSlow(protocol, invokee, options: Options) {
+
+    // Get the invoker's arity, which is needed inside the suspendable function.
+    var invokerArgCount = protocol.invoke.length - 1;
+
+    // Return the suspendable function.
+    return function suspendable($ARGS) {
+
+        // Distribute arguments between the invoker and invokee functions, according to their arities.
+        var invokeeArgCount = arguments.length - invokerArgCount;
+        var invokeeArgs = new Array(invokeeArgCount), invokerArgs = new Array(invokerArgCount + 1);
+        for (var i = 0; i < invokeeArgCount; ++i) invokeeArgs[i] = arguments[i];
+        for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
+
+        // Create a coroutine instance to hold context information for this call.
+        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
+
+        // Pass execution control over to the invoker.
+        invokerArgs[0] = co;
+        return protocol.invoke.apply(null, invokerArgs);
+    }
+}
+
+function createSuspendableFunctionFast(protocol, invokee, options: Options) {
+    "use strict";
 
     // Declare the general shape of the suspendable function.
     function $SUSPENDABLE_TEMPLATE($ARGS) {
@@ -97,33 +123,27 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
         // Distribute arguments between the invoker and invokee functions, according to their arities.
         var invokeeArgCount = arguments.length - invokerArgCount, invokeeArgs = new Array(invokeeArgCount);
         for (var i = 0; i < invokeeArgCount; ++i) invokeeArgs[i] = arguments[i];
-        if (invokerArgCount > 0) {
-            var invokerArgs = new Array(invokerArgCount + 1);
-            for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
-        }
+        $SETUP_INVOKER_ARGS
 
         // Create a coroutine instance to hold context information for this call.
         var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
 
         // Pass execution control over to the invoker.
-        if (invokerArgCount > 0) {
-            invokerArgs[0] = co;
-            return protocol.invoke.apply(null, invokerArgs);
-        }
-        else {
-            return protocol.invoke(co);
-        }
+        $CALL_INVOKER
     }
-
-    // The $SUSPENDABLE_TEMPLATE function will harmlessly close over these when used in DEBUG mode.
-    // The initial values ensure the that fast path in the template is never hit.
-    var $ARGCOUNT = -1, $FASTPATH = null;
 
     // Get the invoker's arity, which is needed inside the suspendable function.
     var invokerArgCount = protocol.invoke.length - 1;
 
-    // At this point, the un-eval'd $SUSPENDABLE_TEMPLATE can be returned directly if in DEBUG mode.
-    if (_.DEBUG) return $SUSPENDABLE_TEMPLATE;
+    //TODO:...
+    if (invokerArgCount === 0) var $SETUP_INVOKER_ARGS = ''; else $SETUP_INVOKER_ARGS =
+        'var invokerArgs = new Array(invokerArgCount + 1); ' +
+        'for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];';
+
+    //TODO:...
+    if (invokerArgCount === 0) var $CALL_INVOKER = 'return protocol.invoke(co);';
+    else var $CALL_INVOKER = 'invokerArgs[0] = co; return protocol.invoke.apply(null, invokerArgs);';
+
 
     // Get all parameter names of the invoker and invokee.
     var invokerParamNames = _.getParamNames(protocol.invoke).slice(1); // Skip the 'co' parameter.
@@ -138,6 +158,7 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
 
     // The two parameter lists together form the parameter list of the suspendable function.
     var allParamNames = invokeeParamNames.concat(invokerParamNames);
+    var $ARGCOUNT: any = '' + allParamNames.length;
 
     // Stringify $SUSPENDABLE_TEMPLATE just once and cache the result in a module variable.
     suspendableTemplateSource = suspendableTemplateSource || $SUSPENDABLE_TEMPLATE.toString(); 
@@ -147,7 +168,7 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
     var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = '(!this || this === global) ? ' +
         (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') +
         ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
-    var fastpath =
+    var $FASTPATH =
         'var self = this, co = pipeline.acquireCoro(protocol, ' + bodyExpr + ');' +
         'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
@@ -155,8 +176,10 @@ function createSuspendableFunction(protocol, invokee, options: Options) {
     var source = suspendableTemplateSource
         .replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name)
         .replace('$ARGS', allParamNames.join(', '))
-        .replace('$ARGCOUNT', '' + allParamNames.length)
-        .replace('$FASTPATH', fastpath);
+        .replace('$ARGCOUNT', $ARGCOUNT)
+        .replace('$FASTPATH', $FASTPATH)
+        .replace('$SETUP_INVOKER_ARGS', $SETUP_INVOKER_ARGS)
+        .replace('$CALL_INVOKER', $CALL_INVOKER);
 
     // Eval the source code into a function, and return it. It must be eval'd inside
     // this function to close over the variables defined here.

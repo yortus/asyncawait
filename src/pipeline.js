@@ -3,14 +3,31 @@ var Fiber = require('fibers');
 var _ = require('./util');
 
 
+//TODO: temp testing...
+var coroPool = [];
+
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
     acquireCoro: function (protocol, bodyFunc, bodyArgs, bodyThis) {
+        //TODO: temp testing...
+        var p = protocol;
+        if (!p.coroPool)
+            p.coroPool = [];
+        if (p.coroPool.length > 0) {
+            var co = p.coroPool.pop();
+            co.bodyFunc = bodyFunc;
+            co.bodyArgs = bodyArgs;
+            co.bodyThis = bodyThis;
+            co.context = {};
+            return co;
+        }
+
         var fiberBody = pipeline.createFiberBody(protocol, function () {
             return co;
         });
         var co = pipeline.acquireFiber(fiberBody);
+        co.protocol = protocol;
         co.bodyFunc = bodyFunc;
         co.bodyArgs = bodyArgs;
         co.bodyThis = bodyThis;
@@ -19,11 +36,11 @@ var defaultPipeline = {
             if (_.DEBUG)
                 assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
             if (error)
-                setImmediate(function () {
+                process.nextTick(function () {
                     co.throwInto(error);
                 });
             else
-                setImmediate(function () {
+                process.nextTick(function () {
                     co.run(value);
                 });
         };
@@ -39,6 +56,12 @@ var defaultPipeline = {
     },
     /** Ensure the Coroutine instance is disposed of cleanly. */
     releaseCoro: function (co) {
+        //TODO: temp testing...
+        var p = co.protocol;
+        p.coroPool.push(co);
+        return;
+
+        //TODO: was...
         co.enter = null;
         co.leave = null;
         co.context = null;
@@ -68,35 +91,37 @@ var defaultPipeline = {
         ;
 
         // Shared reference to coroutine, which is only available after getCo() is called.
-        var co;
+        var co, result_, return_, finally_;
 
         // Define the details of the body function's try/catch/finally clauses.
         var tryBlock = function () {
             // Lazy-load the coroutine instance to use throughout the body function. This mechanism
             // means that the instance need not be available at the time createFiberBody() is called.
-            co = getCo();
+            if (!co) {
+                co = getCo();
+                return_ = function () {
+                    return protocol.return(co.context, result_);
+                };
+                finally_ = function () {
+                    pipeline.releaseFiber(co);
+                    pipeline.releaseCoro(co);
+                };
+            }
 
             // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
             var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
-
-            //TODO: use ?: operator
-            if (slowCall) {
-                var result = co.bodyFunc.apply(co.bodyThis, co.bodyArgs);
-            } else {
-                result = co.bodyFunc();
-            }
-            protocol.return(co.context, result);
+            result_ = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+            setImmediate(return_);
         };
         var catchBlock = function (err) {
             // Handle exceptions in a protocol-defined manner.
-            protocol.throw(co.context, err);
+            setImmediate(function () {
+                return protocol.throw(co.context, err);
+            });
         };
         var finallyBlock = function () {
             // Ensure the fiber exits before we clean it up.
-            setImmediate(function () {
-                pipeline.releaseFiber(co);
-                pipeline.releaseCoro(co);
-            });
+            setImmediate(finally_);
         };
 
         // Return the completed fiberBody closure.
