@@ -2,6 +2,7 @@
 import Promise = require('bluebird');
 import Handler = AsyncAwait.Await.Handler;
 import _ = require('../src/util');
+import pipeline = require('../src/pipeline');
 export = handler;
 
 
@@ -28,7 +29,7 @@ var handler: Handler = (co, args) => {
         }
     }
     else {
-        return false;
+        return pipeline.notHandled;
     }
 }
 

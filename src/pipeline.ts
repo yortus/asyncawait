@@ -113,7 +113,8 @@ var pipeline = {
     currentCoro: () => <CoroFiber> Fiber.current,
     suspendCoro: (val?) => Fiber.yield(val),
     isCurrent: <(co: CoroFiber) => boolean> isCurrentCoro,
-    continueAfterYield: {},
+    continueAfterYield: {}, /* sentinal value */
+    notHandled: {}, /* sentinal value */
     reset: <() => void> resetPipeline,
     isLocked: false,
     mods: []

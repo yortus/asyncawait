@@ -1,6 +1,7 @@
 ﻿var Promise = require('bluebird');
 
 var _ = require('../src/util');
+var pipeline = require('../src/pipeline');
 
 var handler = function (co, args) {
     //TODO: temp testing...
@@ -24,7 +25,7 @@ var handler = function (co, args) {
             }, co.enter);
         }
     } else {
-        return false;
+        return pipeline.notHandled;
     }
 };
 

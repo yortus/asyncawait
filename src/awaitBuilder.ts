@@ -26,19 +26,19 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
         var co = pipeline.currentCoro();
         if (!co) throw new Error('await: may only be called inside a suspendable function.');
 
-        // TODO: explain...
+        // Create a new array to hold the passed-in arguments.
         var len = arguments.length, args = new Array(len);
         for (var i = 0; i < len; ++i) args[i] = arguments[i];
 
-        // TODO: Execute handler...
+        // Delegate to the specified handler to appropriately await the pass-in value(s).
         var handlerResult = handler(co, args);
 
-        if (handlerResult === false) { //TODO: explain sentinel value...
-            // TODO: Improve message...
-            throw new Error('await: not handled!');
+        // Ensure the passed-in value(s) were handled.
+        if (handlerResult === pipeline.notHandled) {
+            throw new Error('await: the passed-in value(s) are not recognised as being awaitable.');
         }
 
-        // TODO: explain...
+        // Suspend the coroutine until the await handler causes it to be resumed.
         return pipeline.suspendCoro();
     }
 

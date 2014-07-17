@@ -118,6 +118,7 @@ var pipeline = {
     },
     isCurrent: isCurrentCoro,
     continueAfterYield: {},
+    notHandled: {},
     reset: resetPipeline,
     isLocked: false,
     mods: []
