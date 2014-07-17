@@ -47,10 +47,11 @@ function maxConcurrency(value: number) {
                         f.co = f; //TODO: temp testing...
                         f.yield = fiber.yield; //TODO: temp testing...
 
+
                         fiber.run = (arg?) => f.run(arg);
                         fiber.throwInto = (err) => f.throwInto(err);
                         fiber.reset = () => f.reset();
-                        setImmediate(() => f.run(arg));
+                        setImmediate(() => fiber.run(arg));
                     });
                 }
             };

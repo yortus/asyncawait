@@ -1,13 +1,14 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
-//TODO: ...
+//TODO: enable debugging
 //var async = require('asyncawait/async');
 //var await = require('asyncawait/await');
 var async = require('../../async');
 var await = require('../../await');
-var use = require('../../src/use');
-var maxConcurrency = require('../../mods/maxConcurrency');
-use(maxConcurrency(1));
+//TODO: for maxConcurrency testing...
+//var use = require('../../src/use');
+//var maxConcurrency = require('../../mods/maxConcurrency');
+//use(maxConcurrency(1));
 
 
 // A function that returns a promise.
@@ -57,9 +58,10 @@ var program = async (function prog() {
 program().then(function (result) {
     console.log(result);
 });
-program().then(function (result) {
-    console.log(result);
-});
+//TODO: for maxConcurrency testing...
+//program().then(function (result) {
+//    console.log(result);
+//});
 
 // Outputs (with one second delays between the numbers):
 // zero...

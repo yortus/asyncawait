@@ -50,7 +50,7 @@ function maxConcurrency(value) {
                                 return f.reset();
                             };
                             setImmediate(function () {
-                                return f.run(arg);
+                                return fiber.run(arg);
                             });
                         });
                     }
