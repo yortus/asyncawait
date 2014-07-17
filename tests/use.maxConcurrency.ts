@@ -8,6 +8,10 @@ import pipeline = require('asyncawait/src/pipeline');
 import maxConcurrency = require('asyncawait/mods/maxConcurrency');
 var expect = chai.expect;
 
+// TODO: More tests...
+// - race condition (causing timeout) - how?
+// works with async.iterable example (covers yield behaviour) (failed before due to yield bug)
+
 
 describe('The maxConcurrency mod', () => {
 

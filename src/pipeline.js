@@ -4,23 +4,6 @@ var Fiber = require('fibers');
 var _ = require('./util');
 
 
-/**
-*  A hash of functions that are used internally by asyncawait at various stages
-*  of handling asynchronous functions. These can be augmented with the use(...)
-*  method on asyncawait's primary export.
-*/
-var pipeline = {
-    // The following four methods comprise the overridable pipeline API.
-    acquireCoro: null,
-    releaseCoro: null,
-    acquireFiber: null,
-    releaseFiber: null,
-    // The remaining items are for internal use and must not be overriden.
-    mods: [],
-    reset: resetPipeline,
-    isLocked: false
-};
-
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline = {
     acquireCoro: function (protocol, bodyFunc, bodyArgs, bodyThis) {
@@ -36,7 +19,7 @@ var defaultPipeline = {
         var finallyBlock = function () {
             // TODO: if protocol supports explicit cleanup/dispose, it goes here...
             setImmediate(function () {
-                pipeline.releaseFiber(fiber);
+                pipeline.releaseFiber(co);
                 pipeline.releaseCoro(co);
             });
         };
@@ -56,10 +39,13 @@ var defaultPipeline = {
         ;
 
         // A coroutine is a fiber with additional properties
-        var fiber = pipeline.acquireFiber(fiberBody);
-        var co = fiber;
-        fiber.co = co; //TODO: retire this, no longer needed...
-        fiber.yield = function (value) {
+        var co = pipeline.acquireFiber(fiberBody);
+
+        //TODO: needed now that fi and co are now one and the same object?
+        co.yield = function (value) {
+            //TODO: temp testing...
+            assert(Fiber.current && Fiber.current.context === co.context, 'yield: may only be called from the currently executing coroutine');
+
             if (!protocol.yield(co.context, value))
                 co.leave();
         }; //TODO: review this. Use sentinel?
@@ -67,16 +53,16 @@ var defaultPipeline = {
         co.enter = function (error, value) {
             if (error)
                 setImmediate(function () {
-                    fiber.throwInto(error);
+                    co.throwInto(error);
                 });
             else
                 setImmediate(function () {
-                    fiber.run(value);
+                    co.run(value);
                 });
         };
 
         co.leave = function (value) {
-            assert(Fiber.current === fiber, 'leave: may only be called from the currently executing coroutine');
+            assert(Fiber.current && Fiber.current.context === co.context, 'leave: may only be called from the currently executing coroutine');
             Fiber.yield(value); // TODO: need setImmediate?
         };
 
@@ -95,9 +81,26 @@ var defaultPipeline = {
     },
     //TODO: doc...
     releaseFiber: function (fiber) {
-        fiber.co = null;
+        //fiber.co = null;
         fiber.yield = null;
     }
+};
+
+/**
+*  A hash of functions that are used internally by asyncawait at various stages
+*  of handling asynchronous functions. These can be augmented with the use(...)
+*  method on asyncawait's primary export.
+*/
+var pipeline = {
+    // The following four methods comprise the overridable pipeline API.
+    acquireCoro: defaultPipeline.acquireCoro,
+    releaseCoro: defaultPipeline.releaseCoro,
+    acquireFiber: defaultPipeline.acquireFiber,
+    releaseFiber: defaultPipeline.releaseFiber,
+    // The remaining items are for internal use and must not be overriden.
+    mods: [],
+    reset: resetPipeline,
+    isLocked: false
 };
 
 function resetPipeline() {

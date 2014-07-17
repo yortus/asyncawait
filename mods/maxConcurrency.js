@@ -37,7 +37,8 @@ function maxConcurrency(value) {
                             f.enter = fiber.enter;
                             f.leave = fiber.leave;
                             f.context = fiber.context;
-                            f.co = f; //TODO: temp testing...
+
+                            //f.co = f; //TODO: temp testing...
                             f.yield = fiber.yield; //TODO: temp testing...
 
                             fiber.run = function (arg) {

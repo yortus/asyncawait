@@ -27,7 +27,7 @@ function createAwaitBuilder(handlerFactory, options, baseHandler) {
             args[i] = arguments[i];
 
         // TODO: Execute handler...
-        var handlerResult = handler(fiber.co, args);
+        var handlerResult = handler(fiber, args);
 
         if (handlerResult === false) {
             throw new Error('await: not handled!');

@@ -13,9 +13,8 @@ declare module "references" { }
 
 
 /** Extended Fiber interface for internal use. */
-interface Fiber {
-    co: AsyncAwait.Coroutine;
-    yield(value?: any): any;
+interface Fiber extends AsyncAwait.Coroutine {
+    yield(value?: any): any; //TODO: remove somehow?
 }
 
 
