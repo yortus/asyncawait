@@ -16,26 +16,21 @@ var coroPool: CoroFiber[] = [];
 var defaultPipeline: Pipeline = {
 
     /** Create and return a new Coroutine instance. */
-    acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => {
+    acquireCoro: (protocol: Protocol, body: () => any) => {
 
         //TODO: temp testing...
         var p: any = protocol;
         if (!p.coroPool) p.coroPool = [];
         if (p.coroPool.length > 0) {
             var co = <CoroFiber> p.coroPool.pop();
-            co.bodyFunc = bodyFunc;
-            co.bodyArgs = bodyArgs;
-            co.bodyThis = bodyThis;
+            co.body = body;
             co.context = {};
             return co;
         }
 
         var fiberBody = pipeline.createFiberBody(protocol, () => co);
         var co = <CoroFiber> pipeline.acquireFiber(fiberBody);
-        co.protocol = protocol;
-        co.bodyFunc = bodyFunc;
-        co.bodyArgs = bodyArgs;
-        co.bodyThis = bodyThis;
+        co.body = body;
         co.context = {};
         co.enter = function enter(error?, value?) {
             if (_.DEBUG) assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
@@ -51,10 +46,10 @@ var defaultPipeline: Pipeline = {
     },
 
     /** Ensure the Coroutine instance is disposed of cleanly. */
-    releaseCoro: (co: CoroFiber) => {
+    releaseCoro: (protocol: Protocol, co: CoroFiber) => {
 
         //TODO: temp testing...
-        var p: any = co.protocol;
+        var p: any = protocol;
         p.coroPool.push(co);
         return;
 
@@ -99,8 +94,9 @@ var defaultPipeline: Pipeline = {
 
             // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
             error = null;
-            var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
-            result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+            result = co.body();
+            //var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
+            //result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
         };
         var catchBlock = err => {
             error = err;
@@ -109,7 +105,7 @@ var defaultPipeline: Pipeline = {
             if (error) protocol.throw(co.context, error);
             else protocol.return(co.context, result);
             pipeline.releaseFiber(co);
-            pipeline.releaseCoro(co);
+            pipeline.releaseCoro(protocol, co);
         };
 
         // Return the completed fiberBody closure.

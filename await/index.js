@@ -3,10 +3,12 @@ var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
 
-//TOSO: temp testing...
+//TODO: temp testing...
 var compound = require('./compound');
 var noop = function (co, args) {
-    return co.enter(null, args[0]);
+    setImmediate(function () {
+        co.enter(null, args[0]);
+    });
 };
 
 var api = compound.derive({ handlers: [promise.handler, cps.handler, thunk.handler, general, noop] });

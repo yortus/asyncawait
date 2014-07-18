@@ -103,7 +103,8 @@ function createSuspendableFunctionSlow(protocol, invokee, options: Options) {
         for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
+        var body = () => invokee.apply(this, invokeeArgs);
+        var co = pipeline.acquireCoro(protocol, body);
 
         // Pass execution control over to the invoker.
         invokerArgs[0] = co;
@@ -118,6 +119,7 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
     function $SUSPENDABLE_TEMPLATE($ARGS) {
 
         // Code for the fast path will be injected here.
+        var self = this, body = $BODYEXPR;
         if (arguments.length === $ARGCOUNT) { $FASTPATH }
 
         // Distribute arguments between the invoker and invokee functions, according to their arities.
@@ -126,7 +128,8 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
         $SETUP_INVOKER_ARGS
 
         // Create a coroutine instance to hold context information for this call.
-        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
+        body = function b3() { return invokee.apply(self, invokeeArgs); };
+        var co = pipeline.acquireCoro(protocol, body);
 
         // Pass execution control over to the invoker.
         $CALL_INVOKER
@@ -134,6 +137,16 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
 
     // Get the invoker's arity, which is needed inside the suspendable function.
     var invokerArgCount = protocol.invoke.length - 1;
+
+    // Get all parameter names of the invoker and invokee.
+    var invokerParamNames = _.getParamNames(protocol.invoke).slice(1); // Skip the 'co' parameter.
+    var invokeeParamNames = _.getParamNames(invokee);
+
+    //TODO:...
+    var invokeeArgs = invokeeParamNames.join(', ');
+    var bodyNoThis = invokeeParamNames.length === 0 ? 'invokee' : 'function b1() { return invokee(' + invokeeArgs + '); }';
+    var bodyWithThis = ' function b2() { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }'
+    var $BODYEXPR: any = '(!this || this === global) ? ' + bodyNoThis + ' : ' + bodyWithThis;
 
     //TODO:...
     if (invokerArgCount === 0) var $SETUP_INVOKER_ARGS = ''; else $SETUP_INVOKER_ARGS =
@@ -143,11 +156,6 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
     //TODO:...
     if (invokerArgCount === 0) var $CALL_INVOKER = 'return protocol.invoke(co);';
     else var $CALL_INVOKER = 'invokerArgs[0] = co; return protocol.invoke.apply(null, invokerArgs);';
-
-
-    // Get all parameter names of the invoker and invokee.
-    var invokerParamNames = _.getParamNames(protocol.invoke).slice(1); // Skip the 'co' parameter.
-    var invokeeParamNames = _.getParamNames(invokee);
 
     // Ensure there are no clashes between invoker/invokee parameter names.
     for (var i = 0; i < invokeeParamNames.length; ++i) {
@@ -165,17 +173,15 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
 
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function#call().
-    var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = '(!this || this === global) ? ' +
-        (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') +
-        ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
     var $FASTPATH =
-        'var self = this, co = pipeline.acquireCoro(protocol, ' + bodyExpr + ');' +
+        'var co = pipeline.acquireCoro(protocol, body); ' +
         'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.
     var source = suspendableTemplateSource
         .replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name)
         .replace('$ARGS', allParamNames.join(', '))
+        .replace('$BODYEXPR', $BODYEXPR)
         .replace('$ARGCOUNT', $ARGCOUNT)
         .replace('$FASTPATH', $FASTPATH)
         .replace('$SETUP_INVOKER_ARGS', $SETUP_INVOKER_ARGS)

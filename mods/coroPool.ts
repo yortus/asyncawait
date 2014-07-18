@@ -21,9 +21,9 @@ var coroPool: Mod = (pipeline) => ({
         }
     },
 
-    releaseCoro: co => {
+    releaseCoro: (protocol, co) => {
         if (co.bodyFunc.pooled) {
-            pipeline.releaseCoro(co);
+            pipeline.releaseCoro(protocol, co);
         }
         else {
             co.bodyFunc.pooled = co;

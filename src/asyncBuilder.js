@@ -90,6 +90,7 @@ function createSuspendableFunctionSlow(protocol, invokee, options) {
 
     // Return the suspendable function.
     return function suspendable($ARGS) {
+        var _this = this;
         // Distribute arguments between the invoker and invokee functions, according to their arities.
         var invokeeArgCount = arguments.length - invokerArgCount;
         var invokeeArgs = new Array(invokeeArgCount), invokerArgs = new Array(invokerArgCount + 1);
@@ -99,7 +100,10 @@ function createSuspendableFunctionSlow(protocol, invokee, options) {
             invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
+        var body = function () {
+            return invokee.apply(_this, invokeeArgs);
+        };
+        var co = pipeline.acquireCoro(protocol, body);
 
         // Pass execution control over to the invoker.
         invokerArgs[0] = co;
@@ -113,6 +117,7 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
     // Declare the general shape of the suspendable function.
     function $SUSPENDABLE_TEMPLATE($ARGS) {
         // Code for the fast path will be injected here.
+        var self = this, body = $BODYEXPR;
         if (arguments.length === $ARGCOUNT) {
             $FASTPATH;
         }
@@ -124,7 +129,10 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
         $SETUP_INVOKER_ARGS;
 
         // Create a coroutine instance to hold context information for this call.
-        var co = pipeline.acquireCoro(protocol, invokee, invokeeArgs, this);
+        body = function b3() {
+            return invokee.apply(self, invokeeArgs);
+        };
+        var co = pipeline.acquireCoro(protocol, body);
 
         // Pass execution control over to the invoker.
         $CALL_INVOKER;
@@ -132,6 +140,16 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
 
     // Get the invoker's arity, which is needed inside the suspendable function.
     var invokerArgCount = protocol.invoke.length - 1;
+
+    // Get all parameter names of the invoker and invokee.
+    var invokerParamNames = _.getParamNames(protocol.invoke).slice(1);
+    var invokeeParamNames = _.getParamNames(invokee);
+
+    //TODO:...
+    var invokeeArgs = invokeeParamNames.join(', ');
+    var bodyNoThis = invokeeParamNames.length === 0 ? 'invokee' : 'function b1() { return invokee(' + invokeeArgs + '); }';
+    var bodyWithThis = ' function b2() { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
+    var $BODYEXPR = '(!this || this === global) ? ' + bodyNoThis + ' : ' + bodyWithThis;
 
     //TODO:...
     if (invokerArgCount === 0)
@@ -144,10 +162,6 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
         var $CALL_INVOKER = 'return protocol.invoke(co);';
     else
         var $CALL_INVOKER = 'invokerArgs[0] = co; return protocol.invoke.apply(null, invokerArgs);';
-
-    // Get all parameter names of the invoker and invokee.
-    var invokerParamNames = _.getParamNames(protocol.invoke).slice(1);
-    var invokeeParamNames = _.getParamNames(invokee);
 
     for (var i = 0; i < invokeeParamNames.length; ++i) {
         var paramName = invokeeParamNames[i];
@@ -165,11 +179,10 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
 
     // Assemble the source code for the suspendable function's fast path.
     // NB: If the calling context need not be preserved, we can avoid using the slower Function#call().
-    var invokeeArgs = invokeeParamNames.join(', '), bodyExpr = '(!this || this === global) ? ' + (invokeeParamNames.length === 0 ? 'invokee' : 'function () { return invokee(' + invokeeArgs + '); }') + ' : function () { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
-    var $FASTPATH = 'var self = this, co = pipeline.acquireCoro(protocol, ' + bodyExpr + ');' + 'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
+    var $FASTPATH = 'var co = pipeline.acquireCoro(protocol, body); ' + 'return protocol.invoke(co' + (invokerParamNames.length ? ', ' + invokerParamNames.join(', ') : '') + ');';
 
     // Substitute all placeholders in the template function to get the final source code.
-    var source = suspendableTemplateSource.replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name).replace('$ARGS', allParamNames.join(', ')).replace('$ARGCOUNT', $ARGCOUNT).replace('$FASTPATH', $FASTPATH).replace('$SETUP_INVOKER_ARGS', $SETUP_INVOKER_ARGS).replace('$CALL_INVOKER', $CALL_INVOKER);
+    var source = suspendableTemplateSource.replace('$SUSPENDABLE_TEMPLATE', 'suspendable_' + invokee.name).replace('$ARGS', allParamNames.join(', ')).replace('$BODYEXPR', $BODYEXPR).replace('$ARGCOUNT', $ARGCOUNT).replace('$FASTPATH', $FASTPATH).replace('$SETUP_INVOKER_ARGS', $SETUP_INVOKER_ARGS).replace('$CALL_INVOKER', $CALL_INVOKER);
 
     // Eval the source code into a function, and return it. It must be eval'd inside
     // this function to close over the variables defined here.

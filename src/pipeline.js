@@ -9,16 +9,14 @@ var coroPool = [];
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
-    acquireCoro: function (protocol, bodyFunc, bodyArgs, bodyThis) {
+    acquireCoro: function (protocol, body) {
         //TODO: temp testing...
         var p = protocol;
         if (!p.coroPool)
             p.coroPool = [];
         if (p.coroPool.length > 0) {
             var co = p.coroPool.pop();
-            co.bodyFunc = bodyFunc;
-            co.bodyArgs = bodyArgs;
-            co.bodyThis = bodyThis;
+            co.body = body;
             co.context = {};
             return co;
         }
@@ -27,10 +25,7 @@ var defaultPipeline = {
             return co;
         });
         var co = pipeline.acquireFiber(fiberBody);
-        co.protocol = protocol;
-        co.bodyFunc = bodyFunc;
-        co.bodyArgs = bodyArgs;
-        co.bodyThis = bodyThis;
+        co.body = body;
         co.context = {};
         co.enter = function enter(error, value) {
             if (_.DEBUG)
@@ -51,9 +46,9 @@ var defaultPipeline = {
         return co;
     },
     /** Ensure the Coroutine instance is disposed of cleanly. */
-    releaseCoro: function (co) {
+    releaseCoro: function (protocol, co) {
         //TODO: temp testing...
-        var p = co.protocol;
+        var p = protocol;
         p.coroPool.push(co);
         return;
 
@@ -97,8 +92,9 @@ var defaultPipeline = {
 
             // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
             error = null;
-            var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
-            result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+            result = co.body();
+            //var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
+            //result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
         };
         var catchBlock = function (err) {
             error = err;
@@ -109,7 +105,7 @@ var defaultPipeline = {
             else
                 protocol.return(co.context, result);
             pipeline.releaseFiber(co);
-            pipeline.releaseCoro(co);
+            pipeline.releaseCoro(protocol, co);
         };
 
         // Return the completed fiberBody closure.

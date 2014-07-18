@@ -146,6 +146,7 @@ declare module AsyncAwait {
         }
 
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
+        // TODO: doc: handlers *must* resume coro asynchronously
         export interface Handler {
             (co: Coroutine, args: any[]): any;
         }
@@ -166,7 +167,7 @@ declare module AsyncAwait {
 
     export interface Pipeline {
         acquireCoro: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
-        releaseCoro: (co: Coroutine) => void;
+        releaseCoro: (protocol: Async.Protocol, co: Coroutine) => void;
         acquireFiber: (body: () => any) => Fiber;
         releaseFiber: (fiber: Fiber) => void;
         createFiberBody: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
@@ -174,7 +175,7 @@ declare module AsyncAwait {
 
     export interface PipelineOverrides {
         acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
-        releaseCoro?: (co: Coroutine) => void;
+        releaseCoro?: (protocol: Async.Protocol, co: Coroutine) => void;
         acquireFiber?: (body: () => any) => Fiber;
         releaseFiber?: (fiber: Fiber) => void;
         createFiberBody?: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
