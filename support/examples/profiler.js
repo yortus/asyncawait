@@ -9,17 +9,6 @@ var await = require('../../await');
 //use(maxConcurrency(1));
 
 
-//var oldSetImm = setImmediate;
-//setImmediate = function () {
-//    if (arguments.length > 1) {
-//        console.log('setImm prob...');
-//    }
-//    oldSetImm.apply(this, arguments);
-//}
-
-
-
-
 var counter = 0, n = 25000;
 var startTime = new Date().getTime();
 
