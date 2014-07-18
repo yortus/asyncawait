@@ -25,6 +25,7 @@ var defaultPipeline = {
             return co;
         });
         var co = pipeline.acquireFiber(fiberBody);
+        co.id = ++pipeline.nextCoroId;
         co.body = body;
         co.context = {};
         co.enter = function enter(error, value) {
@@ -133,6 +134,7 @@ var pipeline = {
         return Fiber.yield(val);
     },
     isCurrent: isCurrentCoro,
+    nextCoroId: 1,
     continueAfterYield: {},
     notHandled: {},
     reset: resetPipeline,
@@ -154,7 +156,7 @@ function resetPipeline() {
 
 function isCurrentCoro(co) {
     var current = Fiber.current;
-    return current && current.context === co.context;
+    return current && current.id === co.id;
 }
 module.exports = pipeline;
 //# sourceMappingURL=pipeline.js.map

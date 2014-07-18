@@ -185,7 +185,7 @@ declare module AsyncAwait {
 
     //------------------------- Common -------------------------
     export interface Coroutine {
-        //TODO: id: number;//TODO: add support for this throughout (helps debugging and asserts)
+        id: number;
         enter: (error?: Error, value?: any) => void;
         leave: (value?: any) => void;
         context: any;

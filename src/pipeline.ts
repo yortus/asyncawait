@@ -30,6 +30,7 @@ var defaultPipeline: Pipeline = {
 
         var fiberBody = pipeline.createFiberBody(protocol, () => co);
         var co = <CoroFiber> pipeline.acquireFiber(fiberBody);
+        co.id = ++pipeline.nextCoroId;
         co.body = body;
         co.context = {};
         co.enter = function enter(error?, value?) {
@@ -132,6 +133,7 @@ var pipeline = {
     currentCoro: () => <CoroFiber> Fiber.current,
     suspendCoro: (val?) => Fiber.yield(val),
     isCurrent: <(co: CoroFiber) => boolean> isCurrentCoro,
+    nextCoroId: 1,
     continueAfterYield: {}, /* sentinal value */
     notHandled: {}, /* sentinal value */
     reset: <() => void> resetPipeline,
@@ -156,5 +158,5 @@ function resetPipeline() {
 
 function isCurrentCoro(co: CoroFiber) {
     var current = <CoroFiber> Fiber.current;
-    return current && current.context === co.context;
+    return current && current.id === co.id;
 }
