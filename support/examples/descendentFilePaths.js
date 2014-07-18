@@ -2,9 +2,9 @@
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
 var _ = require('lodash');
-var async = require('..').async;
-var await = require('..').await;
-var yield_ = require('..').yield;
+var async = require('../..').async;
+var await = require('../..').await;
+var yield_ = require('../..').yield;
 
 
 var descendentFilePaths = async.iterable (function self(dir, recursive) {

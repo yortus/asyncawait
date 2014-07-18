@@ -18,7 +18,6 @@ describe('A suspendable function returned by async.cps(...)', function () {
         });
         var bar = async.cps(function (a, b) {
         });
-
         expect(function () {
             return foo();
         }).to.throw(Error);
@@ -36,17 +35,18 @@ describe('A suspendable function returned by async.cps(...)', function () {
         }).to.throw(Error);
     });
 
-    it('executes its definition asynchronously', function (done) {
+    it('begins executing synchronously and completes asynchronously', function (done) {
         var x = 5;
         var foo = async.cps(function () {
             x = 7;
         });
-        Promise.promisify(foo)().then(function (result) {
-            return expect(x).to.equal(7);
+        Promise.promisify(foo)().then(function () {
+            return expect(x).to.equal(9);
         }).then(function () {
             return done();
         }).catch(done);
-        expect(x).to.equal(5);
+        expect(x).to.equal(7);
+        x = 9;
     });
 
     it("preserves the 'this' context of the call", function (done) {

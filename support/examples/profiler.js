@@ -15,6 +15,7 @@ var startTime = new Date().getTime();
 
 // ========== async.cps ==========
 var program = async.cps (function prog(a) {
+    //return await (a);
     return a;
 });
 function doOne() { program(1, doneOne); }

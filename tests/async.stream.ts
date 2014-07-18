@@ -25,11 +25,12 @@ describe('A suspendable function returned by async.stream(...)', () => {
         expect(syncResult).instanceOf(stream.Readable);
     });
 
-    it('executes its definition asynchronously', done => {
+    it('begins executing synchronously and completes asynchronously', done => {
         var arr = [], items = foo(3, arr);
         items.resume();
-        items.on('end', () => { expect(arr).to.not.be.empty; done(); });
-        expect(arr).to.be.empty;
+        items.on('end', () => { expect(arr).to.deep.equal([111, '***', 222, 333]); done(); });
+        expect(arr).to.deep.equal([111]);
+        arr.push('***');
     });
 
     it("preserves the 'this' context of the call", done => {

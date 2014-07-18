@@ -34,17 +34,17 @@ describe('A suspendable function returned by async.thunk(...)', () => {
         .then(result => expect(x).to.equal(7))
         .then(() => done())
         .catch(done);
-        expect(x).to.equal(5);
     });
 
-    it('executes its definition asynchronously', done => {
+    it('begins executing synchronously and completes asynchronously', done => {
         var x = 5;
         var foo = async.thunk (() => { x = 7; });
         Promise.promisify(foo())()
-        .then(result => expect(x).to.equal(7))
+        .then(() => expect(x).to.equal(9))
         .then(() => done())
         .catch(done);
-        expect(x).to.equal(5);
+        expect(x).to.equal(7);
+        x = 9;
     });
 
     it("preserves the 'this' context of the call", done => {

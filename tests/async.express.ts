@@ -35,13 +35,14 @@ describe('A suspendable function returned by async.express(...)', () => {
         expect(() => bar('a', 'b', 'c')).to.throw(Error);
     });
 
-    it('executes its definition asynchronously', done => {
-        var rs = { pre: 'abc', post: null };
+    it('begins executing synchronously and completes asynchronously', done => {
+        var rs = { pre: 'abc', post: 'def' };
         Promise.promisify(foo)('next', rs)
-        .then(() => expect(rs.post).to.equal('abc'))
+        .then(() => expect(rs.post).to.equal('123'))
         .then(() => done())
         .catch(done);
-        expect(rs.pre).to.exist;
+        expect(rs.post).to.equal('abc');
+        rs.post = '123';
     });
 
     it('eventually rejects if its definition\'s return value is not falsy or \'next\' or \'route\'', done => {

@@ -32,14 +32,15 @@ describe('async.iterable(...)', function () {
             expect(iter.next()).instanceOf(Promise);
         });
 
-        it('executes its definition asynchronously', function (done) {
+        it('begins executing synchronously and completes asynchronously', function (done) {
             var arr = [], iter = foo(3, arr);
-            iter.next().then(function (result) {
-                return expect(arr).to.deep.equal([111]);
+            iter.next().then(function () {
+                return expect(arr).to.deep.equal([111, '***']);
             }).then(function () {
                 return done();
             }).catch(done);
-            expect(arr).to.be.empty;
+            expect(arr).to.deep.equal([111]);
+            arr.push('***');
         });
 
         it("preserves the 'this' context of the call", async.cps(function () {
@@ -101,14 +102,15 @@ describe('async.iterable(...)', function () {
             expect(iter.forEach(nullFunc)).instanceOf(Promise);
         });
 
-        it('executes its definition asynchronously', function (done) {
+        it('begins executing synchronously and completes asynchronously', function (done) {
             var arr = [], iter = foo(3, arr);
-            iter.forEach(nullFunc).then(function (result) {
-                return expect(arr).to.deep.equal([111, 222, 333]);
+            iter.forEach(nullFunc).then(function () {
+                return expect(arr).to.deep.equal([111, '***', 222, 333]);
             }).then(function () {
                 return done();
             }).catch(done);
-            expect(arr).to.be.empty;
+            expect(arr).to.deep.equal([111]);
+            arr.push('***');
         });
 
         it('iterates over all yielded values', async.cps(function () {

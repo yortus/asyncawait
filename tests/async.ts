@@ -83,14 +83,15 @@ describe('A suspendable function returned by async(...)', () => {
         expect(syncResult).instanceOf(Promise);
     });
 
-    it('executes its definition asynchronously', done => {
+    it('begins executing synchronously and completes asynchronously', done => {
         var x = 5;
         var foo = async (() => { x = 7; });
-        (<Promise<any>> foo())
-        .then(result => expect(x).to.equal(7))
+        foo()
+        .then(() => expect(x).to.equal(9))
         .then(() => done())
         .catch(done);
-        expect(x).to.equal(5);
+        expect(x).to.equal(7);
+        x = 9;
     });
 
     it("preserves the 'this' context of the call", done => {

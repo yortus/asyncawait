@@ -17,7 +17,6 @@ describe('A suspendable function returned by async.cps(...)', () => {
     it('throws if a callback is not supplied after the other arguments', () => {
         var foo: Function = async.cps (() => {});
         var bar: Function = async.cps ((a, b) => {});
-
         expect(() => foo()).to.throw(Error);
         expect(() => foo(1)).to.throw(Error);
         expect(() => bar()).to.throw(Error);
@@ -25,14 +24,15 @@ describe('A suspendable function returned by async.cps(...)', () => {
         expect(() => bar(1, 2, 3)).to.throw(Error);
     });
 
-    it('executes its definition asynchronously', done => {
+    it('begins executing synchronously and completes asynchronously', done => {
         var x = 5;
         var foo = async.cps (() => { x = 7; });
         Promise.promisify(foo)()
-        .then(result => expect(x).to.equal(7))
+        .then(() => expect(x).to.equal(9))
         .then(() => done())
         .catch(done);
-        expect(x).to.equal(5);
+        expect(x).to.equal(7);
+        x = 9;
     });
 
     it("preserves the 'this' context of the call", done => {

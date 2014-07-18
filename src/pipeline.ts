@@ -39,8 +39,8 @@ var defaultPipeline: Pipeline = {
         co.context = {};
         co.enter = function enter(error?, value?) {
             if (_.DEBUG) assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
-            if (error) process.nextTick(() => { co.throwInto(error); });
-            else process.nextTick(() => { co.run(value); });
+            if (error) co.throwInto(error);
+            else co.run(value);
         };
         co.leave = function leave(value?) {
             if (_.DEBUG) assert(pipeline.isCurrent(co), 'enter: may only be called from the currently executing coroutine');

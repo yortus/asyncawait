@@ -36,13 +36,9 @@ var defaultPipeline = {
             if (_.DEBUG)
                 assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
             if (error)
-                process.nextTick(function () {
-                    co.throwInto(error);
-                });
+                co.throwInto(error);
             else
-                process.nextTick(function () {
-                    co.run(value);
-                });
+                co.run(value);
         };
         co.leave = function leave(value) {
             if (_.DEBUG)
