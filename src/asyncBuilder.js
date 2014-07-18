@@ -125,78 +125,6 @@ function createSuspendableFunctionSlow(protocol, invokee, options) {
 function createSuspendableFunctionFast(protocol, invokee, options) {
     "use strict";
 
-    // This is the template for an optimized suspendable function. It has substitutable parts.
-    function $SUSPENDABLE($PARAMS) {
-        var self = this, len = arguments.length, hasThis = this && this !== global, body, co;
-
-        /* ---------- Fast path ---------- */
-        /* i.e., when argument count equals formal parameter count. */
-        if (len === $PARAM_COUNT) {
-            if (hasThis) {
-                /* $IF_HAS_INVOKEE_PARAMS */
-                body = function b2() {
-                    return invokee.call(self, $INVOKEE_PARAMS);
-                };
-
-                /* ELSE */
-                body = function b3() {
-                    return invokee.call(self);
-                };
-                /* ENDIF */
-            } else {
-                /* $IF_HAS_INVOKEE_PARAMS */
-                body = function b4() {
-                    return invokee($INVOKEE_PARAMS);
-                };
-
-                /* ELSE */
-                body = invokee;
-                /* ENDIF */
-            }
-
-            /* Invoke the body function inside a new coroutine. */
-            co = pipeline.acquireCoro(protocol, body);
-
-            /* $IF_HAS_INVOKER_PARAMS */
-            return protocol.invoke(co, $INVOKER_PARAMS);
-
-            /* ELSE */
-            return protocol.invoke(co);
-            /* ENDIF */
-        }
-
-        /* ---------- General path ---------- */
-        /* Distribute arguments between the invoker and invokee functions, according to their arities. */
-        var invokeeArgCount = len - $INVOKER_PARAM_COUNT;
-        var invokeeArgs = new Array(invokeeArgCount);
-        for (var i = 0; i < invokeeArgCount; ++i)
-            invokeeArgs[i] = arguments[i];
-
-        /* $IF_HAS_INVOKER_PARAMS */
-        var invokerArgs = new Array($INVOKER_PARAM_COUNT + 1);
-        for (var j = 1; j <= $INVOKER_PARAM_COUNT; ++i, ++j)
-            invokerArgs[j] = arguments[i];
-
-        /* ELSE */
-        /* ENDIF */
-        /* Create the body function and invoke it inside a new coroutine. */
-        body = function b5() {
-            return invokee.apply(self, invokeeArgs);
-        };
-        co = pipeline.acquireCoro(protocol, body);
-
-        /* $IF_HAS_INVOKER_PARAMS */
-        invokerArgs[0] = co;
-        return protocol.invoke.apply(null, invokerArgs);
-
-        /* ELSE */
-        return protocol.invoke(co);
-        /* ENDIF */
-    }
-
-    // These are dummies; their presence ensures the template function above is syntactically valid.
-    var $PARAM_COUNT, $INVOKEE_PARAMS, $INVOKER_PARAMS, $INVOKER_PARAM_COUNT;
-
     // Get all formal parameter names of the invoker and invokee functions.
     var invokerParams = _.getParamNames(protocol.invoke).slice(1);
     var invokeeParams = _.getParamNames(invokee);
@@ -211,7 +139,7 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
     // Calculate all the substitution values to be applied to the template function.
     var substs = {
         // Substitutions
-        $SUSPENDABLE2: 'suspendable_' + invokee.name,
+        $SUSPENDABLE: 'suspendable_' + (invokee.name || ''),
         $PARAMS: invokeeParams.concat(invokerParams).join(', '),
         $PARAM_COUNT: invokeeParams.length + invokerParams.length,
         $INVOKER_PARAM_COUNT: '' + invokerParams.length,
@@ -223,16 +151,15 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
     };
 
     // Stringify the template function above just once, and cache the result in a module variable.
-    suspendableTemplateSource = suspendableTemplateSource || $SUSPENDABLE.toString();
+    // Move comments and excess whitespace in the process.
+    suspendableTemplateSource = suspendableTemplateSource || $SUSPENDABLE.toString().replace(/(?:[\s][\s]+)|(?:\/\*[^*]*\*\/)/gm, ' ');
 
     // Perform all substitutions to get the final source code for the suspendable function.
-    var source = suspendableTemplateSource;
-    for (var varName in substs) {
-        if (!substs.hasOwnProperty(varName))
-            continue;
-        var value = substs[varName], isCondition = varName.indexOf('$IF') === 0;
-        source = isCondition ? conditionSubst(source, varName, value) : variableSubst(source, varName, value);
-    }
+    var source = suspendableTemplateSource.replace(/\$(?!IF|ELSE|ENDIF)[A-Z_]+/gm, function (name) {
+        return substs[name];
+    }).replace(/(\$[A-Z_]+)([^$]*)\$ELSE([^$]*)\$ENDIF/gm, function ($0, $1, $2, $3) {
+        return (substs[$1] ? $2 : $3);
+    });
 
     // Eval the source code into a function, and return it. It must be eval'd inside
     // this function to close over the variables defined here.
@@ -241,36 +168,75 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
     return result;
 }
 
-// This module variable holds the cached source of the $SUSPENDABLE template function, defined above.
+// This module variable holds the cached source of the $SUSPENDABLE template function, defined below.
 var suspendableTemplateSource;
 
-/** Resolve a template variable in the given template. */
-function variableSubst(template, name, value) {
-    while (true) {
-        var i = template.indexOf(name);
-        if (i === -1)
-            break;
-        template = template.substring(0, i) + value + template.substring(i + name.length);
+// This is the template for an optimized suspendable function. It has substitutable parts.
+function $SUSPENDABLE($PARAMS) {
+    var self = this, len = arguments.length, hasThis = this && this !== global, body, co;
+
+    /* --------------- Fast path --------------- */
+    /* i.e., when argument count equals formal parameter count. */
+    if (len === $PARAM_COUNT) {
+        /* Create the body function. */
+        if (hasThis) {
+            $IF_HAS_INVOKEE_PARAMS;
+            body = function b2() {
+                return invokee.call(self, $INVOKEE_PARAMS);
+            };
+            $ELSE;
+            body = function b3() {
+                return invokee.call(self);
+            };
+            $ENDIF;
+        } else {
+            $IF_HAS_INVOKEE_PARAMS;
+            body = function b4() {
+                return invokee($INVOKEE_PARAMS);
+            };
+            $ELSE;
+            body = invokee;
+            $ENDIF;
+        }
+
+        /* Invoke the body function inside a new coroutine. */
+        co = pipeline.acquireCoro(protocol, body);
+        $IF_HAS_INVOKER_PARAMS;
+        return protocol.invoke(co, $INVOKER_PARAMS);
+        $ELSE;
+        return protocol.invoke(co);
+        $ENDIF;
     }
-    return template;
+
+    /* --------------- General path --------------- */
+    /* Distribute arguments between the invoker and invokee functions, according to their arities. */
+    var invokeeArgCount = len - $INVOKER_PARAM_COUNT;
+    var invokeeArgs = new Array(invokeeArgCount);
+    for (var i = 0; i < invokeeArgCount; ++i)
+        invokeeArgs[i] = arguments[i];
+    $IF_HAS_INVOKER_PARAMS;
+    var invokerArgs = new Array($INVOKER_PARAM_COUNT + 1);
+    for (var j = 1; j <= $INVOKER_PARAM_COUNT; ++i, ++j)
+        invokerArgs[j] = arguments[i];
+    $ELSE;
+    $ENDIF;
+
+    /* Create the body function and invoke it inside a new coroutine. */
+    body = function b5() {
+        return invokee.apply(self, invokeeArgs);
+    };
+    co = pipeline.acquireCoro(protocol, body);
+    $IF_HAS_INVOKER_PARAMS;
+    invokerArgs[0] = co;
+    return protocol.invoke.apply(null, invokerArgs);
+    $ELSE;
+    return protocol.invoke(co);
+    $ENDIF;
 }
 
-/** Resolve a condition section of the given template. */
-function conditionSubst(template, name, value) {
-    var $if = '/* ' + name + ' */', $else = '/* ELSE */', $endif = '/* ENDIF */';
-    while (true) {
-        var i0 = template.indexOf($if);
-        if (i0 === -1)
-            break;
-        var i1 = template.indexOf($else, i0 + $if.length);
-        var i2 = template.indexOf($endif, i1 + $else.length);
-
-        var pre = template.substring(0, i0);
-        var subst = value ? template.substring(i0 + $if.length, i1) : template.substring(i1 + $else.length, i2);
-        var post = template.substring(i2 + $endif.length);
-        template = pre + subst + post;
-    }
-    return template;
-}
+// These are dummies; their presence ensures the template function above is syntactically valid.
+var $PARAM_COUNT, $INVOKEE_PARAMS, $INVOKER_PARAMS, $INVOKER_PARAM_COUNT;
+var $IF_HAS_INVOKEE_PARAMS, $IF_HAS_INVOKER_PARAMS, $ELSE, $ENDIF;
+var invokee, protocol;
 module.exports = asyncBuilder;
 //# sourceMappingURL=asyncBuilder.js.map

@@ -14,17 +14,17 @@ var startTime = new Date().getTime();
 
 
 // ========== async.cps ==========
-//var program = function (a, cb) {
-//    (async.cps (function prog(a) {
-//        //return await (a);
-//        return a;
-//    }))(a, cb);
-//};
-var program = async.cps (function prog(a) {
-    //return await (Promise.resolve(a));
-    //return await (a);
-    return a;
-});
+var program = function (a, cb) {
+    (async.cps (function prog(a) {
+        //return await (a);
+        return a;
+    }))(a, cb);
+};
+//var program = async.cps (function prog(a) {
+//    //return await (Promise.resolve(a));
+//    //return await (a);
+//    return a;
+//});
 function doOne() { program(1, doneOne); }
 doOne();
 function doneOne(err, val) {
