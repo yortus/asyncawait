@@ -70,6 +70,16 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
     };
 }
 
+// ================================================================================
+//TODO: Find a way to hot-swap from slow to fast impl *only if* repeatedly invoked.
+//      Otherwise the cost of eval is added to every invoke (approx 6x slower).
+//      Fast impl is approx 20% faster than slow impl, so it needs to amortise its
+//      setup cost over 100s or 1000s of invocations.
+//      In particular: if user code puts something like (async(...))() in repeatedly
+//      called code, then there is no oportunity for amortisation since a new
+//      suspendable function is created for every call, and in this case it makes
+//      no sense to use the fast impl.
+// ================================================================================
 /**
 *  Creates a suspendable function configured for the given protocol and invokee.
 *  This function is not on the hot path, but the suspendable function it returns
