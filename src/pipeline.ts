@@ -28,7 +28,7 @@ var defaultPipeline: Pipeline = {
             return co;
         }
 
-        var fiberBody = pipeline.createFiberBody(protocol, () => co);
+        var fiberBody = pipeline.createFiberBody(protocol, function getCo() { return co; });
         var co = <CoroFiber> pipeline.acquireFiber(fiberBody);
         co.id = ++pipeline.nextCoroId;
         co.body = body;
@@ -87,7 +87,7 @@ var defaultPipeline: Pipeline = {
         var co: CoroFiber, result, error;
 
         // Define the details of the body function's try/catch/finally clauses.
-        var tryBlock = () => {
+        function tryBlock() {
 
             // Lazy-load the coroutine instance to use throughout the body function. This mechanism
             // means that the instance need not be available at the time createFiberBody() is called.
@@ -98,11 +98,11 @@ var defaultPipeline: Pipeline = {
             result = co.body();
             //var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
             //result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
-        };
-        var catchBlock = err => {
+        }
+        function catchBlock(err) {
             error = err;
         };
-        var finallyBlock = () => {
+        function finallyBlock() {
             if (error) protocol.throw(co.context, error);
             else protocol.return(co.context, result);
             pipeline.releaseFiber(co);

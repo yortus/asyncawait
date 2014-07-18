@@ -10,7 +10,7 @@ export = api;
 
 //TODO: temp testing...
 import compound = require('./compound');
-var noop = (co, args) => {
+var value = function valueHandler(co, args) {
     setImmediate(() => {
         co.enter(null, args[0]);
     });
@@ -19,7 +19,7 @@ var noop = (co, args) => {
 
 
 
-var api: AsyncAwait.Await.API = <any> compound.derive({ handlers: [ promise.handler, cps.handler, thunk.handler, general, noop ]});
+var api: AsyncAwait.Await.API = <any> compound.derive({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
 api.promise = promise;
 api.cps = <any> cps;
 api.thunk = <any> thunk;

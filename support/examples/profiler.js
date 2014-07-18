@@ -21,8 +21,8 @@ var startTime = new Date().getTime();
 //    }))(a, cb);
 //};
 var program = async.cps (function prog(a) {
-    //return await (a);
-    return a;
+    return await (a);
+    //return a;
 });
 function doOne() { program(1, doneOne); }
 doOne();

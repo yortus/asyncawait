@@ -21,7 +21,7 @@ var defaultPipeline = {
             return co;
         }
 
-        var fiberBody = pipeline.createFiberBody(protocol, function () {
+        var fiberBody = pipeline.createFiberBody(protocol, function getCo() {
             return co;
         });
         var co = pipeline.acquireFiber(fiberBody);
@@ -86,7 +86,7 @@ var defaultPipeline = {
         var co, result, error;
 
         // Define the details of the body function's try/catch/finally clauses.
-        var tryBlock = function () {
+        function tryBlock() {
             // Lazy-load the coroutine instance to use throughout the body function. This mechanism
             // means that the instance need not be available at the time createFiberBody() is called.
             co = co || getCo();
@@ -96,18 +96,20 @@ var defaultPipeline = {
             result = co.body();
             //var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
             //result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
-        };
-        var catchBlock = function (err) {
+        }
+        function catchBlock(err) {
             error = err;
-        };
-        var finallyBlock = function () {
+        }
+        ;
+        function finallyBlock() {
             if (error)
                 protocol.throw(co.context, error);
             else
                 protocol.return(co.context, result);
             pipeline.releaseFiber(co);
             pipeline.releaseCoro(protocol, co);
-        };
+        }
+        ;
 
         // Return the completed fiberBody closure.
         return fiberBody;

@@ -3,7 +3,7 @@ var pipeline = require('../src/pipeline');
 
 
 var builder = oldBuilder.derive(function () {
-    return function (co, args) {
+    return function cpsHandler(co, args) {
         if (args.length !== 1 || args[0] !== void 0)
             return pipeline.notHandled;
     };

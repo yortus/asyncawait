@@ -15,6 +15,12 @@ function isArray(obj) {
 }
 exports.isArray = isArray;
 
+/** Determines whether the given object is an object (i.e., anything other than a primitive). */
+function isObject(obj) {
+    return typeof obj === 'object';
+}
+exports.isObject = isObject;
+
 /** Determines whether the given object is a plain object (i.e., it's constructor is Object). */
 function isPlainObject(obj) {
     return typeof obj === 'object' && obj.constructor == Object;
@@ -26,6 +32,12 @@ function isNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 exports.isNumber = isNumber;
+
+/** Determines whether the given object is a promise/thenable. */
+function isPromise(obj) {
+    return exports.isObject(obj) && typeof obj.then === 'function';
+}
+exports.isPromise = isPromise;
 
 /** Equivalent to lodash's _.assign() function. */
 exports.mergeProps = function () {

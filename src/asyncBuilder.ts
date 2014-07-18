@@ -117,7 +117,7 @@ function createSuspendableFunctionSlow(protocol, invokee, options: Options) {
         for (var j = 1; j <= invokerArgCount; ++i, ++j) invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var body = () => invokee.apply(this, invokeeArgs);
+        var self = this, body = function b1() { invokee.apply(self, invokeeArgs); }
         var co = pipeline.acquireCoro(protocol, body);
 
         // Pass execution control over to the invoker.
@@ -142,7 +142,7 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
         $SETUP_INVOKER_ARGS
 
         // Create a coroutine instance to hold context information for this call.
-        body = function b3() { return invokee.apply(self, invokeeArgs); };
+        body = function b4() { return invokee.apply(self, invokeeArgs); };
         var co = pipeline.acquireCoro(protocol, body);
 
         // Pass execution control over to the invoker.
@@ -158,8 +158,8 @@ function createSuspendableFunctionFast(protocol, invokee, options: Options) {
 
     //TODO:...
     var invokeeArgs = invokeeParamNames.join(', ');
-    var bodyNoThis = invokeeParamNames.length === 0 ? 'invokee' : 'function b1() { return invokee(' + invokeeArgs + '); }';
-    var bodyWithThis = ' function b2() { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }'
+    var bodyNoThis = invokeeParamNames.length === 0 ? 'invokee' : 'function b2() { return invokee(' + invokeeArgs + '); }';
+    var bodyWithThis = ' function b3() { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }'
     var $BODYEXPR: any = '(!this || this === global) ? ' + bodyNoThis + ' : ' + bodyWithThis;
 
     //TODO:...

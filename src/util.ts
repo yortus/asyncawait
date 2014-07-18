@@ -18,6 +18,12 @@ export function isArray(obj) {
 }
 
 
+/** Determines whether the given object is an object (i.e., anything other than a primitive). */
+export function isObject(obj) {
+    return typeof obj === 'object';
+}
+
+
 /** Determines whether the given object is a plain object (i.e., it's constructor is Object). */
 export function isPlainObject(obj) {
     return typeof obj === 'object' && obj.constructor == Object;
@@ -27,6 +33,12 @@ export function isPlainObject(obj) {
 /** Determines whether the given object is a number. */
 export function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+/** Determines whether the given object is a promise/thenable. */
+export function isPromise(obj) {
+    return isObject(obj) && typeof obj.then === 'function';
 }
 
 

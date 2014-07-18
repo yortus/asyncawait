@@ -6,7 +6,7 @@ import pipeline = require('../src/pipeline');
 export = handler;
 
 
-var handler: Handler = (co, args) => {
+var handler: Handler = function generalHandler(co, args) {
 
     //TODO: temp testing...
     var traverse = traverseClone;

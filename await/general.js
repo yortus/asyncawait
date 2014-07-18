@@ -3,7 +3,7 @@
 var _ = require('../src/util');
 var pipeline = require('../src/pipeline');
 
-var handler = function (co, args) {
+var handler = function generalHandler(co, args) {
     //TODO: temp testing...
     var traverse = traverseClone;
     var topN = null;

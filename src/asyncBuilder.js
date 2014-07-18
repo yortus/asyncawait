@@ -100,7 +100,6 @@ function createSuspendableFunctionSlow(protocol, invokee, options) {
 
     // Return the suspendable function.
     return function suspendable($ARGS) {
-        var _this = this;
         // Distribute arguments between the invoker and invokee functions, according to their arities.
         var invokeeArgCount = arguments.length - invokerArgCount;
         var invokeeArgs = new Array(invokeeArgCount), invokerArgs = new Array(invokerArgCount + 1);
@@ -110,8 +109,8 @@ function createSuspendableFunctionSlow(protocol, invokee, options) {
             invokerArgs[j] = arguments[i];
 
         // Create a coroutine instance to hold context information for this call.
-        var body = function () {
-            return invokee.apply(_this, invokeeArgs);
+        var self = this, body = function b1() {
+            invokee.apply(self, invokeeArgs);
         };
         var co = pipeline.acquireCoro(protocol, body);
 
@@ -139,7 +138,7 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
         $SETUP_INVOKER_ARGS;
 
         // Create a coroutine instance to hold context information for this call.
-        body = function b3() {
+        body = function b4() {
             return invokee.apply(self, invokeeArgs);
         };
         var co = pipeline.acquireCoro(protocol, body);
@@ -157,8 +156,8 @@ function createSuspendableFunctionFast(protocol, invokee, options) {
 
     //TODO:...
     var invokeeArgs = invokeeParamNames.join(', ');
-    var bodyNoThis = invokeeParamNames.length === 0 ? 'invokee' : 'function b1() { return invokee(' + invokeeArgs + '); }';
-    var bodyWithThis = ' function b2() { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
+    var bodyNoThis = invokeeParamNames.length === 0 ? 'invokee' : 'function b2() { return invokee(' + invokeeArgs + '); }';
+    var bodyWithThis = ' function b3() { return invokee.call(self' + (invokeeParamNames.length > 0 ? ', ' + invokeeArgs : '') + '); }';
     var $BODYEXPR = '(!this || this === global) ? ' + bodyNoThis + ' : ' + bodyWithThis;
 
     //TODO:...
