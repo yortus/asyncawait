@@ -5,9 +5,9 @@ var thunk = require('./thunk');
 
 //TODO: temp testing...
 var compound = require('./compound');
-var value = function valueHandler(co, args) {
+var value = function valueHandler(co, arg, allArgs) {
     setImmediate(function () {
-        co.enter(null, args[0]);
+        co.enter(null, arg);
     });
 };
 

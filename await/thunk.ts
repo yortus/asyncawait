@@ -6,8 +6,8 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Await.ThunkBuilder>(
-    () => function thunkHandler(co, args) {
-        if (args.length !== 1 || !_.isFunction(args[0])) return pipeline.notHandled;
-        args[0](co.enter);
+    () => function thunkHandler(co, arg, allArgs) {
+        if (allArgs || !_.isFunction(arg)) return pipeline.notHandled;
+        arg(co.enter);
     }
 );

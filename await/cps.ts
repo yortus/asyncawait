@@ -6,8 +6,8 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Await.CPSBuilder>(
-    () => function cpsHandler(co, args) {
-        if (args.length !== 1 || args[0] !== void 0) return pipeline.notHandled;
+    () => function cpsHandler(co, arg, allArgs) {
+        if (allArgs || arg !== void 0) return pipeline.notHandled;
     }
 );
 

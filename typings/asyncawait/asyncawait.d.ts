@@ -147,8 +147,9 @@ declare module AsyncAwait {
 
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
         // TODO: doc: handlers *must* resume coro asynchronously
+        // TODO: doc: arg/allArgs fast/slow paths
         export interface Handler {
-            (co: Coroutine, args: any[]): any;
+            (co: Coroutine, arg: any, allArgs?: any[]): any;
         }
     }
 

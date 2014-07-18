@@ -3,10 +3,10 @@ var pipeline = require('../src/pipeline');
 var _ = require('../src/util');
 
 var builder = oldBuilder.derive(function () {
-    return function thunkHandler(co, args) {
-        if (args.length !== 1 || !_.isFunction(args[0]))
+    return function thunkHandler(co, arg, allArgs) {
+        if (allArgs || !_.isFunction(arg))
             return pipeline.notHandled;
-        args[0](co.enter);
+        arg(co.enter);
     };
 });
 module.exports = builder;

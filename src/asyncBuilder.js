@@ -51,9 +51,9 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
     return function derive() {
         // Validate the arguments.
         var len = arguments.length;
-        assert(len > 0, 'derive(): expected at least one argument');
+        assert(len > 0, 'derive: expected at least one argument');
         var arg0 = arguments[0], hasProtocolFactory = _.isFunction(arg0);
-        assert(hasProtocolFactory || len === 1, 'derive(): invalid argument combination');
+        assert(hasProtocolFactory || len === 1, 'derive: invalid argument combination');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
         var opts = {};

@@ -2,12 +2,11 @@
 var pipeline = require('../src/pipeline');
 var _ = require('../src/util');
 
-
 var builder = oldBuilder.derive(function () {
-    return function promiseHandler(co, args) {
-        if (args.length !== 1 || !_.isPromise(args[0]))
+    return function promiseHandler(co, arg, allArgs) {
+        if (allArgs || !_.isPromise(arg))
             return pipeline.notHandled;
-        args[0].then(function (val) {
+        arg.then(function (val) {
             return co.enter(null, val);
         }, co.enter);
     };

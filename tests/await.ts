@@ -8,6 +8,8 @@ var expect = chai.expect;
 
 //TODO more tests here and other await API parts (eg for thunk cf async.thunk.ts)
 
+//TODO: all await.x tests: test handling of single/multiple args as appropriate
+
 describe('The await(...) function', () => {
 
     it('throws if not called within a suspendable function', () => {

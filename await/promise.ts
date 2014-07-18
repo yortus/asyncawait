@@ -6,8 +6,8 @@ export = builder;
 
 
 var builder = oldBuilder.derive<AsyncAwait.Await.PromiseBuilder>(
-    () => function promiseHandler(co, args) {
-        if (args.length !== 1 || !_.isPromise(args[0])) return pipeline.notHandled;
-        args[0].then(val => co.enter(null, val), co.enter);
+    () => function promiseHandler(co, arg, allArgs) {
+        if (allArgs || !_.isPromise(arg)) return pipeline.notHandled;
+        arg.then(val => co.enter(null, val), co.enter);
     }
 );

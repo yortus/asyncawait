@@ -9,6 +9,17 @@ var await = require('../../await');
 //use(maxConcurrency(1));
 
 
+//var oldSetImm = setImmediate;
+//setImmediate = function () {
+//    if (arguments.length > 1) {
+//        console.log('setImm prob...');
+//    }
+//    oldSetImm.apply(this, arguments);
+//}
+
+
+
+
 var counter = 0, n = 25000;
 var startTime = new Date().getTime();
 
@@ -21,8 +32,9 @@ var startTime = new Date().getTime();
 //    }))(a, cb);
 //};
 var program = async.cps (function prog(a) {
-    return await (a);
-    //return a;
+    //return await (Promise.resolve(a));
+    //return await (a);
+    return a;
 });
 function doOne() { program(1, doneOne); }
 doOne();

@@ -18,25 +18,30 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: 
     var handler = handlerFactory(options, baseHandler);
 
     // Create the builder function.
-    var builder: TBuilder = <any> function await() {
+    var builder: TBuilder = <any> function await(arg) {
 
         //TODO: can this be optimised more, eg like async builder's eval?
 
         // Ensure this function is executing inside a coroutine.
         var co = pipeline.currentCoro();
-        if (!co) throw new Error('await: may only be called inside a suspendable function.');
+        assert(co, 'await: may only be called inside a suspendable function');
 
-        // Create a new array to hold the passed-in arguments.
-        var len = arguments.length, args = new Array(len);
-        for (var i = 0; i < len; ++i) args[i] = arguments[i];
+        // TODO: temp testing... fast/slow paths
+        if (arguments.length === 1) {
+            var handlerResult = handler(co, arg);    
+        }
+        else {
 
-        // Delegate to the specified handler to appropriately await the pass-in value(s).
-        var handlerResult = handler(co, args);
+            // Create a new array to hold the passed-in arguments.
+            var len = arguments.length, allArgs = new Array(len);
+            for (var i = 0; i < len; ++i) allArgs[i] = arguments[i];
+
+            // Delegate to the specified handler to appropriately await the pass-in value(s).
+            var handlerResult = handler(co, arg, allArgs);
+        }
 
         // Ensure the passed-in value(s) were handled.
-        if (handlerResult === pipeline.notHandled) {
-            throw new Error('await: the passed-in value(s) are not recognised as being awaitable.');
-        }
+        assert(handlerResult !== pipeline.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
 
         // Suspend the coroutine until the await handler causes it to be resumed.
         return pipeline.suspendCoro();
@@ -58,9 +63,9 @@ function createDeriveMethod(handler, handlerFactory, options, baseHandler) {
 
         // Validate the arguments.
         var len = arguments.length;
-        assert(len > 0, 'derive(): expected at least one argument');
+        assert(len > 0, 'derive: expected at least one argument');
         var arg0 = arguments[0], hasHandlerFactory = _.isFunction(arg0);
-        assert(hasHandlerFactory || len === 1, 'derive(): invalid argument combination');
+        assert(hasHandlerFactory || len === 1, 'derive: invalid argument combination');
 
         // Determine the appropriate options to pass to createAwaitBuilder.
         var opts = {};

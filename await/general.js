@@ -3,29 +3,26 @@
 var _ = require('../src/util');
 var pipeline = require('../src/pipeline');
 
-var handler = function generalHandler(co, args) {
+var handler = function generalHandler(co, expr, allArgs) {
     //TODO: temp testing...
     var traverse = traverseClone;
     var topN = null;
 
-    var expr = args[0];
-
-    if (_.isArray(expr) || _.isPlainObject(expr)) {
-        // An array or plain object: resume the coroutine with a deep clone of the array/object,
-        // where all contained promises and thunks have been replaced by their resolved values.
-        var trackedPromises = [];
-        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
-        if (!topN) {
-            Promise.all(trackedPromises).then(function (val) {
-                return co.enter(null, expr);
-            }, co.enter);
-        } else {
-            Promise.some(trackedPromises, topN).then(function (val) {
-                return co.enter(null, val);
-            }, co.enter);
-        }
-    } else {
+    if (allArgs || !(_.isArray(expr) || _.isPlainObject(expr)))
         return pipeline.notHandled;
+
+    // An array or plain object: resume the coroutine with a deep clone of the array/object,
+    // where all contained promises and thunks have been replaced by their resolved values.
+    var trackedPromises = [];
+    expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+    if (!topN) {
+        Promise.all(trackedPromises).then(function (val) {
+            return co.enter(null, expr);
+        }, co.enter);
+    } else {
+        Promise.some(trackedPromises, topN).then(function (val) {
+            return co.enter(null, val);
+        }, co.enter);
     }
 };
 

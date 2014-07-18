@@ -11,9 +11,11 @@ interface CompoundOptions {
 
 
 var builder = oldBuilder.derive<AsyncAwait.Await.Builder>(
-    (options: any) => function compoundHandler(co, args) {
+    (options: any) => function compoundHandler(co, arg, allArgs) {
+        //TODO: temp testing... handle allArgs too...
+        if (allArgs) return pipeline.notHandled;
         var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
-        for (var i = 0; result === pipeline.notHandled && i < len; ++i) result = handlers[i](co, args);
+        for (var i = 0; result === pipeline.notHandled && i < len; ++i) result = handlers[i](co, arg);
         return result;
     }
 );

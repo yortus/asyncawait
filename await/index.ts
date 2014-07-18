@@ -10,9 +10,9 @@ export = api;
 
 //TODO: temp testing...
 import compound = require('./compound');
-var value = function valueHandler(co, args) {
+var value = function valueHandler(co, arg, allArgs) {
     setImmediate(() => {
-        co.enter(null, args[0]);
+        co.enter(null, arg);
     });
 }
 
