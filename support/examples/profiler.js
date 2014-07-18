@@ -14,6 +14,12 @@ var startTime = new Date().getTime();
 
 
 // ========== async.cps ==========
+//var program = function (a, cb) {
+//    (async.cps (function prog(a) {
+//        //return await (a);
+//        return a;
+//    }))(a, cb);
+//};
 var program = async.cps (function prog(a) {
     //return await (a);
     return a;

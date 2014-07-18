@@ -42,7 +42,7 @@ var defaultPipeline = {
         };
         co.leave = function leave(value) {
             if (_.DEBUG)
-                assert(pipeline.isCurrent(co), 'enter: may only be called from the currently executing coroutine');
+                assert(pipeline.isCurrent(co), 'leave: may only be called from the currently executing coroutine');
             value = protocol.yield(co.context, value);
             if (value === pipeline.continueAfterYield)
                 return;
@@ -81,43 +81,35 @@ var defaultPipeline = {
             } catch (err) {
                 catchBlock(err);
             } finally {
-                finallyBlock();
+                setImmediate(finallyBlock); /* Ensure the fiber exits before we clean it up. */ 
             }
         }
         ;
 
-        // Shared reference to coroutine, which is only available after getCo() is called.
-        var co, result_, return_, finally_;
+        // These references are shared by the closures below.
+        var co, result, error;
 
         // Define the details of the body function's try/catch/finally clauses.
         var tryBlock = function () {
             // Lazy-load the coroutine instance to use throughout the body function. This mechanism
             // means that the instance need not be available at the time createFiberBody() is called.
-            if (!co) {
-                co = getCo();
-                return_ = function () {
-                    return protocol.return(co.context, result_);
-                };
-                finally_ = function () {
-                    pipeline.releaseFiber(co);
-                    pipeline.releaseCoro(co);
-                };
-            }
+            co = co || getCo();
 
             // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
+            error = null;
             var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
-            result_ = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
-            setImmediate(return_);
+            result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
         };
         var catchBlock = function (err) {
-            // Handle exceptions in a protocol-defined manner.
-            setImmediate(function () {
-                return protocol.throw(co.context, err);
-            });
+            error = err;
         };
         var finallyBlock = function () {
-            // Ensure the fiber exits before we clean it up.
-            setImmediate(finally_);
+            if (error)
+                protocol.throw(co.context, error);
+            else
+                protocol.return(co.context, result);
+            pipeline.releaseFiber(co);
+            pipeline.releaseCoro(co);
         };
 
         // Return the completed fiberBody closure.
