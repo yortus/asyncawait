@@ -2,6 +2,7 @@
 import _ = require('./util');
 import pipeline = require('./pipeline');
 import fiberPoolFix = require('./mods/fiberPoolFix');
+import coroPool = require('./mods/coroPool');
 import continuationOperator = require('./mods/continuationOperator');
 import maxConcurrency = require('./mods/maxConcurrency');
 import Mod = AsyncAwait.Mod;
@@ -29,5 +30,6 @@ var use: AsyncAwait.Use = <any> function use(mod: Mod) {
 
 // Make the built-in mods accessible as properties on the use() function.
 Object.defineProperty(use, 'fiberPoolFix', { get: () => use(fiberPoolFix) });
+Object.defineProperty(use, 'coroPool', { get: () => use(coroPool) });
 use.continuationOperator = identifier => use(continuationOperator(identifier));
 use.maxConcurrency = n => use(maxConcurrency(n));

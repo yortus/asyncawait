@@ -3,26 +3,21 @@ var Fiber = require('fibers');
 var _ = require('./util');
 
 
-//TODO: temp testing...
-var coroPool = [];
-
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
     acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
-        //TODO: temp testing...
-        var p = protocol;
-        if (!p.coroPool)
-            p.coroPool = [];
-        if (p.coroPool.length > 0) {
-            var co = p.coroPool.pop();
-            co.bodyFunc = bodyFunc;
-            co.bodyThis = bodyThis;
-            co.bodyArgs = bodyArgs;
-            co.context = {};
-            return co;
-        }
-
+        ////TODO: temp testing...
+        //var p: any = protocol;
+        //if (!p.coroPool) p.coroPool = [];
+        //if (p.coroPool.length > 0) {
+        //    var co = <CoroFiber> p.coroPool.pop();
+        //    co.bodyFunc = bodyFunc;
+        //    co.bodyThis = bodyThis;
+        //    co.bodyArgs = bodyArgs;
+        //    co.context = {};
+        //    return co;
+        //}
         var fiberBody = pipeline.createFiberBody(protocol, function getCo() {
             return co;
         });
@@ -52,16 +47,16 @@ var defaultPipeline = {
     },
     /** Ensure the Coroutine instance is disposed of cleanly. */
     releaseCoro: function (protocol, co) {
-        //TODO: temp testing...
-        var p = protocol;
-        p.coroPool.push(co);
-        return;
-
-        //TODO: was...
-        //TODO: add body stuff...
+        ////TODO: temp testing...
+        //var p: any = protocol;
+        //p.coroPool.push(co);
+        //return;
         co.enter = null;
         co.leave = null;
         co.context = null;
+        co.bodyFunc = null;
+        co.bodyThis = null;
+        co.bodyArgs = null;
     },
     /** Create and return a new Fiber instance. */
     acquireFiber: function (body) {

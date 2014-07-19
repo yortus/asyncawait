@@ -70,7 +70,6 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
     };
 }
 
-//TODO: restore DEBUG-mode non-eval'd version...
 /**
 *  Creates a suspendable function configured for the given protocol and invokee.
 *  This function is not on the hot path, but the suspendable function it returns

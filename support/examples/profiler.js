@@ -4,6 +4,7 @@ var async = require('../../async');
 var await = require('../../await');
 async.use.continuationOperator('___');
 async.use.maxConcurrency(1);
+async.use.coroPool;
 
 
 var counter = 0, n = 25000;

@@ -1,6 +1,7 @@
 ﻿var _ = require('./util');
 var pipeline = require('./pipeline');
 var fiberPoolFix = require('./mods/fiberPoolFix');
+var coroPool = require('./mods/coroPool');
 var continuationOperator = require('./mods/continuationOperator');
 var maxConcurrency = require('./mods/maxConcurrency');
 
@@ -26,6 +27,9 @@ var use = function use(mod) {
 // Make the built-in mods accessible as properties on the use() function.
 Object.defineProperty(use, 'fiberPoolFix', { get: function () {
         return use(fiberPoolFix);
+    } });
+Object.defineProperty(use, 'coroPool', { get: function () {
+        return use(coroPool);
     } });
 use.continuationOperator = function (identifier) {
     return use(continuationOperator(identifier));
