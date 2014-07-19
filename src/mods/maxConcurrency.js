@@ -13,67 +13,69 @@ function maxConcurrency(value) {
         throw new Error('maxConcurrency: please specify a positive numeric value');
 
     // Ensure mod is applied only once.
-    if (size() !== null)
+    if (semaphoreSize() !== null)
         throw new Error('maxConcurrency: mod cannot be applied multiple times');
 
     // Set the semaphore size.
-    size(value);
+    semaphoreSize(value);
 
     // Return the mod function.
     return function (pipeline) {
         return ({
-            acquireFiber: function (body) {
-                // For non-top-level requests, just delegate to the existing pipeline.
+            /** Create and return a new Coroutine instance. */
+            acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
+                // For non-top-level acquisitions, just delegate to the existing pipeline.
                 // If coroutines invoke other coroutines and await their results, putting
                 // the nested coroutines through the semaphore could easily lead to deadlocks.
-                if (pipeline.currentCoro())
-                    return pipeline.acquireFiber(body);
+                if (!!pipeline.currentCoro())
+                    return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
-                // This is a top-level request. Return a 'placeholder' fiber whose run() method waits
-                // on the semaphore and then fills itself out fully when a real fiber is available.
-                var fiber = {
+                // This is a top-level acquisition. Return a 'placeholder' coroutine whose enter() method waits
+                // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
+                var co = {
                     inSemaphore: true,
-                    run: function (arg) {
+                    context: {},
+                    enter: function (error, value) {
                         // Upon execution, enter the semaphore.
-                        enter(function () {
-                            // When the semaphore is ready, fill out the fiber and begin execution.
-                            var f = pipeline.acquireFiber(body);
-                            f.enter = fiber.enter;
-                            f.leave = fiber.leave;
-                            f.context = fiber.context;
-                            fiber.run = function (arg) {
-                                return f.run(arg);
-                            };
-                            fiber.throwInto = function (err) {
-                                return f.throwInto(err);
-                            };
-                            fiber.reset = function () {
-                                return f.reset();
-                            };
-                            setImmediate(function () {
-                                return fiber.run(arg);
-                            });
+                        enterSemaphore(function () {
+                            // When the semaphore is ready, acquire a coroutine from the pipeline.
+                            var c = pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+
+                            // There may still be outstanding references to the placeholder coroutine,
+                            // so ensure its enter() and leave() methods call the real coroutine.
+                            co.enter = c.enter;
+                            co.leave = c.leave;
+
+                            // The context is already initialised on the placeholder, so copy in back.
+                            c.context = co.context;
+
+                            // Mark this coroutine so it is properly handled by releaseCoro().
+                            c.inSemaphore = true;
+
+                            // Begin execution.
+                            co.enter(error, value);
                         });
                     }
                 };
-                return fiber;
+                return co;
             },
-            releaseFiber: function (fiber) {
-                // If this fiber entered the semaphore, then it must leave through the semaphore.
-                if (fiber.inSemaphore) {
-                    leave();
-                    fiber.inSemaphore = false;
+            /** Ensure the Coroutine instance is disposed of cleanly. */
+            releaseCoro: function (protocol, co) {
+                // If this coroutine entered through the semaphore, then it must leave through the semaphore.
+                if (co.inSemaphore) {
+                    co.inSemaphore = false;
+                    leaveSemaphore();
                 }
 
                 // Delegate to the existing pipeline.
-                return pipeline.releaseFiber(fiber);
+                return pipeline.releaseCoro(protocol, co);
             }
         });
     };
 }
 
 /** Enter the global semaphore. */
-function enter(fn) {
+function enterSemaphore(fn) {
     if (_avail > 0) {
         --_avail;
         fn();
@@ -83,7 +85,7 @@ function enter(fn) {
 }
 
 /** Leave the global semaphore. */
-function leave() {
+function leaveSemaphore() {
     if (_queued.length > 0) {
         var fn = _queued.shift();
         fn();
@@ -93,7 +95,7 @@ function leave() {
 }
 
 /** Get or set the size of the global semaphore. */
-function size(n) {
+function semaphoreSize(n) {
     if (n) {
         _avail += (n - _size);
         _size = n;

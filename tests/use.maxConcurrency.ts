@@ -3,13 +3,10 @@ import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
+import yield_ = require('asyncawait/yield');
 import pipeline = require('asyncawait/src/pipeline');
 var maxConcurrency = require('asyncawait/src/mods/maxConcurrency');
 var expect = chai.expect;
-
-// TODO: More tests...
-// - race condition (causing timeout) - how?
-// works with async.iterable example (covers yield behaviour) (failed before due to yield bug)
 
 
 describe('The maxConcurrency mod', () => {
@@ -57,5 +54,48 @@ describe('The maxConcurrency mod', () => {
             expect(i).to.equal(2);
             done();
         }
+    });
+
+    it('lets non-top-level invocations pass through to prevent deadlocks', done => {
+        var start1Timer = async (() => await (Promise.delay(20)));
+        var start10Timers = async (() => await ([1,2,3,4,5,6,7,8,9,10].map(start1Timer)));
+        var start100Timers = () => Promise.all([1,2,3,4,5,6,7,8,9,10].map(start10Timers));
+
+        // The following would cause a deadlock if sub-level coros are not passed through
+        reset();
+        async.use(maxConcurrency(2));
+        start100Timers().then(() => done());
+    });
+
+    it('works with async.iterable and yield', done => {
+
+        var foo = async.iterable ((count: number, accum?: any[]) => {
+            if (count < 1 || count > 9) throw new Error('out of range');
+            for (var i = 1; i <= count; ++i) {
+                if (accum) accum.push(111 * i);
+                yield_ (111 * i);
+            }
+            return 'done';
+        });
+
+
+        // Single file
+        reset();
+        async.use(maxConcurrency(1));
+        var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
+        Promise.all(promises)
+        .then(() => expect(arr).to.deep.equal([111, 111, 222, 111, 222, 333]))
+        .then(() => done())
+        .catch(done);
+
+        // Concurrent
+        reset();
+        async.use(maxConcurrency(3));
+        var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
+        Promise.all(promises)
+        .then(() => expect(arr).to.deep.equal([111, 111, 111, 222, 222, 333]))
+        .then(() => done())
+        .catch(done);
+        
     });
 });
