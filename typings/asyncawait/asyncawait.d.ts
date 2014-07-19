@@ -167,7 +167,7 @@ declare module AsyncAwait {
     }
 
     export interface Pipeline {
-        acquireCoro: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
+        acquireCoro: (protocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Coroutine;
         releaseCoro: (protocol: Async.Protocol, co: Coroutine) => void;
         acquireFiber: (body: () => any) => Fiber;
         releaseFiber: (fiber: Fiber) => void;
@@ -175,7 +175,7 @@ declare module AsyncAwait {
     }
 
     export interface PipelineOverrides {
-        acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyArgs?: any[], bodyThis?: any) => Coroutine;
+        acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Coroutine;
         releaseCoro?: (protocol: Async.Protocol, co: Coroutine) => void;
         acquireFiber?: (body: () => any) => Fiber;
         releaseFiber?: (fiber: Fiber) => void;

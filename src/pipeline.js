@@ -9,14 +9,16 @@ var coroPool = [];
 // Default implementations for the overrideable pipeline methods.
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
-    acquireCoro: function (protocol, body) {
+    acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
         //TODO: temp testing...
         var p = protocol;
         if (!p.coroPool)
             p.coroPool = [];
         if (p.coroPool.length > 0) {
             var co = p.coroPool.pop();
-            co.body = body;
+            co.bodyFunc = bodyFunc;
+            co.bodyThis = bodyThis;
+            co.bodyArgs = bodyArgs;
             co.context = {};
             return co;
         }
@@ -26,7 +28,9 @@ var defaultPipeline = {
         });
         var co = pipeline.acquireFiber(fiberBody);
         co.id = ++pipeline.nextCoroId;
-        co.body = body;
+        co.bodyFunc = bodyFunc;
+        co.bodyThis = bodyThis;
+        co.bodyArgs = bodyArgs;
         co.context = {};
         co.enter = function enter(error, value) {
             if (_.DEBUG)
@@ -54,6 +58,7 @@ var defaultPipeline = {
         return;
 
         //TODO: was...
+        //TODO: add body stuff...
         co.enter = null;
         co.leave = null;
         co.context = null;
@@ -91,11 +96,34 @@ var defaultPipeline = {
             // means that the instance need not be available at the time createFiberBody() is called.
             co = co || getCo();
 
-            // Execute the entirety of bodyFunc, then perform the protocol-specific return operation.
+            // Clear the error state.
             error = null;
-            result = co.body();
-            //var slowCall = (co.bodyArgs && co.bodyArgs.length) || (co.bodyThis && co.bodyThis !== global);
-            //result = slowCall ? co.bodyFunc.apply(co.bodyThis, co.bodyArgs) : co.bodyFunc();
+
+            // Execute the entirety of bodyFunc, using the fastest feasible invocation approach.
+            var f = co.bodyFunc, t = co.bodyThis, a = co.bodyArgs, noThis = !t || t === global;
+            if (noThis && a) {
+                switch (a.length) {
+                    case 0:
+                        result = f();
+                        break;
+                    case 1:
+                        result = f(a[0]);
+                        break;
+                    case 2:
+                        result = f(a[0], a[1]);
+                        break;
+                    case 3:
+                        result = f(a[0], a[1], a[2]);
+                        break;
+                    case 4:
+                        result = f(a[0], a[1], a[2], a[3]);
+                        break;
+                    default:
+                        result = f.apply(null, a);
+                }
+            } else {
+                result = !noThis ? f.apply(t, a) : f();
+            }
         }
         function catchBlock(err) {
             error = err;

@@ -48,6 +48,8 @@ function runTestsFor(variant, acceptsCallback) {
                 return;
 
             var defns = [
+                function (a, b, c) {
+                },
                 function () {
                 },
                 function (a, b, c, d, e, f, g, h, i, j, k, l, m, n) {

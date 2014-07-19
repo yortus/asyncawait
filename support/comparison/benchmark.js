@@ -42,7 +42,7 @@ var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the fun
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
-var USE_MOCK_FS = true;                        // If true, uses a mocked 'fs' module returning fixed in-memory results.
+var USE_MOCK_FS = false;                        // If true, uses a mocked 'fs' module returning fixed in-memory results.
 var COMPARE_WITH_VARIANT = variants.callbacks;  // If non-null, re-run the benchmark with the given variant and show the relative results.
 var OUTPUT_GC_STATS = false;                    // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = true;     // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).
@@ -222,13 +222,13 @@ function run(sample, callback) {
 
 function createSampleFunction() {
     var moduleId = './' + SELECTED_FUNCTION + '/' + SELECTED_FUNCTION + '-' + SELECTED_VARIANT;
+    var testDir = USE_MOCK_FS ? '.' : path.join(__dirname, '.');
     var selectedFunction = rewire(moduleId);
     if (USE_MOCK_FS) selectedFunction.__set__('fs', require('./mockfs'));
     switch (SELECTED_FUNCTION) {
         case functions.countFiles:
-            var dirToCheck = '.';
             var sample = function (callback) {
-                selectedFunction(dirToCheck, function (err, result) {
+                selectedFunction(testDir, function (err, result) {
                     setImmediate(callback, err, result);
                 });
             };
@@ -244,10 +244,9 @@ function createSampleFunction() {
             break;
 
         case functions.largest:
-            var dirToCheck = '.';
             var options = { recurse: true, preview: true };
             var sample = function (callback) {
-                selectedFunction(dirToCheck, options, function (err, result) {
+                selectedFunction(testDir, options, function (err, result) {
                     setImmediate(callback, err, result);
                 });
             };

@@ -34,7 +34,7 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
         // Create and return an appropriately configured suspendable function for the given protocol and body.
-        return createSuspendableFunction(protocol, invokee, options);
+        return createSuspendableFunction(protocol, invokee);
     };
 
     // Tack on the protocol and options properties, and the derive() method.
@@ -70,173 +70,109 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
     };
 }
 
-// ================================================================================
-//TODO: Find a way to hot-swap from slow to fast impl *only if* repeatedly invoked.
-//      Otherwise the cost of eval is added to every invoke (approx 6x slower).
-//      Fast impl is approx 20% faster than slow impl, so it needs to amortise its
-//      setup cost over 100s or 1000s of invocations.
-//      In particular: if user code puts something like (async(...))() in repeatedly
-//      called code, then there is no oportunity for amortisation since a new
-//      suspendable function is created for every call, and in this case it makes
-//      no sense to use the fast impl.
-// ================================================================================
+//TODO: restore DEBUG-mode non-eval'd version...
 /**
 *  Creates a suspendable function configured for the given protocol and invokee.
 *  This function is not on the hot path, but the suspendable function it returns
 *  can be hot, so here we trade some time (off the hot path) to make the suspendable
 *  function as fast as possible. This includes safe use of eval (safe because the
 *  input to eval is entirely known and safe). By using eval, the resulting function
-*  can be pieced together more optimally, as well as having the expected arity and
-*  preserving the invokee's function name and parameter names (to help debugging).
-*  NB: By setting DEBUG (in src/util) to true, a less optimised non-eval'd function
+*  can be pieced together more optimally, as well as having the expected arity.
+*  NB: By setting DEBUG (in src/util) to true, a less optimised non-evaled function
 *  will be returned, which is helpful for step-through debugging sessions. However,
 *  this function will not report the correct arity (function.length) in most cases.
 */
-var createSuspendableFunction = _.DEBUG ? createSuspendableFunctionSlow : createSuspendableFunctionFast;
+var createSuspendableFunction = _.DEBUG ? createSuspendableFunctionDebug : createSuspendableFunctionImpl;
+function createSuspendableFunctionImpl(protocol, invokee) {
+    // Get the formal arity of the invoker and invokee functions.
+    var invokerArity = protocol.invoke.length - 1;
+    var invokeeArity = invokee.length;
 
-/** Return a general, non-eval'd suspendable template function. */
-function createSuspendableFunctionSlow(protocol, invokee, options) {
-    // Get the invoker's arity, which is needed inside the suspendable function.
-    var invokerArgCount = protocol.invoke.length - 1;
-
-    // Return the suspendable function.
-    return function suspendable($ARGS) {
-        // Distribute arguments between the invoker and invokee functions, according to their arities.
-        var invokeeArgCount = arguments.length - invokerArgCount;
-        var invokeeArgs = new Array(invokeeArgCount), invokerArgs = new Array(invokerArgCount + 1);
-        for (var i = 0; i < invokeeArgCount; ++i)
-            invokeeArgs[i] = arguments[i];
-        for (var j = 1; j <= invokerArgCount; ++i, ++j)
-            invokerArgs[j] = arguments[i];
-
-        // Create a coroutine instance to hold context information for this call.
-        var self = this, body = function b1() {
-            invokee.apply(self, invokeeArgs);
-        };
-        var co = pipeline.acquireCoro(protocol, body);
-
-        // Pass execution control over to the invoker.
-        invokerArgs[0] = co;
-        return protocol.invoke.apply(null, invokerArgs);
-    };
-}
-
-/** Return a fast, eval'd suspendable template function. */
-function createSuspendableFunctionFast(protocol, invokee, options) {
-    "use strict";
-
-    // Get all formal parameter names of the invoker and invokee functions.
-    var invokerParams = _.getParamNames(protocol.invoke).slice(1);
-    var invokeeParams = _.getParamNames(invokee);
-
-    for (var i = 0; i < invokeeParams.length; ++i) {
-        var paramName = invokeeParams[i];
-        if (invokerParams.indexOf(paramName) === -1)
-            continue;
-        throw new Error("async builder: invoker and invokee both have a parameter named '" + paramName + "'");
+    // Resolve the second-level cache corresponding to the given invoker arity.
+    var cacheLevel2 = suspendableFactoryCache[invokerArity];
+    if (!cacheLevel2) {
+        cacheLevel2 = [null, null, null, null, null, null, null, null];
+        suspendableFactoryCache[invokerArity] = cacheLevel2;
     }
 
-    // Calculate all the substitution values to be applied to the template function.
-    var substs = {
-        // Substitutions
-        $SUSPENDABLE: 'suspendable_' + (invokee.name || ''),
-        $PARAMS: invokeeParams.concat(invokerParams).join(', '),
-        $PARAM_COUNT: invokeeParams.length + invokerParams.length,
-        $INVOKER_PARAM_COUNT: '' + invokerParams.length,
-        $INVOKER_PARAMS: invokerParams.join(', '),
-        $INVOKEE_PARAMS: invokeeParams.join(', '),
-        // Conditions
-        $IF_HAS_INVOKER_PARAMS: invokerParams.length > 0,
-        $IF_HAS_INVOKEE_PARAMS: invokeeParams.length > 0
-    };
+    // Resolve the factory function corresponding to the given invokee arity.
+    var suspendableFactory = cacheLevel2[invokeeArity];
+    if (!suspendableFactory) {
+        suspendableFactory = createSuspendableFactory(invokerArity, invokeeArity);
+        cacheLevel2[invokeeArity] = suspendableFactory;
+    }
 
-    // Stringify the template function above just once, and cache the result in a module variable.
-    // Move comments and excess whitespace in the process.
-    suspendableTemplateSource = suspendableTemplateSource || $SUSPENDABLE.toString().replace(/(?:[\s][\s]+)|(?:\/\*[^*]*\*\/)/gm, ' ');
+    // Invoke the factory function to obtain an appropriate suspendable function.
+    var result = suspendableFactory(protocol, invokee);
 
-    // Perform all substitutions to get the final source code for the suspendable function.
-    var source = suspendableTemplateSource.replace(/\$(?!IF|ELSE|ENDIF)[A-Z_]+/gm, function (name) {
-        return substs[name];
-    }).replace(/(\$[A-Z_]+)([^$]*)\$ELSE([^$]*)\$ENDIF/gm, function ($0, $1, $2, $3) {
-        return (substs[$1] ? $2 : $3);
-    });
-
-    // Eval the source code into a function, and return it. It must be eval'd inside
-    // this function to close over the variables defined here.
-    var result;
-    eval('result = ' + source);
+    // Return the suspendable function.
     return result;
 }
 
-// This module variable holds the cached source of the $SUSPENDABLE template function, defined below.
-var suspendableTemplateSource;
+// This is a two-level cache (array of arrays), holding the 'factory' functions
+// that are used to create suspendable functions for each invoker/invokee arity.
+// The first level is indexed by invoker arity, and the second level by invokee arity.
+var suspendableFactoryCache = [null, null, null, null];
 
-// This is the template for an optimized suspendable function. It has substitutable parts.
-function $SUSPENDABLE($PARAMS) {
-    var self = this, len = arguments.length, hasThis = this && this !== global, body, co;
+/** Create a factory for creating suspendable functions matching the given arities. */
+function createSuspendableFactory(invokerArity, invokeeArity) {
+    "use strict";
 
-    /* --------------- Fast path --------------- */
-    /* i.e., when argument count equals formal parameter count. */
-    if (len === $PARAM_COUNT) {
-        /* Create the body function. */
-        if (hasThis) {
-            $IF_HAS_INVOKEE_PARAMS;
-            body = function b2() {
-                return invokee.call(self, $INVOKEE_PARAMS);
-            };
-            $ELSE;
-            body = function b3() {
-                return invokee.call(self);
-            };
-            $ENDIF;
-        } else {
-            $IF_HAS_INVOKEE_PARAMS;
-            body = function b4() {
-                return invokee($INVOKEE_PARAMS);
-            };
-            $ELSE;
-            body = invokee;
-            $ENDIF;
-        }
-
-        /* Invoke the body function inside a new coroutine. */
-        co = pipeline.acquireCoro(protocol, body);
-        $IF_HAS_INVOKER_PARAMS;
-        return protocol.invoke(co, $INVOKER_PARAMS);
-        $ELSE;
-        return protocol.invoke(co);
-        $ENDIF;
+    // Calcluate appropriate values to be substituted into the template.
+    var result, funcName = 'SUSP$A' + invokeeArity + '$P' + invokerArity;
+    var paramNames = [], invokerArgs = ['co'], invokeeArgs = [];
+    for (var i = 1; i <= invokeeArity; ++i) {
+        paramNames.push('A' + i);
+        invokeeArgs.push('A' + i);
+    }
+    for (var i = 1; i <= invokerArity; ++i) {
+        paramNames.push('P' + i);
+        invokerArgs.push('arguments[l' + (i - invokerArity - 1) + ']');
     }
 
-    /* --------------- General path --------------- */
-    /* Distribute arguments between the invoker and invokee functions, according to their arities. */
-    var invokeeArgCount = len - $INVOKER_PARAM_COUNT;
-    var invokeeArgs = new Array(invokeeArgCount);
-    for (var i = 0; i < invokeeArgCount; ++i)
-        invokeeArgs[i] = arguments[i];
-    $IF_HAS_INVOKER_PARAMS;
-    var invokerArgs = new Array($INVOKER_PARAM_COUNT + 1);
-    for (var j = 1; j <= $INVOKER_PARAM_COUNT; ++i, ++j)
-        invokerArgs[j] = arguments[i];
-    $ELSE;
-    $ENDIF;
+    // Create the template for the factory function.
+    var srcLines = [
+        'result = function factory(protocol, invokee) {',
+        '  return function $TEMPLATE($PARAMS) {',
+        '    var t = this, l = arguments.length;',
+        '    if ((!t || t===global) && l===$ARITY) {',
+        '      var body = function f0() { return invokee($INVOKEE_ARGS); };',
+        '      var co = pipeline.acquireCoro(protocol, body);',
+        '    } else {',
+        '      var a = new Array(l-$PN);',
+        '      for (var i = 0; i < l-$PN; ++i) a[i] = arguments[i];',
+        '      var co = pipeline.acquireCoro(protocol, invokee, t, a);',
+        '    }',
+        '    return protocol.invoke($INVOKER_ARGS);',
+        '  }',
+        '}'
+    ];
 
-    /* Create the body function and invoke it inside a new coroutine. */
-    body = function b5() {
-        return invokee.apply(self, invokeeArgs);
-    };
-    co = pipeline.acquireCoro(protocol, body);
-    $IF_HAS_INVOKER_PARAMS;
-    invokerArgs[0] = co;
-    return protocol.invoke.apply(null, invokerArgs);
-    $ELSE;
-    return protocol.invoke(co);
-    $ENDIF;
+    // Substitute values into the template to obtain the final source code.
+    var source = srcLines[0] + srcLines[1].replace('$TEMPLATE', funcName).replace('$PARAMS', paramNames.join(', ')) + srcLines[2] + srcLines[3].replace('$ARITY', '' + paramNames.length) + srcLines[4].replace('$INVOKEE_ARGS', invokeeArgs.join(', ')) + srcLines[5] + srcLines[6] + srcLines[7].replace('$PN', invokerArity) + srcLines[8].replace('$PN', invokerArity) + srcLines[9] + srcLines[10] + srcLines[11].replace('$INVOKER_ARGS', invokerArgs.join(', ')) + srcLines[12] + srcLines[13];
+
+    // Reify and return the factory function.
+    eval(source);
+    return result;
 }
 
-// These are dummies; their presence ensures the template function above is syntactically valid.
-var $PARAM_COUNT, $INVOKEE_PARAMS, $INVOKER_PARAMS, $INVOKER_PARAM_COUNT;
-var $IF_HAS_INVOKEE_PARAMS, $IF_HAS_INVOKER_PARAMS, $ELSE, $ENDIF;
-var invokee, protocol;
+// DEBUG version of createSuspendableFunction(), with no eval.
+function createSuspendableFunctionDebug(protocol, invokee) {
+    // Get the formal arity of the invoker functions
+    var invokerArity = protocol.invoke.length - 1;
+
+    // Return the suspendable function.
+    return function SUSP$DEBUG(args) {
+        var t = this, l = arguments.length, a = new Array(l - invokerArity);
+        for (var i = 0; i < l - invokerArity; ++i)
+            a[i] = arguments[i];
+        var co = pipeline.acquireCoro(protocol, invokee, t, a);
+        var b = new Array(invokerArity + 1);
+        b[0] = co;
+        for (var i = 0; i < invokerArity; ++i)
+            b[i + 1] = arguments[l - invokerArity + i];
+        return protocol.invoke.apply(null, b);
+    };
+}
 module.exports = asyncBuilder;
 //# sourceMappingURL=asyncBuilder.js.map

@@ -33,6 +33,7 @@ function runTestsFor(variant?: string, acceptsCallback = false) {
             if (_.DEBUG) return;
 
             var defns = [
+                (a, b, c) => {},
                 () => {},
                 (a, b, c, d, e, f, g, h, i, j, k, l, m, n) => {},
                 x => {}

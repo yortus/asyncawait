@@ -14,7 +14,9 @@ declare module "references" { }
 
 /** Extended Coroutine/Fiber interface for internal use. */
 interface CoroFiber extends AsyncAwait.Coroutine, Fiber {
-    body: () => any;
+    bodyFunc: Function;
+    bodyThis: any;
+    bodyArgs: any[];
 }
 
 
