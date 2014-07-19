@@ -5,6 +5,7 @@ var yield_ = require('asyncawait/yield');
 var _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
+//TODO: tests for long stack traces across async calls?
 function runTestsFor(variant, acceptsCallback) {
     if (typeof acceptsCallback === "undefined") { acceptsCallback = false; }
     var name = 'async' + (variant ? ('.' + variant) : '');

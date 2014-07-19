@@ -1,15 +1,15 @@
 ﻿import references = require('references');
 var cps = require('../../await/cps');
 import Mod = AsyncAwait.Mod;
-export = continuationOperator;
+export = cpsKeyword;
 
 
 /**
  * Creates a global property accessor with the given name, which calls
- * await.cps.continuation(). This purely for convenience and clarity
+ * await.cps.continuation(). This is purely for convenience and clarity
  * for reading and writing async code.
  */
-function continuationOperator(identifier: string) {
+function cpsKeyword(identifier: string) {
 
     // Define the global property accessor.
     Object.defineProperty(global, identifier, { get: cps.continuation });

@@ -2,25 +2,25 @@
 import _ = require('../util');
 import Mod = AsyncAwait.Mod;
 import Protocol = AsyncAwait.Async.Protocol;
-export = maxConcurrency;
+export = maxSlots;
 
 
 /**
  *  Limits the number of calls to suspendable functions that can be concurrently executing.
  *  Excess calls are queued until a slot becomes available. This only applies to calls made
  *  from the main execution stack (i.e., not calls from other suspendable functions), to
- *  avoid race conditions.
+ *  prevent deadlocks.
  */
-function maxConcurrency(value: number) {
+function maxSlots(n: number) {
 
     // Validate argument.
-    if (!_.isNumber(value) || value < 1) throw new Error('maxConcurrency: please specify a positive numeric value');
+    if (!_.isNumber(n) || n < 1) throw new Error('maxSlots: please specify a positive numeric value');
 
     // Ensure mod is applied only once.
-    if (semaphoreSize() !== null) throw new Error('maxConcurrency: mod cannot be applied multiple times');
+    if (semaphoreSize() !== null) throw new Error('maxSlots: mod cannot be applied multiple times');
 
     // Set the semaphore size.
-    semaphoreSize(value);
+    semaphoreSize(n);
 
     // Return the mod function.
     return (pipeline) => ({
@@ -120,7 +120,7 @@ var _queued: Function[] = [];
 
 
 // Private hook for unit testing.
-(<any> maxConcurrency)._reset = () => {
+(<any> maxSlots)._reset = () => {
     _size = _avail = null;
     _queued = [];
 };

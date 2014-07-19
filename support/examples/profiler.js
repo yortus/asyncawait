@@ -2,8 +2,8 @@
 var Promise = require('bluebird');
 var async = require('../../async');
 var await = require('../../await');
-async.use.continuationOperator('___');
-async.use.maxConcurrency(1);
+async.use.cpsKeyword('___');
+async.use.maxSlots(1);
 async.use.coroPool;
 
 

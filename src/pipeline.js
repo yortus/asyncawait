@@ -7,17 +7,6 @@ var _ = require('./util');
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
     acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
-        ////TODO: temp testing...
-        //var p: any = protocol;
-        //if (!p.coroPool) p.coroPool = [];
-        //if (p.coroPool.length > 0) {
-        //    var co = <CoroFiber> p.coroPool.pop();
-        //    co.bodyFunc = bodyFunc;
-        //    co.bodyThis = bodyThis;
-        //    co.bodyArgs = bodyArgs;
-        //    co.context = {};
-        //    return co;
-        //}
         var fiberBody = pipeline.createFiberBody(protocol, function getCo() {
             return co;
         });
@@ -47,10 +36,6 @@ var defaultPipeline = {
     },
     /** Ensure the Coroutine instance is disposed of cleanly. */
     releaseCoro: function (protocol, co) {
-        ////TODO: temp testing...
-        //var p: any = protocol;
-        //p.coroPool.push(co);
-        //return;
         co.enter = null;
         co.leave = null;
         co.context = null;
@@ -106,12 +91,6 @@ var defaultPipeline = {
                         break;
                     case 2:
                         result = f(a[0], a[1]);
-                        break;
-                    case 3:
-                        result = f(a[0], a[1], a[2]);
-                        break;
-                    case 4:
-                        result = f(a[0], a[1], a[2], a[3]);
                         break;
                     default:
                         result = f.apply(null, a);

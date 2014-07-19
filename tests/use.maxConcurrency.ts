@@ -5,23 +5,23 @@ import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 import pipeline = require('asyncawait/src/pipeline');
-var maxConcurrency = require('asyncawait/src/mods/maxConcurrency');
+var maxSlots = require('asyncawait/src/mods/maxSlots');
 var expect = chai.expect;
 
 
-describe('The maxConcurrency mod', () => {
+describe('The maxSlots mod', () => {
 
     var started = 0, finished = 0;
     var opA = async (() => { ++started; await (Promise.delay(20)); ++finished; });
     var opB = async (() => ({ started: started, finished: finished }));
-    var reset = () => { pipeline.reset(); (<any> maxConcurrency)._reset(); };
+    var reset = () => { pipeline.reset(); (<any> maxSlots)._reset(); };
 
     it('applies the specified concurrency factor to subsequent operations', done => {
 
         function doTasks(maxCon: number) {
             started = finished = 0;
             reset();
-            async.use(maxConcurrency(maxCon));
+            async.use(maxSlots(maxCon));
             return Promise
                 .all([opA(), opA(), opA(), opA(), opA(), opB()])
                 .then(r => <any> r[5]);
@@ -44,9 +44,9 @@ describe('The maxConcurrency mod', () => {
         reset();
         try {
             var i = 1;
-            async.use(maxConcurrency(10));
+            async.use(maxSlots(10));
             i = 2;
-            async.use(maxConcurrency(5));
+            async.use(maxSlots(5));
             i = 3;
         }
         catch (err) { }
@@ -56,14 +56,14 @@ describe('The maxConcurrency mod', () => {
         }
     });
 
-    it('lets non-top-level invocations pass through to prevent deadlocks', done => {
+    it('lets nested invocations pass through to prevent deadlocks', done => {
         var start1Timer = async (() => await (Promise.delay(20)));
         var start10Timers = async (() => await ([1,2,3,4,5,6,7,8,9,10].map(start1Timer)));
         var start100Timers = () => Promise.all([1,2,3,4,5,6,7,8,9,10].map(start10Timers));
 
         // The following would cause a deadlock if sub-level coros are not passed through
         reset();
-        async.use(maxConcurrency(2));
+        async.use(maxSlots(2));
         start100Timers().then(() => done());
     });
 
@@ -81,7 +81,7 @@ describe('The maxConcurrency mod', () => {
 
         // Single file
         reset();
-        async.use(maxConcurrency(1));
+        async.use(maxSlots(1));
         var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
         Promise.all(promises)
         .then(() => expect(arr).to.deep.equal([111, 111, 222, 111, 222, 333]))
@@ -90,7 +90,7 @@ describe('The maxConcurrency mod', () => {
 
         // Concurrent
         reset();
-        async.use(maxConcurrency(3));
+        async.use(maxSlots(3));
         var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
         Promise.all(promises)
         .then(() => expect(arr).to.deep.equal([111, 111, 111, 222, 222, 333]))

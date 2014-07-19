@@ -1,18 +1,20 @@
-﻿var _ = require('./util');
+﻿var assert = require('assert');
+var _ = require('./util');
 var pipeline = require('./pipeline');
 var fiberPoolFix = require('./mods/fiberPoolFix');
 var coroPool = require('./mods/coroPool');
-var continuationOperator = require('./mods/continuationOperator');
-var maxConcurrency = require('./mods/maxConcurrency');
+var cpsKeyword = require('./mods/cpsKeyword');
+var maxSlots = require('./mods/maxSlots');
 
 
 /** Install the specified mod to alter the global behaviour of asyncawait. */
 var use = function use(mod) {
-    // Ensure all global mods are install before any async(...) calls are made.
-    if (pipeline.isLocked)
-        throw new Error('use: cannot alter mods after first async(...) call');
+    // Ensure use(...) fails after the first async(...) call.
+    assert(!pipeline.isLocked, 'use: cannot alter mods after first async(...) call');
 
-    //TODO: handle ordering properly - may need to separate builtins from use-added stuff
+    // Reconstruct the pipeline to include the new mod. Mods are applied in reverse
+    // order of the use() calls that registered them, so that the mods associated with
+    // earlier use() calls remain outermost in pipeline call chains.
     var mods = pipeline.mods;
     mods.push(mod);
     pipeline.reset();
@@ -31,11 +33,11 @@ Object.defineProperty(use, 'fiberPoolFix', { get: function () {
 Object.defineProperty(use, 'coroPool', { get: function () {
         return use(coroPool);
     } });
-use.continuationOperator = function (identifier) {
-    return use(continuationOperator(identifier));
+use.cpsKeyword = function (identifier) {
+    return use(cpsKeyword(identifier));
 };
-use.maxConcurrency = function (n) {
-    return use(maxConcurrency(n));
+use.maxSlots = function (n) {
+    return use(maxSlots(n));
 };
 module.exports = use;
 //# sourceMappingURL=use.js.map

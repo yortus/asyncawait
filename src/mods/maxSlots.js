@@ -5,19 +5,19 @@
 *  Limits the number of calls to suspendable functions that can be concurrently executing.
 *  Excess calls are queued until a slot becomes available. This only applies to calls made
 *  from the main execution stack (i.e., not calls from other suspendable functions), to
-*  avoid race conditions.
+*  prevent deadlocks.
 */
-function maxConcurrency(value) {
+function maxSlots(n) {
     // Validate argument.
-    if (!_.isNumber(value) || value < 1)
-        throw new Error('maxConcurrency: please specify a positive numeric value');
+    if (!_.isNumber(n) || n < 1)
+        throw new Error('maxSlots: please specify a positive numeric value');
 
     // Ensure mod is applied only once.
     if (semaphoreSize() !== null)
-        throw new Error('maxConcurrency: mod cannot be applied multiple times');
+        throw new Error('maxSlots: mod cannot be applied multiple times');
 
     // Set the semaphore size.
-    semaphoreSize(value);
+    semaphoreSize(n);
 
     // Return the mod function.
     return function (pipeline) {
@@ -109,9 +109,9 @@ var _avail = null;
 var _queued = [];
 
 // Private hook for unit testing.
-maxConcurrency._reset = function () {
+maxSlots._reset = function () {
     _size = _avail = null;
     _queued = [];
 };
-module.exports = maxConcurrency;
-//# sourceMappingURL=maxConcurrency.js.map
+module.exports = maxSlots;
+//# sourceMappingURL=maxSlots.js.map

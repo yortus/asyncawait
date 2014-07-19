@@ -4,10 +4,10 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
 var pipeline = require('asyncawait/src/pipeline');
-var maxConcurrency = require('asyncawait/src/mods/maxConcurrency');
+var maxSlots = require('asyncawait/src/mods/maxSlots');
 var expect = chai.expect;
 
-describe('The maxConcurrency mod', function () {
+describe('The maxSlots mod', function () {
     var started = 0, finished = 0;
     var opA = async(function () {
         ++started;
@@ -19,14 +19,14 @@ describe('The maxConcurrency mod', function () {
     });
     var reset = function () {
         pipeline.reset();
-        maxConcurrency._reset();
+        maxSlots._reset();
     };
 
     it('applies the specified concurrency factor to subsequent operations', function (done) {
         function doTasks(maxCon) {
             started = finished = 0;
             reset();
-            async.use(maxConcurrency(maxCon));
+            async.use(maxSlots(maxCon));
             return Promise.all([opA(), opA(), opA(), opA(), opA(), opB()]).then(function (r) {
                 return r[5];
             });
@@ -57,9 +57,9 @@ describe('The maxConcurrency mod', function () {
         reset();
         try  {
             var i = 1;
-            async.use(maxConcurrency(10));
+            async.use(maxSlots(10));
             i = 2;
-            async.use(maxConcurrency(5));
+            async.use(maxSlots(5));
             i = 3;
         } catch (err) {
         } finally {
@@ -68,7 +68,7 @@ describe('The maxConcurrency mod', function () {
         }
     });
 
-    it('lets non-top-level invocations pass through to prevent deadlocks', function (done) {
+    it('lets nested invocations pass through to prevent deadlocks', function (done) {
         var start1Timer = async(function () {
             return await(Promise.delay(20));
         });
@@ -81,7 +81,7 @@ describe('The maxConcurrency mod', function () {
 
         // The following would cause a deadlock if sub-level coros are not passed through
         reset();
-        async.use(maxConcurrency(2));
+        async.use(maxSlots(2));
         start100Timers().then(function () {
             return done();
         });
@@ -101,7 +101,7 @@ describe('The maxConcurrency mod', function () {
 
         // Single file
         reset();
-        async.use(maxConcurrency(1));
+        async.use(maxSlots(1));
         var arr = [], promises = [1, 2, 3].map(function (n) {
             return foo(n, arr).forEach(function () {
             });
@@ -114,7 +114,7 @@ describe('The maxConcurrency mod', function () {
 
         // Concurrent
         reset();
-        async.use(maxConcurrency(3));
+        async.use(maxSlots(3));
         var arr = [], promises = [1, 2, 3].map(function (n) {
             return foo(n, arr).forEach(function () {
             });

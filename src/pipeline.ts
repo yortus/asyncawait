@@ -12,19 +12,6 @@ var defaultPipeline: Pipeline = {
 
     /** Create and return a new Coroutine instance. */
     acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
-
-        ////TODO: temp testing...
-        //var p: any = protocol;
-        //if (!p.coroPool) p.coroPool = [];
-        //if (p.coroPool.length > 0) {
-        //    var co = <CoroFiber> p.coroPool.pop();
-        //    co.bodyFunc = bodyFunc;
-        //    co.bodyThis = bodyThis;
-        //    co.bodyArgs = bodyArgs;
-        //    co.context = {};
-        //    return co;
-        //}
-
         var fiberBody = pipeline.createFiberBody(protocol, function getCo() { return co; });
         var co = <CoroFiber> pipeline.acquireFiber(fiberBody);
         co.id = ++pipeline.nextCoroId;
@@ -47,13 +34,6 @@ var defaultPipeline: Pipeline = {
 
     /** Ensure the Coroutine instance is disposed of cleanly. */
     releaseCoro: (protocol: Protocol, co: CoroFiber) => {
-
-        ////TODO: temp testing...
-        //var p: any = protocol;
-        //p.coroPool.push(co);
-        //return;
-
-
         co.enter = null;
         co.leave = null;
         co.context = null;
@@ -104,8 +84,6 @@ var defaultPipeline: Pipeline = {
                     case 0: result = f(); break;
                     case 1: result = f(a[0]); break;
                     case 2: result = f(a[0], a[1]); break;
-                    case 3: result = f(a[0], a[1], a[2]); break;
-                    case 4: result = f(a[0], a[1], a[2], a[3]); break;
                     default: result = f.apply(null, a);
                 }
             }

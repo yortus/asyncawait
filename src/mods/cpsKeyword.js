@@ -3,10 +3,10 @@
 
 /**
 * Creates a global property accessor with the given name, which calls
-* await.cps.continuation(). This purely for convenience and clarity
+* await.cps.continuation(). This is purely for convenience and clarity
 * for reading and writing async code.
 */
-function continuationOperator(identifier) {
+function cpsKeyword(identifier) {
     // Define the global property accessor.
     Object.defineProperty(global, identifier, { get: cps.continuation });
 
@@ -15,5 +15,5 @@ function continuationOperator(identifier) {
         return ({});
     };
 }
-module.exports = continuationOperator;
-//# sourceMappingURL=continuationOperator.js.map
+module.exports = cpsKeyword;
+//# sourceMappingURL=cpsKeyword.js.map
