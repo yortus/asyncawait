@@ -1,4 +1,4 @@
-﻿var use = require('../src/use');
+﻿var extensibility = require('../src/extensibility');
 var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
@@ -7,7 +7,8 @@ var stream = require('./stream');
 var iterable = require('./iterable/index');
 
 var api = promise;
-api.use = use;
+api.use = extensibility.use;
+api.config = extensibility.config;
 api.promise = promise.derive({});
 api.cps = cps;
 api.thunk = thunk;

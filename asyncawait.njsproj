@@ -29,7 +29,7 @@
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
     <EnableTypeScript>true</EnableTypeScript>
@@ -73,8 +73,6 @@
     <TypeScriptCompile Include="await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="await\TODO\value.ts" />
-    <TypeScriptCompile Include="src\mods\cpsKeyword.ts" />
-    <TypeScriptCompile Include="src\mods\coroPool.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
     <TypeScriptCompile Include="support\recipes\expressRouting.ts" />
@@ -83,13 +81,6 @@
     <TypeScriptCompile Include="support\recipes\httpGetFile.ts" />
     <TypeScriptCompile Include="support\recipes\controlFlow.ts" />
     <TypeScriptCompile Include="support\recipes\TODO.ts" />
-    <TypeScriptCompile Include="src\awaitBuilder.ts" />
-    <TypeScriptCompile Include="src\asyncBuilder.ts" />
-    <TypeScriptCompile Include="src\mods\fiberPoolFix.ts" />
-    <TypeScriptCompile Include="src\mods\maxSlots.ts" />
-    <TypeScriptCompile Include="src\pipeline.ts" />
-    <TypeScriptCompile Include="src\use.ts" />
-    <TypeScriptCompile Include="src\util.ts" />
     <TypeScriptCompile Include="tests\async.cps.ts" />
     <TypeScriptCompile Include="tests\async.express.ts" />
     <TypeScriptCompile Include="tests\async.iterable.promise.ts" />
@@ -105,6 +96,15 @@
     <TypeScriptCompile Include="tests\await.promise.ts" />
     <TypeScriptCompile Include="tests\await.ts" />
     <Content Include="references.d.ts" />
+    <Content Include="src\asyncBuilder.ts" />
+    <Content Include="src\awaitBuilder.ts" />
+    <Content Include="src\extensibility.ts" />
+    <Content Include="src\mods\coroPool.ts" />
+    <Content Include="src\mods\cpsKeyword.ts" />
+    <Content Include="src\mods\fiberPoolFix.ts" />
+    <Content Include="src\mods\maxSlots.ts" />
+    <Content Include="src\pipeline.ts" />
+    <Content Include="src\util.ts" />
     <Content Include="support\comparison\README.md" />
     <Content Include="support\docs\index.md" />
     <Content Include="tests\async.derive.ts" />
@@ -157,17 +157,17 @@
     <Folder Include="async\iterable\" />
     <Folder Include="await\" />
     <Folder Include="await\TODO\" />
+    <Folder Include="src\" />
+    <Folder Include="src\mods\" />
     <Folder Include="support\comparison\" />
     <Folder Include="support\comparison\countFiles\" />
     <Folder Include="support\comparison\fibonacci\" />
     <Folder Include="support\comparison\largest\" />
     <Folder Include="support\examples\" />
     <Folder Include="support\examples\ts\" />
-    <Folder Include="src\mods\" />
     <Folder Include="support\" />
     <Folder Include="support\docs\" />
     <Folder Include="support\recipes\" />
-    <Folder Include="src\" />
     <Folder Include="tests\" />
     <Folder Include="typings\" />
     <Folder Include="typings\asyncawait\" />

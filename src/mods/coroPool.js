@@ -1,7 +1,8 @@
 ﻿
 /** Pools coroutine instances across acquire/release cycles, for improved performance. */
-var coroPool = function (pipeline) {
-    return ({
+var coroPool = function (pipeline, options) {
+    // Override the pipeline if the option is selected.
+    return (!options.coroPool) ? null : {
         /** Create and return a new Coroutine instance. */
         acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
             // Resolve the coroutine pool associated with the protocol.
@@ -37,7 +38,7 @@ var coroPool = function (pipeline) {
             co.context = null;
             coroPool.push(co);
         }
-    });
+    };
 };
 
 

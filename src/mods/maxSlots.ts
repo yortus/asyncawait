@@ -11,19 +11,17 @@ export = maxSlots;
  *  from the main execution stack (i.e., not calls from other suspendable functions), to
  *  prevent deadlocks.
  */
-function maxSlots(n: number) {
+var maxSlots: Mod = (pipeline: any, options) => {
 
-    // Validate argument.
-    if (!_.isNumber(n) || n < 1) throw new Error('maxSlots: please specify a positive numeric value');
-
-    // Ensure mod is applied only once.
-    if (semaphoreSize() !== null) throw new Error('maxSlots: mod cannot be applied multiple times');
+    // Do nothing if the option is not selected.
+    var n = options.maxSlots;
+    if (!n || !_.isNumber(n)) return;
 
     // Set the semaphore size.
     semaphoreSize(n);
 
-    // Return the mod function.
-    return (pipeline) => ({
+    // Return the pipeline overrides.
+    return {
 
         /** Create and return a new Coroutine instance. */
         acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
@@ -77,7 +75,7 @@ function maxSlots(n: number) {
             // Delegate to the existing pipeline.
             return pipeline.releaseCoro(protocol, co);
         }
-    });
+    };
 }
 
 

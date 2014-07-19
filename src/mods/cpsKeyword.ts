@@ -9,11 +9,15 @@ export = cpsKeyword;
  * await.cps.continuation(). This is purely for convenience and clarity
  * for reading and writing async code.
  */
-function cpsKeyword(identifier: string) {
+var cpsKeyword: Mod = (pipeline, options) => {
+
+    // Do nothing if the option is not selected.
+    var ident = options.cpsKeyword;
+    if (!ident) return;
 
     // Define the global property accessor.
-    Object.defineProperty(global, identifier, { get: cps.continuation });
+    Object.defineProperty(global, ident, { get: cps.continuation });
 
     // Return an empty object, since we don't alter the pipeline here.
     return (pipeline) => ({});
-}
+};

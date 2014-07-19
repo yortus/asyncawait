@@ -1,5 +1,6 @@
 ﻿var assert = require('assert');
 var pipeline = require('./pipeline');
+var extensibility = require('./extensibility');
 var _ = require('./util');
 
 
@@ -26,8 +27,8 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
-        // Once an async(...) method has been called, ensure subsequent calls to asyncawait.use(...) fail.
-        pipeline.isLocked = true;
+        // Ensure mods are applied on first call to async. Subsequent calls do nothing.
+        extensibility._applyMods();
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');

@@ -128,24 +128,24 @@ var pipeline = {
     nextCoroId: 1,
     continueAfterYield: {}, /* sentinal value */
     notHandled: {}, /* sentinal value */
-    reset: <() => void> resetPipeline,
-    isLocked: false,
-    mods: []
+    restoreDefaults: () => _.mergeProps(pipeline, defaultPipeline)
 };
 
 
-/** Reset the pipeline to its default state. This is useful for unit testing. */
-function resetPipeline() {
+//TODO: was...
 
-    // Restore the methods from the default pipeline.
-    _.mergeProps(pipeline, defaultPipeline);
+///** Reset the pipeline to its default state. This is useful for unit testing. */
+//function resetPipeline() {
 
-    // 'Forget' all applied mods.
-    pipeline.mods = [];
+//    // Restore the methods from the default pipeline.
+//    _.mergeProps(pipeline, defaultPipeline);
 
-    // Unlock the pipeline so that use(...) calls can be made again.
-    pipeline.isLocked = false;
-}
+//    // 'Forget' all applied mods.
+//    pipeline.mods = [];
+
+//    // Unlock the pipeline so that use(...) calls can be made again.
+//    pipeline.isLocked = false;
+//}
 
 
 function isCurrentCoro(co: CoroFiber) {

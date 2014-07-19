@@ -4,11 +4,7 @@ var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
 var async = require('../../..').async;
 var await = require('../../..').await;
-async.use.fiberPoolFix;
-async.use.cpsKeyword('___');
-//asyncawait.use(require('../../../mods/coroPool'));
-
-
+async.config({ cpsKeyword: '___', fiberPoolFix: true });
 
 
 /**

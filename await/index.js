@@ -1,4 +1,4 @@
-﻿var use = require('../src/use');
+﻿var extensibility = require('../src/extensibility');
 var general = require('./general');
 var promise = require('./promise');
 var cps = require('./cps');
@@ -13,7 +13,7 @@ var value = function valueHandler(co, arg, allArgs) {
 };
 
 var api = compound.derive({ handlers: [promise.handler, cps.handler, thunk.handler, general, value] });
-api.use = use;
+api.use = extensibility.use;
 api.promise = promise;
 api.cps = cps;
 api.thunk = thunk;

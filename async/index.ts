@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import use = require('../src/use');
+import extensibility = require('../src/extensibility');
 import promise = require('./promise');
 import cps = require('./cps');
 import thunk = require('./thunk');
@@ -10,7 +10,8 @@ export = api;
 
 
 var api: AsyncAwait.Async.API = <any> promise;
-api.use = use;
+api.use = extensibility.use;
+api.config = extensibility.config;
 api.promise = promise.derive<AsyncAwait.Async.PromiseBuilder>({});
 api.cps = cps;
 api.thunk = thunk;

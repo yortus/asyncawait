@@ -1,59 +1,65 @@
-﻿import references = require('references');
-import chai = require('chai');
-import Promise = require('bluebird');
-import async = require('asyncawait/async');
-import await = require('asyncawait/await');
-import use = require('asyncawait/src/use');
-import pipeline = require('asyncawait/src/pipeline');
-var expect = chai.expect;
+﻿
+
+//TODO: restore...
 
 
-//TODO: needed?
-//beforeEach(() => origConcurrency = async.config().maxConcurrency);
-//afterEach(() => async.config({ maxConcurrency: origConcurrency }));
+
+//import references = require('references');
+//import chai = require('chai');
+//import Promise = require('bluebird');
+//import async = require('asyncawait/async');
+//import await = require('asyncawait/await');
+//import use = require('asyncawait/src/use');
+//import pipeline = require('asyncawait/src/pipeline');
+//var expect = chai.expect;
 
 
-//TODO: define test mods...
-var tracking = [];
-var testMod1 = (pipeline) => {
-    tracking.push('A');
-    return {
-        acquireCoro: protocol => {
-
-            //TODO: delegate...
-            pipeline.acquireCoro.apply(null, arguments);    
-        }    
-    };
-};
-var testMod2 = (pipeline) => {
-    tracking.push('B');
-    return {};
-};
+////TODO: needed?
+////beforeEach(() => origConcurrency = async.config().maxConcurrency);
+////afterEach(() => async.config({ maxConcurrency: origConcurrency }));
 
 
-describe('Calling use(...)', () => {
+////TODO: define test mods...
+//var tracking = [];
+//var testMod1 = (pipeline) => {
+//    tracking.push('A');
+//    return {
+//        acquireCoro: protocol => {
 
-    it('does not execute the mod function if async(...) is never called', () => {
-        //TODO: test code here...
-    });
+//            //TODO: delegate...
+//            pipeline.acquireCoro.apply(null, arguments);    
+//        }    
+//    };
+//};
+//var testMod2 = (pipeline) => {
+//    tracking.push('B');
+//    return {};
+//};
 
-    it('executes mod functions on the first call to async(...)', () => {
-        //TODO: test code here...
-    });
 
-    it('executes mod functions only once', () => {
-        //TODO: test code here...
-    });
+//describe('Calling use(...)', () => {
 
-    it('executes mod functions in reverse order of their application', () => {
-        //TODO: test code here...
-    });
+//    it('does not execute the mod function if async(...) is never called', () => {
+//        //TODO: test code here...
+//    });
 
-    it('applies the mods to all async calls', () => {
-        //TODO: test code here...
-    });
+//    it('executes mod functions on the first call to async(...)', () => {
+//        //TODO: test code here...
+//    });
 
-    it('fails if async(...) has already been called', () => {
-        //TODO: test code here...
-    });
-});
+//    it('executes mod functions only once', () => {
+//        //TODO: test code here...
+//    });
+
+//    it('executes mod functions in reverse order of their application', () => {
+//        //TODO: test code here...
+//    });
+
+//    it('applies the mods to all async calls', () => {
+//        //TODO: test code here...
+//    });
+
+//    it('fails if async(...) has already been called', () => {
+//        //TODO: test code here...
+//    });
+//});

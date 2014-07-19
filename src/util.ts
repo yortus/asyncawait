@@ -61,18 +61,3 @@ export var mergeProps: (...args) => any = () => {
 
 /** An empty, no-op function. */
 export function empty(): any { }
-
-
-/**
- *  Returns an array containing the declared parameter names of the given function.
- *  NB: Not for use on hot paths! The operation uses [function].toString and regexes.
- *  Source: http://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically-from-javascript
- */
-var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-var ARGUMENT_NAMES = /([^\s,]+)/g;
-export function getParamNames(func: Function) {
-    var source = func.toString().replace(STRIP_COMMENTS, '');
-    var result = source.slice(source.indexOf('(') + 1, source.indexOf(')')).match(ARGUMENT_NAMES);
-    if (result === null) result = [];
-    return result;
-}

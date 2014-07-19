@@ -12,16 +12,20 @@ export = fiberPoolFix;
  *  mod addresses.
  *  For more details see https://github.com/laverdet/node-fibers/issues/169.
  */
-var fiberPoolFix: Mod = (pipeline) => ({
-    acquireFiber: body => {
-        inc();
-        return pipeline.acquireFiber(body);
-    },
-    releaseFiber: fiber => {
-        dec();
-        return pipeline.releaseFiber(fiber);
+var fiberPoolFix: Mod = (pipeline, options) => {
+
+    // Override the pipeline if the option is selected.
+    return (!options.fiberPoolFix) ? null : {
+        acquireFiber: body => {
+            inc();
+            return pipeline.acquireFiber(body);
+        },
+        releaseFiber: fiber => {
+            dec();
+            return pipeline.releaseFiber(fiber);
+        }
     }
-});
+};
 
 
 /** Increment the number of active fibers. */

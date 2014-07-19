@@ -1,6 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import pipeline = require('./pipeline');
+import extensibility = require('./extensibility');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Protocol = AsyncAwait.Async.Protocol;
@@ -28,8 +29,8 @@ function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options:
     // Create the builder function.
     var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
 
-        // Once an async(...) method has been called, ensure subsequent calls to asyncawait.use(...) fail.
-        pipeline.isLocked = true;
+        // Ensure mods are applied on first call to async. Subsequent calls do nothing.
+        extensibility._applyMods();
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');

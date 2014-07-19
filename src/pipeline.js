@@ -141,23 +141,21 @@ var pipeline = {
     nextCoroId: 1,
     continueAfterYield: {},
     notHandled: {},
-    reset: resetPipeline,
-    isLocked: false,
-    mods: []
+    restoreDefaults: function () {
+        return _.mergeProps(pipeline, defaultPipeline);
+    }
 };
 
-/** Reset the pipeline to its default state. This is useful for unit testing. */
-function resetPipeline() {
-    // Restore the methods from the default pipeline.
-    _.mergeProps(pipeline, defaultPipeline);
-
-    // 'Forget' all applied mods.
-    pipeline.mods = [];
-
-    // Unlock the pipeline so that use(...) calls can be made again.
-    pipeline.isLocked = false;
-}
-
+//TODO: was...
+///** Reset the pipeline to its default state. This is useful for unit testing. */
+//function resetPipeline() {
+//    // Restore the methods from the default pipeline.
+//    _.mergeProps(pipeline, defaultPipeline);
+//    // 'Forget' all applied mods.
+//    pipeline.mods = [];
+//    // Unlock the pipeline so that use(...) calls can be made again.
+//    pipeline.isLocked = false;
+//}
 function isCurrentCoro(co) {
     var current = Fiber.current;
     return current && current.id === co.id;

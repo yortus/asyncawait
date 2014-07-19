@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import use = require('../src/use');
+import extensibility = require('../src/extensibility');
 import general = require('./general');
 import promise = require('./promise');
 import cps = require('./cps');
@@ -20,7 +20,7 @@ var value = function valueHandler(co, arg, allArgs) {
 
 
 var api: AsyncAwait.Await.API = <any> compound.derive({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
-api.use = use;
+api.use = extensibility.use;
 api.promise = promise;
 api.cps = <any> cps;
 api.thunk = <any> thunk;

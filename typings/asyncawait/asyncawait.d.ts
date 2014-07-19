@@ -15,6 +15,7 @@ declare module AsyncAwait {
         
         export interface API extends PromiseBuilder {
             use: Use;
+            config: Config;
             promise: PromiseBuilder;
             cps: CPSBuilder;
             thunk: ThunkBuilder;
@@ -164,6 +165,21 @@ declare module AsyncAwait {
 
 
     //------------------------- Extensibility -------------------------
+    export interface Config {
+        (): ConfigOptions;
+        (options: ConfigOptions): void;
+
+        reset: () => void; //TODO: impl this
+        
+    }
+
+    export interface ConfigOptions {
+        fiberPoolFix?: boolean;
+        coroPool?: boolean;
+        maxSlots?: number;
+        cpsKeyword?: string;
+    }
+
     export interface Use {
         (mod: Mod): void;
         fiberPoolFix: Mod;
@@ -173,7 +189,7 @@ declare module AsyncAwait {
     }
 
     export interface Mod {
-        (pipeline: Pipeline): PipelineOverrides;
+        (pipeline: Pipeline, options: ConfigOptions): PipelineOverrides;
     }
 
     export interface Pipeline {
