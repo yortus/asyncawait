@@ -2,10 +2,10 @@ var fs = require('fs');
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
-var asyncawait = require('../../..');
-var async = asyncawait.async;
-var await = asyncawait.await;
-asyncawait.use(require('../../../mods/continuationOperator')('___'));
+var async = require('../../..').async;
+var await = require('../../..').await;
+async.use.fiberPoolFix;
+async.use.continuationOperator('___');
 //asyncawait.use(require('../../../mods/coroPool'));
 
 

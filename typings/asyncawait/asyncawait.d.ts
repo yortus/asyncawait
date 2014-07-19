@@ -14,6 +14,7 @@ declare module AsyncAwait {
     export module Async {
         
         export interface API extends PromiseBuilder {
+            use: Use;
             promise: PromiseBuilder;
             cps: CPSBuilder;
             thunk: ThunkBuilder;
@@ -109,6 +110,7 @@ declare module AsyncAwait {
     export module Await {
 
         export interface API extends Builder {
+            use: Use;
             promise: PromiseBuilder;
             cps: CPSBuilder;
             thunk: ThunkBuilder;
@@ -162,6 +164,12 @@ declare module AsyncAwait {
 
 
     //------------------------- Extensibility -------------------------
+    export interface Use {
+        (mod: Mod): void;
+        fiberPoolFix: Mod;
+        continuationOperator: (identifier: string) => void;
+    }
+
     export interface Mod {
         (pipeline: Pipeline): PipelineOverrides;
     }
@@ -181,7 +189,6 @@ declare module AsyncAwait {
         releaseFiber?: (fiber: Fiber) => void;
         createFiberBody?: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
     }
-
 
 
     //------------------------- Common -------------------------
@@ -205,7 +212,7 @@ declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
     export import yield_ = require("asyncawait/yield");
-    export function use(mod: AsyncAwait.Mod): void;
+    export var use: AsyncAwait.Use;
 }
 declare module "asyncawait/async" { var api: AsyncAwait.Async.API; export = api; }
 declare module "asyncawait/await" { var api: AsyncAwait.Await.API; export = api; }

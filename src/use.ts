@@ -1,12 +1,14 @@
 ﻿import references = require('references');
 import _ = require('./util');
 import pipeline = require('./pipeline');
+import fiberPoolFix = require('../mods/fiberPoolFix');
+import continuationOperator = require('../mods/continuationOperator');
 import Mod = AsyncAwait.Mod;
 export = use;
 
 
 /** Install the specified mod to alter the global behaviour of asyncawait. */
-function use(mod: Mod) {
+var use: AsyncAwait.Use = <any> function use(mod: Mod) {
 
     // Ensure all global mods are install before any async(...) calls are made.
     if (pipeline.isLocked) throw new Error('use: cannot alter mods after first async(...) call');
@@ -22,3 +24,8 @@ function use(mod: Mod) {
         _.mergeProps(pipeline, overrides);
     }
 }
+
+
+// Make the built-in mods accessible as properties on the use() function.
+Object.defineProperty(use, 'fiberPoolFix', { get: () => use(fiberPoolFix) });
+use.continuationOperator = identifier => use(continuationOperator(identifier));
