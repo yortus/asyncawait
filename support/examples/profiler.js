@@ -2,11 +2,8 @@
 var Promise = require('bluebird');
 var async = require('../../async');
 var await = require('../../await');
-//var use = require('../../src/use');
-//var maxConcurrency = require('../../mods/maxConcurrency');
-//var continuationOperator = require('../../mods/continuationOperator');
-//use(continuationOperator('___'));
-//use(maxConcurrency(1));
+async.use.continuationOperator('___');
+async.use.maxConcurrency(1);
 
 
 var counter = 0, n = 25000;

@@ -15,9 +15,9 @@ var coroPool = function (pipeline) {
                 return pipeline.acquireCoro(protocol, bodyFunc, bodyArgs, bodyThis);
             }
         },
-        releaseCoro: function (co) {
+        releaseCoro: function (protocol, co) {
             if (co.bodyFunc.pooled) {
-                pipeline.releaseCoro(co);
+                pipeline.releaseCoro(protocol, co);
             } else {
                 co.bodyFunc.pooled = co;
             }

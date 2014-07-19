@@ -1,7 +1,8 @@
 ﻿var _ = require('./util');
 var pipeline = require('./pipeline');
-var fiberPoolFix = require('../mods/fiberPoolFix');
-var continuationOperator = require('../mods/continuationOperator');
+var fiberPoolFix = require('./mods/fiberPoolFix');
+var continuationOperator = require('./mods/continuationOperator');
+var maxConcurrency = require('./mods/maxConcurrency');
 
 
 /** Install the specified mod to alter the global behaviour of asyncawait. */
@@ -28,6 +29,9 @@ Object.defineProperty(use, 'fiberPoolFix', { get: function () {
     } });
 use.continuationOperator = function (identifier) {
     return use(continuationOperator(identifier));
+};
+use.maxConcurrency = function (n) {
+    return use(maxConcurrency(n));
 };
 module.exports = use;
 //# sourceMappingURL=use.js.map

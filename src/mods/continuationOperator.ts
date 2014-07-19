@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-var await = require('../await');
+var cps = require('../../await/cps');
 import Mod = AsyncAwait.Mod;
 export = continuationOperator;
 
@@ -12,7 +12,7 @@ export = continuationOperator;
 function continuationOperator(identifier: string) {
 
     // Define the global property accessor.
-    Object.defineProperty(global, identifier, { get: await.cps.continuation });
+    Object.defineProperty(global, identifier, { get: cps.continuation });
 
     // Return an empty object, since we don't alter the pipeline here.
     return (pipeline) => ({});

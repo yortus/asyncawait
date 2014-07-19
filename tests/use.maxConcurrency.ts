@@ -3,9 +3,8 @@ import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
-import use = require('asyncawait/src/use');
 import pipeline = require('asyncawait/src/pipeline');
-import maxConcurrency = require('asyncawait/mods/maxConcurrency');
+var maxConcurrency = require('asyncawait/src/mods/maxConcurrency');
 var expect = chai.expect;
 
 // TODO: More tests...
@@ -25,7 +24,7 @@ describe('The maxConcurrency mod', () => {
         function doTasks(maxCon: number) {
             started = finished = 0;
             reset();
-            use(maxConcurrency(maxCon));
+            async.use(maxConcurrency(maxCon));
             return Promise
                 .all([opA(), opA(), opA(), opA(), opA(), opB()])
                 .then(r => <any> r[5]);
@@ -48,9 +47,9 @@ describe('The maxConcurrency mod', () => {
         reset();
         try {
             var i = 1;
-            use(maxConcurrency(10));
+            async.use(maxConcurrency(10));
             i = 2;
-            use(maxConcurrency(5));
+            async.use(maxConcurrency(5));
             i = 3;
         }
         catch (err) { }

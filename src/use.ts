@@ -1,8 +1,9 @@
 ﻿import references = require('references');
 import _ = require('./util');
 import pipeline = require('./pipeline');
-import fiberPoolFix = require('../mods/fiberPoolFix');
-import continuationOperator = require('../mods/continuationOperator');
+import fiberPoolFix = require('./mods/fiberPoolFix');
+import continuationOperator = require('./mods/continuationOperator');
+import maxConcurrency = require('./mods/maxConcurrency');
 import Mod = AsyncAwait.Mod;
 export = use;
 
@@ -29,3 +30,4 @@ var use: AsyncAwait.Use = <any> function use(mod: Mod) {
 // Make the built-in mods accessible as properties on the use() function.
 Object.defineProperty(use, 'fiberPoolFix', { get: () => use(fiberPoolFix) });
 use.continuationOperator = identifier => use(continuationOperator(identifier));
+use.maxConcurrency = n => use(maxConcurrency(n));

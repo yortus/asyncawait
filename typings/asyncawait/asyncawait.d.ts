@@ -168,6 +168,7 @@ declare module AsyncAwait {
         (mod: Mod): void;
         fiberPoolFix: Mod;
         continuationOperator: (identifier: string) => void;
+        maxConcurrency: (n: number) => void;
     }
 
     export interface Mod {

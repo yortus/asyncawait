@@ -1,4 +1,4 @@
-﻿var await = require('../await');
+﻿var cps = require('../../await/cps');
 
 
 /**
@@ -8,7 +8,7 @@
 */
 function continuationOperator(identifier) {
     // Define the global property accessor.
-    Object.defineProperty(global, identifier, { get: await.cps.continuation });
+    Object.defineProperty(global, identifier, { get: cps.continuation });
 
     // Return an empty object, since we don't alter the pipeline here.
     return function (pipeline) {

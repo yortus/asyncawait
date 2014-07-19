@@ -73,8 +73,8 @@
     <TypeScriptCompile Include="await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="await\TODO\value.ts" />
-    <TypeScriptCompile Include="mods\continuationOperator.ts" />
-    <TypeScriptCompile Include="mods\coroPool.ts" />
+    <TypeScriptCompile Include="src\mods\continuationOperator.ts" />
+    <TypeScriptCompile Include="src\mods\coroPool.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
     <TypeScriptCompile Include="support\recipes\expressRouting.ts" />
@@ -85,8 +85,8 @@
     <TypeScriptCompile Include="support\recipes\TODO.ts" />
     <TypeScriptCompile Include="src\awaitBuilder.ts" />
     <TypeScriptCompile Include="src\asyncBuilder.ts" />
-    <TypeScriptCompile Include="mods\fiberPoolFix.ts" />
-    <TypeScriptCompile Include="mods\maxConcurrency.ts" />
+    <TypeScriptCompile Include="src\mods\fiberPoolFix.ts" />
+    <TypeScriptCompile Include="src\mods\maxConcurrency.ts" />
     <TypeScriptCompile Include="src\pipeline.ts" />
     <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\util.ts" />
@@ -116,7 +116,6 @@
     <Content Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="tests\use.maxConcurrency.ts" />
     <TypeScriptCompile Include="tests\use.ts" />
-    <TypeScriptCompile Include="use\index.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -164,10 +163,9 @@
     <Folder Include="support\comparison\largest\" />
     <Folder Include="support\examples\" />
     <Folder Include="support\examples\ts\" />
-    <Folder Include="mods\" />
+    <Folder Include="src\mods\" />
     <Folder Include="support\" />
     <Folder Include="support\docs\" />
-    <Folder Include="use\" />
     <Folder Include="support\recipes\" />
     <Folder Include="src\" />
     <Folder Include="tests\" />

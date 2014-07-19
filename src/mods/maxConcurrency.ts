@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import _ = require('../src/util');
+import _ = require('../util');
 import Mod = AsyncAwait.Mod;
 export = maxConcurrency;
 
