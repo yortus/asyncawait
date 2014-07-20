@@ -39,6 +39,11 @@ function isPromise(obj) {
 }
 exports.isPromise = isPromise;
 
+/** An empty, no-op function. */
+function empty() {
+}
+exports.empty = empty;
+
 /** Equivalent to lodash's _.assign() function. */
 exports.mergeProps = function () {
     var len = arguments.length, target = arguments[0];
@@ -57,8 +62,12 @@ exports.mergeProps = function () {
     return target;
 };
 
-/** An empty, no-op function. */
-function empty() {
+/** Creates a new object that has the given object as its prototype */
+function branch(proto) {
+    function O() {
+    }
+    O.prototype = proto;
+    return new O();
 }
-exports.empty = empty;
+exports.branch = branch;
 //# sourceMappingURL=util.js.map

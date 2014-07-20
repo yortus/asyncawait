@@ -28,7 +28,16 @@ var pipeline = {
     nextCoroId: 1,
     continueAfterYield: {}, /* sentinal value */
     notHandled: {}, /* sentinal value */
-    restoreDefaults: () => _.mergeProps(pipeline, defaultPipeline)
+    restoreDefaults: () => _.mergeProps(pipeline, defaultPipeline),
+
+    //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
+    continuation: function continuation() {
+        var co = pipeline.currentCoro();
+        return function continue_(err, result) {
+            co.enter(err, result);
+            co = null;
+        };
+    }
 };
 
 

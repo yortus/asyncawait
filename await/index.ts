@@ -1,4 +1,5 @@
 ﻿import references = require('references');
+//TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
 import general = require('./general');
 import promise = require('./promise');
 import cps = require('./cps');
@@ -18,7 +19,9 @@ var value = function valueHandler(co, arg, allArgs) {
 
 
 
-var api: AsyncAwait.Await.API = <any> compound.derive({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
+//TODO: temp testing...
+var opts = { handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]};
+var api: AsyncAwait.Await.API = <any> compound.derive(opts);
 api.promise = promise;
 api.cps = <any> cps;
 api.thunk = <any> thunk;

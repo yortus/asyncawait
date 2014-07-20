@@ -6,7 +6,6 @@ export = coroPool;
 /** Pools coroutine instances across acquire/release cycles, for improved performance. */
 var coroPool: Mod = <any>{
 
-    // TODO:...
     apply: (pipeline, options) => {
 
         // Override the pipeline if the option is selected.

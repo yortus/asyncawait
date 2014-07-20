@@ -1,4 +1,5 @@
-﻿var general = require('./general');
+﻿//TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
+var general = require('./general');
 var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
@@ -11,7 +12,9 @@ var value = function valueHandler(co, arg, allArgs) {
     });
 };
 
-var api = compound.derive({ handlers: [promise.handler, cps.handler, thunk.handler, general, value] });
+//TODO: temp testing...
+var opts = { handlers: [promise.handler, cps.handler, thunk.handler, general, value] };
+var api = compound.derive(opts);
 api.promise = promise;
 api.cps = cps;
 api.thunk = thunk;

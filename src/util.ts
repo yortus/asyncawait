@@ -42,6 +42,10 @@ export function isPromise(obj) {
 }
 
 
+/** An empty, no-op function. */
+export function empty(): any { }
+
+
 /** Equivalent to lodash's _.assign() function. */
 export var mergeProps: (...args) => any = () => {
     var len = arguments.length, target = arguments[0];
@@ -59,5 +63,9 @@ export var mergeProps: (...args) => any = () => {
 }
 
 
-/** An empty, no-op function. */
-export function empty(): any { }
+/** Creates a new object that has the given object as its prototype */
+export function branch(proto) {
+    function O() { }
+    O.prototype = proto;
+    return new O();
+}

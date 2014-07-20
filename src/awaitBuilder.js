@@ -1,6 +1,7 @@
 ﻿var assert = require('assert');
 var pipeline = require('./pipeline');
 var _ = require('./util');
+var extensibility = require('./extensibility');
 
 
 // Bootstrap a basic await builder using a no-op handler.
@@ -59,7 +60,7 @@ function createDeriveMethod(handler, handlerFactory, options, baseHandler) {
         assert(hasHandlerFactory || len === 1, 'derive: invalid argument combination');
 
         // Determine the appropriate options to pass to createAwaitBuilder.
-        var opts = {};
+        var opts = _.branch(extensibility.config());
         if (!hasHandlerFactory)
             _.mergeProps(opts, options);
         _.mergeProps(opts, hasHandlerFactory ? arguments[1] : arg0);

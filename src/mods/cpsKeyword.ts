@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-var cps = require('../../await/cps');
+import pipeline = require('../pipeline');
 import Mod = AsyncAwait.Mod;
 export = cpsKeyword;
 
@@ -12,7 +12,7 @@ export = cpsKeyword;
  */
 var cpsKeyword: Mod = {
     
-    apply: (pipeline, options) => {
+    apply: (basePipeline, options) => {
 
         // Do nothing if the option is not selected.
         if (!options.cpsKeyword) return;
@@ -22,7 +22,7 @@ var cpsKeyword: Mod = {
 
         // Define the global property accessor.
         _cpsKeyword = options.cpsKeyword;
-        Object.defineProperty(global, _cpsKeyword, { get: cps.continuation, configurable: true });
+        Object.defineProperty(global, _cpsKeyword, { get: pipeline.continuation, configurable: true });
 
         // Return an empty object, since we don't alter the pipeline here.
         return null;

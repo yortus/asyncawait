@@ -2,6 +2,7 @@
 import assert = require('assert');
 import pipeline = require('./pipeline');
 import _ = require('./util');
+import extensibility = require('./extensibility');
 import Builder = AsyncAwait.Await.Builder;
 import Handler = AsyncAwait.Await.Handler;
 export = awaitBuilder;
@@ -68,7 +69,7 @@ function createDeriveMethod(handler, handlerFactory, options, baseHandler) {
         assert(hasHandlerFactory || len === 1, 'derive: invalid argument combination');
 
         // Determine the appropriate options to pass to createAwaitBuilder.
-        var opts = {};
+        var opts = _.branch(extensibility.config());
         if (!hasHandlerFactory) _.mergeProps(opts, options);
         _.mergeProps(opts, hasHandlerFactory ? arguments[1] : arg0);
 

@@ -11,10 +11,5 @@ var builder = oldBuilder.derive<AsyncAwait.Await.CPSBuilder>(
     }
 );
 
-builder.continuation = function continuation() {
-    var co = pipeline.currentCoro();
-    return function continue_(err, result) {
-        co.enter(err, result);
-        co = null;
-    };
-};
+
+builder.continuation = pipeline.continuation;

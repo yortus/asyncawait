@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var cps = require('../../await/cps');
+var pipeline = require('../pipeline');
 
 
 /**
@@ -8,7 +8,7 @@ var cps = require('../../await/cps');
 * for reading and writing async code.
 */
 var cpsKeyword = {
-    apply: function (pipeline, options) {
+    apply: function (basePipeline, options) {
         // Do nothing if the option is not selected.
         if (!options.cpsKeyword)
             return;
@@ -18,7 +18,7 @@ var cpsKeyword = {
 
         // Define the global property accessor.
         _cpsKeyword = options.cpsKeyword;
-        Object.defineProperty(global, _cpsKeyword, { get: cps.continuation, configurable: true });
+        Object.defineProperty(global, _cpsKeyword, { get: pipeline.continuation, configurable: true });
 
         // Return an empty object, since we don't alter the pipeline here.
         return null;

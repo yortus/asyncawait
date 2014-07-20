@@ -58,7 +58,7 @@ function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
         assert(hasProtocolFactory || len === 1, 'derive: invalid argument combination');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
-        var opts = {};
+        var opts = _.branch(extensibility.config());
         if (!hasProtocolFactory)
             _.mergeProps(opts, options);
         _.mergeProps(opts, hasProtocolFactory ? arguments[1] : arg0);

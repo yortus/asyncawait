@@ -31,6 +31,14 @@ var pipeline = {
     notHandled: {},
     restoreDefaults: function () {
         return _.mergeProps(pipeline, defaultPipeline);
+    },
+    //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
+    continuation: function continuation() {
+        var co = pipeline.currentCoro();
+        return function continue_(err, result) {
+            co.enter(err, result);
+            co = null;
+        };
     }
 };
 

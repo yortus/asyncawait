@@ -1,7 +1,6 @@
 ﻿
 /** Pools coroutine instances across acquire/release cycles, for improved performance. */
 var coroPool = {
-    // TODO:...
     apply: function (pipeline, options) {
         // Override the pipeline if the option is selected.
         return (!options.coroPool) ? null : {
