@@ -52,11 +52,12 @@ var coroPool: Mod = {
     },
 
     reset: () => {
-        // TODO:...
+        _poolLevel = 0;
+        _poolLimit = 100;
     },
 
     defaults: {
-        // TODO:...
+        coroPool: true
     }
 };
 
@@ -68,5 +69,6 @@ interface Protocol extends AsyncAwait.Async.Protocol {
 
 
 // Private coroutine pool state.
+//TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _poolLevel = 0;
 var _poolLimit = 100;

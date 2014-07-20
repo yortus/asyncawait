@@ -10,7 +10,6 @@
 *  For more details see https://github.com/laverdet/node-fibers/issues/169.
 */
 var fiberPoolFix = {
-    // TODO:...
     apply: function (pipeline, options) {
         // Override the pipeline if the option is selected.
         return (!options.fiberPoolFix) ? null : {
@@ -25,9 +24,12 @@ var fiberPoolFix = {
         };
     },
     reset: function () {
-        // TODO:...
+        _fiberPoolSize = Fiber.poolSize;
+        _activeFiberCount = 0;
     },
-    defaults: {}
+    defaults: {
+        fiberPoolFix: false
+    }
 };
 
 /** Increment the number of active fibers. */
@@ -45,6 +47,7 @@ function dec() {
 }
 
 // Private state.
+//TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;
 module.exports = fiberPoolFix;

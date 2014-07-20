@@ -108,13 +108,13 @@
     <Content Include="support\comparison\README.md" />
     <Content Include="support\docs\index.md" />
     <Content Include="tests\async.derive.ts" />
+    <Content Include="tests\config.maxConcurrency.ts" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />
     <Content Include="typings\chai\chai.d.ts" />
     <Content Include="typings\mocha\mocha.d.ts" />
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
-    <TypeScriptCompile Include="tests\use.maxConcurrency.ts" />
     <TypeScriptCompile Include="tests\use.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>

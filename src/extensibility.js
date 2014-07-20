@@ -6,13 +6,16 @@ var coroPool = require('./mods/coroPool');
 var cpsKeyword = require('./mods/cpsKeyword');
 var maxSlots = require('./mods/maxSlots');
 
+//TODO: doc... order is important
+var builtinMods = [cpsKeyword, maxSlots, coroPool, fiberPoolFix];
+
 // TODO: doc...
-var _options = {
-    fiberPoolFix: false,
-    coroPool: true,
-    cpsKeyword: null,
-    maxSlots: null
-};
+var _options = {};
+builtinMods.forEach(function (mod) {
+    return _.mergeProps(_options, mod.defaults);
+});
+
+//TODO: doc...
 var _mods = [];
 var _isLocked = false;
 
@@ -46,10 +49,7 @@ function _applyMods() {
         return;
 
     //TODO: add built-ins to mod list as lowest priority
-    exports.use(cpsKeyword);
-    exports.use(maxSlots);
-    exports.use(coroPool);
-    exports.use(fiberPoolFix);
+    builtinMods.forEach(exports.use);
 
     // Restore the methods from the default pipeline.
     pipeline.restoreDefaults();
@@ -83,6 +83,27 @@ exports._applyMods = _applyMods;
 
 // TODO: doc...
 function _resetMods() {
+    //TODO: check all this... also DRY! and DRY in mods (eg reset == private state init)
+    // Call reset() on each mod
+    var len = _mods.length;
+    for (var i = len - 1; i >= 0; --i) {
+        var mod = _mods[i];
+        mod.reset();
+    }
+
+    // Reset options
+    _options = {};
+    builtinMods.forEach(function (mod) {
+        return _.mergeProps(_options, mod.defaults);
+    });
+
+    // Reset mods
+    _mods = [];
+
+    // Pipeline will now be reset on next async(...) call
+    // TODO: doc technicalities of this - ie pipeline is now 'corrupt' until next async(...) call
+    // Unlock
+    _isLocked = false;
 }
 exports._resetMods = _resetMods;
 //# sourceMappingURL=extensibility.js.map

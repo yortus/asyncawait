@@ -14,7 +14,6 @@ export = fiberPoolFix;
  */
 var fiberPoolFix: Mod = {
     
-    // TODO:...
     apply: (pipeline, options) => {
 
         // Override the pipeline if the option is selected.
@@ -31,11 +30,12 @@ var fiberPoolFix: Mod = {
     },
 
     reset: () => {
-        // TODO:...
+        _fiberPoolSize = Fiber.poolSize;
+        _activeFiberCount = 0;
     },
 
     defaults: {
-        // TODO:...
+        fiberPoolFix: false
     }
 };
 
@@ -57,5 +57,6 @@ function dec() {
 
 
 // Private state.
+//TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;

@@ -8,7 +8,6 @@
 *  prevent deadlocks.
 */
 var maxSlots = {
-    // TODO:...
     apply: function (pipeline, options) {
         // Do nothing if the option is not selected.
         var n = options.maxSlots;
@@ -71,9 +70,12 @@ var maxSlots = {
         };
     },
     reset: function () {
-        // TODO:...
+        _size = _avail = null;
+        _queued = [];
     },
-    defaults: {}
+    defaults: {
+        maxSlots: null
+    }
 };
 
 /** Enter the global semaphore. */
@@ -106,14 +108,9 @@ function semaphoreSize(n) {
 }
 
 // Private semaphore state.
+//TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _size = null;
 var _avail = null;
 var _queued = [];
-
-// Private hook for unit testing.
-maxSlots._reset = function () {
-    _size = _avail = null;
-    _queued = [];
-};
 module.exports = maxSlots;
 //# sourceMappingURL=maxSlots.js.map

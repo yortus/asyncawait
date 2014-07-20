@@ -11,26 +11,30 @@ export = cpsKeyword;
  */
 var cpsKeyword: Mod = {
     
-
-    //TODO: impl new form...    
     apply: (pipeline, options) => {
 
         // Do nothing if the option is not selected.
-        var ident = options.cpsKeyword;
-        if (!ident) return;
+        _cpsKeyword = options.cpsKeyword;
+        if (!_cpsKeyword) return;
 
         // Define the global property accessor.
-        Object.defineProperty(global, ident, { get: cps.continuation });
+        Object.defineProperty(global, _cpsKeyword, { get: cps.continuation });
 
         // Return an empty object, since we don't alter the pipeline here.
         return null;
     },
 
     reset: () => {
-        // TODO:...
+        if (_cpsKeyword) delete global[_cpsKeyword];
+        _cpsKeyword = null;
     },
 
     defaults: {
-        // TODO:...
+        cpsKeyword: null
     }
 };
+
+
+// Private keyword state.
+//TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
+var _cpsKeyword = null;

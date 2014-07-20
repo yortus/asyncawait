@@ -13,7 +13,6 @@ export = maxSlots;
  */
 var maxSlots: Mod = {
 
-    // TODO:...
     apply: (pipeline: any, options) => {
 
         // Do nothing if the option is not selected.
@@ -82,11 +81,12 @@ var maxSlots: Mod = {
     },
 
     reset: () => {
-        // TODO:...
+        _size = _avail = null;
+        _queued = [];
     },
 
     defaults: {
-        // TODO:...
+        maxSlots: null
     }
 };
 
@@ -124,13 +124,7 @@ function semaphoreSize(n?: number): number {
 
 
 // Private semaphore state.
+//TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _size: number = null;
 var _avail: number = null;
 var _queued: Function[] = [];
-
-
-// Private hook for unit testing.
-(<any> maxSlots)._reset = () => {
-    _size = _avail = null;
-    _queued = [];
-};

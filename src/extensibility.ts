@@ -9,15 +9,16 @@ import maxSlots = require('./mods/maxSlots');
 import Mod = AsyncAwait.Mod;
 
 
+//TODO: doc... order is important
+var builtinMods = [ cpsKeyword, maxSlots, coroPool, fiberPoolFix ];
 
 
 // TODO: doc...
-var _options = {
-    fiberPoolFix: false,
-    coroPool: true,
-    cpsKeyword: null,
-    maxSlots: null
-};
+var _options = { };
+builtinMods.forEach(mod => _.mergeProps(_options, mod.defaults));
+
+
+//TODO: doc...
 var _mods = [];
 var _isLocked = false;
 
@@ -61,10 +62,7 @@ export function _applyMods() {
 
 
     //TODO: add built-ins to mod list as lowest priority
-    use(cpsKeyword);
-    use(maxSlots);
-    use(coroPool);
-    use(fiberPoolFix);
+    builtinMods.forEach(use);
 
 
     // Restore the methods from the default pipeline.
@@ -105,7 +103,28 @@ export function _applyMods() {
 // TODO: doc...
 export function _resetMods() {
 
-    
+    //TODO: check all this... also DRY! and DRY in mods (eg reset == private state init)
+
+    // Call reset() on each mod
+    var len = _mods.length;
+    for (var i = len - 1; i >= 0; --i) {
+        var mod = _mods[i];
+        mod.reset();
+    }
+
+    // Reset options
+    _options = { };
+    builtinMods.forEach(mod => _.mergeProps(_options, mod.defaults));
+
+    // Reset mods
+    _mods = [];
+
+    // Pipeline will now be reset on next async(...) call
+    // TODO: doc technicalities of this - ie pipeline is now 'corrupt' until next async(...) call
+
+    // Unlock
+    _isLocked = false;
+
 }
 
 
