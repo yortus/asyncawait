@@ -23,7 +23,7 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
 /** Creates a new async builder function using the specified protocol settings. */
 function createAsyncBuilder(protocolFactory, options, baseProtocol) {
     // Instantiate the protocol by calling the provided factory function.
-    var protocol = _.mergeProps({}, baseProtocol, protocolFactory(options, baseProtocol));
+    var protocol = _.mergeProps({}, baseProtocol, protocolFactory(baseProtocol, options));
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {

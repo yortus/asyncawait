@@ -3,7 +3,7 @@ import oldBuilder = require('./cps');
 export = newBuilder;
 
 
-var newBuilder = oldBuilder.derive<AsyncAwait.Async.CPSBuilder>((options, cps) => ({
+var newBuilder = oldBuilder.derive<AsyncAwait.Async.CPSBuilder>((cps) => ({
     return: (ctx, result) => {
         if (result === 'next') return cps.return(ctx, null);
         if (result === 'route') return cps.throw(ctx, <any> 'route');

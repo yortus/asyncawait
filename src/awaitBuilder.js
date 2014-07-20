@@ -11,7 +11,7 @@ var awaitBuilder = createAwaitBuilder(_.empty, {}, function (co, args) {
 /** Creates a new await builder function using the specified handler settings. */
 function createAwaitBuilder(handlerFactory, options, baseHandler) {
     // Instantiate the handler by calling the provided factory function.
-    var handler = handlerFactory(options, baseHandler);
+    var handler = handlerFactory(baseHandler, options);
 
     // Create the builder function.
     var builder = function await(arg) {

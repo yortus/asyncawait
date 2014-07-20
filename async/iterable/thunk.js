@@ -2,7 +2,7 @@
 var oldBuilder = require('./cps');
 var _ = require('../../src/util');
 
-var builder = oldBuilder.derive(function (options, cps) {
+var builder = oldBuilder.derive(function (cps) {
     return ({
         invoke: function (co) {
             var iter = cps.invoke(co);

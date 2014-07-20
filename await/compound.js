@@ -2,7 +2,7 @@
 var pipeline = require('../src/pipeline');
 
 
-var builder = oldBuilder.derive(function (options) {
+var builder = oldBuilder.derive(function (baseHandler, options) {
     return function compoundHandler(co, arg, allArgs) {
         //TODO: temp testing... handle allArgs too...
         if (allArgs)

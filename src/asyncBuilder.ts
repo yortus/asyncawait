@@ -21,10 +21,10 @@ var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
 
 
 /** Creates a new async builder function using the specified protocol settings. */
-function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options: Options, baseProtocol: Protocol) => ProtocolOverrides, options: Options, baseProtocol: Protocol) {
+function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (baseProtocol: Protocol, options: Options) => ProtocolOverrides, options: Options, baseProtocol: Protocol) {
 
     // Instantiate the protocol by calling the provided factory function.
-    var protocol: Protocol = <any> _.mergeProps({}, baseProtocol, protocolFactory(options, baseProtocol));
+    var protocol: Protocol = <any> _.mergeProps({}, baseProtocol, protocolFactory(baseProtocol, options));
 
     // Create the builder function.
     var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {

@@ -1,6 +1,6 @@
 ﻿var oldBuilder = require('./cps');
 
-var newBuilder = oldBuilder.derive(function (options, cps) {
+var newBuilder = oldBuilder.derive(function (cps) {
     return ({
         return: function (ctx, result) {
             if (result === 'next')

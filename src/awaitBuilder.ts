@@ -12,10 +12,10 @@ var awaitBuilder = createAwaitBuilder<Builder>(_.empty, {}, (co, args) => co.ent
 
 
 /** Creates a new await builder function using the specified handler settings. */
-function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (options: {}, baseHandler: Handler) => Handler, options: {}, baseHandler: Handler) {
+function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (baseHandler: Handler, options: {}) => Handler, options: {}, baseHandler: Handler) {
 
     // Instantiate the handler by calling the provided factory function.
-    var handler = handlerFactory(options, baseHandler);
+    var handler = handlerFactory(baseHandler, options);
 
     // Create the builder function.
     var builder: TBuilder = <any> function await(arg) {

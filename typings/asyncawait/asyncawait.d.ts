@@ -82,7 +82,7 @@ declare module AsyncAwait {
             (fn: Function): Function;
             protocol: Protocol;
             options: Options;
-            derive<TBuilder extends Builder>(protocolFactory: (options: Options, baseProtocol: Protocol) => ProtocolOverrides, options?: Options): TBuilder;
+            derive<TBuilder extends Builder>(protocolFactory: (baseProtocol: Protocol, options: Options) => ProtocolOverrides, options?: Options): TBuilder;
             derive<TBuilder extends Builder>(options: Options): TBuilder;
         }
 
@@ -142,7 +142,7 @@ declare module AsyncAwait {
             (...args: any[]): any;
             handler: Handler;
             options: {};
-            derive<TBuilder extends Builder>(handlerFactory: (options: {}, baseHandler: Handler) => Handler, options?: {}): TBuilder;
+            derive<TBuilder extends Builder>(handlerFactory: (baseHandler: Handler, options: {}) => Handler, options?: {}): TBuilder;
             derive<TBuilder extends Builder>(options: {}): TBuilder;
         }
 

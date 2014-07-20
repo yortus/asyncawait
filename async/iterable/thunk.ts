@@ -5,7 +5,7 @@ import _ = require('../../src/util');
 export = builder;
 
 
-var builder = oldBuilder.derive<AsyncAwait.Async.IterableThunkBuilder>((options, cps) => ({
+var builder = oldBuilder.derive<AsyncAwait.Async.IterableThunkBuilder>((cps) => ({
     invoke: (co) => {
         var iter = cps.invoke(co);
         return {

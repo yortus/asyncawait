@@ -6,7 +6,7 @@ import await = require('asyncawait/await');
 var expect = chai.expect;
 
 
-var customProtocolFactory = (options, baseProtocol) => {
+var customProtocolFactory = (baseProtocol, options) => {
     var prefix = options.prefix || '';
     var suffix = options.suffix || '';
     return {

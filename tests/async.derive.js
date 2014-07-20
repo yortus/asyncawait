@@ -4,7 +4,7 @@ var async = require('asyncawait/async');
 
 var expect = chai.expect;
 
-var customProtocolFactory = function (options, baseProtocol) {
+var customProtocolFactory = function (baseProtocol, options) {
     var prefix = options.prefix || '';
     var suffix = options.suffix || '';
     return {
