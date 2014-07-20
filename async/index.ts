@@ -10,7 +10,6 @@ export = api;
 
 
 var api: AsyncAwait.Async.API = <any> promise;
-api.use = extensibility.use;
 api.config = extensibility.config;
 api.promise = promise.derive<AsyncAwait.Async.PromiseBuilder>({});
 api.cps = cps;

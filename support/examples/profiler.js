@@ -2,10 +2,6 @@
 var Promise = require('bluebird');
 var async = require('../../async');
 var await = require('../../await');
-//async.use.cpsKeyword('___');
-//async.use.maxSlots(1);
-//async.use.coroPool;
-
 async.config({
     //cpsKeyword: '___',
     //maxSlots: 1,

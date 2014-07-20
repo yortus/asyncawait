@@ -29,8 +29,8 @@ function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (options:
     // Create the builder function.
     var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
 
-        // Ensure mods are applied on first call to async. Subsequent calls do nothing.
-        extensibility._applyMods();
+        // Ensure mods are applied on first call to async.
+        if (!extensibility.isLocked) extensibility.applyMods();
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');

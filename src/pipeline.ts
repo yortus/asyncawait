@@ -7,7 +7,32 @@ import Protocol = AsyncAwait.Async.Protocol;
 export = pipeline;
 
 
-// Default implementations for the overrideable pipeline methods.
+/**
+ *  A hash of functions and properties that are used internally at various
+ *  stages of async/await handling. The pipeline may be augmented by mods,
+ *  which are loaded via the use(...) API method.
+ */
+var pipeline = {
+
+    // The following methods comprise the overridable part of the pipeline API.
+    acquireCoro: <typeof defaultPipeline.acquireCoro> null,
+    releaseCoro: <typeof defaultPipeline.releaseCoro> null,
+    acquireFiber: <typeof defaultPipeline.acquireFiber> null,
+    releaseFiber: <typeof defaultPipeline.releaseFiber> null,
+    createFiberBody: <typeof defaultPipeline.createFiberBody> null,
+
+    // The remaining items are for internal use and may not be overriden.
+    currentCoro: () => <CoroFiber> Fiber.current,
+    suspendCoro: (val?) => Fiber.yield(val),
+    isCurrent: co => { var f = <CoroFiber> Fiber.current; return f && f.id === co.id; },
+    nextCoroId: 1,
+    continueAfterYield: {}, /* sentinal value */
+    notHandled: {}, /* sentinal value */
+    restoreDefaults: () => _.mergeProps(pipeline, defaultPipeline)
+};
+
+
+/** Default implementations for the overrideable pipeline methods. */
 var defaultPipeline: Pipeline = {
 
     /** Create and return a new Coroutine instance. */
@@ -49,7 +74,7 @@ var defaultPipeline: Pipeline = {
 
     /** Ensure the Fiber instance is disposed of cleanly. */
     releaseFiber: (fiber: Fiber) => {
-        // NB: Nothing to do here in this default implementation.
+        // No-op.
     },
 
     /** Create the body function to be executed inside a fiber. */
@@ -62,7 +87,7 @@ var defaultPipeline: Pipeline = {
             try { tryBlock(); }
             catch (err) { catchBlock(err); }
             finally { setImmediate(finallyBlock); /* Ensure the fiber exits before we clean it up. */ }
-        };
+        }
 
         // These references are shared by the closures below.
         var co: CoroFiber, result, error;
@@ -93,64 +118,15 @@ var defaultPipeline: Pipeline = {
         }
         function catchBlock(err) {
             error = err;
-        };
+        }
         function finallyBlock() {
             if (error) protocol.throw(co.context, error);
             else protocol.return(co.context, result);
             pipeline.releaseFiber(co);
             pipeline.releaseCoro(protocol, co);
-        };
+        }
 
         // Return the completed fiberBody closure.
         return fiberBody;
     }
-}
-
-
-/**
- *  A hash of functions and properties that are used internally by asyncawait at
- *  various stages of handling asynchronous functions. These can be augmented with
- *  the use(...) method on asyncawait's primary export.
- */
-var pipeline = {
-
-    // The following methods comprise the overridable pipeline API.
-    acquireCoro: defaultPipeline.acquireCoro,
-    releaseCoro: defaultPipeline.releaseCoro,
-    acquireFiber: defaultPipeline.acquireFiber,
-    releaseFiber: defaultPipeline.releaseFiber,
-    createFiberBody: defaultPipeline.createFiberBody,
-
-    //TODO: all these needed IN pipeline?
-
-    // The remaining items are for internal use and must not be overriden.
-    currentCoro: () => <CoroFiber> Fiber.current,
-    suspendCoro: (val?) => Fiber.yield(val),
-    isCurrent: <(co: CoroFiber) => boolean> isCurrentCoro,
-    nextCoroId: 1,
-    continueAfterYield: {}, /* sentinal value */
-    notHandled: {}, /* sentinal value */
-    restoreDefaults: () => _.mergeProps(pipeline, defaultPipeline)
 };
-
-
-//TODO: was...
-
-///** Reset the pipeline to its default state. This is useful for unit testing. */
-//function resetPipeline() {
-
-//    // Restore the methods from the default pipeline.
-//    _.mergeProps(pipeline, defaultPipeline);
-
-//    // 'Forget' all applied mods.
-//    pipeline.mods = [];
-
-//    // Unlock the pipeline so that use(...) calls can be made again.
-//    pipeline.isLocked = false;
-//}
-
-
-function isCurrentCoro(co: CoroFiber) {
-    var current = <CoroFiber> Fiber.current;
-    return current && current.id === co.id;
-}

@@ -3,7 +3,38 @@ var Fiber = require('fibers');
 var _ = require('./util');
 
 
-// Default implementations for the overrideable pipeline methods.
+/**
+*  A hash of functions and properties that are used internally at various
+*  stages of async/await handling. The pipeline may be augmented by mods,
+*  which are loaded via the use(...) API method.
+*/
+var pipeline = {
+    // The following methods comprise the overridable part of the pipeline API.
+    acquireCoro: null,
+    releaseCoro: null,
+    acquireFiber: null,
+    releaseFiber: null,
+    createFiberBody: null,
+    // The remaining items are for internal use and may not be overriden.
+    currentCoro: function () {
+        return Fiber.current;
+    },
+    suspendCoro: function (val) {
+        return Fiber.yield(val);
+    },
+    isCurrent: function (co) {
+        var f = Fiber.current;
+        return f && f.id === co.id;
+    },
+    nextCoroId: 1,
+    continueAfterYield: {},
+    notHandled: {},
+    restoreDefaults: function () {
+        return _.mergeProps(pipeline, defaultPipeline);
+    }
+};
+
+/** Default implementations for the overrideable pipeline methods. */
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
     acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
@@ -49,7 +80,7 @@ var defaultPipeline = {
     },
     /** Ensure the Fiber instance is disposed of cleanly. */
     releaseFiber: function (fiber) {
-        // NB: Nothing to do here in this default implementation.
+        // No-op.
     },
     /** Create the body function to be executed inside a fiber. */
     createFiberBody: function (protocol, getCo) {
@@ -65,7 +96,6 @@ var defaultPipeline = {
                 setImmediate(finallyBlock); /* Ensure the fiber exits before we clean it up. */ 
             }
         }
-        ;
 
         // These references are shared by the closures below.
         var co, result, error;
@@ -102,7 +132,6 @@ var defaultPipeline = {
         function catchBlock(err) {
             error = err;
         }
-        ;
         function finallyBlock() {
             if (error)
                 protocol.throw(co.context, error);
@@ -111,55 +140,10 @@ var defaultPipeline = {
             pipeline.releaseFiber(co);
             pipeline.releaseCoro(protocol, co);
         }
-        ;
 
         // Return the completed fiberBody closure.
         return fiberBody;
     }
 };
-
-/**
-*  A hash of functions and properties that are used internally by asyncawait at
-*  various stages of handling asynchronous functions. These can be augmented with
-*  the use(...) method on asyncawait's primary export.
-*/
-var pipeline = {
-    // The following methods comprise the overridable pipeline API.
-    acquireCoro: defaultPipeline.acquireCoro,
-    releaseCoro: defaultPipeline.releaseCoro,
-    acquireFiber: defaultPipeline.acquireFiber,
-    releaseFiber: defaultPipeline.releaseFiber,
-    createFiberBody: defaultPipeline.createFiberBody,
-    //TODO: all these needed IN pipeline?
-    // The remaining items are for internal use and must not be overriden.
-    currentCoro: function () {
-        return Fiber.current;
-    },
-    suspendCoro: function (val) {
-        return Fiber.yield(val);
-    },
-    isCurrent: isCurrentCoro,
-    nextCoroId: 1,
-    continueAfterYield: {},
-    notHandled: {},
-    restoreDefaults: function () {
-        return _.mergeProps(pipeline, defaultPipeline);
-    }
-};
-
-//TODO: was...
-///** Reset the pipeline to its default state. This is useful for unit testing. */
-//function resetPipeline() {
-//    // Restore the methods from the default pipeline.
-//    _.mergeProps(pipeline, defaultPipeline);
-//    // 'Forget' all applied mods.
-//    pipeline.mods = [];
-//    // Unlock the pipeline so that use(...) calls can be made again.
-//    pipeline.isLocked = false;
-//}
-function isCurrentCoro(co) {
-    var current = Fiber.current;
-    return current && current.id === co.id;
-}
 module.exports = pipeline;
 //# sourceMappingURL=pipeline.js.map

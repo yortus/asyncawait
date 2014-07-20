@@ -3,12 +3,9 @@ var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
+var extensibility = require('asyncawait/src/extensibility');
 var expect = chai.expect;
 
-var extensibility = require('asyncawait/src/extensibility');
-
-//import pipeline = require('asyncawait/src/pipeline');
-//var maxSlots = require('asyncawait/src/mods/maxSlots');
 describe('The maxSlots mod', function () {
     var started = 0, finished = 0;
     var opA = async(function () {
@@ -19,17 +16,16 @@ describe('The maxSlots mod', function () {
     var opB = async(function () {
         return ({ started: started, finished: finished });
     });
-    var reset = function () {
-        return extensibility._resetMods();
+    var setMaxSlots = function (n) {
+        extensibility.resetMods();
+        extensibility.config({ maxSlots: n });
+        extensibility.applyMods();
     };
 
     it('applies the specified concurrency factor to subsequent operations', function (done) {
         function doTasks(maxCon) {
             started = finished = 0;
-            reset();
-            async.config({ maxSlots: maxCon });
-
-            //async(()=>{});//TODO: necessary until lazy-loading of mods is fixed
+            setMaxSlots(maxCon);
             return Promise.all([opA(), opA(), opA(), opA(), opA(), opB()]).then(function (r) {
                 return r[5];
             });
@@ -56,22 +52,6 @@ describe('The maxSlots mod', function () {
         }).catch(done);
     });
 
-    //TODO: no longer realistic? or generalise and move to config.use test suite
-    //it('fails if applied more than once', done => {
-    //    //TODO: was... reset();
-    //    try {
-    //        var i = 1;
-    //        async.use(maxSlots));
-    //        i = 2;
-    //        async.use(maxSlots(5));
-    //        i = 3;
-    //    }
-    //    catch (err) { }
-    //    finally {
-    //        expect(i).to.equal(2);
-    //        done();
-    //    }
-    //});
     it('lets nested invocations pass through to prevent deadlocks', function (done) {
         var start1Timer = async(function () {
             return await(Promise.delay(20));
@@ -84,10 +64,7 @@ describe('The maxSlots mod', function () {
         };
 
         // The following would cause a deadlock if sub-level coros are not passed through
-        reset();
-        async.config({ maxSlots: 2 });
-        async(function () {
-        }); //TODO: necessary until lazy-loading of mods is fixed
+        setMaxSlots(2);
         start100Timers().then(function () {
             return done();
         });
@@ -106,10 +83,7 @@ describe('The maxSlots mod', function () {
         });
 
         // Single file
-        reset();
-        async.config({ maxSlots: 1 });
-        async(function () {
-        }); //TODO: necessary until lazy-loading of mods is fixed
+        setMaxSlots(1);
         var arr = [], promises = [1, 2, 3].map(function (n) {
             return foo(n, arr).forEach(function () {
             });
@@ -121,10 +95,7 @@ describe('The maxSlots mod', function () {
         }).catch(done);
 
         // Concurrent
-        reset();
-        async.config({ maxSlots: 3 });
-        async(function () {
-        }); //TODO: necessary until lazy-loading of mods is fixed
+        setMaxSlots(3);
         var arr = [], promises = [1, 2, 3].map(function (n) {
             return foo(n, arr).forEach(function () {
             });
@@ -136,4 +107,3 @@ describe('The maxSlots mod', function () {
         }).catch(done);
     });
 });
-//# sourceMappingURL=config.maxConcurrency.js.map

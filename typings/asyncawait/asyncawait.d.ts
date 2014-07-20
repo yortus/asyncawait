@@ -14,7 +14,6 @@ declare module AsyncAwait {
     export module Async {
         
         export interface API extends PromiseBuilder {
-            use: Use;
             config: Config;
             promise: PromiseBuilder;
             cps: CPSBuilder;
@@ -111,7 +110,6 @@ declare module AsyncAwait {
     export module Await {
 
         export interface API extends Builder {
-            use: Use;
             promise: PromiseBuilder;
             cps: CPSBuilder;
             thunk: ThunkBuilder;
@@ -168,9 +166,7 @@ declare module AsyncAwait {
     export interface Config {
         (): ConfigOptions;
         (options: ConfigOptions): void;
-
-        reset: () => void; //TODO: impl this
-        
+        use: (mod: Mod) => void;
     }
 
     export interface ConfigOptions {
@@ -178,14 +174,6 @@ declare module AsyncAwait {
         coroPool?: boolean;
         maxSlots?: number;
         cpsKeyword?: string;
-    }
-
-    export interface Use {
-        (mod: Mod): void;
-        fiberPoolFix: Mod;
-        coroPool: Mod;
-        cpsKeyword: (identifier: string) => void;
-        maxSlots: (n: number) => void;
     }
 
     export interface Mod {
@@ -232,7 +220,6 @@ declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
     export import yield_ = require("asyncawait/yield");
-    export var use: AsyncAwait.Use;
 }
 declare module "asyncawait/async" { var api: AsyncAwait.Async.API; export = api; }
 declare module "asyncawait/await" { var api: AsyncAwait.Await.API; export = api; }

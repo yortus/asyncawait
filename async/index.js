@@ -7,7 +7,6 @@ var stream = require('./stream');
 var iterable = require('./iterable/index');
 
 var api = promise;
-api.use = extensibility.use;
 api.config = extensibility.config;
 api.promise = promise.derive({});
 api.cps = cps;

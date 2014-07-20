@@ -115,7 +115,7 @@
     <Content Include="typings\mocha\mocha.d.ts" />
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
-    <TypeScriptCompile Include="tests\use.ts" />
+    <TypeScriptCompile Include="tests\config.use.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>
   <ItemGroup>

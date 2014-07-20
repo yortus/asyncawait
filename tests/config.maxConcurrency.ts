@@ -4,14 +4,8 @@ import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
-var expect = chai.expect;
-
-
 import extensibility = require('asyncawait/src/extensibility');
-//import pipeline = require('asyncawait/src/pipeline');
-//var maxSlots = require('asyncawait/src/mods/maxSlots');
-
-
+var expect = chai.expect;
 
 
 describe('The maxSlots mod', () => {
@@ -19,15 +13,17 @@ describe('The maxSlots mod', () => {
     var started = 0, finished = 0;
     var opA = async (() => { ++started; await (Promise.delay(20)); ++finished; });
     var opB = async (() => ({ started: started, finished: finished }));
-    var reset = () => extensibility._resetMods();
+    var setMaxSlots = n => {
+        extensibility.resetMods();
+        extensibility.config({maxSlots: n});
+        extensibility.applyMods();
+    };
 
     it('applies the specified concurrency factor to subsequent operations', done => {
 
         function doTasks(maxCon: number) {
             started = finished = 0;
-            reset();
-            async.config({maxSlots: maxCon});
-            //async(()=>{});//TODO: necessary until lazy-loading of mods is fixed
+            setMaxSlots(maxCon);
             return Promise
                 .all([opA(), opA(), opA(), opA(), opA(), opB()])
                 .then(r => <any> r[5]);
@@ -46,32 +42,13 @@ describe('The maxSlots mod', () => {
         .catch(done);
     });
 
-    //TODO: no longer realistic? or generalise and move to config.use test suite
-    //it('fails if applied more than once', done => {
-    //    //TODO: was... reset();
-    //    try {
-    //        var i = 1;
-    //        async.use(maxSlots));
-    //        i = 2;
-    //        async.use(maxSlots(5));
-    //        i = 3;
-    //    }
-    //    catch (err) { }
-    //    finally {
-    //        expect(i).to.equal(2);
-    //        done();
-    //    }
-    //});
-
     it('lets nested invocations pass through to prevent deadlocks', done => {
         var start1Timer = async (() => await (Promise.delay(20)));
         var start10Timers = async (() => await ([1,2,3,4,5,6,7,8,9,10].map(start1Timer)));
         var start100Timers = () => Promise.all([1,2,3,4,5,6,7,8,9,10].map(start10Timers));
 
         // The following would cause a deadlock if sub-level coros are not passed through
-        reset();
-        async.config({maxSlots: 2});
-        async(()=>{});//TODO: necessary until lazy-loading of mods is fixed
+        setMaxSlots(2);
         start100Timers().then(() => done());
     });
 
@@ -88,9 +65,7 @@ describe('The maxSlots mod', () => {
 
 
         // Single file
-        reset();
-        async.config({maxSlots: 1});
-        async(()=>{});//TODO: necessary until lazy-loading of mods is fixed
+        setMaxSlots(1);
         var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
         Promise.all(promises)
         .then(() => expect(arr).to.deep.equal([111, 111, 222, 111, 222, 333]))
@@ -98,9 +73,7 @@ describe('The maxSlots mod', () => {
         .catch(done);
 
         // Concurrent
-        reset();
-        async.config({maxSlots: 3});
-        async(()=>{});//TODO: necessary until lazy-loading of mods is fixed
+        setMaxSlots(3);
         var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
         Promise.all(promises)
         .then(() => expect(arr).to.deep.equal([111, 111, 111, 222, 222, 333]))

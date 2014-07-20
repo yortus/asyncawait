@@ -6,104 +6,101 @@ var coroPool = require('./mods/coroPool');
 var cpsKeyword = require('./mods/cpsKeyword');
 var maxSlots = require('./mods/maxSlots');
 
-//TODO: doc... order is important
-var builtinMods = [cpsKeyword, maxSlots, coroPool, fiberPoolFix];
-
-// TODO: doc...
-var _options = {};
-builtinMods.forEach(function (mod) {
-    return _.mergeProps(_options, mod.defaults);
-});
-
-//TODO: doc...
-var _mods = [];
-var _isLocked = false;
-
-/** TODO: doc... */
+/** Get or set global configuration values. */
 exports.config = function config() {
     // If called as a getter, return a reference to the options object.
     if (arguments.length === 0)
         return _options;
 
-    // Ensure config(...) setter fails after mods have been applied.
-    assert(!_isLocked, 'config: cannot alter config after first async(...) call');
+    // Reject operation if this subsystem is now locked.
+    assert(!exports.isLocked, 'config: cannot alter config after first async(...) call');
 
     // Merge the given value's own properties into the options object.
     _.mergeProps(_options, arguments[0]);
 };
 
-/** Install the specified mod to alter the global behaviour of asyncawait. */
-exports.use = function use(mod) {
-    // Ensure use(...) fails after mods have been applied.
-    assert(!_isLocked, 'use: cannot alter mods after first async(...) call');
+/** Register the specified mod and add its default options to current config. */
+exports.config.use = function use(mod) {
+    // Reject operation if this subsystem is now locked.
+    assert(!exports.isLocked, 'use: cannot register mods after first async(...) call');
 
-    // TODO: doc...
-    _mods.push(mod);
+    // Ensure mods are registered only once.
+    assert(exports.externalMods.indexOf(mod) === -1, 'use: mod already registered');
+
+    // Add the mod to the list.
+    exports.externalMods.push(mod);
+
+    // Incorporate the mod's default options.
+    _.mergeProps(_options, mod.defaults);
 };
 
-//TODO: may need explicit apply() function - eg if mod adds async.xyz, it won't be there until first async call, but may want it immediately
-// TODO: doc...
-function _applyMods() {
-    // If the mods are already applied, return with no further action.
-    if (_isLocked)
-        return;
+/** Apply all registered mods and lock the subsystem against further changes. */
+function applyMods() {
+    // Reject operation if this subsystem is now locked.
+    assert(!exports.isLocked, 'applyMods: mods already applied');
 
-    //TODO: add built-ins to mod list as lowest priority
-    builtinMods.forEach(exports.use);
+    // Create a combined mod list in the appropriate order.
+    var allMods = exports.externalMods.concat(exports.internalMods);
 
-    // Restore the methods from the default pipeline.
+    // Restore the pipeline to its default state.
     pipeline.restoreDefaults();
 
-    // Reconstruct the pipeline to include the new mod. Mods are applied in reverse
-    // order of the use() calls that registered them, so that the mods associated with
-    // earlier use() calls remain outermost in pipeline call chains.
-    var len = _mods.length, applied = [];
-    for (var i = len - 1; i >= 0; --i) {
-        var mod = _mods[i];
-
-        //TODO:...
-        var previous = _.mergeProps({}, pipeline);
-
-        // TODO: Ensure the mod has not already been applied
-        if (applied.indexOf(mod) !== -1)
-            throw new Error('applyMods: mod cannot be applied multiple times');
-
-        // TODO: execute the mod, and obtain its pipeline overrides, if any.
-        var overrides = mod.apply(previous, _options);
-
-        //TODO:...
-        _.mergeProps(pipeline, overrides);
-        applied.push(mod);
+    for (var i = allMods.length - 1; i >= 0; --i) {
+        var pipelineBeforeMod = _.mergeProps({}, pipeline);
+        var pipelineOverrides = allMods[i].apply(pipelineBeforeMod, _options);
+        _.mergeProps(pipeline, pipelineOverrides);
     }
 
-    //TODO: set locked
-    _isLocked = true;
+    // Lock the subsystem against further changes.
+    exports.isLocked = true;
 }
-exports._applyMods = _applyMods;
+exports.applyMods = applyMods;
 
-// TODO: doc...
-function _resetMods() {
-    //TODO: check all this... also DRY! and DRY in mods (eg reset == private state init)
-    // Call reset() on each mod
-    var len = _mods.length;
-    for (var i = len - 1; i >= 0; --i) {
-        var mod = _mods[i];
-        mod.reset();
-    }
+/**
+*  Reset all registered mods and return the subsystem to an unlocked state. This
+*  method is primarily used for unit testing of mods and the extensibility system.
+*/
+function resetMods() {
+    // Call each registered mod's reset() function, if present.
+    var allMods = exports.externalMods.concat(exports.internalMods);
+    allMods.forEach(function (mod) {
+        if (mod.reset)
+            mod.reset();
+    });
 
-    // Reset options
+    // Clear all external mod registrations.
+    exports.externalMods = [];
+
+    // Restore options to its initial state.
     _options = {};
-    builtinMods.forEach(function (mod) {
+    exports.internalMods.forEach(function (mod) {
         return _.mergeProps(_options, mod.defaults);
     });
 
-    // Reset mods
-    _mods = [];
+    // Restore the default pipeline.
+    pipeline.restoreDefaults();
 
-    // Pipeline will now be reset on next async(...) call
-    // TODO: doc technicalities of this - ie pipeline is now 'corrupt' until next async(...) call
-    // Unlock
-    _isLocked = false;
+    // Unlock the subsystem.
+    exports.isLocked = false;
 }
-exports._resetMods = _resetMods;
+exports.resetMods = resetMods;
+
+/** Built-in mods that are always applied. Order is important. */
+exports.internalMods = [cpsKeyword, maxSlots, coroPool, fiberPoolFix];
+
+/** Mods that have been explicitly registered via use(...). */
+exports.externalMods = [];
+
+/**
+*  This flag is set to true when all mods have been applied. Once it is set
+*  subsequent mod/config changes are not allowed. Calling reset() sets this
+*  flag back to false.
+*/
+exports.isLocked = false;
+
+/** Global options hash accessed by the config() getter/getter function. */
+var _options = {};
+exports.internalMods.forEach(function (mod) {
+    return _.mergeProps(_options, mod.defaults);
+});
 //# sourceMappingURL=extensibility.js.map
