@@ -69,7 +69,7 @@ function _applyMods() {
             throw new Error('applyMods: mod cannot be applied multiple times');
 
         // TODO: execute the mod, and obtain its pipeline overrides, if any.
-        var overrides = mod(previous, _options);
+        var overrides = mod.apply(previous, _options);
 
         //TODO:...
         _.mergeProps(pipeline, overrides);

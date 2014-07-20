@@ -121,6 +121,8 @@ var pipeline = {
     releaseFiber: defaultPipeline.releaseFiber,
     createFiberBody: defaultPipeline.createFiberBody,
 
+    //TODO: all these needed IN pipeline?
+
     // The remaining items are for internal use and must not be overriden.
     currentCoro: () => <CoroFiber> Fiber.current,
     suspendCoro: (val?) => Fiber.yield(val),

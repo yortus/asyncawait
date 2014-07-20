@@ -9,18 +9,25 @@
 *  mod addresses.
 *  For more details see https://github.com/laverdet/node-fibers/issues/169.
 */
-var fiberPoolFix = function (pipeline, options) {
-    // Override the pipeline if the option is selected.
-    return (!options.fiberPoolFix) ? null : {
-        acquireFiber: function (body) {
-            inc();
-            return pipeline.acquireFiber(body);
-        },
-        releaseFiber: function (fiber) {
-            dec();
-            return pipeline.releaseFiber(fiber);
-        }
-    };
+var fiberPoolFix = {
+    // TODO:...
+    apply: function (pipeline, options) {
+        // Override the pipeline if the option is selected.
+        return (!options.fiberPoolFix) ? null : {
+            acquireFiber: function (body) {
+                inc();
+                return pipeline.acquireFiber(body);
+            },
+            releaseFiber: function (fiber) {
+                dec();
+                return pipeline.releaseFiber(fiber);
+            }
+        };
+    },
+    reset: function () {
+        // TODO:...
+    },
+    defaults: {}
 };
 
 /** Increment the number of active fibers. */

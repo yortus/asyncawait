@@ -11,72 +11,84 @@ export = maxSlots;
  *  from the main execution stack (i.e., not calls from other suspendable functions), to
  *  prevent deadlocks.
  */
-var maxSlots: Mod = (pipeline: any, options) => {
+var maxSlots: Mod = {
 
-    // Do nothing if the option is not selected.
-    var n = options.maxSlots;
-    if (!n || !_.isNumber(n)) return;
+    // TODO:...
+    apply: (pipeline: any, options) => {
 
-    // Set the semaphore size.
-    semaphoreSize(n);
+        // Do nothing if the option is not selected.
+        var n = options.maxSlots;
+        if (!n || !_.isNumber(n)) return;
 
-    // Return the pipeline overrides.
-    return {
+        // Set the semaphore size.
+        semaphoreSize(n);
 
-        /** Create and return a new Coroutine instance. */
-        acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+        // Return the pipeline overrides.
+        return {
 
-            // For non-top-level acquisitions, just delegate to the existing pipeline.
-            // If coroutines invoke other coroutines and await their results, putting
-            // the nested coroutines through the semaphore could easily lead to deadlocks.
-            if (!!pipeline.currentCoro()) return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+            /** Create and return a new Coroutine instance. */
+            acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
 
-            // This is a top-level acquisition. Return a 'placeholder' coroutine whose enter() method waits
-            // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
-            var co: any = {
-                inSemaphore: true,
-                context: {},
-                enter: (error?, value?) => {
+                // For non-top-level acquisitions, just delegate to the existing pipeline.
+                // If coroutines invoke other coroutines and await their results, putting
+                // the nested coroutines through the semaphore could easily lead to deadlocks.
+                if (!!pipeline.currentCoro()) return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
-                    // Upon execution, enter the semaphore.
-                    enterSemaphore(() => {
+                // This is a top-level acquisition. Return a 'placeholder' coroutine whose enter() method waits
+                // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
+                var co: any = {
+                    inSemaphore: true,
+                    context: {},
+                    enter: (error?, value?) => {
 
-                        // When the semaphore is ready, acquire a coroutine from the pipeline.
-                        var c = pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                        // Upon execution, enter the semaphore.
+                        enterSemaphore(() => {
 
-                        // There may still be outstanding references to the placeholder coroutine,
-                        // so ensure its enter() and leave() methods call the real coroutine.
-                        co.enter = c.enter;
-                        co.leave = c.leave;
+                            // When the semaphore is ready, acquire a coroutine from the pipeline.
+                            var c = pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
-                        // The context is already initialised on the placeholder, so copy in back.
-                        c.context = co.context;
+                            // There may still be outstanding references to the placeholder coroutine,
+                            // so ensure its enter() and leave() methods call the real coroutine.
+                            co.enter = c.enter;
+                            co.leave = c.leave;
 
-                        // Mark this coroutine so it is properly handled by releaseCoro().
-                        c.inSemaphore = true;
+                            // The context is already initialised on the placeholder, so copy in back.
+                            c.context = co.context;
 
-                        // Begin execution.
-                        co.enter(error, value);
-                    });
+                            // Mark this coroutine so it is properly handled by releaseCoro().
+                            c.inSemaphore = true;
+
+                            // Begin execution.
+                            co.enter(error, value);
+                        });
+                    }
+                };
+                return co;
+            },
+
+            /** Ensure the Coroutine instance is disposed of cleanly. */
+            releaseCoro: (protocol, co) => {
+
+                // If this coroutine entered through the semaphore, then it must leave through the semaphore.
+                if (co.inSemaphore) {
+                    co.inSemaphore = false;
+                    leaveSemaphore();
                 }
-            };
-            return co;
-        },
 
-        /** Ensure the Coroutine instance is disposed of cleanly. */
-        releaseCoro: (protocol, co) => {
-
-            // If this coroutine entered through the semaphore, then it must leave through the semaphore.
-            if (co.inSemaphore) {
-                co.inSemaphore = false;
-                leaveSemaphore();
+                // Delegate to the existing pipeline.
+                return pipeline.releaseCoro(protocol, co);
             }
+        };
+    },
 
-            // Delegate to the existing pipeline.
-            return pipeline.releaseCoro(protocol, co);
-        }
-    };
-}
+    reset: () => {
+        // TODO:...
+    },
+
+    defaults: {
+        // TODO:...
+    }
+};
 
 
 /** Enter the global semaphore. */

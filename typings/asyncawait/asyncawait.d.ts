@@ -189,7 +189,9 @@ declare module AsyncAwait {
     }
 
     export interface Mod {
-        (pipeline: Pipeline, options: ConfigOptions): PipelineOverrides;
+        apply: (pipeline: Pipeline, options: ConfigOptions) => PipelineOverrides;
+        reset?: () => void;
+        defaults?: {};
     }
 
     export interface Pipeline {

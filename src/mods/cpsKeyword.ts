@@ -9,15 +9,28 @@ export = cpsKeyword;
  * await.cps.continuation(). This is purely for convenience and clarity
  * for reading and writing async code.
  */
-var cpsKeyword: Mod = (pipeline, options) => {
+var cpsKeyword: Mod = {
+    
 
-    // Do nothing if the option is not selected.
-    var ident = options.cpsKeyword;
-    if (!ident) return;
+    //TODO: impl new form...    
+    apply: (pipeline, options) => {
 
-    // Define the global property accessor.
-    Object.defineProperty(global, ident, { get: cps.continuation });
+        // Do nothing if the option is not selected.
+        var ident = options.cpsKeyword;
+        if (!ident) return;
 
-    // Return an empty object, since we don't alter the pipeline here.
-    return (pipeline) => ({});
+        // Define the global property accessor.
+        Object.defineProperty(global, ident, { get: cps.continuation });
+
+        // Return an empty object, since we don't alter the pipeline here.
+        return null;
+    },
+
+    reset: () => {
+        // TODO:...
+    },
+
+    defaults: {
+        // TODO:...
+    }
 };
