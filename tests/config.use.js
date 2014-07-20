@@ -1,65 +1,141 @@
 ﻿var chai = require('chai');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+var extensibility = require('asyncawait/src/extensibility');
 
 var expect = chai.expect;
 
-//TODO: needed?
-//beforeEach(() => origConcurrency = async.config().maxConcurrency);
-//afterEach(() => async.config({ maxConcurrency: origConcurrency }));
-//TODO: define test mods...
+// Define test mods
 var tracking = [];
-var testMod1 = function (pipeline) {
-    tracking.push('A');
-    return {
-        acquireCoro: function (protocol) {
-            //TODO: delegate...
-            pipeline.acquireCoro.apply(null, arguments);
-        }
-    };
+var testModA = {
+    apply: function (pipeline, options) {
+        tracking.push('apply A');
+        return {
+            acquireCoro: function () {
+                tracking.push('acquire A');
+                return pipeline.acquireCoro.apply(null, arguments);
+            },
+            releaseCoro: function () {
+                tracking.push('release A');
+                pipeline.releaseCoro.apply(null, arguments);
+            }
+        };
+    },
+    reset: function () {
+        return tracking.push('reset A');
+    },
+    defaults: { a: 1 }
 };
-var testMod2 = function (pipeline) {
-    tracking.push('B');
-    return {};
+var testModB = {
+    apply: function (pipeline, options) {
+        tracking.push('apply B');
+        return {
+            acquireCoro: function () {
+                tracking.push('acquire B');
+                return pipeline.acquireCoro.apply(null, arguments);
+            },
+            releaseCoro: function () {
+                tracking.push('release B');
+                pipeline.releaseCoro.apply(null, arguments);
+            }
+        };
+    },
+    reset: function () {
+        return tracking.push('reset B');
+    },
+    defaults: { b: 2 }
 };
 
-describe('Calling config.use(...)', function () {
-    it('does not apply the mod if async(...) is never called', function () {
-        //TODO: test code here...
+beforeEach(function () {
+    extensibility.resetMods();
+    tracking = [];
+});
+
+describe('The config.use(...) function', function () {
+    it('registers the specified mod, without applying it', function () {
+        expect(extensibility.externalMods).to.be.empty;
+        async.config.use(testModA);
+        expect(extensibility.externalMods).to.deep.equal([testModA]);
+        async.config.use(testModB);
+        expect(extensibility.externalMods).to.deep.equal([testModA, testModB]);
+        expect(tracking).to.be.empty;
     });
 
-    it('executes mod functions on the first call to async(...)', function () {
-        //TODO: test code here...
+    it('adds the mod\'s defaults to config', function () {
+        expect(async.config()).to.not.have.key('a');
+        async.config.use(testModA);
+        expect(async.config()).to.haveOwnProperty('a');
+        expect(async.config()['a']).to.equal(1);
     });
 
-    it('executes mod functions only once', function () {
-        //TODO: test code here...
+    it('rejects multiple registrations of the same mod', function () {
+        async.config.use(testModA);
+        expect(function () {
+            return async.config.use(testModA);
+        }).to.throw();
+        async.config.use(testModB);
+        expect(function () {
+            return async.config.use(testModB);
+        }).to.throw();
     });
 
-    it('executes mod functions in reverse order of their application', function () {
-        //TODO: test code here...
-    });
-
-    it('applies the mods to all async calls', function () {
-        //TODO: test code here...
-    });
-
-    it('fails if async(...) has already been called', function () {
-        //TODO: test code here...
+    it('rejects registrations after async(...) is called', function () {
+        async.config.use(testModA);
+        var foo = async(function () {
+        });
+        expect(function () {
+            return async.config.use(testModB);
+        }).to.throw();
     });
 });
-//TODO: no longer realistic? or generalise and move to config.use test suite
-//it('fails if applied more than once', done => {
-//    //TODO: was... reset();
-//    try {
-//        var i = 1;
-//        async.use(maxSlots));
-//        i = 2;
-//        async.use(maxSlots(5));
-//        i = 3;
-//    }
-//    catch (err) { }
-//    finally {
-//        expect(i).to.equal(2);
-//        done();
-//    }
-//});
+
+describe('Registered mods', function () {
+    it('are applied when async(...) is first called', function () {
+        async.config.use(testModA);
+        expect(tracking).to.be.empty;
+        var foo = async(function () {
+        });
+        expect(tracking).to.deep.equal(['apply A']);
+    });
+
+    it('are applied such that earliest registrations are outermost in pipeline call chains', function () {
+        async.config.use(testModA);
+        async.config.use(testModB);
+        expect(tracking).to.be.empty;
+        var foo = async(function () {
+        });
+        expect(tracking).to.deep.equal(['apply B', 'apply A']);
+    });
+
+    it('have their pipeline overrides applied', async.cps(function () {
+        async.config.use(testModA);
+        expect(tracking).to.be.empty;
+        var foo = async(function () {
+        });
+        await(foo());
+        expect(tracking).to.deep.equal(['apply A', 'acquire A', 'release A']);
+    }));
+
+    it('have their pipeline overrides called with correct nesting', async.cps(function () {
+        async.config.use(testModA);
+        async.config.use(testModB);
+        expect(tracking).to.be.empty;
+        var foo = async(function () {
+        });
+        await(foo());
+        expect(tracking).to.deep.equal(['apply B', 'apply A', 'acquire A', 'acquire B', 'release A', 'release B']);
+    }));
+
+    it('have their reset() functions called when resetMods() is called', async.cps(function () {
+        async.config.use(testModA);
+        async.config.use(testModB);
+        var foo = async(function () {
+        });
+        await(foo());
+        tracking = [];
+        extensibility.resetMods();
+        expect(tracking).to.contain('reset A');
+        expect(tracking).to.contain('reset B');
+    }));
+});
 //# sourceMappingURL=config.use.js.map

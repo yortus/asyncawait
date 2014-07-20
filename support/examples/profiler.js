@@ -5,7 +5,16 @@ var await = require('../../await');
 async.config({
     //cpsKeyword: '___',
     //maxSlots: 1,
-    coroPool: true
+    coroPool: true,
+
+    awaitOrder: [ 'promise', 'cps', 'thunk', 'promise[]', 'value' ],
+
+    //TODO: rename continuation() to complete()
+    keywords: {
+        cps: '___',
+        yield: 'yield_',
+        await: 'await'
+    }
 });
 
 

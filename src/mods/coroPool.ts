@@ -4,7 +4,7 @@ export = coroPool;
 
 
 /** Pools coroutine instances across acquire/release cycles, for improved performance. */
-var coroPool: Mod = {
+var coroPool: Mod = <any>{
 
     // TODO:...
     apply: (pipeline, options) => {
@@ -16,7 +16,8 @@ var coroPool: Mod = {
             acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
 
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPool = protocol.coroPool || (protocol.coroPool = []);
+                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is empty, create and return a new coroutine via the pipeline.
                 if (coroPool.length === 0) return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
@@ -35,7 +36,8 @@ var coroPool: Mod = {
             releaseCoro: (protocol: Protocol, co: CoroFiber) => {
 
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPool = protocol.coroPool || (protocol.coroPool = []);
+                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is already full, release the coroutine via the pipeline.
                 if (_poolLevel >= _poolLimit) return pipeline.releaseCoro(protocol, co);
@@ -54,6 +56,7 @@ var coroPool: Mod = {
     reset: () => {
         _poolLevel = 0;
         _poolLimit = 100;
+        _pools = [];
     },
 
     defaults: {
@@ -64,7 +67,7 @@ var coroPool: Mod = {
 
 /** Extended Protocol interface with coroutine pool. */
 interface Protocol extends AsyncAwait.Async.Protocol {
-    coroPool: CoroFiber[];
+    coroPoolId: number;
 }
 
 
@@ -72,3 +75,5 @@ interface Protocol extends AsyncAwait.Async.Protocol {
 //TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _poolLevel = 0;
 var _poolLimit = 100;
+var _nextPoolId = 0;
+var _pools: CoroFiber[][] = [];

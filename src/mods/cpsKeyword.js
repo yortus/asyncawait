@@ -1,4 +1,5 @@
-﻿var cps = require('../../await/cps');
+﻿var assert = require('assert');
+var cps = require('../../await/cps');
 
 
 /**
@@ -9,12 +10,15 @@
 var cpsKeyword = {
     apply: function (pipeline, options) {
         // Do nothing if the option is not selected.
-        _cpsKeyword = options.cpsKeyword;
-        if (!_cpsKeyword)
+        if (!options.cpsKeyword)
             return;
 
+        // Ensure the symbol is not already defined
+        assert(!global[options.cpsKeyword], 'cpsKeyword: identifier already exists on global object');
+
         // Define the global property accessor.
-        Object.defineProperty(global, _cpsKeyword, { get: cps.continuation });
+        _cpsKeyword = options.cpsKeyword;
+        Object.defineProperty(global, _cpsKeyword, { get: cps.continuation, configurable: true });
 
         // Return an empty object, since we don't alter the pipeline here.
         return null;

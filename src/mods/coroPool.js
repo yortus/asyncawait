@@ -8,7 +8,8 @@ var coroPool = {
             /** Create and return a new Coroutine instance. */
             acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPool = protocol.coroPool || (protocol.coroPool = []);
+                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is empty, create and return a new coroutine via the pipeline.
                 if (coroPool.length === 0)
@@ -26,7 +27,8 @@ var coroPool = {
             /** Ensure the Coroutine instance is disposed of cleanly. */
             releaseCoro: function (protocol, co) {
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPool = protocol.coroPool || (protocol.coroPool = []);
+                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is already full, release the coroutine via the pipeline.
                 if (_poolLevel >= _poolLimit)
@@ -45,6 +47,7 @@ var coroPool = {
     reset: function () {
         _poolLevel = 0;
         _poolLimit = 100;
+        _pools = [];
     },
     defaults: {
         coroPool: true
@@ -56,5 +59,7 @@ var coroPool = {
 //TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _poolLevel = 0;
 var _poolLimit = 100;
+var _nextPoolId = 0;
+var _pools = [];
 module.exports = coroPool;
 //# sourceMappingURL=coroPool.js.map

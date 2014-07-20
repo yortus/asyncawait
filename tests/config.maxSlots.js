@@ -107,3 +107,4 @@ describe('The maxSlots mod', function () {
         }).catch(done);
     });
 });
+//# sourceMappingURL=config.maxSlots.js.map
