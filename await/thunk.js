@@ -2,12 +2,16 @@
 var pipeline = require('../src/pipeline');
 var _ = require('../src/util');
 
-var builder = oldBuilder.derive(function () {
-    return function thunkHandler(co, arg, allArgs) {
-        if (allArgs || !_.isFunction(arg))
-            return pipeline.notHandled;
-        arg(co.enter);
-    };
+var newBuilder = oldBuilder.mod({
+    name: 'thunk',
+    type: null,
+    overrideHandler: function (base, options) {
+        return function thunkHandler(co, arg, allArgs) {
+            if (allArgs || !_.isFunction(arg))
+                return pipeline.notHandled;
+            arg(co.enter);
+        };
+    }
 });
-module.exports = builder;
+module.exports = newBuilder;
 //# sourceMappingURL=thunk.js.map

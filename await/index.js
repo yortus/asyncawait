@@ -14,7 +14,7 @@ var value = function valueHandler(co, arg, allArgs) {
 
 //TODO: temp testing...
 var opts = { handlers: [promise.handler, cps.handler, thunk.handler, general, value] };
-var api = compound.derive(opts);
+var api = compound.mod({ defaultOptions: opts });
 api.promise = promise;
 api.cps = cps;
 api.thunk = thunk;

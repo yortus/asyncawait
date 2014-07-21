@@ -2,14 +2,20 @@
 import oldBuilder = require('../src/awaitBuilder');
 import pipeline = require('../src/pipeline');
 import Promise = require('bluebird');
-export = builder;
+export = newBuilder;
 
 
-var builder = oldBuilder.derive<AsyncAwait.Await.CPSBuilder>(
-    () => function cpsHandler(co, arg, allArgs) {
+var newBuilder = oldBuilder.mod({
+
+    name: 'cps',
+
+    type: <AsyncAwait.Await.CPSBuilder> null,
+
+    overrideHandler: (base, options) => function cpsHandler(co, arg, allArgs) {
         if (allArgs || arg !== void 0) return pipeline.notHandled;
     }
-);
+});
 
 
-builder.continuation = pipeline.continuation;
+//TODO: is pipeline the right place for this?
+newBuilder.continuation = pipeline.continuation;

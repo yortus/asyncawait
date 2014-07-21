@@ -2,13 +2,18 @@
 var pipeline = require('../src/pipeline');
 
 
-var builder = oldBuilder.derive(function () {
-    return function cpsHandler(co, arg, allArgs) {
-        if (allArgs || arg !== void 0)
-            return pipeline.notHandled;
-    };
+var newBuilder = oldBuilder.mod({
+    name: 'cps',
+    type: null,
+    overrideHandler: function (base, options) {
+        return function cpsHandler(co, arg, allArgs) {
+            if (allArgs || arg !== void 0)
+                return pipeline.notHandled;
+        };
+    }
 });
 
-builder.continuation = pipeline.continuation;
-module.exports = builder;
+//TODO: is pipeline the right place for this?
+newBuilder.continuation = pipeline.continuation;
+module.exports = newBuilder;
 //# sourceMappingURL=cps.js.map

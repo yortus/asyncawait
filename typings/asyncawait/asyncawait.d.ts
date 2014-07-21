@@ -144,9 +144,15 @@ declare module AsyncAwait {
         export interface Builder {
             (...args: any[]): any;
             handler: Handler;
-            options: {};
-            derive<TBuilder extends Builder>(handlerFactory: (baseHandler: Handler, options: {}) => Handler, options?: {}): TBuilder;
-            derive<TBuilder extends Builder>(options: {}): TBuilder;
+            options: any;
+            mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
+        }
+
+        export interface Mod<TBuilder extends Builder> {
+            name?: string;
+            type?: TBuilder;
+            overrideHandler?: (base: Handler, options: any) => Handler;
+            defaultOptions?: {};
         }
 
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?

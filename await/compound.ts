@@ -2,7 +2,7 @@
 import oldBuilder = require('../src/awaitBuilder');
 import pipeline = require('../src/pipeline');
 import Promise = require('bluebird');
-export = builder;
+export = newBuilder;
 
 
 interface CompoundOptions {
@@ -10,12 +10,15 @@ interface CompoundOptions {
 }
 
 
-var builder = oldBuilder.derive<AsyncAwait.Await.Builder>(
-    (baseHandler, options: any) => function compoundHandler(co, arg, allArgs) {
+var newBuilder = oldBuilder.mod({
+
+    name: 'compound',
+
+    overrideHandler: (base, options) => function compoundHandler(co, arg, allArgs) {
         //TODO: temp testing... handle allArgs too...
         if (allArgs) return pipeline.notHandled;
         var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
         for (var i = 0; result === pipeline.notHandled && i < len; ++i) result = handlers[i](co, arg);
         return result;
     }
-);
+});

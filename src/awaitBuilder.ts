@@ -4,6 +4,7 @@ import pipeline = require('./pipeline');
 import _ = require('./util');
 import extensibility = require('./extensibility');
 import Builder = AsyncAwait.Await.Builder;
+import Mod = AsyncAwait.Await.Mod;
 import Handler = AsyncAwait.Await.Handler;
 export = awaitBuilder;
 
@@ -48,33 +49,31 @@ function createAwaitBuilder<TBuilder extends Builder>(handlerFactory: (baseHandl
         return pipeline.suspendCoro();
     }
 
-    // Tack on the handler and options properties, and the derive() method.
+    // Tack on the handler and options properties, and the mod() method.
     builder.handler = handler;
     builder.options = options;
-    builder.derive = createDeriveMethod(handler, handlerFactory, options, baseHandler);
+    builder.mod = createModMethod(handler, handlerFactory, options, baseHandler);
 
     // Return the await builder function.
     return builder;
 }
 
 
-/** Creates a derive method appropriate to the given handler settings. */
-function createDeriveMethod(handler, handlerFactory, options, baseHandler) {
-    return function mod() {
+//TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
+/** Creates a mod() method appropriate to the given handler settings. */
+function createModMethod(handler, handlerFactory, options, baseHandler) {
+    return function mod(mod: Mod<Builder>) {
 
-        // Validate the arguments.
-        var len = arguments.length;
-        assert(len > 0, 'derive: expected at least one argument');
-        var arg0 = arguments[0], hasHandlerFactory = _.isFunction(arg0);
-        assert(hasHandlerFactory || len === 1, 'derive: invalid argument combination');
+        // Validate the argument.
+        assert(arguments.length === 1, 'mod: expected one argument');
+        var hasHandlerFactory = !!mod.overrideHandler;
 
         // Determine the appropriate options to pass to createAwaitBuilder.
         var opts = _.branch(extensibility.config());
-        if (!hasHandlerFactory) _.mergeProps(opts, options);
-        _.mergeProps(opts, hasHandlerFactory ? arguments[1] : arg0);
+        _.mergeProps(opts, options, mod.defaultOptions);
 
         // Determine the appropriate handlerFactory and baseHandler to pass to createAwaitBuilder.
-        var newHandlerFactory = hasHandlerFactory ? arg0 : handlerFactory;
+        var newHandlerFactory = hasHandlerFactory ? mod.overrideHandler : handlerFactory;
         var newBaseHandler = hasHandlerFactory ? handler : baseHandler;
 
         // Delegate to createAwaitBuilder to return a new async builder function.

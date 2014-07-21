@@ -21,7 +21,7 @@ var value = function valueHandler(co, arg, allArgs) {
 
 //TODO: temp testing...
 var opts = { handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]};
-var api: AsyncAwait.Await.API = <any> compound.derive(opts);
+var api: AsyncAwait.Await.API = <any> compound.mod({ defaultOptions: opts });//TODO: review awkward syntax, just want to pass opts
 api.promise = promise;
 api.cps = <any> cps;
 api.thunk = <any> thunk;

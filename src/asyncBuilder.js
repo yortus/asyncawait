@@ -48,7 +48,7 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
     return builder;
 }
 
-//TODO: review this method! use name? use type? clarity how overrides/defaults are used
+//TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
 /** Creates a mod() method appropriate to the given protocol settings. */
 function createModMethod(protocol, protocolFactory, options, baseProtocol) {
     return function mod(mod) {
