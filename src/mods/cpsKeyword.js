@@ -8,7 +8,8 @@ var pipeline = require('../pipeline');
 * for reading and writing async code.
 */
 var cpsKeyword = {
-    apply: function (basePipeline, options) {
+    name: 'cpsKeyword',
+    apply: function (options) {
         // Do nothing if the option is not selected.
         if (!options.cpsKeyword)
             return;
@@ -28,7 +29,7 @@ var cpsKeyword = {
             delete global[_cpsKeyword];
         _cpsKeyword = null;
     },
-    defaults: {
+    defaultOptions: {
         cpsKeyword: null
     }
 };

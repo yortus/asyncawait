@@ -1,7 +1,8 @@
 ﻿
 /** Pools coroutine instances across acquire/release cycles, for improved performance. */
 var coroPool = {
-    apply: function (pipeline, options) {
+    name: 'coroPool',
+    overridePipeline: function (base, options) {
         // Override the pipeline if the option is selected.
         return (!options.coroPool) ? null : {
             /** Create and return a new Coroutine instance. */
@@ -12,7 +13,7 @@ var coroPool = {
 
                 // If the pool is empty, create and return a new coroutine via the pipeline.
                 if (coroPool.length === 0)
-                    return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                    return base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
                 // Reuse a coroutine from the pool, and return it.
                 --_poolLevel;
@@ -31,7 +32,7 @@ var coroPool = {
 
                 // If the pool is already full, release the coroutine via the pipeline.
                 if (_poolLevel >= _poolLimit)
-                    return pipeline.releaseCoro(protocol, co);
+                    return base.releaseCoro(protocol, co);
 
                 // Clear the coroutine and add it to the pool.
                 ++_poolLevel;
@@ -48,7 +49,7 @@ var coroPool = {
         _poolLimit = 100;
         _pools = [];
     },
-    defaults: {
+    defaultOptions: {
         coroPool: true
     }
 };

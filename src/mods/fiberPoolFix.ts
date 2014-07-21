@@ -13,18 +13,20 @@ export = fiberPoolFix;
  *  For more details see https://github.com/laverdet/node-fibers/issues/169.
  */
 var fiberPoolFix: Mod = {
-    
-    apply: (pipeline, options) => {
+
+    name: 'fiberPoolFix',
+
+    overridePipeline: (base, options) => {
 
         // Override the pipeline if the option is selected.
         return (!options.fiberPoolFix) ? null : {
             acquireFiber: body => {
                 inc();
-                return pipeline.acquireFiber(body);
+                return base.acquireFiber(body);
             },
             releaseFiber: fiber => {
                 dec();
-                return pipeline.releaseFiber(fiber);
+                return base.releaseFiber(fiber);
             }
         };
     },
@@ -34,7 +36,7 @@ var fiberPoolFix: Mod = {
         _activeFiberCount = 0;
     },
 
-    defaults: {
+    defaultOptions: {
         fiberPoolFix: false
     }
 };

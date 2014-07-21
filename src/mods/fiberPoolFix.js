@@ -10,16 +10,17 @@
 *  For more details see https://github.com/laverdet/node-fibers/issues/169.
 */
 var fiberPoolFix = {
-    apply: function (pipeline, options) {
+    name: 'fiberPoolFix',
+    overridePipeline: function (base, options) {
         // Override the pipeline if the option is selected.
         return (!options.fiberPoolFix) ? null : {
             acquireFiber: function (body) {
                 inc();
-                return pipeline.acquireFiber(body);
+                return base.acquireFiber(body);
             },
             releaseFiber: function (fiber) {
                 dec();
-                return pipeline.releaseFiber(fiber);
+                return base.releaseFiber(fiber);
             }
         };
     },
@@ -27,7 +28,7 @@ var fiberPoolFix = {
         _fiberPoolSize = Fiber.poolSize;
         _activeFiberCount = 0;
     },
-    defaults: {
+    defaultOptions: {
         fiberPoolFix: false
     }
 };

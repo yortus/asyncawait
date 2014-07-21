@@ -8,42 +8,46 @@ var expect = chai.expect;
 // Define test mods
 var tracking = [];
 var testModA = {
-    apply: function (pipeline, options) {
-        tracking.push('apply A');
-        return {
+    overridePipeline: function (base, options) {
+        return ({
             acquireCoro: function () {
                 tracking.push('acquire A');
-                return pipeline.acquireCoro.apply(null, arguments);
+                return base.acquireCoro.apply(null, arguments);
             },
             releaseCoro: function () {
                 tracking.push('release A');
-                pipeline.releaseCoro.apply(null, arguments);
+                base.releaseCoro.apply(null, arguments);
             }
-        };
+        });
+    },
+    apply: function () {
+        return tracking.push('apply A');
     },
     reset: function () {
         return tracking.push('reset A');
     },
-    defaults: { a: 1 }
+    defaultOptions: { a: 1 }
 };
 var testModB = {
-    apply: function (pipeline, options) {
-        tracking.push('apply B');
-        return {
+    overridePipeline: function (base, options) {
+        return ({
             acquireCoro: function () {
                 tracking.push('acquire B');
-                return pipeline.acquireCoro.apply(null, arguments);
+                return base.acquireCoro.apply(null, arguments);
             },
             releaseCoro: function () {
                 tracking.push('release B');
-                pipeline.releaseCoro.apply(null, arguments);
+                base.releaseCoro.apply(null, arguments);
             }
-        };
+        });
+    },
+    apply: function () {
+        return tracking.push('apply B');
     },
     reset: function () {
         return tracking.push('reset B');
     },
-    defaults: { b: 2 }
+    defaultOptions: { b: 2 }
 };
 
 beforeEach(function () {
@@ -51,47 +55,47 @@ beforeEach(function () {
     tracking = [];
 });
 
-describe('The config.use(...) function', function () {
+describe('The config.mod(...) function', function () {
     it('registers the specified mod, without applying it', function () {
         expect(extensibility.externalMods).to.be.empty;
-        async.config.use(testModA);
+        async.config.mod(testModA);
         expect(extensibility.externalMods).to.deep.equal([testModA]);
-        async.config.use(testModB);
+        async.config.mod(testModB);
         expect(extensibility.externalMods).to.deep.equal([testModA, testModB]);
         expect(tracking).to.be.empty;
     });
 
     it('adds the mod\'s defaults to config', function () {
         expect(async.config()).to.not.have.key('a');
-        async.config.use(testModA);
+        async.config.mod(testModA);
         expect(async.config()).to.haveOwnProperty('a');
         expect(async.config()['a']).to.equal(1);
     });
 
     it('rejects multiple registrations of the same mod', function () {
-        async.config.use(testModA);
+        async.config.mod(testModA);
         expect(function () {
-            return async.config.use(testModA);
+            return async.config.mod(testModA);
         }).to.throw();
-        async.config.use(testModB);
+        async.config.mod(testModB);
         expect(function () {
-            return async.config.use(testModB);
+            return async.config.mod(testModB);
         }).to.throw();
     });
 
     it('rejects registrations after async(...) is called', function () {
-        async.config.use(testModA);
+        async.config.mod(testModA);
         var foo = async(function () {
         });
         expect(function () {
-            return async.config.use(testModB);
+            return async.config.mod(testModB);
         }).to.throw();
     });
 });
 
 describe('Registered mods', function () {
     it('are applied when async(...) is first called', function () {
-        async.config.use(testModA);
+        async.config.mod(testModA);
         expect(tracking).to.be.empty;
         var foo = async(function () {
         });
@@ -99,8 +103,8 @@ describe('Registered mods', function () {
     });
 
     it('are applied such that earliest registrations are outermost in pipeline call chains', function () {
-        async.config.use(testModA);
-        async.config.use(testModB);
+        async.config.mod(testModA);
+        async.config.mod(testModB);
         expect(tracking).to.be.empty;
         var foo = async(function () {
         });
@@ -108,7 +112,7 @@ describe('Registered mods', function () {
     });
 
     it('have their pipeline overrides applied', async.cps(function () {
-        async.config.use(testModA);
+        async.config.mod(testModA);
         expect(tracking).to.be.empty;
         var foo = async(function () {
         });
@@ -117,8 +121,8 @@ describe('Registered mods', function () {
     }));
 
     it('have their pipeline overrides called with correct nesting', async.cps(function () {
-        async.config.use(testModA);
-        async.config.use(testModB);
+        async.config.mod(testModA);
+        async.config.mod(testModB);
         expect(tracking).to.be.empty;
         var foo = async(function () {
         });
@@ -127,8 +131,8 @@ describe('Registered mods', function () {
     }));
 
     it('have their reset() functions called when resetMods() is called', async.cps(function () {
-        async.config.use(testModA);
-        async.config.use(testModB);
+        async.config.mod(testModA);
+        async.config.mod(testModB);
         var foo = async(function () {
         });
         await(foo());
@@ -138,4 +142,4 @@ describe('Registered mods', function () {
         expect(tracking).to.contain('reset B');
     }));
 });
-//# sourceMappingURL=config.use.js.map
+//# sourceMappingURL=config.mod.js.map

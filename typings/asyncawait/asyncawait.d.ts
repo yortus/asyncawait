@@ -175,7 +175,7 @@ declare module AsyncAwait {
     export interface Config {
         (): ConfigOptions;
         (options: ConfigOptions): void;
-        use: (mod: Mod) => void;
+        mod: (mod: Mod) => void;
     }
 
     export interface ConfigOptions {
@@ -185,10 +185,13 @@ declare module AsyncAwait {
         cpsKeyword?: string;
     }
 
+    // TODO: should be AsyncAwait.Config.Mod - need another namespace
     export interface Mod {
-        apply: (pipeline: Pipeline, options: ConfigOptions) => PipelineOverrides;
+        name?: string;
+        overridePipeline?: (base: Pipeline, options: ConfigOptions) => PipelineOverrides;
+        apply?: (options: ConfigOptions) => void;
         reset?: () => void;
-        defaults?: {};
+        defaultOptions?: {};
     }
 
     export interface Pipeline {

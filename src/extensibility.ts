@@ -24,7 +24,7 @@ export var config: AsyncAwait.Config = <any> function config() {
 
 
 /** Register the specified mod and add its default options to current config. */
-config.use = function use(mod: Mod) {
+config.mod = function use(mod: Mod) {
 
     // Reject operation if this subsystem is now locked.
     assert(!isLocked, 'use: cannot register mods after first async(...) call');
@@ -35,8 +35,8 @@ config.use = function use(mod: Mod) {
     // Add the mod to the list.
     externalMods.push(mod);
 
-    // Incorporate the mod's default options.
-    _.mergeProps(_options, mod.defaults);
+    // Incorporate the mod's default options, if any.
+    _.mergeProps(_options, mod.defaultOptions);
 }
 
 
@@ -47,7 +47,7 @@ export function applyMods() {
     assert(!isLocked, 'applyMods: mods already applied');
 
     // Create a combined mod list in the appropriate order.
-    var allMods = externalMods.concat(internalMods);
+    var allMods: Mod[] = externalMods.concat(internalMods);
 
     // Restore the pipeline to its default state.
     pipeline.restoreDefaults();
@@ -56,9 +56,11 @@ export function applyMods() {
     // registered earliest remain outermost in pipeline call chains, which is the
     // design intention.
     for (var i = allMods.length - 1; i >= 0; --i) {
+        var mod = allMods[i];
         var pipelineBeforeMod = _.mergeProps({}, pipeline);
-        var pipelineOverrides = allMods[i].apply(pipelineBeforeMod, _options);
+        var pipelineOverrides = (mod.overridePipeline || <any> _.empty)(pipelineBeforeMod, _options);
         _.mergeProps(pipeline, pipelineOverrides);
+        if (mod.apply) mod.apply(_options);
     }
 
     // Lock the subsystem against further changes.
@@ -81,7 +83,7 @@ export function resetMods() {
 
     // Restore options to its initial state.
     _options = { };
-    internalMods.forEach(mod => _.mergeProps(_options, mod.defaults));
+    internalMods.forEach(mod => _.mergeProps(_options, mod.defaultOptions));
 
     // Restore the default pipeline.
     pipeline.restoreDefaults();
@@ -108,5 +110,7 @@ export var isLocked = false;
 
 
 /** Global options hash accessed by the config() getter/getter function. */
+//TODO: make this GLOBAL to prevent errors where process has multiple asyncawaits loaded
+//TODO: then, pass options to both apply and reset, and have mods put ALL their state in there?
 var _options = { };
-internalMods.forEach(mod => _.mergeProps(_options, mod.defaults));
+internalMods.forEach(mod => _.mergeProps(_options, mod.defaultOptions));

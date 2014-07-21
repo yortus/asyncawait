@@ -11,8 +11,10 @@ export = cpsKeyword;
  * for reading and writing async code.
  */
 var cpsKeyword: Mod = {
+
+    name: 'cpsKeyword',
     
-    apply: (basePipeline, options) => {
+    apply: (options) => {
 
         // Do nothing if the option is not selected.
         if (!options.cpsKeyword) return;
@@ -33,7 +35,7 @@ var cpsKeyword: Mod = {
         _cpsKeyword = null;
     },
 
-    defaults: {
+    defaultOptions: {
         cpsKeyword: null
     }
 };

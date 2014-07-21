@@ -20,7 +20,7 @@ exports.config = function config() {
 };
 
 /** Register the specified mod and add its default options to current config. */
-exports.config.use = function use(mod) {
+exports.config.mod = function use(mod) {
     // Reject operation if this subsystem is now locked.
     assert(!exports.isLocked, 'use: cannot register mods after first async(...) call');
 
@@ -30,8 +30,8 @@ exports.config.use = function use(mod) {
     // Add the mod to the list.
     exports.externalMods.push(mod);
 
-    // Incorporate the mod's default options.
-    _.mergeProps(_options, mod.defaults);
+    // Incorporate the mod's default options, if any.
+    _.mergeProps(_options, mod.defaultOptions);
 };
 
 /** Apply all registered mods and lock the subsystem against further changes. */
@@ -46,9 +46,12 @@ function applyMods() {
     pipeline.restoreDefaults();
 
     for (var i = allMods.length - 1; i >= 0; --i) {
+        var mod = allMods[i];
         var pipelineBeforeMod = _.mergeProps({}, pipeline);
-        var pipelineOverrides = allMods[i].apply(pipelineBeforeMod, _options);
+        var pipelineOverrides = (mod.overridePipeline || _.empty)(pipelineBeforeMod, _options);
         _.mergeProps(pipeline, pipelineOverrides);
+        if (mod.apply)
+            mod.apply(_options);
     }
 
     // Lock the subsystem against further changes.
@@ -74,7 +77,7 @@ function resetMods() {
     // Restore options to its initial state.
     _options = {};
     exports.internalMods.forEach(function (mod) {
-        return _.mergeProps(_options, mod.defaults);
+        return _.mergeProps(_options, mod.defaultOptions);
     });
 
     // Restore the default pipeline.
@@ -99,8 +102,10 @@ exports.externalMods = [];
 exports.isLocked = false;
 
 /** Global options hash accessed by the config() getter/getter function. */
+//TODO: make this GLOBAL to prevent errors where process has multiple asyncawaits loaded
+//TODO: then, pass options to both apply and reset, and have mods put ALL their state in there?
 var _options = {};
 exports.internalMods.forEach(function (mod) {
-    return _.mergeProps(_options, mod.defaults);
+    return _.mergeProps(_options, mod.defaultOptions);
 });
 //# sourceMappingURL=extensibility.js.map

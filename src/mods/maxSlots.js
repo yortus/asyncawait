@@ -8,7 +8,8 @@
 *  prevent deadlocks.
 */
 var maxSlots = {
-    apply: function (pipeline, options) {
+    name: 'maxSlots',
+    overridePipeline: function (base, options) {
         // Do nothing if the option is not selected.
         var n = options.maxSlots;
         if (!n || !_.isNumber(n))
@@ -24,8 +25,8 @@ var maxSlots = {
                 // For non-top-level acquisitions, just delegate to the existing pipeline.
                 // If coroutines invoke other coroutines and await their results, putting
                 // the nested coroutines through the semaphore could easily lead to deadlocks.
-                if (!!pipeline.currentCoro())
-                    return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                if (!!base.currentCoro())
+                    return base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
                 // This is a top-level acquisition. Return a 'placeholder' coroutine whose enter() method waits
                 // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
@@ -36,7 +37,7 @@ var maxSlots = {
                         // Upon execution, enter the semaphore.
                         enterSemaphore(function () {
                             // When the semaphore is ready, acquire a coroutine from the pipeline.
-                            var c = pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                            var c = base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
                             // There may still be outstanding references to the placeholder coroutine,
                             // so ensure its enter() and leave() methods call the real coroutine.
@@ -65,7 +66,7 @@ var maxSlots = {
                 }
 
                 // Delegate to the existing pipeline.
-                return pipeline.releaseCoro(protocol, co);
+                return base.releaseCoro(protocol, co);
             }
         };
     },
@@ -73,7 +74,7 @@ var maxSlots = {
         _size = _avail = null;
         _queued = [];
     },
-    defaults: {
+    defaultOptions: {
         maxSlots: null
     }
 };

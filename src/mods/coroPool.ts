@@ -4,9 +4,11 @@ export = coroPool;
 
 
 /** Pools coroutine instances across acquire/release cycles, for improved performance. */
-var coroPool: Mod = <any>{
+var coroPool: Mod = {
 
-    apply: (pipeline, options) => {
+    name: 'coroPool',
+
+    overridePipeline: (base, options) => {
 
         // Override the pipeline if the option is selected.
         return (!options.coroPool) ? null : {
@@ -19,7 +21,7 @@ var coroPool: Mod = <any>{
                 var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is empty, create and return a new coroutine via the pipeline.
-                if (coroPool.length === 0) return pipeline.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                if (coroPool.length === 0) return base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
 
                 // Reuse a coroutine from the pool, and return it.
                 --_poolLevel;
@@ -39,7 +41,7 @@ var coroPool: Mod = <any>{
                 var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is already full, release the coroutine via the pipeline.
-                if (_poolLevel >= _poolLimit) return pipeline.releaseCoro(protocol, co);
+                if (_poolLevel >= _poolLimit) return base.releaseCoro(protocol, co);
 
                 // Clear the coroutine and add it to the pool.
                 ++_poolLevel;
@@ -58,7 +60,7 @@ var coroPool: Mod = <any>{
         _pools = [];
     },
 
-    defaults: {
+    defaultOptions: {
         coroPool: true
     }
 };
