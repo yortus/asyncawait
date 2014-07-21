@@ -6,7 +6,6 @@ import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Mod = AsyncAwait.Async.Mod;
 import Protocol = AsyncAwait.Async.Protocol;
-import Options = AsyncAwait.Async.Options;
 import ProtocolOverrides = AsyncAwait.Async.ProtocolOverrides;
 import Coroutine = AsyncAwait.Coroutine;
 export = asyncBuilder;
@@ -22,7 +21,7 @@ var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
 
 
 /** Creates a new async builder function using the specified protocol settings. */
-function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (baseProtocol: Protocol, options: Options) => ProtocolOverrides, options: Options, baseProtocol: Protocol) {
+function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (baseProtocol: Protocol, options: any) => ProtocolOverrides, options: any, baseProtocol: Protocol) {
 
     // Instantiate the protocol by calling the provided factory function.
     var protocol: Protocol = <any> _.mergeProps({}, baseProtocol, protocolFactory(baseProtocol, options));
