@@ -3,32 +3,36 @@ var assert = require('assert');
 var Promise = require('bluebird');
 var _ = require('../../src/util');
 
-var builder = oldBuilder.derive(function () {
-    return ({
-        invoke: function (co) {
-            var ctx = co.context = {
-                nextResolver: null,
-                done: false
-            };
-            var next = function () {
-                var res = ctx.nextResolver = Promise.defer();
-                ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
-                return ctx.nextResolver.promise;
-            };
-            return new AsyncIterator(next);
-        },
-        return: function (ctx, result) {
-            ctx.done = true;
-            ctx.nextResolver.resolve({ done: true, value: result });
-        },
-        throw: function (ctx, error) {
-            ctx.nextResolver.reject(error);
-        },
-        yield: function (ctx, value) {
-            var result = { done: false, value: value };
-            ctx.nextResolver.resolve(result);
-        }
-    });
+var newBuilder = oldBuilder.mod({
+    name: 'promise',
+    type: null,
+    overrideProtocol: function (base, options) {
+        return ({
+            invoke: function (co) {
+                var ctx = co.context = {
+                    nextResolver: null,
+                    done: false
+                };
+                var next = function () {
+                    var res = ctx.nextResolver = Promise.defer();
+                    ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
+                    return ctx.nextResolver.promise;
+                };
+                return new AsyncIterator(next);
+            },
+            return: function (ctx, result) {
+                ctx.done = true;
+                ctx.nextResolver.resolve({ done: true, value: result });
+            },
+            throw: function (ctx, error) {
+                ctx.nextResolver.reject(error);
+            },
+            yield: function (ctx, value) {
+                var result = { done: false, value: value };
+                ctx.nextResolver.resolve(result);
+            }
+        });
+    }
 });
 
 var AsyncIterator = (function () {
@@ -59,5 +63,5 @@ var AsyncIterator = (function () {
     };
     return AsyncIterator;
 })();
-module.exports = builder;
+module.exports = newBuilder;
 //# sourceMappingURL=promise.js.map

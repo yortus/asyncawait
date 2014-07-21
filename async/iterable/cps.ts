@@ -2,33 +2,40 @@
 import assert = require('assert');
 import oldBuilder = require('../../src/asyncBuilder');
 import _ = require('../../src/util');
-export = builder;
+export = newBuilder;
 
 
-var builder = oldBuilder.derive<AsyncAwait.Async.IterableCPSBuilder>(() => ({
-    invoke: (co) => {
-        var ctx = co.context = {
-            nextCallback: null,
-            done: false
-        };
-        var next = (callback?: (err, item?: { done: boolean; value?: any; }) => void) => {
-            ctx.nextCallback = callback || _.empty;
-            ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
+var newBuilder = oldBuilder.mod({
+
+    name: 'iterable.cps',
+
+    type: <AsyncAwait.Async.IterableCPSBuilder> null,
+
+    overrideProtocol: (base, options) => ({
+        invoke: (co) => {
+            var ctx = co.context = {
+                nextCallback: null,
+                done: false
+            };
+            var next = (callback?: (err, item?: { done: boolean; value?: any; }) => void) => {
+                ctx.nextCallback = callback || _.empty;
+                ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
+            }
+            return new AsyncIterator(next);
+        },
+        return: (ctx, result) => {
+            ctx.done = true;
+            ctx.nextCallback(null, { done: true, value: result });
+        },
+        throw: (ctx, error) => {
+            ctx.nextCallback(error);
+        },
+        yield: (ctx, value) => {
+            var result = { done: false, value: value };
+            ctx.nextCallback(null, result);
         }
-        return new AsyncIterator(next);
-    },
-    return: (ctx, result) => {
-        ctx.done = true;
-        ctx.nextCallback(null, { done: true, value: result });
-    },
-    throw: (ctx, error) => {
-        ctx.nextCallback(error);
-    },
-    yield: (ctx, value) => {
-        var result = { done: false, value: value };
-        ctx.nextCallback(null, result);
-    }
-}));
+    })
+});
 
 
 class AsyncIterator {

@@ -39,32 +39,29 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
         return createSuspendableFunction(protocol, invokee);
     };
 
-    // Tack on the protocol and options properties, and the derive() method.
+    // Tack on the protocol and options properties, and the mod() method.
     builder.protocol = protocol;
     builder.options = options;
-    builder.derive = createDeriveMethod(protocol, protocolFactory, options, baseProtocol);
+    builder.mod = createModMethod(protocol, protocolFactory, options, baseProtocol);
 
     // Return the async builder function.
     return builder;
 }
 
-/** Creates a derive method appropriate to the given protocol settings. */
-function createDeriveMethod(protocol, protocolFactory, options, baseProtocol) {
-    return function derive() {
-        // Validate the arguments.
-        var len = arguments.length;
-        assert(len > 0, 'derive: expected at least one argument');
-        var arg0 = arguments[0], hasProtocolFactory = _.isFunction(arg0);
-        assert(hasProtocolFactory || len === 1, 'derive: invalid argument combination');
+//TODO: review this method! use name? use type? clarity how overrides/defaults are used
+/** Creates a mod() method appropriate to the given protocol settings. */
+function createModMethod(protocol, protocolFactory, options, baseProtocol) {
+    return function mod(mod) {
+        // Validate the argument.
+        assert(arguments.length === 1, 'mod: expected one argument');
+        var hasProtocolFactory = !!mod.overrideProtocol;
 
         // Determine the appropriate options to pass to createAsyncBuilder.
         var opts = _.branch(extensibility.config());
-        if (!hasProtocolFactory)
-            _.mergeProps(opts, options);
-        _.mergeProps(opts, hasProtocolFactory ? arguments[1] : arg0);
+        _.mergeProps(opts, options, mod.defaultOptions);
 
         // Determine the appropriate protocolFactory and baseProtocol to pass to createAsyncBuilder.
-        var newProtocolFactory = hasProtocolFactory ? arg0 : protocolFactory;
+        var newProtocolFactory = hasProtocolFactory ? mod.overrideProtocol : protocolFactory;
         var newBaseProtocol = hasProtocolFactory ? protocol : baseProtocol;
 
         // Delegate to createAsyncBuilder to return a new async builder function.

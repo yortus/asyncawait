@@ -82,8 +82,14 @@ declare module AsyncAwait {
             (fn: Function): Function;
             protocol: Protocol;
             options: Options;
-            derive<TBuilder extends Builder>(protocolFactory: (baseProtocol: Protocol, options: Options) => ProtocolOverrides, options?: Options): TBuilder;
-            derive<TBuilder extends Builder>(options: Options): TBuilder;
+            mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
+        }
+
+        export interface Mod<TBuilder extends Builder> {
+            name?: string;
+            type?: TBuilder;
+            overrideProtocol?: (base: Protocol, options: any) => ProtocolOverrides;
+            defaultOptions?: {};
         }
 
         export interface Options {

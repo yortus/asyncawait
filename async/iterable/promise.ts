@@ -3,34 +3,41 @@ import oldBuilder = require('../../src/asyncBuilder');
 import assert = require('assert');
 import Promise = require('bluebird');
 import _ = require('../../src/util');
-export = builder;
+export = newBuilder;
 
 
-var builder = oldBuilder.derive<AsyncAwait.Async.IterablePromiseBuilder>(() => ({
-    invoke: (co) => {
-        var ctx = co.context = {
-            nextResolver: null,
-            done: false
-        };
-        var next = () => {
-            var res = ctx.nextResolver = Promise.defer<any>();
-            ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
-            return ctx.nextResolver.promise;
+var newBuilder = oldBuilder.mod({
+
+    name: 'promise',
+
+    type: <AsyncAwait.Async.IterablePromiseBuilder> null,
+
+    overrideProtocol: (base, options) => ({
+        invoke: (co) => {
+            var ctx = co.context = {
+                nextResolver: null,
+                done: false
+            };
+            var next = () => {
+                var res = ctx.nextResolver = Promise.defer<any>();
+                ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
+                return ctx.nextResolver.promise;
+            }
+            return new AsyncIterator(next);
+        },
+        return: (ctx, result) => {
+            ctx.done = true;
+            ctx.nextResolver.resolve({ done: true, value: result });
+        },
+        throw: (ctx, error) => {
+            ctx.nextResolver.reject(error);
+        },
+        yield: (ctx, value) => {
+            var result = { done: false, value: value };
+            ctx.nextResolver.resolve(result);
         }
-        return new AsyncIterator(next);
-    },
-    return: (ctx, result) => {
-        ctx.done = true;
-        ctx.nextResolver.resolve({ done: true, value: result });
-    },
-    throw: (ctx, error) => {
-        ctx.nextResolver.reject(error);
-    },
-    yield: (ctx, value) => {
-        var result = { done: false, value: value };
-        ctx.nextResolver.resolve(result);
-    }
-}));
+    })
+});
 
 
 class AsyncIterator {

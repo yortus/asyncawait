@@ -2,31 +2,35 @@
 var oldBuilder = require('../../src/asyncBuilder');
 var _ = require('../../src/util');
 
-var builder = oldBuilder.derive(function () {
-    return ({
-        invoke: function (co) {
-            var ctx = co.context = {
-                nextCallback: null,
-                done: false
-            };
-            var next = function (callback) {
-                ctx.nextCallback = callback || _.empty;
-                ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
-            };
-            return new AsyncIterator(next);
-        },
-        return: function (ctx, result) {
-            ctx.done = true;
-            ctx.nextCallback(null, { done: true, value: result });
-        },
-        throw: function (ctx, error) {
-            ctx.nextCallback(error);
-        },
-        yield: function (ctx, value) {
-            var result = { done: false, value: value };
-            ctx.nextCallback(null, result);
-        }
-    });
+var newBuilder = oldBuilder.mod({
+    name: 'iterable.cps',
+    type: null,
+    overrideProtocol: function (base, options) {
+        return ({
+            invoke: function (co) {
+                var ctx = co.context = {
+                    nextCallback: null,
+                    done: false
+                };
+                var next = function (callback) {
+                    ctx.nextCallback = callback || _.empty;
+                    ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
+                };
+                return new AsyncIterator(next);
+            },
+            return: function (ctx, result) {
+                ctx.done = true;
+                ctx.nextCallback(null, { done: true, value: result });
+            },
+            throw: function (ctx, error) {
+                ctx.nextCallback(error);
+            },
+            yield: function (ctx, value) {
+                var result = { done: false, value: value };
+                ctx.nextCallback(null, result);
+            }
+        });
+    }
 });
 
 var AsyncIterator = (function () {
@@ -56,5 +60,5 @@ var AsyncIterator = (function () {
     };
     return AsyncIterator;
 })();
-module.exports = builder;
+module.exports = newBuilder;
 //# sourceMappingURL=cps.js.map

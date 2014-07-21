@@ -4,8 +4,15 @@ import _ = require('../src/util');
 export = newBuilder;
 
 
-var newBuilder = oldBuilder.derive<AsyncAwait.Async.ThunkBuilder>((cps) => ({
-    invoke: (co) => {
-        return (callback: AsyncAwait.Callback<any>) => cps.invoke(co, callback || _.empty);
-    }
-}));
+var newBuilder = oldBuilder.mod({
+
+    name: 'thunk',
+
+    type: <AsyncAwait.Async.ThunkBuilder> null,
+
+    overrideProtocol: (cps, options) => ({
+        invoke: (co) => {
+            return (callback: AsyncAwait.Callback<any>) => cps.invoke(co, callback || _.empty);
+        }
+    })
+});

@@ -1,14 +1,18 @@
 ﻿var oldBuilder = require('./cps');
 var _ = require('../src/util');
 
-var newBuilder = oldBuilder.derive(function (cps) {
-    return ({
-        invoke: function (co) {
-            return function (callback) {
-                return cps.invoke(co, callback || _.empty);
-            };
-        }
-    });
+var newBuilder = oldBuilder.mod({
+    name: 'thunk',
+    type: null,
+    overrideProtocol: function (cps, options) {
+        return ({
+            invoke: function (co) {
+                return function (callback) {
+                    return cps.invoke(co, callback || _.empty);
+                };
+            }
+        });
+    }
 });
 module.exports = newBuilder;
 //# sourceMappingURL=thunk.js.map

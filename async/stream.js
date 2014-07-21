@@ -7,25 +7,29 @@
 var oldBuilder = require('../src/asyncBuilder');
 var stream = require('stream');
 
-var builder = oldBuilder.derive(function () {
-    return ({
-        invoke: function (co) {
-            return (co.context = new Stream(function () {
-                return co.enter();
-            }));
-        },
-        return: function (stream, result) {
-            return stream.push(null);
-        },
-        throw: function (stream, error) {
-            return stream.emit('error', error);
-        },
-        yield: function (stream, value) {
-            setImmediate(function () {
-                return stream.push(value);
-            });
-        }
-    });
+var newBuilder = oldBuilder.mod({
+    name: 'stream',
+    type: null,
+    overrideProtocol: function (base, options) {
+        return ({
+            invoke: function (co) {
+                return (co.context = new Stream(function () {
+                    return co.enter();
+                }));
+            },
+            return: function (stream, result) {
+                return stream.push(null);
+            },
+            throw: function (stream, error) {
+                return stream.emit('error', error);
+            },
+            yield: function (stream, value) {
+                setImmediate(function () {
+                    return stream.push(value);
+                });
+            }
+        });
+    }
 });
 
 var Stream = (function (_super) {
@@ -39,5 +43,5 @@ var Stream = (function (_super) {
     };
     return Stream;
 })(stream.Readable);
-module.exports = builder;
+module.exports = newBuilder;
 //# sourceMappingURL=stream.js.map

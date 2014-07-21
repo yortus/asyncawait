@@ -107,7 +107,7 @@
     <Content Include="src\util.ts" />
     <Content Include="support\comparison\README.md" />
     <Content Include="support\docs\index.md" />
-    <Content Include="tests\async.derive.ts" />
+    <Content Include="tests\async.mod.ts" />
     <Content Include="tests\config.maxSlots.ts" />
     <Content Include="typings\asyncawait\asyncawait.d.ts" />
     <Content Include="typings\bluebird\bluebird.d.ts" />

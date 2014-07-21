@@ -4,22 +4,25 @@ var async = require('asyncawait/async');
 
 var expect = chai.expect;
 
-var customProtocolFactory = function (baseProtocol, options) {
-    var prefix = options.prefix || '';
-    var suffix = options.suffix || '';
-    return {
-        return: function (co, result) {
-            return baseProtocol.return(co, prefix + result + suffix);
-        },
-        throw: function (co, error) {
-            return baseProtocol.throw(co, new Error(prefix + error.message + suffix));
-        }
-    };
+var testMod = {
+    overrideProtocol: function (base, options) {
+        var prefix = options.prefix || '';
+        var suffix = options.suffix || '';
+        return {
+            return: function (co, result) {
+                return base.return(co, prefix + result + suffix);
+            },
+            throw: function (co, error) {
+                return base.throw(co, new Error(prefix + error.message + suffix));
+            }
+        };
+    }
 };
 
-describe('async.derive(...)', function () {
+//TODO: add a few more tests here covering the various expectations of mods
+describe('async.mod(...)', function () {
     it('returns a new async function defaulting to the same protocol', function (done) {
-        var a2 = async.derive({});
+        var a2 = async.mod({});
         expect(a2).to.exist;
         expect(a2).to.not.equal(async);
         var fn = a2(function (n) {
@@ -33,7 +36,7 @@ describe('async.derive(...)', function () {
     });
 
     it('returns an async function that uses the specified protocol', function (done) {
-        var asyncX = async.derive(customProtocolFactory);
+        var asyncX = async.mod(testMod);
         var fn = asyncX(function (msg) {
             return msg;
         });
@@ -44,8 +47,9 @@ describe('async.derive(...)', function () {
         }).catch(done);
     });
 
+    //TODO: review this test... awkward way to just pass some options!
     it('returns an async function that uses the specified protocol options', function (done) {
-        var asyncX = async.derive(customProtocolFactory).derive({ prefix: '<<<', suffix: '>>>' });
+        var asyncX = async.mod(testMod).mod({ defaultOptions: { prefix: '<<<', suffix: '>>>' } });
         var fn = asyncX(function (msg) {
             return msg;
         });
@@ -56,4 +60,4 @@ describe('async.derive(...)', function () {
         }).catch(done);
     });
 });
-//# sourceMappingURL=async.derive.js.map
+//# sourceMappingURL=async.mod.js.map
