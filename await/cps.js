@@ -1,7 +1,6 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
 var pipeline = require('../src/pipeline');
 
-
 var newBuilder = oldBuilder.mod({
     name: 'cps',
     type: null,

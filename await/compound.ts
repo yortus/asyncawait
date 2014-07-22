@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/awaitBuilder');
 import pipeline = require('../src/pipeline');
-import Promise = require('bluebird');
 export = newBuilder;
 
 
