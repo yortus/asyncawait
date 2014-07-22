@@ -3,26 +3,32 @@
 var _ = require('../src/util');
 var pipeline = require('../src/pipeline');
 
-var handler = function generalHandler(co, expr, allArgs) {
-    //TODO: temp testing...
-    var traverse = traverseClone;
-    var topN = null;
+var handlers = {
+    singular: function generalHandler(co, expr) {
+        //TODO: temp testing...
+        var traverse = traverseClone;
+        var topN = null;
 
-    if (allArgs || !(_.isArray(expr) || _.isPlainObject(expr)))
+        if (!(_.isArray(expr) || _.isPlainObject(expr)))
+            return pipeline.notHandled;
+
+        // An array or plain object: resume the coroutine with a deep clone of the array/object,
+        // where all contained promises and thunks have been replaced by their resolved values.
+        var trackedPromises = [];
+        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+        if (!topN) {
+            Promise.all(trackedPromises).then(function (val) {
+                return co.enter(null, expr);
+            }, co.enter);
+        } else {
+            Promise.some(trackedPromises, topN).then(function (val) {
+                return co.enter(null, val);
+            }, co.enter);
+        }
+    },
+    variadic: function generalHandler(co, allArgs) {
+        //TODO: temp testing... handle allArgs too...
         return pipeline.notHandled;
-
-    // An array or plain object: resume the coroutine with a deep clone of the array/object,
-    // where all contained promises and thunks have been replaced by their resolved values.
-    var trackedPromises = [];
-    expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
-    if (!topN) {
-        Promise.all(trackedPromises).then(function (val) {
-            return co.enter(null, expr);
-        }, co.enter);
-    } else {
-        Promise.some(trackedPromises, topN).then(function (val) {
-            return co.enter(null, val);
-        }, co.enter);
     }
 };
 
@@ -101,5 +107,5 @@ function thunkToPromise(thunk) {
         thunk(callback);
     });
 }
-module.exports = handler;
+module.exports = handlers;
 //# sourceMappingURL=general.js.map

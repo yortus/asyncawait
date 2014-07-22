@@ -5,7 +5,7 @@ export = newBuilder;
 
 
 interface CompoundOptions {
-    handlers?: AsyncAwait.Await.Handler[];
+    handlers?: AsyncAwait.Await.Handlers[];
 }
 
 
@@ -13,11 +13,15 @@ var newBuilder = oldBuilder.mod({
 
     name: 'compound',
 
-    overrideHandler: (base, options) => function compoundHandler(co, arg, allArgs) {
-        //TODO: temp testing... handle allArgs too...
-        if (allArgs) return pipeline.notHandled;
-        var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
-        for (var i = 0; result === pipeline.notHandled && i < len; ++i) result = handlers[i](co, arg);
-        return result;
-    }
+    overrideHandlers: (base, options) => ({
+        singular: (co, arg) => {
+            var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
+            for (var i = 0; result === pipeline.notHandled && i < len; ++i) result = handlers[i].singular(co, arg);
+            return result;
+        },
+        variadic: (co, args) => {
+            //TODO: temp testing... handle allArgs too...
+            return pipeline.notHandled;
+        }
+    })
 });

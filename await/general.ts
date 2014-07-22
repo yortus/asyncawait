@@ -1,32 +1,39 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
-import Handler = AsyncAwait.Await.Handler;
+import Handlers = AsyncAwait.Await.Handlers;
 import _ = require('../src/util');
 import pipeline = require('../src/pipeline');
-export = handler;
+export = handlers;
 
 
-var handler: Handler = function generalHandler(co, expr, allArgs) {
+var handlers: Handlers = {
+    singular: function generalHandler(co, expr) {
 
-    //TODO: temp testing...
-    var traverse = traverseClone;
-    var topN = null;
-
-
-    if (allArgs || !(_.isArray(expr) || _.isPlainObject(expr))) return pipeline.notHandled;
+        //TODO: temp testing...
+        var traverse = traverseClone;
+        var topN = null;
 
 
+        if (!(_.isArray(expr) || _.isPlainObject(expr))) return pipeline.notHandled;
 
-    // An array or plain object: resume the coroutine with a deep clone of the array/object,
-    // where all contained promises and thunks have been replaced by their resolved values.
-    var trackedPromises = [];
-    expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
-    if (!topN) {
-        Promise.all(trackedPromises).then(val => co.enter(null, expr), co.enter);
-    } else {
-        Promise.some(trackedPromises, topN).then(val => co.enter(null, val), co.enter);
+
+
+        // An array or plain object: resume the coroutine with a deep clone of the array/object,
+        // where all contained promises and thunks have been replaced by their resolved values.
+        var trackedPromises = [];
+        expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
+        if (!topN) {
+            Promise.all(trackedPromises).then(val => co.enter(null, expr), co.enter);
+        } else {
+            Promise.some(trackedPromises, topN).then(val => co.enter(null, val), co.enter);
+        }
+    },
+    variadic: function generalHandler(co, allArgs) {
+
+        //TODO: temp testing... handle allArgs too...
+        return pipeline.notHandled;
     }
-}
+};
 
 
 /** In-place (ie non-cloning) object traversal. */

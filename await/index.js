@@ -6,14 +6,21 @@ var thunk = require('./thunk');
 
 //TODO: temp testing...
 var compound = require('./compound');
-var value = function valueHandler(co, arg, allArgs) {
-    setImmediate(function () {
-        co.enter(null, arg);
-    });
+var value = {
+    singular: function (co, arg) {
+        setImmediate(function () {
+            co.enter(null, arg);
+        });
+    },
+    variadic: function (co, args) {
+        setImmediate(function () {
+            co.enter(null, args[0]);
+        });
+    }
 };
 
 //TODO: temp testing...
-var opts = { handlers: [promise.handler, cps.handler, thunk.handler, general, value] };
+var opts = { handlers: [promise.handlers, cps.handlers, thunk.handlers, general, value] };
 var api = compound.mod({ defaultOptions: opts });
 api.promise = promise;
 api.cps = cps;

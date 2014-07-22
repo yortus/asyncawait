@@ -4,11 +4,17 @@ var pipeline = require('../src/pipeline');
 var newBuilder = oldBuilder.mod({
     name: 'cps',
     type: null,
-    overrideHandler: function (base, options) {
-        return function cpsHandler(co, arg, allArgs) {
-            if (allArgs || arg !== void 0)
-                return pipeline.notHandled;
-        };
+    overrideHandlers: function (base, options) {
+        return ({
+            singular: function (co, arg) {
+                if (arg !== void 0)
+                    return pipeline.notHandled;
+            },
+            variadic: function (co, args) {
+                if (args[0] !== void 0)
+                    return pipeline.notHandled;
+            }
+        });
     }
 });
 

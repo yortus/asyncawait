@@ -14,8 +14,14 @@ var newBuilder = oldBuilder.mod({
 
     type: <AsyncAwait.Await.PromiseBuilder> null,
 
-    overrideHandler: (base, options) => function promiseHandler(co, arg, allArgs) {
-        if (allArgs || !_.isPromise(arg)) return pipeline.notHandled;
-        arg.then(val => co.enter(null, val), co.enter);
-    }
+    overrideHandlers: (base, options) => ({
+        singular: (co, arg) => {
+            if (!_.isPromise(arg)) return pipeline.notHandled;
+            arg.then(val => co.enter(null, val), co.enter);
+        },
+        variadic: (co, args) => {
+            if (!_.isPromise(args[0])) return pipeline.notHandled;
+            args[0].then(val => co.enter(null, val), co.enter);
+        }
+    })
 });

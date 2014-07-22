@@ -143,7 +143,7 @@ declare module AsyncAwait {
 
         export interface Builder {
             (...args: any[]): any;
-            handler: Handler;
+            handlers: Handlers;
             options: any;
             mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
         }
@@ -151,15 +151,23 @@ declare module AsyncAwait {
         export interface Mod<TBuilder extends Builder> {
             name?: string;
             type?: TBuilder;
-            overrideHandler?: (base: Handler, options: any) => Handler;
+            overrideHandlers?: (base: Handlers, options: any) => HandlerOverrides; //TODO: new...
             defaultOptions?: {};
         }
 
+        // TODO: new...
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
         // TODO: doc: handlers *must* resume coro asynchronously
         // TODO: doc: arg/allArgs fast/slow paths
-        export interface Handler {
-            (co: Coroutine, arg: any, allArgs?: any[]): any;
+        export interface Handlers {
+            singular: (co: Coroutine, arg: any) => any;
+            variadic: (co: Coroutine, args: any[]) => any;
+        }
+
+        // TODO: new...
+        export interface HandlerOverrides {
+            singular?: (co: Coroutine, arg: any) => any;
+            variadic?: (co: Coroutine, args: any[]) => any;
         }
     }
 

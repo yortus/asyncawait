@@ -3,16 +3,19 @@ var pipeline = require('../src/pipeline');
 
 var newBuilder = oldBuilder.mod({
     name: 'compound',
-    overrideHandler: function (base, options) {
-        return function compoundHandler(co, arg, allArgs) {
-            //TODO: temp testing... handle allArgs too...
-            if (allArgs)
+    overrideHandlers: function (base, options) {
+        return ({
+            singular: function (co, arg) {
+                var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
+                for (var i = 0; result === pipeline.notHandled && i < len; ++i)
+                    result = handlers[i].singular(co, arg);
+                return result;
+            },
+            variadic: function (co, args) {
+                //TODO: temp testing... handle allArgs too...
                 return pipeline.notHandled;
-            var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
-            for (var i = 0; result === pipeline.notHandled && i < len; ++i)
-                result = handlers[i](co, arg);
-            return result;
-        };
+            }
+        });
     }
 });
 module.exports = newBuilder;

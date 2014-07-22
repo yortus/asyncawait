@@ -10,9 +10,14 @@ var newBuilder = oldBuilder.mod({
 
     type: <AsyncAwait.Await.CPSBuilder> null,
 
-    overrideHandler: (base, options) => function cpsHandler(co, arg, allArgs) {
-        if (allArgs || arg !== void 0) return pipeline.notHandled;
-    }
+    overrideHandlers: (base, options) => ({
+        singular: (co, arg) => {
+            if (arg !== void 0) return pipeline.notHandled;
+        },
+        variadic: (co, args) => {
+            if (args[0] !== void 0) return pipeline.notHandled;
+        }
+    })
 });
 
 

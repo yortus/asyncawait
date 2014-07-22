@@ -8,14 +8,23 @@ var _ = require('../src/util');
 var newBuilder = oldBuilder.mod({
     name: 'promise',
     type: null,
-    overrideHandler: function (base, options) {
-        return function promiseHandler(co, arg, allArgs) {
-            if (allArgs || !_.isPromise(arg))
-                return pipeline.notHandled;
-            arg.then(function (val) {
-                return co.enter(null, val);
-            }, co.enter);
-        };
+    overrideHandlers: function (base, options) {
+        return ({
+            singular: function (co, arg) {
+                if (!_.isPromise(arg))
+                    return pipeline.notHandled;
+                arg.then(function (val) {
+                    return co.enter(null, val);
+                }, co.enter);
+            },
+            variadic: function (co, args) {
+                if (!_.isPromise(args[0]))
+                    return pipeline.notHandled;
+                args[0].then(function (val) {
+                    return co.enter(null, val);
+                }, co.enter);
+            }
+        });
     }
 });
 module.exports = newBuilder;
