@@ -59,7 +59,6 @@
     <TypeScriptCompile Include="async\iterable\promise.ts" />
     <TypeScriptCompile Include="await\compound.ts" />
     <TypeScriptCompile Include="await\cps.ts" />
-    <TypeScriptCompile Include="await\general.ts" />
     <TypeScriptCompile Include="await\index.ts" />
     <TypeScriptCompile Include="await\thunk.ts" />
     <TypeScriptCompile Include="await\promise.ts" />
