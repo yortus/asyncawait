@@ -25,13 +25,14 @@ var largest = async.cps (function self(dir, options) {
     // Enumerate all files and subfolders in 'dir' to get their stats.
     var files = await (fs.readdir(dir, await.cps.continuation()));
     var paths = _.map(files, function x1(file) { return path.join(dir, file); });
-    var stats = _.map(paths, function x2(path) { return await (fs.stat(path, ___)); });
+    var stats = await (_.map(paths, function x2(path) { return fs.stat(path, ___); }));
+    //TODO: was... var stats = _.map(paths, function x2(path) { return await (fs.stat(path, ___)); });
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
-    var candidates = await (_.map(stats, function x3(stat, i) {
+    var candidates = _.map(stats, function x3(stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
         return options.recurse ? self(paths[i], recurseOptions, true) : null;
-    }));
+    });
 
     // Choose the best candidate.
     var result = _(candidates)

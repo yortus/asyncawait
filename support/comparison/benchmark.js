@@ -42,7 +42,7 @@ var CONCURRENCY_FACTOR = 10;  // Max number of concurrent invocations of the fun
 // Some additional switches
 var JUST_CHECK_THE_FUNCTION = false;            // If true, just call the function once and display its results.
 var USE_SAME_SYMBOL_FOR_ALL_SAMPLES = true;     // If true, all samples will use the same symbol ('.'). Otherwise, concurrent samples will use distinct symbols.
-var USE_MOCK_FS = true;                         // If true, uses a mocked 'fs' module returning fixed in-memory results.
+var USE_MOCK_FS = false;                         // If true, uses a mocked 'fs' module returning fixed in-memory results.
 var COMPARE_WITH_VARIANT = variants.callbacks;  // If non-null, re-run the benchmark with the given variant and show the relative results.
 var OUTPUT_GC_STATS = false;                    // If true, indicate GC pauses and statistics, and indicate possible memory leaks.
 var OUTPUT_SAMPLES_PER_SEC_SUMMARY = true;      // If true, print all samples/sec numbers at the end, to export for anaysis (eg for charting).

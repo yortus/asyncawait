@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>330c5f49-70cc-42b2-b036-7e7c0c4e604d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>support\examples\profiler.js</StartupFile>
+    <StartupFile>support\comparison\benchmark.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -118,8 +118,8 @@
     <TypeScriptCompile Include="tests\config.cpsKeyword.ts" />
     <TypeScriptCompile Include="tests\config.fiberPoolFix.ts" />
     <TypeScriptCompile Include="tests\config.coroPool.ts" />
+    <TypeScriptCompile Include="tests\config.mod.ts" />
     <TypeScriptCompile Include="tests\config.ts" />
-    <TypeScriptCompile Include="tests\config.use.ts" />
     <TypeScriptCompile Include="yield\index.ts" />
   </ItemGroup>
   <ItemGroup>

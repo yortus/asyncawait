@@ -162,6 +162,7 @@ declare module AsyncAwait {
         export interface Handlers {
             singular: (co: Coroutine, arg: any) => any;
             variadic: (co: Coroutine, args: any[]) => any;
+            elements?: (values: any[], result: (err: Error, value: any, index: number) => void) => number;
         }
 
         // TODO: new...

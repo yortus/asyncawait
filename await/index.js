@@ -1,5 +1,4 @@
 ﻿//TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
-var general = require('./general');
 var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
@@ -16,11 +15,14 @@ var value = {
         setImmediate(function () {
             co.enter(null, args[0]);
         });
+    },
+    elements: function () {
+        return 0;
     }
 };
 
 //TODO: temp testing...
-var opts = { handlers: [promise.handlers, cps.handlers, thunk.handlers, general, value] };
+var opts = { handlers: [promise.handlers, cps.handlers, thunk.handlers, value] };
 var api = compound.mod({ defaultOptions: opts });
 api.promise = promise;
 api.cps = cps;

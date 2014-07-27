@@ -17,6 +17,7 @@ interface CoroFiber extends AsyncAwait.Coroutine, Fiber {
     bodyFunc: Function;
     bodyThis: any;
     bodyArgs: any[];
+    awaiting: AsyncAwait.Callback<any>[];
 }
 
 

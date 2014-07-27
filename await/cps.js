@@ -9,10 +9,38 @@ var newBuilder = oldBuilder.mod({
             singular: function (co, arg) {
                 if (arg !== void 0)
                     return pipeline.notHandled;
+
+                if (co.awaiting.length !== 1) {
+                    // TODO: mismatch here - raise an error
+                    co.enter(null, new Error('222'));
+                }
+
+                co.awaiting[0] = function (err, res) {
+                    co.awaiting = [];
+                    co.enter(err, res);
+                };
             },
             variadic: function (co, args) {
                 if (args[0] !== void 0)
                     return pipeline.notHandled;
+            },
+            elements: function (values, result) {
+                // TODO: temp testing...
+                var k = 0, co = pipeline.currentCoro();
+                values.forEach(function (value, i) {
+                    if (i in values && values[i] === void 0) {
+                        co.awaiting[k++] = function (err, res) {
+                            if (err)
+                                return result(err, null, i);
+                            return result(null, res, i);
+                        };
+                    }
+                });
+                if (k !== co.awaiting.length) {
+                    // TODO: mismatch here - raise an error
+                    result(new Error('111'));
+                }
+                return k;
             }
         });
     }

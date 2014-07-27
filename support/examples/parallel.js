@@ -1,7 +1,7 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
-var async = require('..').async;
-var await = require('..').await;
+var async = require('../..').async;
+var await = require('../..').await;
 
 
 // A thunked version of fs.readFile.
@@ -30,6 +30,7 @@ var compoundOperation = async (function () {
         longCalculation(1, 'A: two'),
         stat(__filename),
         {
+            //TODO: breaking change from v0.7... these will no longer be awaited
             three: longCalculation(1, 'A: three'),
             four: longCalculation(1, 'A: four'),
             five: 'five'
@@ -38,6 +39,7 @@ var compoundOperation = async (function () {
     console.log(result1);
 
     // result2 won't start being computed until result1 above is complete.
+    //TODO: breaking change from v0.7... this will no longer be awaited
     var result2 = await ({
 
         // Everything is this object will be computed in parallel.

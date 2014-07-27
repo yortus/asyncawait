@@ -3,7 +3,7 @@ var Promise = require('bluebird');
 var async = require('../../async');
 var await = require('../../await');
 async.config({
-    //cpsKeyword: '___',
+    cpsKeyword: '___',
     //maxSlots: 1,
     coroPool: true,
 
@@ -18,7 +18,7 @@ async.config({
 });
 
 
-var counter = 0, n = 25000;
+var counter = 0, n = 1;
 var startTime = new Date().getTime();
 
 
@@ -32,7 +32,9 @@ var startTime = new Date().getTime();
 var program = async.cps (function prog(a) {
     //return await (Promise.resolve(a));
     //return await (a);
-    return a;
+    //return a;
+    var result = await ([fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___)]);
+    return result;
 });
 function doOne() { program(1, doneOne); }
 doOne();

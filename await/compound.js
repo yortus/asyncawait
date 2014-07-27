@@ -14,6 +14,14 @@ var newBuilder = oldBuilder.mod({
             variadic: function (co, args) {
                 //TODO: temp testing... handle allArgs too...
                 return pipeline.notHandled;
+            },
+            elements: function (futures, present) {
+                // TODO: temp testing...
+                var handlers = options.handlers || [], len = handlers.length, numberHandled = 0;
+                for (var i = 0; numberHandled < len && i < len; ++i) {
+                    numberHandled += handlers[i].elements(futures, present);
+                }
+                return numberHandled;
             }
         });
     }

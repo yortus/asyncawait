@@ -22,6 +22,16 @@ var newBuilder = oldBuilder.mod({
         variadic: (co, args) => {
             //TODO: temp testing... handle allArgs too...
             return pipeline.notHandled;
+        },
+
+        elements: (futures: any[], present: (err: Error, value: any, index: number) => void) => {
+
+            // TODO: temp testing...
+            var handlers = options.handlers || [], len = handlers.length, numberHandled = 0;
+            for (var i = 0; numberHandled < len && i < len; ++i) {
+                numberHandled += handlers[i].elements(futures, present);
+            }
+            return numberHandled;
         }
     })
 });

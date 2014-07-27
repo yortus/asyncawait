@@ -23,6 +23,21 @@ var newBuilder = oldBuilder.mod({
                 args[0].then(function (val) {
                     return co.enter(null, val);
                 }, co.enter);
+            },
+            elements: function (values, result) {
+                // TODO: temp testing...
+                var k = 0;
+                values.forEach(function (value, i) {
+                    if (_.isPromise(value)) {
+                        value.then(function (val) {
+                            return result(null, val, i);
+                        }, function (err) {
+                            return result(err, null, i);
+                        });
+                        ++k;
+                    }
+                });
+                return k;
             }
         });
     }

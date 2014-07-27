@@ -35,8 +35,51 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
 
         // TODO: temp testing... fast/slow paths
         if (arguments.length === 1) {
-            var handlerResult = handlers.singular(co, arg);    
+
+            // TODO: singular case...
+            if (!Array.isArray(arg)) {
+                var handlerResult = handlers.singular(co, arg);
+            }
+
+            // TODO: single array case...
+            else {
+                //TODO: resultCallback should be defined in handlers...
+                var numberResolved = 0, tgt = [];
+                var resultCallback = (err: Error, value: any, index: number) => {
+                    if (err) {
+                        //TODO:...
+                        throw err;
+                    }
+
+                    tgt[index] = value;
+                    if (++numberResolved === numberHandled) {
+
+                        // TODO: fill remaining 'holes' in tgt, if any
+
+                        // TODO: restore co state for next await
+                        co.awaiting = [];
+
+                        // And finally we're done
+                        co.enter(null, tgt);
+                            
+                    }
+                    
+                };
+                if (arg.length > 0) {
+                    var numberHandled = handlers.elements(arg, resultCallback);
+                }
+                else {
+                    //TODO: special case: empty array...
+                    //TODO: need setImmediate?
+                    setImmediate(() => {
+                        co.awaiting = [];
+                        co.enter(null, []);
+                    });
+                }
+            }
         }
+
+        // TODO: variadic case...
         else {
 
             // Create a new array to hold the passed-in arguments.
@@ -48,6 +91,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
         }
 
         // Ensure the passed-in value(s) were handled.
+        //TODO: ...or just pass back value unchanged (i.e. await.value(...) is the built-in fallback.
         assert(handlerResult !== pipeline.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
 
         // Suspend the coroutine until the await handler causes it to be resumed.

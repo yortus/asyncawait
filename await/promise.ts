@@ -22,6 +22,19 @@ var newBuilder = oldBuilder.mod({
         variadic: (co, args) => {
             if (!_.isPromise(args[0])) return pipeline.notHandled;
             args[0].then(val => co.enter(null, val), co.enter);
+        },
+
+        elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {
+
+            // TODO: temp testing...
+            var k = 0;
+            values.forEach((value, i) => {
+                if (_.isPromise(value)) {
+                    value.then(val => result(null, val, i), err => result(err, null, i));
+                    ++k;
+                }
+            });
+            return k;
         }
     })
 });

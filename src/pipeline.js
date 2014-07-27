@@ -35,8 +35,9 @@ var pipeline = {
     //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
     continuation: function continuation() {
         var co = pipeline.currentCoro();
+        var i = co.awaiting.length++;
         return function continue_(err, result) {
-            co.enter(err, result);
+            co.awaiting[i](err, result);
             co = null;
         };
     }
@@ -55,6 +56,7 @@ var defaultPipeline = {
         co.bodyThis = bodyThis;
         co.bodyArgs = bodyArgs;
         co.context = {};
+        co.awaiting = [];
         co.enter = function enter(error, value) {
             if (_.DEBUG)
                 assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
