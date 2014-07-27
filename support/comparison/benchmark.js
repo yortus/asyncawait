@@ -29,7 +29,7 @@ var variants = {
 // ================================================================================
 // Benchmark configuration - adjust to suit.
 
-var SELECTED_FUNCTION = functions.largest;
+var SELECTED_FUNCTION = functions.fibonacci;
 
 var SELECTED_VARIANT = variants.asyncawait;
 

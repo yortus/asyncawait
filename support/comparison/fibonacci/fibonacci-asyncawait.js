@@ -6,7 +6,7 @@ var await = require('../../..').await;
 // to exercise recursive behaviour for testing and evaluation purposes.
 var fibonacci = async.cps (function self(n) {
     if (n <= 1) return 1;
-    var operands = await.in ([self(n - 1), self(n - 2)]);
+    var operands = await ([self(n - 1), self(n - 2)]);
     return operands[0] + operands[1];
 });
 

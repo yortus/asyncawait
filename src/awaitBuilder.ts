@@ -44,7 +44,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
             // TODO: single array case...
             else {
                 //TODO: resultCallback should be defined in handlers...
-                var numberResolved = 0, tgt = [];
+                var numberResolved = 0, tgt = new Array(arg.length);
                 var resultCallback = (err: Error, value: any, index: number) => {
                     if (err) {
                         //TODO:...
@@ -55,6 +55,11 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
                     if (++numberResolved === numberHandled) {
 
                         // TODO: fill remaining 'holes' in tgt, if any
+                        if (numberHandled < arg.length) {
+                            for (var i = 0, len = arg.length; i < len; ++i) {
+                                if (!(i in tgt)) tgt[i] = arg[i];
+                            }    
+                        }
 
                         // TODO: restore co state for next await
                         co.awaiting = [];
@@ -67,13 +72,30 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
                 };
                 if (arg.length > 0) {
                     var numberHandled = handlers.elements(arg, resultCallback);
+
+                    // TODO: this is a copy/paste from above AND below...
+                    // TODO: fill remaining 'holes' in tgt, if any
+                    if (numberHandled < arg.length) {
+                        for (i = 0, len = arg.length; i < len; ++i) {
+                            if (!(i in tgt)) tgt[i] = arg[i];
+                        }
+                        if (numberHandled === 0) {
+
+                            //TODO: special case: empty array...
+                            //TODO: need setImmediate?
+                            setImmediate(() => {
+                                co.awaiting = [];
+                                co.enter(null, tgt);
+                            });
+                        }
+                    }
                 }
                 else {
                     //TODO: special case: empty array...
                     //TODO: need setImmediate?
                     setImmediate(() => {
                         co.awaiting = [];
-                        co.enter(null, []);
+                        co.enter(null, tgt);
                     });
                 }
             }
