@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import _ = require('../util');
 import Mod = AsyncAwait.Mod;
-import Protocol = AsyncAwait.Async.Protocol;
+import AsyncProtocol = AsyncAwait.Async.Protocol;
 export = maxSlots;
 
 
@@ -28,12 +28,12 @@ var maxSlots: Mod = {
         return {
 
             /** Create and return a new Coroutine instance. */
-            acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+            acquireCoro: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
 
                 // For non-top-level acquisitions, just delegate to the existing pipeline.
                 // If coroutines invoke other coroutines and await their results, putting
                 // the nested coroutines through the semaphore could easily lead to deadlocks.
-                if (!!base.currentCoro()) return base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                if (!!base.currentCoro()) return base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                 // This is a top-level acquisition. Return a 'placeholder' coroutine whose enter() method waits
                 // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
@@ -46,7 +46,7 @@ var maxSlots: Mod = {
                         enterSemaphore(() => {
 
                             // When the semaphore is ready, acquire a coroutine from the pipeline.
-                            var c = base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                            var c = base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                             // There may still be outstanding references to the placeholder coroutine,
                             // so ensure its enter() and leave() methods call the real coroutine.
@@ -68,7 +68,7 @@ var maxSlots: Mod = {
             },
 
             /** Ensure the Coroutine instance is disposed of cleanly. */
-            releaseCoro: (protocol, co) => {
+            releaseCoro: (asyncProtocol: AsyncProtocol, co) => {
 
                 // If this coroutine entered through the semaphore, then it must leave through the semaphore.
                 if (co.inSemaphore) {
@@ -77,7 +77,7 @@ var maxSlots: Mod = {
                 }
 
                 // Delegate to the existing pipeline.
-                return base.releaseCoro(protocol, co);
+                return base.releaseCoro(asyncProtocol, co);
             }
         };
     },

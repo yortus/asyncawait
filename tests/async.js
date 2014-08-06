@@ -68,28 +68,33 @@ function runTestsFor(variant, acceptsCallback) {
 
         //TODO: review this test...
         it('has an options property that matches the passed-in options', function () {
-            var func2 = func.mod({ defaultOptions: { special: 777 } });
+            var func2 = func.mod({ special: 777 });
             expect(func2.options).to.exist;
             expect(func2.options['special']).to.equal(777);
-            var func2 = func.mod({ defaultOptions: { other: 'blah' } });
+            var func2 = func.mod({ other: 'blah' });
             expect(func2.options['special']).to.not.exist;
+            var func2 = func.mod({ overrideProtocol: function () {
+                }, defaultOptions: { special: 555 } });
+            expect(func2.options).to.exist;
+            expect(func2.options['special']).to.equal(555);
+            expect(func2.options['blah']).to.not.exist;
         });
 
         //TODO: review this test...
         it('has a protocol property that matches the passed-in protocol', function () {
-            var invoke = function (co, arg) {
+            var begin = function (co, arg) {
                 return 'blah';
             };
             var func2 = func.mod({ overrideProtocol: function () {
-                    return ({ invoke: invoke });
+                    return ({ begin: begin });
                 } });
             expect(func2.protocol).to.exist;
-            expect(func2.protocol.invoke).to.equal(invoke);
+            expect(func2.protocol.begin).to.equal(begin);
             var func3 = func.mod({ overrideProtocol: function () {
                     return ({ a: 1 });
                 } });
             expect(func3.protocol).to.exist;
-            expect(func3.protocol.invoke).to.not.equal(invoke);
+            expect(func3.protocol.begin).to.not.equal(begin);
         });
     });
 }

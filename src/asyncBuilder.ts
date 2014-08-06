@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import pipeline = require('./pipeline');
+import jointProtocol = require('./pipeline');
 import extensibility = require('./extensibility');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
@@ -11,16 +11,12 @@ import Coroutine = AsyncAwait.Coroutine;
 export = asyncBuilder;
 
 
-// Bootstrap an initial async builder using a no-op protocol. All methods throw, to assist in protocol debugging.
+// Bootstrap an initial async builder using a no-op protocol.
+// TODO: revise. was: Most methods just throwan error, to assist in protocol debugging.
 var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
-    invoke: (co) => { throw new Error('invoke: not supported by this type of suspendable function'); },
-    return: (ctx, result) => { throw new Error('return: not supported by this type of suspendable function'); },
-    throw: (ctx, error) => { throw new Error('throw: not supported by this type of suspendable function'); },
-    yield: (ctx, value) => { throw new Error('yield: not supported by this type of suspendable function'); },
-
 
     begin: (fi) => {
-        throw new Error('begin: not implemented! All async mods must override this method.');
+        throw new Error('begin: not implemented. All async mods must override this method.');
     },
 
     suspend: (fi, error?, value?) => {
@@ -33,9 +29,8 @@ var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
     },
 
     end: (fi, error?, value?) => {
-        throw new Error('end: not implemented! All async mods must override this method.');
+        throw new Error('end: not implemented. All async mods must override this method.');
     }
-
 
 });
 
@@ -77,15 +72,15 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
 
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
-        var hasProtocolFactory = !!mod.overrideProtocol;
+        var isOptionsOnly = !mod.overrideProtocol;
 
         // Determine the appropriate options to pass to createAsyncBuilder.
         var opts = _.branch(extensibility.config());
-        _.mergeProps(opts, options, mod.defaultOptions);
+        _.mergeProps(opts, options, isOptionsOnly ? mod : mod.defaultOptions);
 
         // Determine the appropriate protocolFactory and baseProtocol to pass to createAsyncBuilder.
-        var newProtocolFactory = hasProtocolFactory ? mod.overrideProtocol : protocolFactory;
-        var newBaseProtocol = hasProtocolFactory ? protocol : baseProtocol;
+        var newProtocolFactory = isOptionsOnly ? protocolFactory : mod.overrideProtocol;
+        var newBaseProtocol = isOptionsOnly ? baseProtocol : protocol;
 
         // Delegate to createAsyncBuilder to return a new async builder function.
         return createAsyncBuilder(newProtocolFactory, opts, newBaseProtocol);
@@ -157,18 +152,18 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
 
     // Create the template for the factory function.
     var srcLines = [
-        'result = function factory(protocol, invokee) {',
+        'result = function factory(asyncProtocol, invokee) {',
         '  return function $TEMPLATE($PARAMS) {',
         '    var t = this, l = arguments.length;',
         '    if ((!t || t===global) && l===$ARITY) {',
         '      var body = function f0() { return invokee($INVOKEE_ARGS); };',
-        '      var co = pipeline.acquireCoro(protocol, body);',
+        '      var co = jointProtocol.acquireCoro(asyncProtocol, body);',
         '    } else {',
         '      var a = new Array(l-$PN);',
         '      for (var i = 0; i < l-$PN; ++i) a[i] = arguments[i];',
-        '      var co = pipeline.acquireCoro(protocol, invokee, t, a);',
+        '      var co = jointProtocol.acquireCoro(asyncProtocol, invokee, t, a);',
         '    }',
-        '    return protocol.begin($INVOKER_ARGS);',
+        '    return asyncProtocol.begin($INVOKER_ARGS);',
         '  }',
         '}'
     ];
@@ -196,19 +191,19 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
 
 
 // DEBUG version of createSuspendableFunction(), with no eval.
-function createSuspendableFunctionDebug(protocol: Protocol, invokee: Function) {
+function createSuspendableFunctionDebug(asyncProtocol: Protocol, invokee: Function) {
 
     // Get the formal arity of the invoker functions
-    var invokerArity = protocol.begin.length - 1; // Skip the 'co' parameter.
+    var invokerArity = asyncProtocol.begin.length - 1; // Skip the 'co' parameter.
 
     // Return the suspendable function.
     return function SUSP$DEBUG(args) {
         var t = this, l = arguments.length, a = new Array(l - invokerArity);
         for (var i = 0; i < l - invokerArity; ++i) a[i] = arguments[i];
-        var co = pipeline.acquireCoro(protocol, invokee, t, a);
+        var co = jointProtocol.acquireCoro(asyncProtocol, invokee, t, a);
         var b = new Array(invokerArity + 1);
         b[0] = co;
         for (var i = 0; i < invokerArity; ++i) b[i + 1] = arguments[l - invokerArity + i];
-        return protocol.begin.apply(null, b);
+        return asyncProtocol.begin.apply(null, b);
     }
 }

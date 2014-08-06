@@ -44,9 +44,8 @@ describe('async.mod(...)', () => {
         .catch(done);
     });
 
-    //TODO: review this test... awkward way to just pass some options!
     it('returns an async function that uses the specified protocol options', done => {
-        var asyncX = async.mod(testMod).mod({ defaultOptions: { prefix: '<<<', suffix: '>>>' }});
+        var asyncX = async.mod(testMod).mod({ prefix: '<<<', suffix: '>>>' });
         var fn = asyncX (msg => msg);
         fn('BLAH!')
         .then(r => expect(r).to.equal('<<<BLAH!>>>'))

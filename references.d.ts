@@ -13,7 +13,7 @@ declare module "references" { }
 
 
 /** Extended Coroutine/Fiber interface for internal use. */
-interface CoroFiber extends AsyncAwait.Coroutine, Fiber {
+interface CoroFiber extends Fiber {
     bodyFunc: Function;
     bodyThis: any;
     bodyArgs: any[];
@@ -32,6 +32,7 @@ interface Fiber {
     //TODO: ...
     suspend: (error?: Error, value?: any) => void;
     resume: (error?: Error, value?: any) => void;
+    context: any;
 }
 
 

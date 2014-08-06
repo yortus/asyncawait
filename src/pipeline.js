@@ -1,4 +1,5 @@
-﻿var Fiber = require('fibers');
+﻿//TODO: rename this file... should be jointProtocol
+var Fiber = require('fibers');
 var _ = require('./util');
 
 
@@ -45,8 +46,8 @@ var pipeline = {
 /** Default implementations for the overrideable pipeline methods. */
 var defaultPipeline = {
     /** Create and return a new Coroutine instance. */
-    acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
-        var fiberBody = pipeline.createFiberBody(protocol, function getCo() {
+    acquireCoro: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
+        var fiberBody = pipeline.createFiberBody(asyncProtocol, function getCo() {
             return co;
         });
         var co = pipeline.acquireFiber(fiberBody);
@@ -57,17 +58,17 @@ var defaultPipeline = {
         co.context = {};
         co.awaiting = [];
         co.suspend = function (error, value) {
-            return protocol.suspend(co, error, value);
+            return asyncProtocol.suspend(co, error, value);
         };
         co.resume = function (error, value) {
-            return protocol.resume(co, error, value);
+            return asyncProtocol.resume(co, error, value);
         };
         return co;
     },
     /** Ensure the Coroutine instance is disposed of cleanly. */
-    releaseCoro: function (protocol, co) {
-        co.enter = null;
-        co.leave = null;
+    releaseCoro: function (asyncProtocol, co) {
+        co.suspend = null;
+        co.resume = null;
         co.context = null;
         co.bodyFunc = null;
         co.bodyThis = null;
@@ -82,7 +83,7 @@ var defaultPipeline = {
         // No-op.
     },
     /** Create the body function to be executed inside a fiber. */
-    createFiberBody: function (protocol, getCo) {
+    createFiberBody: function (asyncProtocol, getCo) {
         // V8 may not optimise the following function due to the presence of
         // try/catch/finally. Therefore it does as little as possible, only
         // referencing the optimisable closures prepared below.
@@ -132,9 +133,9 @@ var defaultPipeline = {
             error = err;
         }
         function finallyBlock() {
-            protocol.end(co, error, result);
+            asyncProtocol.end(co, error, result);
             pipeline.releaseFiber(co);
-            pipeline.releaseCoro(protocol, co);
+            pipeline.releaseCoro(asyncProtocol, co);
         }
 
         // Return the completed fiberBody closure.

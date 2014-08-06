@@ -1,9 +1,15 @@
-﻿import references = require('references');
+﻿
+//TODO: rename this file... should be jointProtocol
+
+
+
+
+import references = require('references');
 import assert = require('assert');
 import Fiber = require('fibers');
 import _ = require('./util');
 import Pipeline = AsyncAwait.Pipeline;
-import Protocol = AsyncAwait.Async.Protocol;
+import AsyncProtocol = AsyncAwait.Async.Protocol;
 export = pipeline;
 
 
@@ -46,24 +52,24 @@ var pipeline = {
 var defaultPipeline: Pipeline = {
 
     /** Create and return a new Coroutine instance. */
-    acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
-        var fiberBody = pipeline.createFiberBody(protocol, function getCo() { return co; });
-        var co = <CoroFiber> pipeline.acquireFiber(fiberBody);
+    acquireCoro: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+        var fiberBody = pipeline.createFiberBody(asyncProtocol, function getCo() { return co; });
+        var co = pipeline.acquireFiber(fiberBody);
         co.id = ++pipeline.nextCoroId;
         co.bodyFunc = bodyFunc;
         co.bodyThis = bodyThis;
         co.bodyArgs = bodyArgs;
         co.context = {};
         co.awaiting = [];
-        co.suspend = (error?: Error, value?) => protocol.suspend(co, error, value);
-        co.resume = (error?: Error, value?) => protocol.resume(co, error, value);
+        co.suspend = (error?: Error, value?) => asyncProtocol.suspend(co, error, value);
+        co.resume = (error?: Error, value?) => asyncProtocol.resume(co, error, value);
         return co;
     },
 
     /** Ensure the Coroutine instance is disposed of cleanly. */
-    releaseCoro: (protocol: Protocol, co: CoroFiber) => {
-        co.enter = null;
-        co.leave = null;
+    releaseCoro: (asyncProtocol: AsyncProtocol, co: Fiber) => {
+        co.suspend = null;
+        co.resume = null;
         co.context = null;
         co.bodyFunc = null;
         co.bodyThis = null;
@@ -81,7 +87,7 @@ var defaultPipeline: Pipeline = {
     },
 
     /** Create the body function to be executed inside a fiber. */
-    createFiberBody: (protocol: Protocol, getCo: () => CoroFiber) => {
+    createFiberBody: (asyncProtocol: AsyncProtocol, getCo: () => Fiber) => {
 
         // V8 may not optimise the following function due to the presence of
         // try/catch/finally. Therefore it does as little as possible, only
@@ -93,7 +99,7 @@ var defaultPipeline: Pipeline = {
         }
 
         // These references are shared by the closures below.
-        var co: CoroFiber, result, error;
+        var co: Fiber, result, error;
 
         // Define the details of the body function's try/catch/finally clauses.
         function tryBlock() {
@@ -123,9 +129,9 @@ var defaultPipeline: Pipeline = {
             error = err;
         }
         function finallyBlock() {
-            protocol.end(co, error, result);
+            asyncProtocol.end(co, error, result);
             pipeline.releaseFiber(co);
-            pipeline.releaseCoro(protocol, co);
+            pipeline.releaseCoro(asyncProtocol, co);
         }
 
         // Return the completed fiberBody closure.

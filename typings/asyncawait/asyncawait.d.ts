@@ -83,34 +83,29 @@ declare module AsyncAwait {
             protocol: Protocol;
             options: any;
             mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
+            mod<TBuilder extends Builder>(options: {}): TBuilder;
         }
 
         export interface Mod<TBuilder extends Builder> {
+            overrideProtocol: (base: Protocol, options: any) => ProtocolOverrides;
             name?: string;
             type?: TBuilder;
-            overrideProtocol?: (base: Protocol, options: any) => ProtocolOverrides;
             defaultOptions?: {};
         }
 
         //TODO: doc these methods
         export interface Protocol {
-            invoke: (co: Coroutine, ...protocolArgs) => any;
-            return: (ctx: any, result: any) => void;
-            throw: (ctx: any, error: Error) => void;
-            yield: (ctx: any, value: any) => any; //TODO: use sentinel to indicate push behaviour? use push/pull overrides instead? specify push/pull via formal param
-
-            //TODO: ...
-            begin?: (fi: Fiber, ...protocolArgs) => any;
-            suspend?: (fi: Fiber, error?: Error, value?: any) => any;
-            resume?: (fi: Fiber, error?: Error, value?: any) => any;
-            end?: (fi: Fiber, error?: Error, value?: any) => void;
+            begin: (fi: Fiber, ...protocolArgs) => any;
+            suspend: (fi: Fiber, error?: Error, value?: any) => any;
+            resume: (fi: Fiber, error?: Error, value?: any) => any;
+            end: (fi: Fiber, error?: Error, value?: any) => any;
         }
 
         export interface ProtocolOverrides {
-            invoke?: (co: Coroutine, ...protocolArgs) => any;
-            return?: (ctx: any, result: any) => void;
-            throw?: (ctx: any, error: Error) => void;
-            yield?: (ctx: any, value: any) => any;
+            begin?: (fi: Fiber, ...protocolArgs) => any;
+            suspend?: (fi: Fiber, error?: Error, value?: any) => any;
+            resume?: (fi: Fiber, error?: Error, value?: any) => any;
+            end?: (fi: Fiber, error?: Error, value?: any) => any;
         }
     }
 
@@ -210,19 +205,19 @@ declare module AsyncAwait {
     }
 
     export interface Pipeline {
-        acquireCoro: (protocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Coroutine;
-        releaseCoro: (protocol: Async.Protocol, co: Coroutine) => void;
+        acquireCoro: (asyncPipeline: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
+        releaseCoro: (asyncPipeline: Async.Protocol, co: Fiber) => void;
         acquireFiber: (body: () => any) => Fiber;
         releaseFiber: (fiber: Fiber) => void;
-        createFiberBody: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
+        createFiberBody: (asyncPipeline: Async.Protocol, getCo: () => Fiber) => () => void;
     }
 
     export interface PipelineOverrides {
-        acquireCoro?: (protocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Coroutine;
-        releaseCoro?: (protocol: Async.Protocol, co: Coroutine) => void;
+        acquireCoro?: (asyncPipeline: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
+        releaseCoro?: (asyncPipeline: Async.Protocol, co: Fiber) => void;
         acquireFiber?: (body: () => any) => Fiber;
         releaseFiber?: (fiber: Fiber) => void;
-        createFiberBody?: (protocol: Async.Protocol, getCo: () => Coroutine) => () => void;
+        createFiberBody?: (asyncPipeline: Async.Protocol, getCo: () => Fiber) => () => void;
     }
 
 

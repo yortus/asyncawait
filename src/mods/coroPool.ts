@@ -14,14 +14,14 @@ var coroPool: Mod = {
         return (!options.coroPool) ? null : {
 
             /** Create and return a new Coroutine instance. */
-            acquireCoro: (protocol: Protocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+            acquireCoro: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
 
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPoolId = asyncProtocol.coroPoolId || (asyncProtocol.coroPoolId = ++_nextPoolId);
                 var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is empty, create and return a new coroutine via the pipeline.
-                if (coroPool.length === 0) return base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                if (coroPool.length === 0) return base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                 // Reuse a coroutine from the pool, and return it.
                 --_poolLevel;
@@ -34,14 +34,14 @@ var coroPool: Mod = {
             },
 
             /** Ensure the Coroutine instance is disposed of cleanly. */
-            releaseCoro: (protocol: Protocol, co: CoroFiber) => {
+            releaseCoro: (asyncProtocol: AsyncProtocol, co: Fiber) => {
 
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPoolId = asyncProtocol.coroPoolId || (asyncProtocol.coroPoolId = ++_nextPoolId);
                 var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is already full, release the coroutine via the pipeline.
-                if (_poolLevel >= _poolLimit) return base.releaseCoro(protocol, co);
+                if (_poolLevel >= _poolLimit) return base.releaseCoro(asyncProtocol, co);
 
                 // Clear the coroutine and add it to the pool.
                 ++_poolLevel;
@@ -67,7 +67,7 @@ var coroPool: Mod = {
 
 
 /** Extended Protocol interface with coroutine pool. */
-interface Protocol extends AsyncAwait.Async.Protocol {
+interface AsyncProtocol extends AsyncAwait.Async.Protocol {
     coroPoolId: number;
 }
 
@@ -77,4 +77,4 @@ interface Protocol extends AsyncAwait.Async.Protocol {
 var _poolLevel = 0;
 var _poolLimit = 100;
 var _nextPoolId = 0;
-var _pools: CoroFiber[][] = [];
+var _pools: Fiber[][] = [];

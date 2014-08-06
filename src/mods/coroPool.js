@@ -6,14 +6,14 @@ var coroPool = {
         // Override the pipeline if the option is selected.
         return (!options.coroPool) ? null : {
             /** Create and return a new Coroutine instance. */
-            acquireCoro: function (protocol, bodyFunc, bodyThis, bodyArgs) {
+            acquireCoro: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPoolId = asyncProtocol.coroPoolId || (asyncProtocol.coroPoolId = ++_nextPoolId);
                 var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is empty, create and return a new coroutine via the pipeline.
                 if (coroPool.length === 0)
-                    return base.acquireCoro(protocol, bodyFunc, bodyThis, bodyArgs);
+                    return base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                 // Reuse a coroutine from the pool, and return it.
                 --_poolLevel;
@@ -25,14 +25,14 @@ var coroPool = {
                 return co;
             },
             /** Ensure the Coroutine instance is disposed of cleanly. */
-            releaseCoro: function (protocol, co) {
+            releaseCoro: function (asyncProtocol, co) {
                 // Resolve the coroutine pool associated with the protocol.
-                var coroPoolId = protocol.coroPoolId || (protocol.coroPoolId = ++_nextPoolId);
+                var coroPoolId = asyncProtocol.coroPoolId || (asyncProtocol.coroPoolId = ++_nextPoolId);
                 var coroPool = _pools[coroPoolId] || (_pools[coroPoolId] = []);
 
                 // If the pool is already full, release the coroutine via the pipeline.
                 if (_poolLevel >= _poolLimit)
-                    return base.releaseCoro(protocol, co);
+                    return base.releaseCoro(asyncProtocol, co);
 
                 // Clear the coroutine and add it to the pool.
                 ++_poolLevel;
