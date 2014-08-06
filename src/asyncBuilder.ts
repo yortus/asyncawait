@@ -17,26 +17,29 @@ export = asyncBuilder;
 // - implements resume() in terms of Fiber's run() and throwInto().
 // - implements begin() and end() to just throw, since all protocols must override these.
 // - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
-var asyncBuilder = createAsyncBuilder(<any> {}, {
+var asyncBuilder = createAsyncBuilder({
     overrideProtocol: (base, options) => ({
         begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
         suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
         end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
-    })
+    }),
+    defaultOptions: _.branch(extensibility.config())
 });
 
 
 /** Creates a new async builder function using the specified protocol settings. */
-function createAsyncBuilder(baseProtocol: Protocol, mod: AsyncAwait.Async.Mod) {
+function createAsyncBuilder(effectiveMod: AsyncAwait.Async.Mod, previousProtocol?: Protocol) {
 
     // Instantiate the protocol by calling the provided factory function.
-    var protocol: Protocol = <any> _.mergeProps({}, baseProtocol, mod.overrideProtocol(baseProtocol, mod.defaultOptions));
+    var protocolOverrides = effectiveMod.overrideProtocol(previousProtocol, effectiveMod.defaultOptions);
+    var effectiveProtocol: Protocol = <any> _.mergeProps({}, previousProtocol, protocolOverrides);
 
     // Create the builder function.
     var builder: Builder = <any> function asyncBuilder(invokee: Function) {
 
         // Ensure mods are applied on first call to async.
+        //TODO: get rid of this...
         if (!extensibility.isLocked) extensibility.applyMods();
 
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
@@ -44,14 +47,14 @@ function createAsyncBuilder(baseProtocol: Protocol, mod: AsyncAwait.Async.Mod) {
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
         // Create and return an appropriately configured suspendable function for the given protocol and body.
-        return createSuspendableFunction(protocol, invokee);
+        return createSuspendableFunction(effectiveProtocol, invokee);
     };
 
     // Tack on the builder's other properties, and the mod() method.
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.protocol = protocol;
-    builder.options = mod.defaultOptions;
-    builder.mod = createModMethod(protocol, mod.overrideProtocol, mod.defaultOptions, baseProtocol);
+    builder.protocol = effectiveProtocol;
+    builder.options = effectiveMod.defaultOptions;
+    builder.mod = createModMethod(effectiveProtocol, effectiveMod, previousProtocol);
 
     // Return the async builder function.
     return builder;
@@ -60,27 +63,24 @@ function createAsyncBuilder(baseProtocol: Protocol, mod: AsyncAwait.Async.Mod) {
 
 //TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
 /** Creates a mod() method appropriate to the given protocol settings. */
-function createModMethod(protocol, getProtocolOverrides, options, baseProtocol) {
+function createModMethod(effectiveProtocol, effectiveMod: Mod, previousProtocol) {
     return function mod(mod: Mod) {
+        //TODO: revise all comments in here...
 
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
         var isOptionsOnly = !mod.overrideProtocol;
 
         // Determine the appropriate options to pass to createAsyncBuilder.
-        var opts = _.branch(extensibility.config());
-        _.mergeProps(opts, options, isOptionsOnly ? mod : mod.defaultOptions);
-
-        // Determine the appropriate protocolFactory and baseProtocol to pass to createAsyncBuilder.
-        var newGetProtocolOverrides = isOptionsOnly ? getProtocolOverrides : mod.overrideProtocol;
-        var newBaseProtocol = isOptionsOnly ? baseProtocol : protocol;
+        var supersedingOptions = isOptionsOnly ? mod : mod.defaultOptions;
+        var options = _.mergeProps(_.branch(effectiveMod.defaultOptions), supersedingOptions);//TODO: is 'branch' correct here?
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        var newMod: Mod = {
-            overrideProtocol: newGetProtocolOverrides,
-            defaultOptions: opts
+        var supersedingMod: Mod = {
+            overrideProtocol: isOptionsOnly ? effectiveMod.overrideProtocol : mod.overrideProtocol,
+            defaultOptions: options
         };
-        return createAsyncBuilder(newBaseProtocol, newMod);
+        return createAsyncBuilder(supersedingMod, isOptionsOnly ? previousProtocol : effectiveProtocol);
     }
 }
 
