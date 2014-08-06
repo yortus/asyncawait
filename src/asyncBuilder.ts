@@ -7,42 +7,32 @@ import Builder = AsyncAwait.Async.Builder;
 import Mod = AsyncAwait.Async.Mod;
 import Protocol = AsyncAwait.Async.Protocol;
 import ProtocolOverrides = AsyncAwait.Async.ProtocolOverrides;
-import Coroutine = AsyncAwait.Coroutine;
 export = asyncBuilder;
 
 
-// Bootstrap an initial async builder using a no-op protocol.
-// TODO: revise. was: Most methods just throwan error, to assist in protocol debugging.
-var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
+// TODO: change co to fi throughout and use correct type (Fiber/FiberEx)
 
-    begin: (fi) => {
-        throw new Error('begin: not implemented. All async mods must override this method.');
-    },
 
-    suspend: (fi, error?, value?) => {
-        throw new Error('suspend: not supported by this type of suspendable function');
-    },
-
-    //TODO: change co to fi throughout and use correct type
-    resume: (fi, error?, value?) => {
-        return error ? fi.throwInto(error) : fi.run(value);
-    },
-
-    end: (fi, error?, value?) => {
-        throw new Error('end: not implemented. All async mods must override this method.');
-    }
-
+// Bootstrap an initial async builder using the base protocol. The base protocol:
+// - implements resume() in terms of Fiber's run() and throwInto().
+// - implements begin() and end() to just throw, since all protocols must override these.
+// - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
+var asyncBuilder = createAsyncBuilder(_.empty, {}, {
+    begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
+    suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
+    resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
+    end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
 });
 
 
 /** Creates a new async builder function using the specified protocol settings. */
-function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (baseProtocol: Protocol, options: any) => ProtocolOverrides, options: any, baseProtocol: Protocol) {
+function createAsyncBuilder(protocolFactory: (baseProtocol: Protocol, options: any) => ProtocolOverrides, options: any, baseProtocol: Protocol) {
 
     // Instantiate the protocol by calling the provided factory function.
     var protocol: Protocol = <any> _.mergeProps({}, baseProtocol, protocolFactory(baseProtocol, options));
 
     // Create the builder function.
-    var builder: TBuilder = <any> function asyncBuilder(invokee: Function) {
+    var builder: Builder = <any> function asyncBuilder(invokee: Function) {
 
         // Ensure mods are applied on first call to async.
         if (!extensibility.isLocked) extensibility.applyMods();
@@ -68,7 +58,7 @@ function createAsyncBuilder<TBuilder extends Builder>(protocolFactory: (baseProt
 //TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
 /** Creates a mod() method appropriate to the given protocol settings. */
 function createModMethod(protocol, protocolFactory, options, baseProtocol) {
-    return function mod(mod: Mod<Builder>) {
+    return function mod(mod: Mod) {
 
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');

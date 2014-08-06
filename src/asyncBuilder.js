@@ -4,8 +4,11 @@ var extensibility = require('./extensibility');
 var _ = require('./util');
 
 
-// Bootstrap an initial async builder using a no-op protocol.
-// TODO: revise. was: Most methods just throwan error, to assist in protocol debugging.
+// TODO: change co to fi throughout and use correct type (Fiber/FiberEx)
+// Bootstrap an initial async builder using the base protocol. The base protocol:
+// - implements resume() in terms of Fiber's run() and throwInto().
+// - implements begin() and end() to just throw, since all protocols must override these.
+// - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
 var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     begin: function (fi) {
         throw new Error('begin: not implemented. All async mods must override this method.');
@@ -13,7 +16,6 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     suspend: function (fi, error, value) {
         throw new Error('suspend: not supported by this type of suspendable function');
     },
-    //TODO: change co to fi throughout and use correct type
     resume: function (fi, error, value) {
         return error ? fi.throwInto(error) : fi.run(value);
     },

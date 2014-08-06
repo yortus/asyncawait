@@ -15,7 +15,7 @@ var newBuilder = oldBuilder.mod({
 
     name: 'cps',
 
-    type: <AsyncAwait.Async.PromiseBuilder> null,
+    type: <AsyncAwait.Async.CPSBuilder> null,
 
     overrideProtocol: (base, options) => ({
 

@@ -6,6 +6,6 @@ export = iterableAPI;
 
 
 var iterableAPI: AsyncAwait.Async.IterableAPI = <any> promise;
-iterableAPI.promise = promise.mod<AsyncAwait.Async.IterablePromiseBuilder>({});
+iterableAPI.promise = promise.mod({});
 iterableAPI.cps = cps;
 iterableAPI.thunk = thunk;

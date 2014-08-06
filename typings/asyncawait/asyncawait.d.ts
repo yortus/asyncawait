@@ -29,7 +29,7 @@ declare module AsyncAwait {
             thunk: IterableThunkBuilder;
         }
 
-        export interface PromiseBuilder extends Builder {
+        export interface PromiseBuilder extends TypedBuilder<PromiseBuilder> {
             <TResult>(fn: () => TResult): () => Promise<TResult>;
             <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
             <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
@@ -37,7 +37,7 @@ declare module AsyncAwait {
             <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
         }
 
-        export interface CPSBuilder extends Builder {
+        export interface CPSBuilder extends TypedBuilder<CPSBuilder> {
             <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
             <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
             <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
@@ -45,7 +45,7 @@ declare module AsyncAwait {
             <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
         }
 
-        export interface ThunkBuilder extends Builder {
+        export interface ThunkBuilder extends TypedBuilder<ThunkBuilder> {
             <TResult>(fn: () => TResult): () => Thunk<TResult>;
             <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
             <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
@@ -53,44 +53,54 @@ declare module AsyncAwait {
             <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
         }
 
-        export interface StreamBuilder extends Builder {
+        export interface StreamBuilder extends TypedBuilder<StreamBuilder> {
             (fn: Function): (...args: any[]) => ReadableStream;
         }
 
-        export interface IterablePromiseBuilder extends Builder {
+        export interface IterablePromiseBuilder extends TypedBuilder<IterablePromiseBuilder> {
             (fn: Function): (...args: any[]) => {
                 next(): Promise<{ done: boolean; value?: any; }>;
                 forEach(callback: (value) => void): Promise<void>;
             };
         }
 
-        export interface IterableCPSBuilder extends Builder {
+        export interface IterableCPSBuilder extends TypedBuilder<IterableCPSBuilder> {
             (fn: Function): (...args: any[]) => {
                 next(callback?: Callback<any>): void;
                 forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
             };
         }
 
-        export interface IterableThunkBuilder extends Builder {
+        export interface IterableThunkBuilder extends TypedBuilder<IterableThunkBuilder> {
             (fn: Function): (...args: any[]) => {
                 next(): Thunk<{ done: boolean; value?: any; }>;
                 forEach(callback: (value) => void): Thunk<void>;
             };
         }
 
+        export interface TypedBuilder<TBuilder extends Builder> extends Builder {
+            mod<TBuilder2 extends Builder>(mod: TypedMod<TBuilder2>): TBuilder2;
+            mod(mod: Mod): TBuilder;
+            mod(options: {}): TBuilder;
+        }
+
         export interface Builder {
             (fn: Function): Function;
             protocol: Protocol;
             options: any;
-            mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
-            mod<TBuilder extends Builder>(options: {}): TBuilder;
+            mod<TBuilder extends Builder>(mod: TypedMod<TBuilder>): TBuilder;
+            mod(mod: Mod): Builder;
+            mod(options: {}): Builder;
         }
 
-        export interface Mod<TBuilder extends Builder> {
+        export interface TypedMod<TBuilder extends Builder> extends Mod {
+            type: TBuilder;
+        }
+
+        export interface Mod {
             overrideProtocol: (base: Protocol, options: any) => ProtocolOverrides;
-            name?: string;
-            type?: TBuilder;
             defaultOptions?: {};
+            name?: string;
         }
 
         //TODO: doc these methods

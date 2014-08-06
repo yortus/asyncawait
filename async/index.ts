@@ -11,7 +11,7 @@ export = api;
 
 var api: AsyncAwait.Async.API = <any> promise;
 api.config = extensibility.config;
-api.promise = promise.mod<AsyncAwait.Async.PromiseBuilder>({});
+api.promise = promise.mod({});
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;
