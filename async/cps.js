@@ -1,22 +1,23 @@
-﻿var oldBuilder = require('../src/asyncBuilder');
-var assert = require('assert');
+﻿var assert = require('assert');
+var oldBuilder = require('../src/asyncBuilder');
 var _ = require('../src/util');
+
 
 var newBuilder = oldBuilder.mod({
     name: 'cps',
     type: null,
     overrideProtocol: function (base, options) {
         return ({
-            invoke: function (co, callback) {
+            begin: function (fi, callback) {
                 assert(_.isFunction(callback), 'Expected final argument to be a callback');
-                co.context = callback;
-                co.enter();
+                fi.context = callback;
+                fi.resume();
             },
-            return: function (callback, result) {
-                return callback(null, result);
-            },
-            throw: function (callback, error) {
-                return callback(error);
+            end: function (fi, error, value) {
+                if (error)
+                    fi.context(error);
+                else
+                    fi.context(null, value);
             }
         });
     }

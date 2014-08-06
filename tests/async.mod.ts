@@ -11,8 +11,10 @@ var testMod = {
         var prefix = options.prefix || '';
         var suffix = options.suffix || '';
         return {
-            return: (co, result) => base.return(co, prefix + result + suffix),
-            throw: (co, error) => base.throw(co, new Error(prefix + error.message + suffix))
+            end: (fi, error?, value?) => {
+                if (error) return base.end(fi, new Error(prefix + error.message + suffix));
+                return base.end(fi, null, prefix + value + suffix);
+            }
         };
     }
 };

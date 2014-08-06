@@ -11,10 +11,10 @@ export = api;
 import compound = require('./compound');
 var value = {
     singular: (co, arg) => {
-        setImmediate(() => { co.enter(null, arg); });
+        setImmediate(() => { co.resume(null, arg); });
     },
     variadic: (co, args) => {
-        setImmediate(() => { co.enter(null, args[0]); });
+        setImmediate(() => { co.resume(null, args[0]); });
     },
     elements: () => 0
 };

@@ -1,8 +1,18 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import oldBuilder = require('../../src/asyncBuilder');
+import pipeline = require('../../src/pipeline');
 import _ = require('../../src/util');
 export = newBuilder;
+
+
+/** Fiber interface extended with type information for 'context'. */
+interface FiberEx extends Fiber {
+    context: {
+        nextCallback: (error?, value?) => void;
+        done: boolean;
+    };
+}
 
 
 var newBuilder = oldBuilder.mod({
@@ -12,27 +22,28 @@ var newBuilder = oldBuilder.mod({
     type: <AsyncAwait.Async.IterableCPSBuilder> null,
 
     overrideProtocol: (base, options) => ({
-        invoke: (co) => {
-            var ctx = co.context = {
-                nextCallback: null,
-                done: false
-            };
+
+        begin: (fi: FiberEx) => {
+            var ctx = fi.context = { nextCallback: null, done: false };
             var next = (callback?: (err, item?: { done: boolean; value?: any; }) => void) => {
                 ctx.nextCallback = callback || _.empty;
-                ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
+                if (ctx.done) ctx.nextCallback(new Error('iterated past end')); else fi.resume();
             }
             return new AsyncIterator(next);
         },
-        return: (ctx, result) => {
+
+        suspend: (fi: FiberEx, error?, value?) => {
+            if (error) throw error; // NB: not handled - throw in fiber
+            fi.context.nextCallback(null, { done: false, value: value });
+
+            // TODO: correct?
+            pipeline.suspendCoro();
+        },
+
+        end: (fi: FiberEx, error?, value?) => {
+            var ctx = fi.context;
             ctx.done = true;
-            ctx.nextCallback(null, { done: true, value: result });
-        },
-        throw: (ctx, error) => {
-            ctx.nextCallback(error);
-        },
-        yield: (ctx, value) => {
-            var result = { done: false, value: value };
-            ctx.nextCallback(null, result);
+            if (error) ctx.nextCallback(error); else ctx.nextCallback(null, { done: true, value: value });
         }
     })
 });

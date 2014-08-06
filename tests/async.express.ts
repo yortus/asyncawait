@@ -3,6 +3,7 @@ import stream = require('stream');
 import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
+import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -79,6 +80,14 @@ describe('A suspendable function returned by async.express(...)', () => {
         Promise.promisify(foo)(exp, rs)
         .catch(err => act = err)
         .finally(() => done(act && act.message === exp.message ? null : exp));
+    });
+
+    it('works with await', done => {
+        var foo = async.express (() => { return await (Promise.delay(20).then(() => 'next')); });
+        Promise.promisify(foo)()
+        .then(result => expect(result).to.not.exist)
+        .then(() => done())
+        .catch(done);
     });
 
     it('fails if yield() is called', done => {

@@ -17,11 +17,11 @@ var newBuilder = oldBuilder.mod({
     overrideHandlers: (base, options) => ({
         singular: (co, arg) => {
             if (!_.isPromise(arg)) return pipeline.notHandled;
-            arg.then(val => co.enter(null, val), co.enter);
+            arg.then(val => co.resume(null, val), co.resume);
         },
         variadic: (co, args) => {
             if (!_.isPromise(args[0])) return pipeline.notHandled;
-            args[0].then(val => co.enter(null, val), co.enter);
+            args[0].then(val => co.resume(null, val), co.resume);
         },
 
         elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {

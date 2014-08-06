@@ -46,7 +46,30 @@ module.exports = function(grunt) {
         mochaTest: {
             main: {
                 options: { reporter: 'list' },
-                src: ['tests/**/*.js']
+                //src: ['tests/**/*.js']
+                src: [
+                    'tests/async.cps.js',
+                    'tests/async.express.js',
+                    'tests/async.iterable.cps.js',
+                    'tests/async.iterable.promise.js',
+                    'tests/async.iterable.thunk.js',
+                    'tests/async.iterable.js',
+                    'tests/async.mod.js',
+                    'tests/async.promise.js',
+                    'tests/async.stream.js',
+                    'tests/async.thunk.js',
+                    'tests/async.js',
+                    //'tests/await.cps.js',
+                    //'tests/await.promise.js',
+                    //'tests/await.thunk.js',
+                    //'tests/await.js',
+                    //'tests/config.coroPool.js',
+                    //'tests/config.cpsKeyword.js',
+                    //'tests/config.fiberPoolFix.js',
+                    //'tests/config.maxSlots.js',
+                    //'tests/config.mod.js',
+                    //'tests/config.js',
+                ]
             }
         },
 

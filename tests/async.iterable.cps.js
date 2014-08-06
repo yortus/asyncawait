@@ -79,6 +79,20 @@ describe('async.iterable.cps(...)', function () {
                 return await(next());
             }).to.throw(Error);
         }));
+
+        it('works with await', function (done) {
+            var foo = async.iterable.cps(function () {
+                yield_(await(Promise.delay(20).then(function () {
+                    return 'blah';
+                })));
+            });
+            var iter = foo();
+            Promise.promisify(iter.next, iter)().then(function (result) {
+                return expect(result).to.deep.equal({ done: false, value: 'blah' });
+            }).then(function () {
+                return done();
+            }).catch(done);
+        });
     });
 
     describe('provides an iterator whose forEach() method', function () {
@@ -142,6 +156,24 @@ describe('async.iterable.cps(...)', function () {
                 return await(forEach(nullFunc));
             }).to.throw(Error);
         }));
+
+        it('works with await', function (done) {
+            var foo = async.iterable.cps(function () {
+                yield_(await(Promise.delay(20).then(function () {
+                    return 'blah';
+                })));
+            }), arr = [];
+            var iter = foo();
+            Promise.promisify(iter.forEach, iter)(function (val) {
+                return arr.push(val);
+            }).then(function (result) {
+                return expect(result).to.not.exist;
+            }).then(function () {
+                return expect(arr).to.deep.equal(['blah']);
+            }).then(function () {
+                return done();
+            }).catch(done);
+        });
     });
 });
 //# sourceMappingURL=async.iterable.cps.js.map

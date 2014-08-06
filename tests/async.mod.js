@@ -9,11 +9,10 @@ var testMod = {
         var prefix = options.prefix || '';
         var suffix = options.suffix || '';
         return {
-            return: function (co, result) {
-                return base.return(co, prefix + result + suffix);
-            },
-            throw: function (co, error) {
-                return base.throw(co, new Error(prefix + error.message + suffix));
+            end: function (fi, error, value) {
+                if (error)
+                    return base.end(fi, new Error(prefix + error.message + suffix));
+                return base.end(fi, null, prefix + value + suffix);
             }
         };
     }

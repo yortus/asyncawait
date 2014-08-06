@@ -1,8 +1,14 @@
 ﻿import references = require('references');
+import Promise = require('bluebird');
 import oldBuilder = require('../src/asyncBuilder');
 import pipeline = require('../src/pipeline');
-import Promise = require('bluebird');
 export = newBuilder;
+
+
+/** Fiber interface extended with type information for 'context'. */
+interface FiberEx extends Fiber {
+    context: Promise.Resolver<any>;
+}
 
 
 var newBuilder = oldBuilder.mod({
@@ -12,13 +18,20 @@ var newBuilder = oldBuilder.mod({
     type: <AsyncAwait.Async.PromiseBuilder> null,
 
     overrideProtocol: (base, options) => ({
-        invoke: (co) => {
-            var resolver = co.context = Promise.defer<any>();
-            co.enter();
+
+        begin: (fi: FiberEx) => {
+            var resolver = fi.context = Promise.defer<any>();
+            fi.resume();
             return resolver.promise;
         },
-        return: (resolver, result) => resolver.resolve(result),
-        throw: (resolver, error) => resolver.reject(error),
-        yield: (resolver, value) => { resolver.progress(value); return pipeline.continueAfterYield; }
+
+        suspend: (fi: FiberEx, error?, value?) => {
+            if (error) throw error; // NB: not handled - throw in fiber
+            fi.context.progress(value); // NB: Fiber does NOT yield here
+        },
+
+        end: (fi: FiberEx, error?, value?) => {
+            if (error) fi.context.reject(error); else fi.context.resolve(value);
+        }
     })
 });

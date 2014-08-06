@@ -5,13 +5,15 @@ var newBuilder = oldBuilder.mod({
     type: null,
     overrideProtocol: function (cps, options) {
         return ({
-            return: function (ctx, result) {
-                if (result === 'next')
-                    return cps.return(ctx, null);
-                if (result === 'route')
-                    return cps.throw(ctx, 'route');
-                if (!!result)
-                    return cps.throw(ctx, new Error('unexpected return value: ' + result));
+            end: function (fi, error, value) {
+                if (error)
+                    return cps.end(fi, error);
+                if (value === 'next')
+                    return cps.end(fi);
+                if (value === 'route')
+                    return cps.end(fi, 'route');
+                if (!!value)
+                    return cps.end(fi, new Error('unexpected return value: ' + value));
             }
         });
     }

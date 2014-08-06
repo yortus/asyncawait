@@ -3,12 +3,12 @@ var oldBuilder = require('./cps');
 var _ = require('../../src/util');
 
 var newBuilder = oldBuilder.mod({
-    name: 'promise',
+    name: 'iterable.thunk',
     type: null,
     overrideProtocol: function (cps, options) {
         return ({
-            invoke: function (co) {
-                var iter = cps.invoke(co);
+            begin: function (fi) {
+                var iter = cps.begin(fi);
                 return {
                     next: function () {
                         return function (callback) {

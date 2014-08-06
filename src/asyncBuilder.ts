@@ -16,7 +16,27 @@ var asyncBuilder = createAsyncBuilder<Builder>(_.empty, {}, {
     invoke: (co) => { throw new Error('invoke: not supported by this type of suspendable function'); },
     return: (ctx, result) => { throw new Error('return: not supported by this type of suspendable function'); },
     throw: (ctx, error) => { throw new Error('throw: not supported by this type of suspendable function'); },
-    yield: (ctx, value) => { throw new Error('yield: not supported by this type of suspendable function'); }
+    yield: (ctx, value) => { throw new Error('yield: not supported by this type of suspendable function'); },
+
+
+    begin: (fi) => {
+        throw new Error('begin: not implemented! All async mods must override this method.');
+    },
+
+    suspend: (fi, error?, value?) => {
+        throw new Error('suspend: not supported by this type of suspendable function');
+    },
+
+    //TODO: change co to fi throughout and use correct type
+    resume: (fi, error?, value?) => {
+        return error ? fi.throwInto(error) : fi.run(value);
+    },
+
+    end: (fi, error?, value?) => {
+        throw new Error('end: not implemented! All async mods must override this method.');
+    }
+
+
 });
 
 
@@ -88,7 +108,7 @@ var createSuspendableFunction = _.DEBUG ? createSuspendableFunctionDebug : creat
 function createSuspendableFunctionImpl(protocol: Protocol, invokee: Function) {
 
     // Get the formal arity of the invoker and invokee functions.
-    var invokerArity = protocol.invoke.length - 1; // Skip the 'co' parameter.
+    var invokerArity = protocol.begin.length - 1; // Skip the 'co' parameter.
     var invokeeArity = invokee.length;
 
     // Resolve the second-level cache corresponding to the given invoker arity.
@@ -148,7 +168,7 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
         '      for (var i = 0; i < l-$PN; ++i) a[i] = arguments[i];',
         '      var co = pipeline.acquireCoro(protocol, invokee, t, a);',
         '    }',
-        '    return protocol.invoke($INVOKER_ARGS);',
+        '    return protocol.begin($INVOKER_ARGS);',
         '  }',
         '}'
     ];
@@ -179,7 +199,7 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
 function createSuspendableFunctionDebug(protocol: Protocol, invokee: Function) {
 
     // Get the formal arity of the invoker functions
-    var invokerArity = protocol.invoke.length - 1; // Skip the 'co' parameter.
+    var invokerArity = protocol.begin.length - 1; // Skip the 'co' parameter.
 
     // Return the suspendable function.
     return function SUSP$DEBUG(args) {
@@ -189,6 +209,6 @@ function createSuspendableFunctionDebug(protocol: Protocol, invokee: Function) {
         var b = new Array(invokerArity + 1);
         b[0] = co;
         for (var i = 0; i < invokerArity; ++i) b[i + 1] = arguments[l - invokerArity + i];
-        return protocol.invoke.apply(null, b);
+        return protocol.begin.apply(null, b);
     }
 }

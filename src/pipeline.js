@@ -1,5 +1,4 @@
-﻿var assert = require('assert');
-var Fiber = require('fibers');
+﻿var Fiber = require('fibers');
 var _ = require('./util');
 
 
@@ -57,21 +56,11 @@ var defaultPipeline = {
         co.bodyArgs = bodyArgs;
         co.context = {};
         co.awaiting = [];
-        co.enter = function enter(error, value) {
-            if (_.DEBUG)
-                assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
-            if (error)
-                co.throwInto(error);
-            else
-                co.run(value);
+        co.suspend = function (error, value) {
+            return protocol.suspend(co, error, value);
         };
-        co.leave = function leave(value) {
-            if (_.DEBUG)
-                assert(pipeline.isCurrent(co), 'leave: may only be called from the currently executing coroutine');
-            value = protocol.yield(co.context, value);
-            if (value === pipeline.continueAfterYield)
-                return;
-            pipeline.suspendCoro(value);
+        co.resume = function (error, value) {
+            return protocol.resume(co, error, value);
         };
         return co;
     },
@@ -143,10 +132,7 @@ var defaultPipeline = {
             error = err;
         }
         function finallyBlock() {
-            if (error)
-                protocol.throw(co.context, error);
-            else
-                protocol.return(co.context, result);
+            protocol.end(co, error, result);
             pipeline.releaseFiber(co);
             pipeline.releaseCoro(protocol, co);
         }

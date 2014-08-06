@@ -1,6 +1,7 @@
 ﻿var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
 var _ = require('asyncawait/src/util');
 var expect = chai.expect;
@@ -44,6 +45,7 @@ function runTestsFor(variant, acceptsCallback) {
         });
 
         it('returns a function whose arity matches that of its definition', function () {
+            // TODO: review this... maybe even debug mode should attempt to get correct arity
             // Skip this test in DEBUG mode (see comments about DEBUG in src/asyncBuilder).
             if (_.DEBUG)
                 return;
@@ -166,6 +168,19 @@ describe('A suspendable function returned by async(...)', function () {
             else
                 done();
         });
+    });
+
+    it('works with await', function (done) {
+        var foo = async(function () {
+            return await(Promise.delay(20).then(function () {
+                return 'blah';
+            }));
+        });
+        foo().then(function (result) {
+            return expect(result).to.equal('blah');
+        }).then(function () {
+            return done();
+        }).catch(done);
     });
 
     it('emits progress with each yielded value', function (done) {

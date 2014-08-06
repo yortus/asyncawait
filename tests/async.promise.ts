@@ -2,6 +2,7 @@
 import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
+import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -53,6 +54,14 @@ describe('A suspendable function returned by async.promise(...)', () => {
             else if (act !== exp) done(exp);
             else done();
         });
+    });
+
+    it('works with await', done => {
+        var foo = async.promise (() => { return await (Promise.delay(20).then(() => 'blah')); });
+        foo()
+        .then(result => expect(result).to.equal('blah'))
+        .then(() => done())
+        .catch(done);
     });
 
     it('emits progress with each yielded value', done => {

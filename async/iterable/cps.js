@@ -1,33 +1,40 @@
 ﻿var assert = require('assert');
 var oldBuilder = require('../../src/asyncBuilder');
+var pipeline = require('../../src/pipeline');
 var _ = require('../../src/util');
+
 
 var newBuilder = oldBuilder.mod({
     name: 'iterable.cps',
     type: null,
     overrideProtocol: function (base, options) {
         return ({
-            invoke: function (co) {
-                var ctx = co.context = {
-                    nextCallback: null,
-                    done: false
-                };
+            begin: function (fi) {
+                var ctx = fi.context = { nextCallback: null, done: false };
                 var next = function (callback) {
                     ctx.nextCallback = callback || _.empty;
-                    ctx.done ? ctx.nextCallback(new Error('iterated past end')) : co.enter();
+                    if (ctx.done)
+                        ctx.nextCallback(new Error('iterated past end'));
+                    else
+                        fi.resume();
                 };
                 return new AsyncIterator(next);
             },
-            return: function (ctx, result) {
+            suspend: function (fi, error, value) {
+                if (error)
+                    throw error;
+                fi.context.nextCallback(null, { done: false, value: value });
+
+                // TODO: correct?
+                pipeline.suspendCoro();
+            },
+            end: function (fi, error, value) {
+                var ctx = fi.context;
                 ctx.done = true;
-                ctx.nextCallback(null, { done: true, value: result });
-            },
-            throw: function (ctx, error) {
-                ctx.nextCallback(error);
-            },
-            yield: function (ctx, value) {
-                var result = { done: false, value: value };
-                ctx.nextCallback(null, result);
+                if (error)
+                    ctx.nextCallback(error);
+                else
+                    ctx.nextCallback(null, { done: true, value: value });
             }
         });
     }

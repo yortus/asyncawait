@@ -1,6 +1,7 @@
 ﻿var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -96,6 +97,19 @@ describe('A suspendable function returned by async.thunk(...)', function () {
             else
                 done();
         });
+    });
+
+    it('works with await', function (done) {
+        var foo = async.thunk(function () {
+            return await(Promise.delay(20).then(function () {
+                return 'blah';
+            }));
+        });
+        Promise.promisify(foo())().then(function (result) {
+            return expect(result).to.equal('blah');
+        }).then(function () {
+            return done();
+        }).catch(done);
     });
 
     it('fails if yield() is called', function (done) {

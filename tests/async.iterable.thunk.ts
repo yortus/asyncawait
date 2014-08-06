@@ -96,6 +96,15 @@ describe('async.iterable.thunk(...)', () => {
             expect(await (next())).to.deep.equal({ done: true, value: 'done' });
             expect(() => await (next())).to.throw(Error);
         }));
+
+        it('works with await', done => {
+            var foo = async.iterable.thunk (() => { yield_ (await (Promise.delay(20).then(() => 'blah'))); });
+            var iter = foo();
+            Promise.promisify(iter.next())()
+            .then(result => expect(result).to.deep.equal({done:false,value:'blah'}))
+            .then(() => done())
+            .catch(done);
+        });
     });
 
 
@@ -167,5 +176,15 @@ describe('async.iterable.thunk(...)', () => {
             await (forEach(nullFunc));
             expect (() => await (forEach(nullFunc))).to.throw(Error);
         }));
+
+        it('works with await', done => {
+            var foo = async.iterable.thunk (() => { yield_ (await (Promise.delay(20).then(() => 'blah'))); }), arr = [];
+            var iter = foo();
+            Promise.promisify(iter.forEach(val => arr.push(val)))()
+            .then(result => expect(result).to.not.exist)
+            .then(() => expect(arr).to.deep.equal(['blah']))
+            .then(() => done())
+            .catch(done);
+        });
     });
 });

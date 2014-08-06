@@ -1,40 +1,50 @@
-﻿var oldBuilder = require('../../src/asyncBuilder');
-var assert = require('assert');
+﻿var assert = require('assert');
 var Promise = require('bluebird');
+var oldBuilder = require('../../src/asyncBuilder');
+var pipeline = require('../../src/pipeline');
 var _ = require('../../src/util');
 
+
 var newBuilder = oldBuilder.mod({
-    name: 'promise',
+    name: 'iterable.promise',
     type: null,
     overrideProtocol: function (base, options) {
         return ({
-            invoke: function (co) {
-                var ctx = co.context = {
-                    nextResolver: null,
-                    done: false
-                };
+            begin: function (fi) {
+                var ctx = fi.context = { nextResolver: null, done: false };
                 var next = function () {
                     var res = ctx.nextResolver = Promise.defer();
-                    ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
+                    if (ctx.done)
+                        res.reject(new Error('iterated past end'));
+                    else
+                        fi.resume();
                     return ctx.nextResolver.promise;
                 };
                 return new AsyncIterator(next);
             },
-            return: function (ctx, result) {
+            suspend: function (fi, error, value) {
+                if (error)
+                    throw error;
+                fi.context.nextResolver.resolve({ done: false, value: value });
+
+                // TODO: correct?
+                pipeline.suspendCoro();
+            },
+            end: function (fi, error, value) {
+                var ctx = fi.context;
                 ctx.done = true;
-                ctx.nextResolver.resolve({ done: true, value: result });
-            },
-            throw: function (ctx, error) {
-                ctx.nextResolver.reject(error);
-            },
-            yield: function (ctx, value) {
-                var result = { done: false, value: value };
-                ctx.nextResolver.resolve(result);
+                if (error)
+                    ctx.nextResolver.reject(error);
+                else
+                    ctx.nextResolver.resolve({ done: true, value: value });
             }
         });
     }
 });
 
+//TODO: also support send(), throw(), close()...
+//TODO: see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators
+//TODO: also for other iterable variants...
 var AsyncIterator = (function () {
     function AsyncIterator(next) {
         this.next = next;

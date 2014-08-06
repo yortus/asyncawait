@@ -9,9 +9,11 @@ var yield_: AsyncAwait.Yield = <any> function yield_(value?: any) {
     var co = pipeline.currentCoro();
     if (!co) throw new Error('yield: may only be called inside a suspendable function.');
 
+    //TODO: rename 'protocol' everywhere (now pipelines?)
     // Delegate to the appropriate protocol-specific behaviour.
-    co.leave(value);
+    co.suspend(null, value);
 };
 
 
+// TODO: this is about to be obsolete... remove it
 yield_.continue = pipeline.continueAfterYield;

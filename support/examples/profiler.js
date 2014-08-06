@@ -1,5 +1,6 @@
 ﻿var fs = require('fs');
 var Promise = require('bluebird');
+var Fiber = require('fibers');
 var async = require('../../async');
 var await = require('../../await');
 async.config({
@@ -18,7 +19,35 @@ async.config({
 });
 
 
-var counter = 0, n = 1;
+
+
+
+
+
+// ========== experiment ==========
+var f = Fiber(function (a) {
+    Fiber.yield(a * 2);
+});
+
+
+var x = f.run(3);
+var y = f.run(10);
+var z = f.run(5);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var counter = 0, n = 25000;
 var startTime = new Date().getTime();
 
 
@@ -32,9 +61,9 @@ var startTime = new Date().getTime();
 var program = async.cps (function prog(a) {
     //return await (Promise.resolve(a));
     //return await (a);
-    //return a;
-    var result = await ([fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___)]);
-    return result;
+    return a;
+    //var result = await ([fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___)]);
+    //return result;
 });
 function doOne() { program(1, doneOne); }
 doOne();

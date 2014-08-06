@@ -14,15 +14,15 @@ var newBuilder = oldBuilder.mod({
                 if (!_.isPromise(arg))
                     return pipeline.notHandled;
                 arg.then(function (val) {
-                    return co.enter(null, val);
-                }, co.enter);
+                    return co.resume(null, val);
+                }, co.resume);
             },
             variadic: function (co, args) {
                 if (!_.isPromise(args[0]))
                     return pipeline.notHandled;
                 args[0].then(function (val) {
-                    return co.enter(null, val);
-                }, co.enter);
+                    return co.resume(null, val);
+                }, co.resume);
             },
             elements: function (values, result) {
                 // TODO: temp testing...

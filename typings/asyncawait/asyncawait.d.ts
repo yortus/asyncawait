@@ -98,6 +98,12 @@ declare module AsyncAwait {
             return: (ctx: any, result: any) => void;
             throw: (ctx: any, error: Error) => void;
             yield: (ctx: any, value: any) => any; //TODO: use sentinel to indicate push behaviour? use push/pull overrides instead? specify push/pull via formal param
+
+            //TODO: ...
+            begin?: (fi: Fiber, ...protocolArgs) => any;
+            suspend?: (fi: Fiber, error?: Error, value?: any) => any;
+            resume?: (fi: Fiber, error?: Error, value?: any) => any;
+            end?: (fi: Fiber, error?: Error, value?: any) => void;
         }
 
         export interface ProtocolOverrides {
@@ -223,9 +229,13 @@ declare module AsyncAwait {
     //------------------------- Common -------------------------
     export interface Coroutine {
         id: number;//TODO: doc: useful for debugging/assertions
-        enter: (error?: Error, value?: any) => void;
-        leave: (value?: any) => void;
-        context: any;
+        enter?: (error?: Error, value?: any) => void;
+        leave?: (value?: any) => void;
+        context?: any;
+
+        //TODO: ...
+        suspend: (error?: Error, value?: any) => void;
+        resume: (error?: Error, value?: any) => void;
     }
 
     export interface Callback<TResult> {

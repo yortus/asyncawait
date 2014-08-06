@@ -1,26 +1,28 @@
-﻿var oldBuilder = require('../src/asyncBuilder');
-var pipeline = require('../src/pipeline');
-var Promise = require('bluebird');
+﻿var Promise = require('bluebird');
+var oldBuilder = require('../src/asyncBuilder');
+
+
 
 var newBuilder = oldBuilder.mod({
     name: 'promise',
     type: null,
     overrideProtocol: function (base, options) {
         return ({
-            invoke: function (co) {
-                var resolver = co.context = Promise.defer();
-                co.enter();
+            begin: function (fi) {
+                var resolver = fi.context = Promise.defer();
+                fi.resume();
                 return resolver.promise;
             },
-            return: function (resolver, result) {
-                return resolver.resolve(result);
+            suspend: function (fi, error, value) {
+                if (error)
+                    throw error;
+                fi.context.progress(value); // NB: Fiber does NOT yield here
             },
-            throw: function (resolver, error) {
-                return resolver.reject(error);
-            },
-            yield: function (resolver, value) {
-                resolver.progress(value);
-                return pipeline.continueAfterYield;
+            end: function (fi, error, value) {
+                if (error)
+                    fi.context.reject(error);
+                else
+                    fi.context.resolve(value);
             }
         });
     }

@@ -1,45 +1,59 @@
 ﻿import references = require('references');
-import oldBuilder = require('../../src/asyncBuilder');
 import assert = require('assert');
 import Promise = require('bluebird');
+import oldBuilder = require('../../src/asyncBuilder');
+import pipeline = require('../../src/pipeline');
 import _ = require('../../src/util');
 export = newBuilder;
 
 
+/** Fiber interface extended with type information for 'context'. */
+interface FiberEx extends Fiber {
+    context: {
+        nextResolver: Promise.Resolver<any>;
+        done: boolean;
+    };
+}
+
+
 var newBuilder = oldBuilder.mod({
 
-    name: 'promise',
+    name: 'iterable.promise',
 
     type: <AsyncAwait.Async.IterablePromiseBuilder> null,
 
     overrideProtocol: (base, options) => ({
-        invoke: (co) => {
-            var ctx = co.context = {
-                nextResolver: null,
-                done: false
-            };
+
+        begin: (fi: FiberEx) => {
+            var ctx = fi.context = { nextResolver: null, done: false };
             var next = () => {
                 var res = ctx.nextResolver = Promise.defer<any>();
-                ctx.done ? res.reject(new Error('iterated past end')) : co.enter();
+                if (ctx.done) res.reject(new Error('iterated past end')); else fi.resume();
                 return ctx.nextResolver.promise;
             }
             return new AsyncIterator(next);
         },
-        return: (ctx, result) => {
+
+        suspend: (fi: FiberEx, error?, value?) => {
+            if (error) throw error; // NB: not handled - throw in fiber
+            fi.context.nextResolver.resolve({ done: false, value: value });
+
+            // TODO: correct?
+            pipeline.suspendCoro();
+        },
+
+        end: (fi: FiberEx, error?, value?) => {
+            var ctx = fi.context;
             ctx.done = true;
-            ctx.nextResolver.resolve({ done: true, value: result });
-        },
-        throw: (ctx, error) => {
-            ctx.nextResolver.reject(error);
-        },
-        yield: (ctx, value) => {
-            var result = { done: false, value: value };
-            ctx.nextResolver.resolve(result);
+            if (error) ctx.nextResolver.reject(error); else ctx.nextResolver.resolve({ done: true, value: value });
         }
     })
 });
 
 
+//TODO: also support send(), throw(), close()...
+//TODO: see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators
+//TODO: also for other iterable variants...
 class AsyncIterator {
 
     constructor(public next: () => Promise<any>) { }

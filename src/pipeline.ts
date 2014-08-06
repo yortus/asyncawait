@@ -55,16 +55,8 @@ var defaultPipeline: Pipeline = {
         co.bodyArgs = bodyArgs;
         co.context = {};
         co.awaiting = [];
-        co.enter = function enter(error?, value?) {
-            if (_.DEBUG) assert(!pipeline.isCurrent(co), 'enter: must not be called from the currently executing coroutine');
-            if (error) co.throwInto(error); else co.run(value);
-        };
-        co.leave = function leave(value?) {
-            if (_.DEBUG) assert(pipeline.isCurrent(co), 'leave: may only be called from the currently executing coroutine');
-            value = protocol.yield(co.context, value);
-            if (value === pipeline.continueAfterYield) return;
-            pipeline.suspendCoro(value);
-        };
+        co.suspend = (error?: Error, value?) => protocol.suspend(co, error, value);
+        co.resume = (error?: Error, value?) => protocol.resume(co, error, value);
         return co;
     },
 
@@ -131,8 +123,7 @@ var defaultPipeline: Pipeline = {
             error = err;
         }
         function finallyBlock() {
-            if (error) protocol.throw(co.context, error);
-            else protocol.return(co.context, result);
+            protocol.end(co, error, result);
             pipeline.releaseFiber(co);
             pipeline.releaseCoro(protocol, co);
         }

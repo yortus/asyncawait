@@ -8,10 +8,10 @@ var extensibility = require('./extensibility');
 //TODO: need to work out appropriate 'base' functioanlity/behaviour here...
 var awaitBuilder = createAwaitBuilder(_.empty, {}, {
     singular: function (co, arg) {
-        return co.enter(null, arg);
+        return co.resume(null, arg);
     },
     variadic: function (co, args) {
-        return co.enter(null, args[0]);
+        return co.resume(null, args[0]);
     }
 });
 
@@ -54,7 +54,7 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                         co.awaiting = [];
 
                         // And finally we're done
-                        co.enter(null, tgt);
+                        co.resume(null, tgt);
                     }
                 };
                 if (arg.length > 0) {
@@ -72,7 +72,7 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                             //TODO: need setImmediate?
                             setImmediate(function () {
                                 co.awaiting = [];
-                                co.enter(null, tgt);
+                                co.resume(null, tgt);
                             });
                         }
                     }
@@ -81,7 +81,7 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                     //TODO: need setImmediate?
                     setImmediate(function () {
                         co.awaiting = [];
-                        co.enter(null, tgt);
+                        co.resume(null, tgt);
                     });
                 }
             }
@@ -99,7 +99,9 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
         //TODO: ...or just pass back value unchanged (i.e. await.value(...) is the built-in fallback.
         assert(handlerResult !== pipeline.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
 
-        // Suspend the coroutine until the await handler causes it to be resumed.
+        // Suspend the coroutine until the await handler causes it to be resumed. NB: fi.suspend is bypassed here because:
+        // 1. it's custom handling is not appropriate for await, which always wants to simply suspend the fiber; and
+        // 2. by not needing to special-case await calls, fi.suspend is simplified because it has a single use-case.
         return pipeline.suspendCoro();
     };
 

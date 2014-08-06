@@ -6,9 +6,9 @@ var newBuilder = oldBuilder.mod({
     type: null,
     overrideProtocol: function (cps, options) {
         return ({
-            invoke: function (co) {
+            begin: function (fi) {
                 return function (callback) {
-                    return cps.invoke(co, callback || _.empty);
+                    return cps.begin(fi, callback || _.empty);
                 };
             }
         });

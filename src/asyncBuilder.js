@@ -17,6 +17,19 @@ var asyncBuilder = createAsyncBuilder(_.empty, {}, {
     },
     yield: function (ctx, value) {
         throw new Error('yield: not supported by this type of suspendable function');
+    },
+    begin: function (fi) {
+        throw new Error('begin: not implemented! All async mods must override this method.');
+    },
+    suspend: function (fi, error, value) {
+        throw new Error('suspend: not supported by this type of suspendable function');
+    },
+    //TODO: change co to fi throughout and use correct type
+    resume: function (fi, error, value) {
+        return error ? fi.throwInto(error) : fi.run(value);
+    },
+    end: function (fi, error, value) {
+        throw new Error('end: not implemented! All async mods must override this method.');
     }
 });
 
@@ -83,7 +96,7 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
 var createSuspendableFunction = _.DEBUG ? createSuspendableFunctionDebug : createSuspendableFunctionImpl;
 function createSuspendableFunctionImpl(protocol, invokee) {
     // Get the formal arity of the invoker and invokee functions.
-    var invokerArity = protocol.invoke.length - 1;
+    var invokerArity = protocol.begin.length - 1;
     var invokeeArity = invokee.length;
 
     // Resolve the second-level cache corresponding to the given invoker arity.
@@ -141,7 +154,7 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
         '      for (var i = 0; i < l-$PN; ++i) a[i] = arguments[i];',
         '      var co = pipeline.acquireCoro(protocol, invokee, t, a);',
         '    }',
-        '    return protocol.invoke($INVOKER_ARGS);',
+        '    return protocol.begin($INVOKER_ARGS);',
         '  }',
         '}'
     ];
@@ -157,7 +170,7 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
 // DEBUG version of createSuspendableFunction(), with no eval.
 function createSuspendableFunctionDebug(protocol, invokee) {
     // Get the formal arity of the invoker functions
-    var invokerArity = protocol.invoke.length - 1;
+    var invokerArity = protocol.begin.length - 1;
 
     // Return the suspendable function.
     return function SUSP$DEBUG(args) {
@@ -169,7 +182,7 @@ function createSuspendableFunctionDebug(protocol, invokee) {
         b[0] = co;
         for (var i = 0; i < invokerArity; ++i)
             b[i + 1] = arguments[l - invokerArity + i];
-        return protocol.invoke.apply(null, b);
+        return protocol.begin.apply(null, b);
     };
 }
 module.exports = asyncBuilder;

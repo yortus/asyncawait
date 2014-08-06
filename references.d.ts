@@ -21,6 +21,22 @@ interface CoroFiber extends AsyncAwait.Coroutine, Fiber {
 }
 
 
+// TODO: re-open...
+interface Fiber {
+    id: number;//TODO: doc: useful for debugging/assertions
+    bodyFunc: Function;
+    bodyThis: any;
+    bodyArgs: any[];
+    awaiting: AsyncAwait.Callback<any>[];
+
+    //TODO: ...
+    suspend: (error?: Error, value?: any) => void;
+    resume: (error?: Error, value?: any) => void;
+}
+
+
+
+
 /** V8 supports Function.name. */ 
 interface Function {
     name: string;

@@ -1,7 +1,8 @@
 ﻿var stream = require('stream');
 var chai = require('chai');
-
+var Promise = require('bluebird');
 var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -80,6 +81,22 @@ describe('A suspendable function returned by async.stream(...)', function () {
         items.on('data', nullFunc);
         items.on('error', function (err) {
             expect(err.message).to.equal('out of range');
+            done();
+        });
+    });
+
+    it('works with await', function (done) {
+        var foo = async.stream(function () {
+            yield_(await(Promise.delay(20).then(function () {
+                return 'blah';
+            })));
+        });
+        var arr = [], items = foo();
+        items.on('data', function (val) {
+            return arr.push(val);
+        });
+        items.on('end', function () {
+            expect(arr).to.deep.equal(['blah']);
             done();
         });
     });

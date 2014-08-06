@@ -4,29 +4,41 @@
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var oldBuilder = require('../src/asyncBuilder');
 var stream = require('stream');
+var oldBuilder = require('../src/asyncBuilder');
+var pipeline = require('../src/pipeline');
+
 
 var newBuilder = oldBuilder.mod({
     name: 'stream',
     type: null,
     overrideProtocol: function (base, options) {
         return ({
-            invoke: function (co) {
-                return (co.context = new Stream(function () {
-                    return co.enter();
-                }));
-            },
-            return: function (stream, result) {
-                return stream.push(null);
-            },
-            throw: function (stream, error) {
-                return stream.emit('error', error);
-            },
-            yield: function (stream, value) {
-                setImmediate(function () {
-                    return stream.push(value);
+            begin: function (fi) {
+                var stream = fi.context = new Stream(function () {
+                    return fi.resume();
                 });
+                return stream;
+            },
+            suspend: function (fi, error, value) {
+                // TODO: handle by emitting error event?
+                if (error)
+                    throw error;
+
+                //TODO: should setImmediate go here, or in pipeline?
+                setImmediate(function () {
+                    return fi.context.push(value);
+                });
+
+                // TODO: correct?
+                pipeline.suspendCoro();
+            },
+            end: function (fi, error, value) {
+                // TODO: if error, should we still push null to emit 'end' event as well? Check stream docs... I think errors are not considered final
+                if (error)
+                    fi.context.emit('error', error);
+                else
+                    fi.context.push(null);
             }
         });
     }

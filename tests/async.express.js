@@ -1,6 +1,7 @@
 ﻿var chai = require('chai');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
 var expect = chai.expect;
 
@@ -101,6 +102,19 @@ describe('A suspendable function returned by async.express(...)', function () {
         }).finally(function () {
             return done(act && act.message === exp.message ? null : exp);
         });
+    });
+
+    it('works with await', function (done) {
+        var foo = async.express(function () {
+            return await(Promise.delay(20).then(function () {
+                return 'next';
+            }));
+        });
+        Promise.promisify(foo)().then(function (result) {
+            return expect(result).to.not.exist;
+        }).then(function () {
+            return done();
+        }).catch(done);
     });
 
     it('fails if yield() is called', function (done) {

@@ -8,12 +8,12 @@ var compound = require('./compound');
 var value = {
     singular: function (co, arg) {
         setImmediate(function () {
-            co.enter(null, arg);
+            co.resume(null, arg);
         });
     },
     variadic: function (co, args) {
         setImmediate(function () {
-            co.enter(null, args[0]);
+            co.resume(null, args[0]);
         });
     },
     elements: function () {

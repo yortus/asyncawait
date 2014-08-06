@@ -7,13 +7,13 @@ export = newBuilder;
 
 var newBuilder = oldBuilder.mod({
 
-    name: 'promise',
+    name: 'iterable.thunk',
 
     type: <AsyncAwait.Async.IterableThunkBuilder> null,
 
     overrideProtocol: (cps, options) => ({
-        invoke: (co) => {
-            var iter = cps.invoke(co);
+        begin: (fi) => {
+            var iter = cps.begin(fi);
             return {
                 next: () => (callback) => iter.next(callback),
                 forEach: callback => {

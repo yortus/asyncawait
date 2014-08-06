@@ -76,6 +76,14 @@ describe('async.iterable(...)', () => {
             expect(await (iter.next())).to.deep.equal({ done: true, value: 'done' });
             expect(() => await (iter.next())).to.throw(Error);
         }));
+
+        it('works with await', done => {
+            var foo = async.iterable (() => { yield_ (await (Promise.delay(20).then(() => 'blah'))); });
+            foo().next()
+            .then(result => expect(result).to.deep.equal({done:false,value:'blah'}))
+            .then(() => done())
+            .catch(done);
+        });
     });
 
 
@@ -127,5 +135,14 @@ describe('async.iterable(...)', () => {
             await (iter.forEach(nullFunc));
             expect (() => await (iter.forEach(nullFunc))).to.throw(Error);
         }));
+
+        it('works with await', done => {
+            var foo = async.iterable (() => { yield_ (await (Promise.delay(20).then(() => 'blah'))); }), arr = [];
+            foo().forEach(val => arr.push(val))
+            .then(result => expect(result).to.not.exist)
+            .then(() => expect(arr).to.deep.equal(['blah']))
+            .then(() => done())
+            .catch(done);
+        });
     });
 });
