@@ -9,25 +9,29 @@ var _ = require('./util');
 // - implements resume() in terms of Fiber's run() and throwInto().
 // - implements begin() and end() to just throw, since all protocols must override these.
 // - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
-var asyncBuilder = createAsyncBuilder(_.empty, {}, {
-    begin: function (fi) {
-        throw new Error('begin: not implemented. All async mods must override this method.');
-    },
-    suspend: function (fi, error, value) {
-        throw new Error('suspend: not supported by this type of suspendable function');
-    },
-    resume: function (fi, error, value) {
-        return error ? fi.throwInto(error) : fi.run(value);
-    },
-    end: function (fi, error, value) {
-        throw new Error('end: not implemented. All async mods must override this method.');
+var asyncBuilder = createAsyncBuilder({}, {
+    overrideProtocol: function (base, options) {
+        return ({
+            begin: function (fi) {
+                throw new Error('begin: not implemented. All async mods must override this method.');
+            },
+            suspend: function (fi, error, value) {
+                throw new Error('suspend: not supported by this type of suspendable function');
+            },
+            resume: function (fi, error, value) {
+                return error ? fi.throwInto(error) : fi.run(value);
+            },
+            end: function (fi, error, value) {
+                throw new Error('end: not implemented. All async mods must override this method.');
+            }
+        });
     }
 });
 
 /** Creates a new async builder function using the specified protocol settings. */
-function createAsyncBuilder(protocolFactory, options, baseProtocol) {
+function createAsyncBuilder(baseProtocol, mod) {
     // Instantiate the protocol by calling the provided factory function.
-    var protocol = _.mergeProps({}, baseProtocol, protocolFactory(baseProtocol, options));
+    var protocol = _.mergeProps({}, baseProtocol, mod.overrideProtocol(baseProtocol, mod.defaultOptions));
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
@@ -43,10 +47,11 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
         return createSuspendableFunction(protocol, invokee);
     };
 
-    // Tack on the protocol and options properties, and the mod() method.
+    // Tack on the builder's other properties, and the mod() method.
+    builder.name = null; //TODO:... implement, add all tests, use in error messages
     builder.protocol = protocol;
-    builder.options = options;
-    builder.mod = createModMethod(protocol, protocolFactory, options, baseProtocol);
+    builder.options = mod.defaultOptions;
+    builder.mod = createModMethod(protocol, mod.overrideProtocol, mod.defaultOptions, baseProtocol);
 
     // Return the async builder function.
     return builder;
@@ -54,7 +59,7 @@ function createAsyncBuilder(protocolFactory, options, baseProtocol) {
 
 //TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
 /** Creates a mod() method appropriate to the given protocol settings. */
-function createModMethod(protocol, protocolFactory, options, baseProtocol) {
+function createModMethod(protocol, getProtocolOverrides, options, baseProtocol) {
     return function mod(mod) {
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
@@ -65,11 +70,15 @@ function createModMethod(protocol, protocolFactory, options, baseProtocol) {
         _.mergeProps(opts, options, isOptionsOnly ? mod : mod.defaultOptions);
 
         // Determine the appropriate protocolFactory and baseProtocol to pass to createAsyncBuilder.
-        var newProtocolFactory = isOptionsOnly ? protocolFactory : mod.overrideProtocol;
+        var newGetProtocolOverrides = isOptionsOnly ? getProtocolOverrides : mod.overrideProtocol;
         var newBaseProtocol = isOptionsOnly ? baseProtocol : protocol;
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder(newProtocolFactory, opts, newBaseProtocol);
+        var newMod = {
+            overrideProtocol: newGetProtocolOverrides,
+            defaultOptions: opts
+        };
+        return createAsyncBuilder(newBaseProtocol, newMod);
     };
 }
 

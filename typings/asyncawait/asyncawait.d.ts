@@ -86,6 +86,7 @@ declare module AsyncAwait {
 
         export interface Builder {
             (fn: Function): Function;
+            name: string;
             protocol: Protocol;
             options: any;
             mod<TBuilder extends Builder>(mod: TypedMod<TBuilder>): TBuilder;
