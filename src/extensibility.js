@@ -2,6 +2,37 @@
 var _ = require('./util');
 var jointProtocol = require('./jointProtocol');
 
+// TODO: temp testing...
+var _options = {};
+var _mods = [];
+function applyDefaultMods() {
+    var defaultMods = [
+        require('./mods/fibersHotfix169'),
+        require('./mods/fiberPool'),
+        require('./mods/maxSlots'),
+        require('./mods/cpsKeyword'),
+        require('./mods/promises')
+    ];
+    defaultMods.forEach(addMod);
+}
+function addMod(mod) {
+    _mods.push(mod);
+    _.mergeProps(_options, mod.defaultOptions);
+    var protocolBeforeMod = _.mergeProps({}, jointProtocol);
+    var protocolOverrides = (mod.overrideProtocol || _.empty)(protocolBeforeMod, _options);
+    _.mergeProps(jointProtocol, protocolOverrides);
+    if (mod.apply)
+        mod.apply(_options);
+}
+function removeAllMods() {
+    _mods.reverse().forEach(function (mod) {
+        if (mod.reset)
+            mod.reset();
+    });
+    _options = {};
+    _mods = [];
+}
+
 /** Get or set global configuration values. */
 exports.config = function config() {
     // If called as a getter, return a reference to the options object.
@@ -117,7 +148,7 @@ exports.externalMods = [];
 /** Global options hash accessed by the config() getter/getter function. */
 //TODO: make this GLOBAL to prevent errors where process has multiple asyncawaits loaded
 //TODO: then, pass options to both apply and reset, and have mods put ALL their state in there?
-var _options = {};
+//var _options = { };
 exports.internalMods.forEach(function (mod) {
     return _.mergeProps(_options, mod.defaultOptions);
 });

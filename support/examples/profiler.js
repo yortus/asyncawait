@@ -5,7 +5,7 @@ var async = require('../../async');
 var await = require('../../await');
 async.config({
     cpsKeyword: '___',
-    //maxSlots: 1,
+    maxSlots: 2,
     fiberPool: true,
 
     awaitOrder: [ 'promise', 'cps', 'thunk', 'promise[]', 'value' ],
