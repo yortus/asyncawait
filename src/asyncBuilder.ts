@@ -69,11 +69,13 @@ function createModMethod(effectiveProtocol, effectiveMod: Mod, previousProtocol)
 
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
+        assert(_.isObject(mod), 'mod: expected argument to be an object');
         var isOptionsOnly = !mod.overrideProtocol;
+        assert(isOptionsOnly || _.isFunction(mod.overrideProtocol), 'mod: expected overrideProtocol to be a function');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
         var supersedingOptions = isOptionsOnly ? mod : mod.defaultOptions;
-        var options = _.mergeProps(_.branch(effectiveMod.defaultOptions), supersedingOptions);//TODO: is 'branch' correct here?
+        var options = _.mergeProps(_.branch(effectiveMod.defaultOptions), supersedingOptions);
 
         // Delegate to createAsyncBuilder to return a new async builder function.
         var supersedingMod: Mod = {
