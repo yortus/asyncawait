@@ -7,15 +7,15 @@ var newBuilder = oldBuilder.mod({
     type: null,
     overrideHandlers: function (base, options) {
         return ({
-            singular: function (co, arg) {
+            singular: function (fi, arg) {
                 if (!_.isFunction(arg))
                     return pipeline.notHandled;
-                arg(co.resume);
+                arg(fi.resume);
             },
-            variadic: function (co, args) {
+            variadic: function (fi, args) {
                 if (!_.isFunction(args[0]))
                     return pipeline.notHandled;
-                args[0](co.resume);
+                args[0](fi.resume);
             },
             elements: function (values, result) {
                 // TODO: temp testing...

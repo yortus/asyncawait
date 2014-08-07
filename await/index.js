@@ -6,14 +6,14 @@ var thunk = require('./thunk');
 //TODO: temp testing...
 var compound = require('./compound');
 var value = {
-    singular: function (co, arg) {
+    singular: function (fi, arg) {
         setImmediate(function () {
-            co.resume(null, arg);
+            fi.resume(null, arg);
         });
     },
-    variadic: function (co, args) {
+    variadic: function (fi, args) {
         setImmediate(function () {
-            co.resume(null, args[0]);
+            fi.resume(null, args[0]);
         });
     },
     elements: function () {

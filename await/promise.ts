@@ -15,13 +15,13 @@ var newBuilder = oldBuilder.mod({
     type: <AsyncAwait.Await.PromiseBuilder> null,
 
     overrideHandlers: (base, options) => ({
-        singular: (co, arg) => {
+        singular: (fi, arg) => {
             if (!_.isPromise(arg)) return pipeline.notHandled;
-            arg.then(val => co.resume(null, val), co.resume);
+            arg.then(val => fi.resume(null, val), fi.resume);
         },
-        variadic: (co, args) => {
+        variadic: (fi, args) => {
             if (!_.isPromise(args[0])) return pipeline.notHandled;
-            args[0].then(val => co.resume(null, val), co.resume);
+            args[0].then(val => fi.resume(null, val), fi.resume);
         },
 
         elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {

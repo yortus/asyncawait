@@ -12,13 +12,13 @@ var newBuilder = oldBuilder.mod({
     type: <AsyncAwait.Await.ThunkBuilder> null,
 
     overrideHandlers: (base, options) => ({
-        singular: (co, arg) => {
+        singular: (fi, arg) => {
             if (!_.isFunction(arg)) return pipeline.notHandled;
-            arg(co.resume);
+            arg(fi.resume);
         },
-        variadic: (co, args) => {
+        variadic: (fi, args) => {
             if (!_.isFunction(args[0])) return pipeline.notHandled;
-            args[0](co.resume);
+            args[0](fi.resume);
         },
 
         elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {

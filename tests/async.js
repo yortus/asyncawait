@@ -82,7 +82,7 @@ function runTestsFor(variant, acceptsCallback) {
 
         //TODO: review this test...
         it('has a protocol property that matches the passed-in protocol', function () {
-            var begin = function (co, arg) {
+            var begin = function (fi, arg) {
                 return 'blah';
             };
             var func2 = func.mod({ overrideProtocol: function () {

@@ -7,11 +7,11 @@ var extensibility = require('./extensibility');
 // Bootstrap a basic await builder using a no-op handler.
 //TODO: need to work out appropriate 'base' functioanlity/behaviour here...
 var awaitBuilder = createAwaitBuilder(_.empty, {}, {
-    singular: function (co, arg) {
-        return co.resume(null, arg);
+    singular: function (fi, arg) {
+        return fi.resume(null, arg);
     },
-    variadic: function (co, args) {
-        return co.resume(null, args[0]);
+    variadic: function (fi, args) {
+        return fi.resume(null, args[0]);
     }
 });
 
@@ -24,14 +24,14 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
     var builder = function await(arg) {
         //TODO: can this be optimised more, eg like async builder's eval?
         // Ensure this function is executing inside a fiber.
-        var co = pipeline.currentFiber();
-        assert(co, 'await: may only be called inside a suspendable function');
+        var fi = pipeline.currentFiber();
+        assert(fi, 'await: may only be called inside a suspendable function');
 
         // TODO: temp testing... fast/slow paths
         if (arguments.length === 1) {
             // TODO: singular case...
             if (!Array.isArray(arg)) {
-                var handlerResult = handlers.singular(co, arg);
+                var handlerResult = handlers.singular(fi, arg);
             } else {
                 //TODO: resultCallback should be defined in handlers...
                 var numberResolved = 0, tgt = new Array(arg.length);
@@ -50,11 +50,11 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                             }
                         }
 
-                        // TODO: restore co state for next await
-                        co.awaiting = [];
+                        // TODO: restore fi state for next await
+                        fi.awaiting = [];
 
                         // And finally we're done
-                        co.resume(null, tgt);
+                        fi.resume(null, tgt);
                     }
                 };
                 if (arg.length > 0) {
@@ -71,8 +71,8 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                             //TODO: special case: empty array...
                             //TODO: need setImmediate?
                             setImmediate(function () {
-                                co.awaiting = [];
-                                co.resume(null, tgt);
+                                fi.awaiting = [];
+                                fi.resume(null, tgt);
                             });
                         }
                     }
@@ -80,8 +80,8 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                     //TODO: special case: empty array...
                     //TODO: need setImmediate?
                     setImmediate(function () {
-                        co.awaiting = [];
-                        co.resume(null, tgt);
+                        fi.awaiting = [];
+                        fi.resume(null, tgt);
                     });
                 }
             }
@@ -92,7 +92,7 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
                 allArgs[i] = arguments[i];
 
             // Delegate to the specified handler to appropriately await the pass-in value(s).
-            var handlerResult = handlers.variadic(co, allArgs);
+            var handlerResult = handlers.variadic(fi, allArgs);
         }
 
         // Ensure the passed-in value(s) were handled.

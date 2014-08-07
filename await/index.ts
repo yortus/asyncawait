@@ -10,11 +10,11 @@ export = api;
 //TODO: temp testing...
 import compound = require('./compound');
 var value = {
-    singular: (co, arg) => {
-        setImmediate(() => { co.resume(null, arg); });
+    singular: (fi, arg) => {
+        setImmediate(() => { fi.resume(null, arg); });
     },
-    variadic: (co, args) => {
-        setImmediate(() => { co.resume(null, args[0]); });
+    variadic: (fi, args) => {
+        setImmediate(() => { fi.resume(null, args[0]); });
     },
     elements: () => 0
 };

@@ -20,9 +20,9 @@ var pipeline = {
     suspendFiber: function (val) {
         return Fiber.yield(val);
     },
-    isCurrent: function (co) {
+    isCurrent: function (fi) {
         var f = Fiber.current;
-        return f && f.id === co.id;
+        return f && f.id === fi.id;
     },
     nextCoroId: 1,
     continueAfterYield: {},
@@ -32,11 +32,11 @@ var pipeline = {
     },
     //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
     continuation: function continuation() {
-        var co = pipeline.currentFiber();
-        var i = co.awaiting.length++;
+        var fi = pipeline.currentFiber();
+        var i = fi.awaiting.length++;
         return function continue_(err, result) {
-            co.awaiting[i](err, result);
-            co = null;
+            fi.awaiting[i](err, result);
+            fi = null;
         };
     }
 };

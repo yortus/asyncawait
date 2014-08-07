@@ -36,9 +36,9 @@ var maxSlots: Mod = {
                 // only the concurrency factor of fibers called directly from the main execution stack.
                 if (!!base.currentFiber()) return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
-                // This is a top-level acquisition. Return a 'placeholder' fiber whose resume() method waits
+                // This is a top-level acquisition. Return a 'fake' fiber whose resume() method waits
                 // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
-                var fi: any = {
+                var fake: any = {
                     inSemaphore: true,
                     context: {},
                     resume: (error?, value?) => {
@@ -47,25 +47,25 @@ var maxSlots: Mod = {
                         enterSemaphore(() => {
 
                             // When the semaphore is ready, acquire a real fiber from the pipeline.
-                            var c = base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                            var real = base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
-                            // There may still be outstanding references to the placeholder fiber,
+                            // There may still be outstanding references to the fake fiber,
                             // so ensure its suspend() and resume() methods call the real fiber.
-                            fi.suspend = c.suspend;
-                            fi.resume = c.resume;
+                            fake.suspend = real.suspend;
+                            fake.resume = real.resume;
 
-                            // The context is already initialised on the placeholder, so copy in back.
-                            c.context = fi.context;
+                            // The context is already initialised on the fake, so copy it back.
+                            real.context = fake.context;
 
-                            // Mark this fiber so it is properly handled by releaseFiber().
-                            c.inSemaphore = true;
+                            // Mark the real fiber so it is properly handled by releaseFiber().
+                            real.inSemaphore = true;
 
-                            // Begin execution.
-                            fi.resume(error, value);
+                            // Begin execution in the real fiber.
+                            real.resume(error, value);
                         });
                     }
                 };
-                return fi;
+                return fake;
             },
 
             /** Ensure the Fiber instance is disposed of cleanly. */

@@ -2,13 +2,13 @@
 
 var yield_ = function yield_(value) {
     // Ensure this function is executing inside a coroutine.
-    var co = pipeline.currentFiber();
-    if (!co)
+    var fi = pipeline.currentFiber();
+    if (!fi)
         throw new Error('yield: may only be called inside a suspendable function.');
 
     //TODO: rename 'protocol' everywhere (now pipelines?)
     // Delegate to the appropriate protocol-specific behaviour.
-    co.suspend(null, value);
+    fi.suspend(null, value);
 };
 
 // TODO: this is about to be obsolete... remove it

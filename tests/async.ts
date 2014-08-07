@@ -64,7 +64,7 @@ function runTestsFor(variant?: string, acceptsCallback = false) {
 
         //TODO: review this test...
         it('has a protocol property that matches the passed-in protocol', () => {
-            var begin = (co, arg) => 'blah';
+            var begin = (fi, arg) => 'blah';
             var func2 = func.mod({ overrideProtocol: () => ({ begin: begin })});
             expect(func2.protocol).to.exist;
             expect(func2.protocol.begin).to.equal(begin);

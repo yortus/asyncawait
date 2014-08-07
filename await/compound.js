@@ -5,13 +5,13 @@ var newBuilder = oldBuilder.mod({
     name: 'compound',
     overrideHandlers: function (base, options) {
         return ({
-            singular: function (co, arg) {
+            singular: function (fi, arg) {
                 var handlers = options.handlers || [], len = handlers.length, result = pipeline.notHandled;
                 for (var i = 0; result === pipeline.notHandled && i < len; ++i)
-                    result = handlers[i].singular(co, arg);
+                    result = handlers[i].singular(fi, arg);
                 return result;
             },
-            variadic: function (co, args) {
+            variadic: function (fi, args) {
                 //TODO: temp testing... handle allArgs too...
                 return pipeline.notHandled;
             },

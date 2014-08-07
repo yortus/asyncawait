@@ -30,7 +30,7 @@ var pipeline = {
     // The remaining items are for internal use and may not be overriden.
     currentFiber: () => Fiber.current,
     suspendFiber: (val?) => Fiber.yield(val),
-    isCurrent: co => { var f = Fiber.current; return f && f.id === co.id; },
+    isCurrent: fi => { var f = Fiber.current; return f && f.id === fi.id; },
     nextCoroId: 1,
     continueAfterYield: {}, /* sentinal value */
     notHandled: {}, /* sentinal value */
@@ -38,11 +38,11 @@ var pipeline = {
 
     //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
     continuation: function continuation() {
-        var co = pipeline.currentFiber();
-        var i = co.awaiting.length++;
+        var fi = pipeline.currentFiber();
+        var i = fi.awaiting.length++;
         return function continue_(err, result) {
-            co.awaiting[i](err, result);
-            co = null;
+            fi.awaiting[i](err, result);
+            fi = null;
         };
     }
 };

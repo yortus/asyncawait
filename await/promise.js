@@ -10,19 +10,19 @@ var newBuilder = oldBuilder.mod({
     type: null,
     overrideHandlers: function (base, options) {
         return ({
-            singular: function (co, arg) {
+            singular: function (fi, arg) {
                 if (!_.isPromise(arg))
                     return pipeline.notHandled;
                 arg.then(function (val) {
-                    return co.resume(null, val);
-                }, co.resume);
+                    return fi.resume(null, val);
+                }, fi.resume);
             },
-            variadic: function (co, args) {
+            variadic: function (fi, args) {
                 if (!_.isPromise(args[0]))
                     return pipeline.notHandled;
                 args[0].then(function (val) {
-                    return co.resume(null, val);
-                }, co.resume);
+                    return fi.resume(null, val);
+                }, fi.resume);
             },
             elements: function (values, result) {
                 // TODO: temp testing...

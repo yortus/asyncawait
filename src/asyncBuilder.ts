@@ -135,7 +135,7 @@ function createSuspendableFunctionFactory(invokerArity, invokeeArity) {
 
     // Calcluate appropriate values to be substituted into the template.
     var result, funcName = 'SUSP$A' + invokeeArity + '$P' + invokerArity;
-    var paramNames = [], invokerArgs = ['co'], invokeeArgs = [];
+    var paramNames = [], invokerArgs = ['fi'], invokeeArgs = [];
     for (var i = 1; i <= invokeeArity; ++i) {
         paramNames.push('A' + i);
         invokeeArgs.push('A' + i);
@@ -152,11 +152,11 @@ function createSuspendableFunctionFactory(invokerArity, invokeeArity) {
         '    var t = this, l = arguments.length;',
         '    if ((!t || t===global) && l===$ARITY) {',
         '      var body = function f0() { return invokee($INVOKEE_ARGS); };',
-        '      var co = jointProtocol.acquireFiber(asyncProtocol, body);',
+        '      var fi = jointProtocol.acquireFiber(asyncProtocol, body);',
         '    } else {',
         '      var a = new Array(l-$PN);',
         '      for (var i = 0; i < l-$PN; ++i) a[i] = arguments[i];',
-        '      var co = jointProtocol.acquireFiber(asyncProtocol, invokee, t, a);',
+        '      var fi = jointProtocol.acquireFiber(asyncProtocol, invokee, t, a);',
         '    }',
         '    return asyncProtocol.begin($INVOKER_ARGS);',
         '  }',
@@ -195,9 +195,9 @@ function createDebugSuspendableFunction(asyncProtocol: Protocol, invokee: Functi
     return function SUSP$DEBUG(args) {
         var t = this, l = arguments.length, a = new Array(l - invokerArity);
         for (var i = 0; i < l - invokerArity; ++i) a[i] = arguments[i];
-        var co = jointProtocol.acquireFiber(asyncProtocol, invokee, t, a);
+        var fi = jointProtocol.acquireFiber(asyncProtocol, invokee, t, a);
         var b = new Array(invokerArity + 1);
-        b[0] = co;
+        b[0] = fi;
         for (var i = 0; i < invokerArity; ++i) b[i + 1] = arguments[l - invokerArity + i];
         return asyncProtocol.begin.apply(null, b);
     }
