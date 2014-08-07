@@ -2,8 +2,8 @@
 /** Pools fiber instances across acquire/release cycles, for improved performance. */
 var fiberPool = {
     name: 'fiberPool',
-    overridePipeline: function (base, options) {
-        // Override the pipeline if the option is selected.
+    overrideProtocol: function (base, options) {
+        // Override the joint protocol if the option is selected.
         return (!options.fiberPool) ? null : {
             /** Create and return a new Fiber instance. */
             acquireFiber: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
@@ -11,7 +11,7 @@ var fiberPool = {
                 var fiberPoolId = asyncProtocol.fiberPoolId || (asyncProtocol.fiberPoolId = ++_nextPoolId);
                 var fiberPool = _pools[fiberPoolId] || (_pools[fiberPoolId] = []);
 
-                // If the pool is empty, create and return a new fiber via the pipeline.
+                // If the pool is empty, create and return a new fiber via the jointProtocol.
                 if (fiberPool.length === 0)
                     return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
@@ -30,7 +30,7 @@ var fiberPool = {
                 var fiberPoolId = asyncProtocol.fiberPoolId || (asyncProtocol.fiberPoolId = ++_nextPoolId);
                 var fiberPool = _pools[fiberPoolId] || (_pools[fiberPoolId] = []);
 
-                // If the pool is already full, release the fiber via the pipeline.
+                // If the pool is already full, release the fiber via the jointProtocol.
                 if (_poolLevel >= _poolLimit)
                     return base.releaseFiber(asyncProtocol, fi);
 

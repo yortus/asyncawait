@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/awaitBuilder');
-import pipeline = require('../src/pipeline');
+import jointProtocol = require('../src/jointProtocol');
 import _ = require('../src/util');
 export = newBuilder;
 
@@ -13,11 +13,11 @@ var newBuilder = oldBuilder.mod({
 
     overrideHandlers: (base, options) => ({
         singular: (fi, arg) => {
-            if (!_.isFunction(arg)) return pipeline.notHandled;
+            if (!_.isFunction(arg)) return jointProtocol.notHandled;
             arg(fi.resume);
         },
         variadic: (fi, args) => {
-            if (!_.isFunction(args[0])) return pipeline.notHandled;
+            if (!_.isFunction(args[0])) return jointProtocol.notHandled;
             args[0](fi.resume);
         },
 

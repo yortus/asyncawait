@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var pipeline = require('../pipeline');
+var jointProtocol = require('../jointProtocol');
 
 
 /**
@@ -19,9 +19,9 @@ var cpsKeyword = {
 
         // Define the global property accessor.
         _cpsKeyword = options.cpsKeyword;
-        Object.defineProperty(global, _cpsKeyword, { get: pipeline.continuation, configurable: true });
+        Object.defineProperty(global, _cpsKeyword, { get: jointProtocol.continuation, configurable: true });
 
-        // Return an empty object, since we don't alter the pipeline here.
+        // Return an empty object, since we don't alter the jointProtocol here.
         return null;
     },
     reset: function () {

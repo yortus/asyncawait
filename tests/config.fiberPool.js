@@ -2,7 +2,7 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-var pipeline = require('asyncawait/src/pipeline');
+var jointProtocol = require('asyncawait/src/jointProtocol');
 var extensibility = require('asyncawait/src/extensibility');
 var expect = chai.expect;
 
@@ -14,7 +14,7 @@ describe('The fiberPool mod', function () {
     function createFoo() {
         return async(function () {
             await(Promise.delay(20));
-            return pipeline.currentFiber().id;
+            return jointProtocol.currentFiber().id;
         });
     }
 

@@ -8,9 +8,9 @@ var fiberPool: Mod = {
 
     name: 'fiberPool',
 
-    overridePipeline: (base, options) => {
+    overrideProtocol: (base, options) => {
 
-        // Override the pipeline if the option is selected.
+        // Override the joint protocol if the option is selected.
         return (!options.fiberPool) ? null : {
 
             /** Create and return a new Fiber instance. */
@@ -20,7 +20,7 @@ var fiberPool: Mod = {
                 var fiberPoolId = asyncProtocol.fiberPoolId || (asyncProtocol.fiberPoolId = ++_nextPoolId);
                 var fiberPool = _pools[fiberPoolId] || (_pools[fiberPoolId] = []);
 
-                // If the pool is empty, create and return a new fiber via the pipeline.
+                // If the pool is empty, create and return a new fiber via the jointProtocol.
                 if (fiberPool.length === 0) return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                 // Reuse a fiber from the pool, and return it.
@@ -40,7 +40,7 @@ var fiberPool: Mod = {
                 var fiberPoolId = asyncProtocol.fiberPoolId || (asyncProtocol.fiberPoolId = ++_nextPoolId);
                 var fiberPool = _pools[fiberPoolId] || (_pools[fiberPoolId] = []);
 
-                // If the pool is already full, release the fiber via the pipeline.
+                // If the pool is already full, release the fiber via the jointProtocol.
                 if (_poolLevel >= _poolLimit) return base.releaseFiber(asyncProtocol, fi);
 
                 // Clear the fiber and add it to the pool.

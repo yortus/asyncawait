@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var jointProtocol = require('./pipeline');
+var jointProtocol = require('./jointProtocol');
 var extensibility = require('./extensibility');
 var _ = require('./util');
 

@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import _ = require('./util');
-import pipeline = require('./pipeline');
+import jointProtocol = require('./jointProtocol');
 import fibersHotfix169 = require('./mods/fibersHotfix169');
 import fiberPool = require('./mods/fiberPool');
 import cpsKeyword = require('./mods/cpsKeyword');
@@ -49,17 +49,17 @@ export function applyMods() {
     // Create a combined mod list in the appropriate order.
     var allMods: Mod[] = externalMods.concat(internalMods);
 
-    // Restore the pipeline to its default state.
-    pipeline.restoreDefaults();
+    // Restore the jointProtocol to its default state.
+    jointProtocol.restoreDefaults();
 
     // Apply all mods in reverse order of registration. This ensures that mods
-    // registered earliest remain outermost in pipeline call chains, which is the
+    // registered earliest remain outermost in joint protocol call chains, which is the
     // design intention.
     for (var i = allMods.length - 1; i >= 0; --i) {
         var mod = allMods[i];
-        var pipelineBeforeMod = _.mergeProps({}, pipeline);
-        var pipelineOverrides = (mod.overridePipeline || <any> _.empty)(pipelineBeforeMod, _options);
-        _.mergeProps(pipeline, pipelineOverrides);
+        var protocolBeforeMod = _.mergeProps({}, jointProtocol);
+        var protocolOverrides = (mod.overrideProtocol || <any> _.empty)(protocolBeforeMod, _options);
+        _.mergeProps(jointProtocol, protocolOverrides);
         if (mod.apply) mod.apply(_options);
     }
 
@@ -85,8 +85,8 @@ export function resetMods() {
     _options = { };
     internalMods.forEach(mod => _.mergeProps(_options, mod.defaultOptions));
 
-    // Restore the default pipeline.
-    pipeline.restoreDefaults();
+    // Restore the default jointProtocol.
+    jointProtocol.restoreDefaults();
 
     // Unlock the subsystem.
     isLocked = false;

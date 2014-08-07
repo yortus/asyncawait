@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/awaitBuilder');
-import pipeline = require('../src/pipeline');
+import jointProtocol = require('../src/jointProtocol');
 export = newBuilder;
 
 
@@ -12,7 +12,7 @@ var newBuilder = oldBuilder.mod({
 
     overrideHandlers: (base, options) => ({
         singular: (fi, arg) => {
-            if (arg !== void 0) return pipeline.notHandled;
+            if (arg !== void 0) return jointProtocol.notHandled;
 
             if (fi.awaiting.length !== 1) {
                 // TODO: mismatch here - raise an error
@@ -27,13 +27,13 @@ var newBuilder = oldBuilder.mod({
 
         },
         variadic: (fi, args) => {
-            if (args[0] !== void 0) return pipeline.notHandled;
+            if (args[0] !== void 0) return jointProtocol.notHandled;
         },
 
         elements: (values: any[], result: (err: Error, value?: any, index?: number) => void) => {
 
             // TODO: temp testing...
-            var k = 0, fi = pipeline.currentFiber();
+            var k = 0, fi = jointProtocol.currentFiber();
             values.forEach((value, i) => {
                 if (i in values && values[i] === void 0) {
                     fi.awaiting[k++] = (err, res) => {
@@ -52,5 +52,5 @@ var newBuilder = oldBuilder.mod({
 });
 
 
-//TODO: is pipeline the right place for this?
-newBuilder.continuation = pipeline.continuation;
+//TODO: is jointProtocol the right place for this?
+newBuilder.continuation = jointProtocol.continuation;

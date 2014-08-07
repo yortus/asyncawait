@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import oldBuilder = require('../../src/asyncBuilder');
-import pipeline = require('../../src/pipeline');
+import jointProtocol = require('../../src/jointProtocol');
 import _ = require('../../src/util');
 export = newBuilder;
 
@@ -37,7 +37,7 @@ var newBuilder = oldBuilder.mod({
             fi.context.nextCallback(null, { done: false, value: value });
 
             // TODO: correct?
-            pipeline.suspendFiber();
+            jointProtocol.suspendFiber();
         },
 
         end: (fi: FiberEx, error?, value?) => {

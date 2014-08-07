@@ -3,7 +3,7 @@ import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
-import pipeline = require('asyncawait/src/pipeline');
+import jointProtocol = require('asyncawait/src/jointProtocol');
 import extensibility = require('asyncawait/src/extensibility');
 var expect = chai.expect;
 
@@ -16,7 +16,7 @@ describe('The cpsKeyword mod', () => {
     function createFoo() {
         return async (() => {
             await (Promise.delay(20));
-            return pipeline.currentFiber().id;
+            return jointProtocol.currentFiber().id;
         });
     }
 

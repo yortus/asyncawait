@@ -9,7 +9,7 @@
 */
 var maxSlots = {
     name: 'maxSlots',
-    overridePipeline: function (base, options) {
+    overrideProtocol: function (base, options) {
         // Do nothing if the option is not selected.
         var n = options.maxSlots;
         if (!n || !_.isNumber(n))
@@ -18,13 +18,13 @@ var maxSlots = {
         // Set the semaphore size.
         semaphoreSize(n);
 
-        // Return the pipeline overrides.
+        // Return the joint protocol overrides.
         return {
             /** Create and return a new Fiber instance. */
             acquireFiber: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
                 // If fiber A invokes fiber B and awaits its results, then suspending fiber B until the
                 // semaphore clears could easily lead to deadlocks. Therefore, for nested fiber acquisitions,
-                // skip the semaphore and delegate to the existing pipeline. This means 'maxSlots' affects
+                // skip the semaphore and delegate to the existing jointProtocol. This means 'maxSlots' affects
                 // only the concurrency factor of fibers called directly from the main execution stack.
                 if (!!base.currentFiber())
                     return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
@@ -37,7 +37,7 @@ var maxSlots = {
                     resume: function (error, value) {
                         // Upon execution, enter the semaphore.
                         enterSemaphore(function () {
-                            // When the semaphore is ready, acquire a real fiber from the pipeline.
+                            // When the semaphore is ready, acquire a real fiber from the jointProtocol.
                             var real = base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                             // There may still be outstanding references to the fake fiber,
@@ -66,7 +66,7 @@ var maxSlots = {
                     leaveSemaphore();
                 }
 
-                // Delegate to the existing pipeline.
+                // Delegate to the existing jointProtocol.
                 return base.releaseFiber(asyncProtocol, fi);
             }
         };

@@ -10,7 +10,7 @@ var expect = chai.expect;
 // Define test mods
 var tracking = [];
 var testModA: Mod = {
-    overridePipeline: (base, options) => ({
+    overrideProtocol: (base, options) => ({
         acquireFiber: () => {
             tracking.push('acquire A');
             return base.acquireFiber.apply(null, arguments);    
@@ -25,7 +25,7 @@ var testModA: Mod = {
     defaultOptions: { a: 1 }
 };
 var testModB: Mod = {
-    overridePipeline: (base, options) => ({
+    overrideProtocol: (base, options) => ({
         acquireFiber: () => {
             tracking.push('acquire B');
             return base.acquireFiber.apply(null, arguments);    
@@ -86,7 +86,7 @@ describe('Registered mods', () => {
         expect(tracking).to.deep.equal(['apply A']);
     });
 
-    it('are applied such that earliest registrations are outermost in pipeline call chains', () => {
+    it('are applied such that earliest registrations are outermost in jointProtocol call chains', () => {
         async.config.mod(testModA);
         async.config.mod(testModB);
         expect(tracking).to.be.empty;
@@ -94,7 +94,7 @@ describe('Registered mods', () => {
         expect(tracking).to.deep.equal(['apply B', 'apply A']);
     });
 
-    it('have their pipeline overrides applied', async.cps(() => {
+    it('have their jointProtocol overrides applied', async.cps(() => {
         async.config.mod(testModA);
         expect(tracking).to.be.empty;
         var foo = async (()=>{});
@@ -102,7 +102,7 @@ describe('Registered mods', () => {
         expect(tracking).to.deep.equal(['apply A', 'acquire A', 'release A']);
     }));
 
-    it('have their pipeline overrides called with correct nesting', async.cps(() => {
+    it('have their jointProtocol overrides called with correct nesting', async.cps(() => {
         async.config.mod(testModA);
         async.config.mod(testModB);
         expect(tracking).to.be.empty;

@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import jointProtocol = require('./pipeline');
+import jointProtocol = require('./jointProtocol');
 import extensibility = require('./extensibility');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;

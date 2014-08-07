@@ -1,5 +1,5 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
-var pipeline = require('../src/pipeline');
+var jointProtocol = require('../src/jointProtocol');
 var _ = require('../src/util');
 
 //TODO: but overrideHandler call needs (REALLY??? check) to happen *after* user has a chance to set options
@@ -12,14 +12,14 @@ var newBuilder = oldBuilder.mod({
         return ({
             singular: function (fi, arg) {
                 if (!_.isPromise(arg))
-                    return pipeline.notHandled;
+                    return jointProtocol.notHandled;
                 arg.then(function (val) {
                     return fi.resume(null, val);
                 }, fi.resume);
             },
             variadic: function (fi, args) {
                 if (!_.isPromise(args[0]))
-                    return pipeline.notHandled;
+                    return jointProtocol.notHandled;
                 args[0].then(function (val) {
                     return fi.resume(null, val);
                 }, fi.resume);

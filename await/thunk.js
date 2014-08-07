@@ -1,5 +1,5 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
-var pipeline = require('../src/pipeline');
+var jointProtocol = require('../src/jointProtocol');
 var _ = require('../src/util');
 
 var newBuilder = oldBuilder.mod({
@@ -9,12 +9,12 @@ var newBuilder = oldBuilder.mod({
         return ({
             singular: function (fi, arg) {
                 if (!_.isFunction(arg))
-                    return pipeline.notHandled;
+                    return jointProtocol.notHandled;
                 arg(fi.resume);
             },
             variadic: function (fi, args) {
                 if (!_.isFunction(args[0]))
-                    return pipeline.notHandled;
+                    return jointProtocol.notHandled;
                 args[0](fi.resume);
             },
             elements: function (values, result) {

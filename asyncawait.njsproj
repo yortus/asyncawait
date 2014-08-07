@@ -102,7 +102,7 @@
     <Content Include="src\mods\cpsKeyword.ts" />
     <Content Include="src\mods\fibersHotfix169.ts" />
     <Content Include="src\mods\maxSlots.ts" />
-    <Content Include="src\pipeline.ts" />
+    <Content Include="src\jointProtocol.ts" />
     <Content Include="src\util.ts" />
     <Content Include="support\comparison\README.md" />
     <Content Include="support\docs\index.md" />

@@ -188,7 +188,6 @@ declare module AsyncAwait {
     //------------------------- Yield -------------------------
     export interface Yield {
         (expr?: any): void;
-        continue: any;
     }
 
 
@@ -209,19 +208,19 @@ declare module AsyncAwait {
     // TODO: should be AsyncAwait.Config.Mod - need another namespace
     export interface Mod {
         name?: string;
-        overridePipeline?: (base: Pipeline, options: ConfigOptions) => PipelineOverrides;
+        overrideProtocol?: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
         apply?: (options: ConfigOptions) => void;
         reset?: () => void;
         defaultOptions?: {};
     }
 
-    export interface Pipeline {
+    export interface JointProtocol {
         acquireFiber: (asyncProtocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
         releaseFiber: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
         createFiberBody: (asyncProtocol: Async.Protocol, getCo: () => Fiber) => () => void;
     }
 
-    export interface PipelineOverrides {
+    export interface JointProtocolOverrides {
         acquireFiber?: (asyncProtocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
         releaseFiber?: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
         createFiberBody?: (asyncProtocol: Async.Protocol, getCo: () => Fiber) => () => void;

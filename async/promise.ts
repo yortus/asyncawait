@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
 import oldBuilder = require('../src/asyncBuilder');
-import pipeline = require('../src/pipeline');
+import jointProtocol = require('../src/jointProtocol');
 export = newBuilder;
 
 

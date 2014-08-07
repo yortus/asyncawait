@@ -18,9 +18,9 @@ var fibersHotfix169: Mod = {
 
     name: 'fibersHotfix169',
 
-    overridePipeline: (base, options) => {
+    overrideProtocol: (base, options) => {
 
-        // Override the pipeline if the option is selected.
+        // Override the joint protocol if the option is selected.
         return (!options.fibersHotfix169) ? null : {
             acquireFiber: (asyncProtocol, bodyFunc, bodyThis, bodyArgs) => {
                 inc();

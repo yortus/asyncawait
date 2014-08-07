@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var _ = require('./util');
-var pipeline = require('./pipeline');
+var jointProtocol = require('./jointProtocol');
 var fibersHotfix169 = require('./mods/fibersHotfix169');
 var fiberPool = require('./mods/fiberPool');
 var cpsKeyword = require('./mods/cpsKeyword');
@@ -42,14 +42,14 @@ function applyMods() {
     // Create a combined mod list in the appropriate order.
     var allMods = exports.externalMods.concat(exports.internalMods);
 
-    // Restore the pipeline to its default state.
-    pipeline.restoreDefaults();
+    // Restore the jointProtocol to its default state.
+    jointProtocol.restoreDefaults();
 
     for (var i = allMods.length - 1; i >= 0; --i) {
         var mod = allMods[i];
-        var pipelineBeforeMod = _.mergeProps({}, pipeline);
-        var pipelineOverrides = (mod.overridePipeline || _.empty)(pipelineBeforeMod, _options);
-        _.mergeProps(pipeline, pipelineOverrides);
+        var protocolBeforeMod = _.mergeProps({}, jointProtocol);
+        var protocolOverrides = (mod.overrideProtocol || _.empty)(protocolBeforeMod, _options);
+        _.mergeProps(jointProtocol, protocolOverrides);
         if (mod.apply)
             mod.apply(_options);
     }
@@ -80,8 +80,8 @@ function resetMods() {
         return _.mergeProps(_options, mod.defaultOptions);
     });
 
-    // Restore the default pipeline.
-    pipeline.restoreDefaults();
+    // Restore the default jointProtocol.
+    jointProtocol.restoreDefaults();
 
     // Unlock the subsystem.
     exports.isLocked = false;

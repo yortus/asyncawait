@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import stream = require('stream');
 import oldBuilder = require('../src/asyncBuilder');
-import pipeline = require('../src/pipeline');
+import jointProtocol = require('../src/jointProtocol');
 export = newBuilder;
 
 
@@ -29,11 +29,11 @@ var newBuilder = oldBuilder.mod({
             // TODO: handle by emitting error event?
             if (error) throw error; // NB: not handled - throw in fiber
 
-            //TODO: should setImmediate go here, or in pipeline?
+            //TODO: should setImmediate go here, or in jointProtocol?
             setImmediate(() => fi.context.push(value));
 
             // TODO: correct?
-            pipeline.suspendFiber();
+            jointProtocol.suspendFiber();
         },
 
         end: (fi: FiberEx, error?, value?) => {

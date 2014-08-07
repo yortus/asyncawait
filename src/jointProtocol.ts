@@ -1,31 +1,23 @@
-﻿
-//TODO: rename this file... should be jointProtocol
-
-
-// TODO: change co to fi throughout project and use correct type (Fiber/FiberEx)
-
-
-
-import references = require('references');
+﻿import references = require('references');
 import assert = require('assert');
 import Fiber = require('fibers');
 import _ = require('./util');
-import Pipeline = AsyncAwait.Pipeline;
+import JointProtocol = AsyncAwait.JointProtocol;
 import AsyncProtocol = AsyncAwait.Async.Protocol;
-export = pipeline;
+export = jointProtocol;
 
 
 /**
  *  A hash of functions and properties that are used internally at various
- *  stages of async/await handling. The pipeline may be augmented by mods,
+ *  stages of async/await handling. The jointProtocol may be augmented by mods,
  *  which are loaded via the use(...) API method.
  */
-var pipeline = {
+var jointProtocol = {
 
-    // The following methods comprise the overridable part of the pipeline API.
-    acquireFiber: <typeof defaultPipeline.acquireFiber> null,
-    releaseFiber: <typeof defaultPipeline.releaseFiber> null,
-    createFiberBody: <typeof defaultPipeline.createFiberBody> null,
+    // The following methods comprise the overridable part of the jointProtocol API.
+    acquireFiber: <typeof defaultProtocol.acquireFiber> null,
+    releaseFiber: <typeof defaultProtocol.releaseFiber> null,
+    createFiberBody: <typeof defaultProtocol.createFiberBody> null,
 
     // The remaining items are for internal use and may not be overriden.
     currentFiber: () => Fiber.current,
@@ -34,11 +26,11 @@ var pipeline = {
     nextCoroId: 1,
     continueAfterYield: {}, /* sentinal value */
     notHandled: {}, /* sentinal value */
-    restoreDefaults: () => _.mergeProps(pipeline, defaultPipeline),
+    restoreDefaults: () => _.mergeProps(jointProtocol, defaultProtocol),
 
     //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
     continuation: function continuation() {
-        var fi = pipeline.currentFiber();
+        var fi = jointProtocol.currentFiber();
         var i = fi.awaiting.length++;
         return function continue_(err, result) {
             fi.awaiting[i](err, result);
@@ -48,14 +40,14 @@ var pipeline = {
 };
 
 
-/** Default implementations for the overrideable pipeline methods. */
-var defaultPipeline: Pipeline = {
+/** Default implementations for the overrideable jointProtocol methods. */
+var defaultProtocol: JointProtocol = {
 
     /** Create and return a new Fiber instance. */
     acquireFiber: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
-        var fiberBody = pipeline.createFiberBody(asyncProtocol, function getFi() { return fi; });
+        var fiberBody = jointProtocol.createFiberBody(asyncProtocol, function getFi() { return fi; });
         var fi = Fiber(fiberBody);
-        fi.id = ++pipeline.nextCoroId;
+        fi.id = ++jointProtocol.nextCoroId;
         fi.bodyFunc = bodyFunc;
         fi.bodyThis = bodyThis;
         fi.bodyArgs = bodyArgs;
@@ -120,7 +112,7 @@ var defaultPipeline: Pipeline = {
         }
         function finallyBlock() {
             asyncProtocol.end(fi, error, result);
-            pipeline.releaseFiber(asyncProtocol, fi);
+            jointProtocol.releaseFiber(asyncProtocol, fi);
         }
 
         // Return the completed fiberBody closure.

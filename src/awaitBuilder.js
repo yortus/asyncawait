@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var pipeline = require('./pipeline');
+var jointProtocol = require('./jointProtocol');
 var _ = require('./util');
 var extensibility = require('./extensibility');
 
@@ -24,7 +24,7 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
     var builder = function await(arg) {
         //TODO: can this be optimised more, eg like async builder's eval?
         // Ensure this function is executing inside a fiber.
-        var fi = pipeline.currentFiber();
+        var fi = jointProtocol.currentFiber();
         assert(fi, 'await: may only be called inside a suspendable function');
 
         // TODO: temp testing... fast/slow paths
@@ -97,12 +97,12 @@ function createAwaitBuilder(handlersFactory, options, baseHandlers) {
 
         // Ensure the passed-in value(s) were handled.
         //TODO: ...or just pass back value unchanged (i.e. await.value(...) is the built-in fallback.
-        assert(handlerResult !== pipeline.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
+        assert(handlerResult !== jointProtocol.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
 
         // Suspend the fiber until the await handler causes it to be resumed. NB: fi.suspend is bypassed here because:
         // 1. it's custom handling is not appropriate for await, which always wants to simply suspend the fiber; and
         // 2. by not needing to special-case await calls, fi.suspend is simplified because it has a single use-case.
-        return pipeline.suspendFiber();
+        return jointProtocol.suspendFiber();
     };
 
     // Tack on the handlers and options properties, and the mod() method.
