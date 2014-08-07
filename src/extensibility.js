@@ -1,8 +1,8 @@
 ﻿var assert = require('assert');
 var _ = require('./util');
 var pipeline = require('./pipeline');
-var fiberPoolFix = require('./mods/fiberPoolFix');
-var coroPool = require('./mods/coroPool');
+var fibersHotfix169 = require('./mods/fibersHotfix169');
+var fiberPool = require('./mods/fiberPool');
 var cpsKeyword = require('./mods/cpsKeyword');
 var maxSlots = require('./mods/maxSlots');
 
@@ -89,7 +89,7 @@ function resetMods() {
 exports.resetMods = resetMods;
 
 /** Built-in mods that are always applied. Order is important. */
-exports.internalMods = [cpsKeyword, maxSlots, coroPool, fiberPoolFix];
+exports.internalMods = [cpsKeyword, maxSlots, fiberPool, fibersHotfix169];
 
 /** Mods that have been explicitly registered via use(...). */
 exports.externalMods = [];

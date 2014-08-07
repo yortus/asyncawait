@@ -39,7 +39,7 @@ var newBuilder = oldBuilder.mod({
             fi.context.nextResolver.resolve({ done: false, value: value });
 
             // TODO: correct?
-            pipeline.suspendCoro();
+            pipeline.suspendFiber();
         },
 
         end: (fi: FiberEx, error?, value?) => {

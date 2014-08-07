@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 var peak = 0;
 
-describe('The fiberPoolFix mod', function () {
+describe('The fibersHotfix169 mod', function () {
     function createFoo() {
         return async(function () {
             if (Fiber.poolSize > peak)
@@ -23,7 +23,7 @@ describe('The fiberPoolFix mod', function () {
     }
 
     it('adjusts Fiber.poolSize so it always exceeds the number of executing fibers', async.cps(function () {
-        async.config({ fiberPoolFix: true });
+        async.config({ fibersHotfix169: true });
         expect(Fiber.poolSize).to.equal(120);
         var foo = createFoo();
         await(Array.apply(0, new Array(200)).map(foo));
@@ -31,11 +31,11 @@ describe('The fiberPoolFix mod', function () {
     }));
 
     it('does not adjust Fiber.poolSize if inactivated', async.cps(function () {
-        async.config({ fiberPoolFix: false });
+        async.config({ fibersHotfix169: false });
         expect(Fiber.poolSize).to.equal(120);
         var foo = createFoo();
         await(Array.apply(0, new Array(200)).map(foo));
         expect(peak).to.equal(120);
     }));
 });
-//# sourceMappingURL=config.fiberPoolFix.js.map
+//# sourceMappingURL=config.fibersHotfix169.js.map

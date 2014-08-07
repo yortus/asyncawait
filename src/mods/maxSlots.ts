@@ -27,17 +27,18 @@ var maxSlots: Mod = {
         // Return the pipeline overrides.
         return {
 
-            /** Create and return a new Coroutine instance. */
-            acquireCoro: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+            /** Create and return a new Fiber instance. */
+            acquireFiber: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
 
-                // For non-top-level acquisitions, just delegate to the existing pipeline.
-                // If coroutines invoke other coroutines and await their results, putting
-                // the nested coroutines through the semaphore could easily lead to deadlocks.
-                if (!!base.currentCoro()) return base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                // If fiber A invokes fiber B and awaits its results, then suspending fiber B until the
+                // semaphore clears could easily lead to deadlocks. Therefore, for nested fiber acquisitions,
+                // skip the semaphore and delegate to the existing pipeline. This means 'maxSlots' affects
+                // only the concurrency factor of fibers called directly from the main execution stack.
+                if (!!base.currentFiber()) return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
-                // This is a top-level acquisition. Return a 'placeholder' coroutine whose resume() method waits
+                // This is a top-level acquisition. Return a 'placeholder' fiber whose resume() method waits
                 // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
-                var co: any = {
+                var fi: any = {
                     inSemaphore: true,
                     context: {},
                     resume: (error?, value?) => {
@@ -45,39 +46,39 @@ var maxSlots: Mod = {
                         // Upon execution, enter the semaphore.
                         enterSemaphore(() => {
 
-                            // When the semaphore is ready, acquire a coroutine from the pipeline.
-                            var c = base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                            // When the semaphore is ready, acquire a real fiber from the pipeline.
+                            var c = base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
-                            // There may still be outstanding references to the placeholder coroutine,
-                            // so ensure its suspend() and resume() methods call the real coroutine.
-                            co.suspend = c.suspend;
-                            co.resume = c.resume;
+                            // There may still be outstanding references to the placeholder fiber,
+                            // so ensure its suspend() and resume() methods call the real fiber.
+                            fi.suspend = c.suspend;
+                            fi.resume = c.resume;
 
                             // The context is already initialised on the placeholder, so copy in back.
-                            c.context = co.context;
+                            c.context = fi.context;
 
-                            // Mark this coroutine so it is properly handled by releaseCoro().
+                            // Mark this fiber so it is properly handled by releaseFiber().
                             c.inSemaphore = true;
 
                             // Begin execution.
-                            co.resume(error, value);
+                            fi.resume(error, value);
                         });
                     }
                 };
-                return co;
+                return fi;
             },
 
-            /** Ensure the Coroutine instance is disposed of cleanly. */
-            releaseCoro: (asyncProtocol: AsyncProtocol, co) => {
+            /** Ensure the Fiber instance is disposed of cleanly. */
+            releaseFiber: (asyncProtocol: AsyncProtocol, fi) => {
 
-                // If this coroutine entered through the semaphore, then it must leave through the semaphore.
-                if (co.inSemaphore) {
-                    co.inSemaphore = false;
+                // If this fiber entered through the semaphore, then it must leave through the semaphore.
+                if (fi.inSemaphore) {
+                    fi.inSemaphore = false;
                     leaveSemaphore();
                 }
 
                 // Delegate to the existing pipeline.
-                return base.releaseCoro(asyncProtocol, co);
+                return base.releaseFiber(asyncProtocol, fi);
             }
         };
     },

@@ -63,9 +63,9 @@ module.exports = function(grunt) {
                     'tests/await.promise.js',
                     'tests/await.thunk.js',
                     'tests/await.js',
-                    'tests/config.coroPool.js',
+                    'tests/config.fiberPool.js',
                     'tests/config.cpsKeyword.js',
-                    'tests/config.fiberPoolFix.js',
+                    'tests/config.fibersHotfix169.js',
                     'tests/config.maxSlots.js',
                     'tests/config.mod.js',
                     'tests/config.js'

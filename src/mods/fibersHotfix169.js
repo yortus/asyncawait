@@ -1,26 +1,26 @@
 ﻿var Fiber = require('fibers');
 
 
+//TODO: apply this by default? Check impact on benchmarks.
 /**
 *  Automatically manages Fiber.poolSize to work around an issue with node-fibers.
-*  Apply this mod when the peak number of concurrently executing fibers (there is
-*  one for each currently executing suspendable function) is likely to exceed 120.
-*  Memory leaks and slowdowns under heavy load is symptomatic of the issue this
-*  mod addresses.
-*  For more details see https://github.com/laverdet/node-fibers/issues/169.
+*  This mod is recommended when the peak number of concurrently executing fibers
+*  (there is one for each currently executing suspendable function) is likely to
+*  exceed 120. Memory leaks and slowdowns under heavy load are symptomatic of the
+*  issue fixed by this mod. See https://github.com/laverdet/node-fibers/issues/169.
 */
-var fiberPoolFix = {
-    name: 'fiberPoolFix',
+var fibersHotfix169 = {
+    name: 'fibersHotfix169',
     overridePipeline: function (base, options) {
         // Override the pipeline if the option is selected.
-        return (!options.fiberPoolFix) ? null : {
-            acquireFiber: function (body) {
+        return (!options.fibersHotfix169) ? null : {
+            acquireFiber: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
                 inc();
-                return base.acquireFiber(body);
+                return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
             },
-            releaseFiber: function (fiber) {
+            releaseFiber: function (asyncProtocol, fi) {
                 dec();
-                return base.releaseFiber(fiber);
+                return base.releaseFiber(asyncProtocol, fi);
             }
         };
     },
@@ -29,7 +29,7 @@ var fiberPoolFix = {
         _activeFiberCount = 0;
     },
     defaultOptions: {
-        fiberPoolFix: false
+        fibersHotfix169: false
     }
 };
 
@@ -51,5 +51,5 @@ function dec() {
 //TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;
-module.exports = fiberPoolFix;
-//# sourceMappingURL=fiberPoolFix.js.map
+module.exports = fibersHotfix169;
+//# sourceMappingURL=fibersHotfix169.js.map

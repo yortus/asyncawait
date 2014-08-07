@@ -98,9 +98,9 @@
     <Content Include="src\asyncBuilder.ts" />
     <Content Include="src\awaitBuilder.ts" />
     <Content Include="src\extensibility.ts" />
-    <Content Include="src\mods\coroPool.ts" />
+    <Content Include="src\mods\fiberPool.ts" />
     <Content Include="src\mods\cpsKeyword.ts" />
-    <Content Include="src\mods\fiberPoolFix.ts" />
+    <Content Include="src\mods\fibersHotfix169.ts" />
     <Content Include="src\mods\maxSlots.ts" />
     <Content Include="src\pipeline.ts" />
     <Content Include="src\util.ts" />
@@ -115,8 +115,8 @@
     <Content Include="typings\node-fibers\node-fibers.d.ts" />
     <Content Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="tests\config.cpsKeyword.ts" />
-    <TypeScriptCompile Include="tests\config.fiberPoolFix.ts" />
-    <TypeScriptCompile Include="tests\config.coroPool.ts" />
+    <TypeScriptCompile Include="tests\config.fibersHotfix169.ts" />
+    <TypeScriptCompile Include="tests\config.fiberPool.ts" />
     <TypeScriptCompile Include="tests\config.mod.ts" />
     <TypeScriptCompile Include="tests\config.ts" />
     <TypeScriptCompile Include="yield\index.ts" />

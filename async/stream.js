@@ -31,7 +31,7 @@ var newBuilder = oldBuilder.mod({
                 });
 
                 // TODO: correct?
-                pipeline.suspendCoro();
+                pipeline.suspendFiber();
             },
             end: function (fi, error, value) {
                 // TODO: if error, should we still push null to emit 'end' event as well? Check stream docs... I think errors are not considered final

@@ -11,13 +11,13 @@ var expect = chai.expect;
 var tracking = [];
 var testModA: Mod = {
     overridePipeline: (base, options) => ({
-        acquireCoro: () => {
+        acquireFiber: () => {
             tracking.push('acquire A');
-            return base.acquireCoro.apply(null, arguments);    
+            return base.acquireFiber.apply(null, arguments);    
         },
-        releaseCoro: () => {
+        releaseFiber: () => {
             tracking.push('release A');
-            base.releaseCoro.apply(null, arguments);    
+            base.releaseFiber.apply(null, arguments);    
         }
     }),
     apply: () => tracking.push('apply A'),
@@ -26,13 +26,13 @@ var testModA: Mod = {
 };
 var testModB: Mod = {
     overridePipeline: (base, options) => ({
-        acquireCoro: () => {
+        acquireFiber: () => {
             tracking.push('acquire B');
-            return base.acquireCoro.apply(null, arguments);    
+            return base.acquireFiber.apply(null, arguments);    
         },
-        releaseCoro: () => {
+        releaseFiber: () => {
             tracking.push('release B');
-            base.releaseCoro.apply(null, arguments);    
+            base.releaseFiber.apply(null, arguments);    
         }
     }),
     apply: () => tracking.push('apply B'),

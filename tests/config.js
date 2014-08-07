@@ -12,7 +12,7 @@ beforeEach(function () {
 describe('The config(...) function', function () {
     it('returns the current options when called with no arguments', function () {
         var opts = async.config();
-        expect(opts).to.contain.keys('maxSlots', 'coroPool');
+        expect(opts).to.contain.keys('maxSlots', 'fiberPool');
     });
 
     it('Updates the current options with the key/value pairs passed in its first argument', function () {
@@ -25,7 +25,7 @@ describe('The config(...) function', function () {
 
     it('fails if called with an argument after the first async(...) call', function () {
         var opts = async.config();
-        expect(opts).to.contain.keys('maxSlots', 'coroPool');
+        expect(opts).to.contain.keys('maxSlots', 'fiberPool');
         var foo = async(function () {
         });
         expect(function () {

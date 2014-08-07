@@ -10,13 +10,13 @@ var tracking = [];
 var testModA = {
     overridePipeline: function (base, options) {
         return ({
-            acquireCoro: function () {
+            acquireFiber: function () {
                 tracking.push('acquire A');
-                return base.acquireCoro.apply(null, arguments);
+                return base.acquireFiber.apply(null, arguments);
             },
-            releaseCoro: function () {
+            releaseFiber: function () {
                 tracking.push('release A');
-                base.releaseCoro.apply(null, arguments);
+                base.releaseFiber.apply(null, arguments);
             }
         });
     },
@@ -31,13 +31,13 @@ var testModA = {
 var testModB = {
     overridePipeline: function (base, options) {
         return ({
-            acquireCoro: function () {
+            acquireFiber: function () {
                 tracking.push('acquire B');
-                return base.acquireCoro.apply(null, arguments);
+                return base.acquireFiber.apply(null, arguments);
             },
-            releaseCoro: function () {
+            releaseFiber: function () {
                 tracking.push('release B');
-                base.releaseCoro.apply(null, arguments);
+                base.releaseFiber.apply(null, arguments);
             }
         });
     },

@@ -54,7 +54,7 @@ declare module AsyncAwait {
         }
 
         export interface StreamBuilder extends TypedBuilder<StreamBuilder> {
-            (fn: Function): (...args: any[]) => ReadableStream;
+            (fn: Function): (...args: any[]) => NodeJS.ReadableStream;
         }
 
         export interface IterablePromiseBuilder extends TypedBuilder<IterablePromiseBuilder> {
@@ -172,15 +172,15 @@ declare module AsyncAwait {
         // TODO: doc: handlers *must* resume coro asynchronously
         // TODO: doc: arg/allArgs fast/slow paths
         export interface Handlers {
-            singular: (co: Coroutine, arg: any) => any;
-            variadic: (co: Coroutine, args: any[]) => any;
+            singular: (fi: Fiber, arg: any) => any;
+            variadic: (fi: Fiber, args: any[]) => any;
             elements?: (values: any[], result: (err: Error, value: any, index: number) => void) => number;
         }
 
         // TODO: new...
         export interface HandlerOverrides {
-            singular?: (co: Coroutine, arg: any) => any;
-            variadic?: (co: Coroutine, args: any[]) => any;
+            singular?: (fi: Fiber, arg: any) => any;
+            variadic?: (fi: Fiber, args: any[]) => any;
         }
     }
 
@@ -200,8 +200,8 @@ declare module AsyncAwait {
     }
 
     export interface ConfigOptions {
-        fiberPoolFix?: boolean;
-        coroPool?: boolean;
+        fibersHotfix169?: boolean;
+        fiberPool?: boolean;
         maxSlots?: number;
         cpsKeyword?: string;
     }
@@ -216,34 +216,19 @@ declare module AsyncAwait {
     }
 
     export interface Pipeline {
-        acquireCoro: (asyncPipeline: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
-        releaseCoro: (asyncPipeline: Async.Protocol, co: Fiber) => void;
-        acquireFiber: (body: () => any) => Fiber;
-        releaseFiber: (fiber: Fiber) => void;
-        createFiberBody: (asyncPipeline: Async.Protocol, getCo: () => Fiber) => () => void;
+        acquireFiber: (asyncProtocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
+        releaseFiber: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
+        createFiberBody: (asyncProtocol: Async.Protocol, getCo: () => Fiber) => () => void;
     }
 
     export interface PipelineOverrides {
-        acquireCoro?: (asyncPipeline: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
-        releaseCoro?: (asyncPipeline: Async.Protocol, co: Fiber) => void;
-        acquireFiber?: (body: () => any) => Fiber;
-        releaseFiber?: (fiber: Fiber) => void;
-        createFiberBody?: (asyncPipeline: Async.Protocol, getCo: () => Fiber) => () => void;
+        acquireFiber?: (asyncProtocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
+        releaseFiber?: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
+        createFiberBody?: (asyncProtocol: Async.Protocol, getCo: () => Fiber) => () => void;
     }
 
 
     //------------------------- Common -------------------------
-    export interface Coroutine {
-        id: number;//TODO: doc: useful for debugging/assertions
-        enter?: (error?: Error, value?: any) => void;
-        leave?: (value?: any) => void;
-        context?: any;
-
-        //TODO: ...
-        suspend: (error?: Error, value?: any) => void;
-        resume: (error?: Error, value?: any) => void;
-    }
-
     export interface Callback<TResult> {
         (err: Error, result: TResult): void;
     }
@@ -252,6 +237,7 @@ declare module AsyncAwait {
         (callback?: Callback<TResult>): void;
     }
 }
+
 
 declare module "asyncawait" {
     export import async = require("asyncawait/async");

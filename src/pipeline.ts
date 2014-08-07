@@ -23,16 +23,14 @@ export = pipeline;
 var pipeline = {
 
     // The following methods comprise the overridable part of the pipeline API.
-    acquireCoro: <typeof defaultPipeline.acquireCoro> null,
-    releaseCoro: <typeof defaultPipeline.releaseCoro> null,
     acquireFiber: <typeof defaultPipeline.acquireFiber> null,
     releaseFiber: <typeof defaultPipeline.releaseFiber> null,
     createFiberBody: <typeof defaultPipeline.createFiberBody> null,
 
     // The remaining items are for internal use and may not be overriden.
-    currentCoro: () => <CoroFiber> Fiber.current,
-    suspendCoro: (val?) => Fiber.yield(val),
-    isCurrent: co => { var f = <CoroFiber> Fiber.current; return f && f.id === co.id; },
+    currentFiber: () => Fiber.current,
+    suspendFiber: (val?) => Fiber.yield(val),
+    isCurrent: co => { var f = Fiber.current; return f && f.id === co.id; },
     nextCoroId: 1,
     continueAfterYield: {}, /* sentinal value */
     notHandled: {}, /* sentinal value */
@@ -40,7 +38,7 @@ var pipeline = {
 
     //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
     continuation: function continuation() {
-        var co = pipeline.currentCoro();
+        var co = pipeline.currentFiber();
         var i = co.awaiting.length++;
         return function continue_(err, result) {
             co.awaiting[i](err, result);
@@ -53,43 +51,33 @@ var pipeline = {
 /** Default implementations for the overrideable pipeline methods. */
 var defaultPipeline: Pipeline = {
 
-    /** Create and return a new Coroutine instance. */
-    acquireCoro: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
-        var fiberBody = pipeline.createFiberBody(asyncProtocol, function getCo() { return co; });
-        var co = pipeline.acquireFiber(fiberBody);
-        co.id = ++pipeline.nextCoroId;
-        co.bodyFunc = bodyFunc;
-        co.bodyThis = bodyThis;
-        co.bodyArgs = bodyArgs;
-        co.context = {};
-        co.awaiting = [];
-        co.suspend = (error?: Error, value?) => asyncProtocol.suspend(co, error, value);
-        co.resume = (error?: Error, value?) => asyncProtocol.resume(co, error, value);
-        return co;
-    },
-
-    /** Ensure the Coroutine instance is disposed of cleanly. */
-    releaseCoro: (asyncProtocol: AsyncProtocol, co: Fiber) => {
-        co.suspend = null;
-        co.resume = null;
-        co.context = null;
-        co.bodyFunc = null;
-        co.bodyThis = null;
-        co.bodyArgs = null;
-    },
-
     /** Create and return a new Fiber instance. */
-    acquireFiber: (body: () => any): Fiber => {
-        return Fiber(body);
+    acquireFiber: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+        var fiberBody = pipeline.createFiberBody(asyncProtocol, function getFi() { return fi; });
+        var fi = Fiber(fiberBody);
+        fi.id = ++pipeline.nextCoroId;
+        fi.bodyFunc = bodyFunc;
+        fi.bodyThis = bodyThis;
+        fi.bodyArgs = bodyArgs;
+        fi.context = {};
+        fi.awaiting = [];
+        fi.suspend = (error?: Error, value?) => asyncProtocol.suspend(fi, error, value);
+        fi.resume = (error?: Error, value?) => asyncProtocol.resume(fi, error, value);
+        return fi;
     },
 
     /** Ensure the Fiber instance is disposed of cleanly. */
-    releaseFiber: (fiber: Fiber) => {
-        // No-op.
+    releaseFiber: (asyncProtocol: AsyncProtocol, fi: Fiber) => {
+        fi.suspend = null;
+        fi.resume = null;
+        fi.context = null;
+        fi.bodyFunc = null;
+        fi.bodyThis = null;
+        fi.bodyArgs = null;
     },
 
     /** Create the body function to be executed inside a fiber. */
-    createFiberBody: (asyncProtocol: AsyncProtocol, getCo: () => Fiber) => {
+    createFiberBody: (asyncProtocol: AsyncProtocol, getFi: () => Fiber) => {
 
         // V8 may not optimise the following function due to the presence of
         // try/catch/finally. Therefore it does as little as possible, only
@@ -101,20 +89,20 @@ var defaultPipeline: Pipeline = {
         }
 
         // These references are shared by the closures below.
-        var co: Fiber, result, error;
+        var fi: Fiber, result, error;
 
         // Define the details of the body function's try/catch/finally clauses.
         function tryBlock() {
 
-            // Lazy-load the coroutine instance to use throughout the body function. This mechanism
+            // Lazy-load the fiber instance to use throughout the body function. This mechanism
             // means that the instance need not be available at the time createFiberBody() is called.
-            co = co || getCo();
+            fi = fi || getFi();
 
             // Clear the error state.
             error = null;
 
             // Execute the entirety of bodyFunc, using the fastest feasible invocation approach.
-            var f = co.bodyFunc, t = co.bodyThis, a = co.bodyArgs, noThis = !t || t === global;
+            var f = fi.bodyFunc, t = fi.bodyThis, a = fi.bodyArgs, noThis = !t || t === global;
             if (noThis && a) {
                 switch (a.length) {
                     case 0: result = f(); break;
@@ -131,9 +119,8 @@ var defaultPipeline: Pipeline = {
             error = err;
         }
         function finallyBlock() {
-            asyncProtocol.end(co, error, result);
-            pipeline.releaseFiber(co);
-            pipeline.releaseCoro(asyncProtocol, co);
+            asyncProtocol.end(fi, error, result);
+            pipeline.releaseFiber(asyncProtocol, fi);
         }
 
         // Return the completed fiberBody closure.

@@ -30,7 +30,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
         //TODO: can this be optimised more, eg like async builder's eval?
 
         // Ensure this function is executing inside a coroutine.
-        var co = pipeline.currentCoro();
+        var co = pipeline.currentFiber();
         assert(co, 'await: may only be called inside a suspendable function');
 
         // TODO: temp testing... fast/slow paths
@@ -119,7 +119,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
         // Suspend the coroutine until the await handler causes it to be resumed. NB: fi.suspend is bypassed here because:
         // 1. it's custom handling is not appropriate for await, which always wants to simply suspend the fiber; and
         // 2. by not needing to special-case await calls, fi.suspend is simplified because it has a single use-case.
-        return pipeline.suspendCoro(); 
+        return pipeline.suspendFiber(); 
     }
 
     // Tack on the handlers and options properties, and the mod() method.

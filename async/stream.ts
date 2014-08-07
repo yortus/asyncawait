@@ -33,7 +33,7 @@ var newBuilder = oldBuilder.mod({
             setImmediate(() => fi.context.push(value));
 
             // TODO: correct?
-            pipeline.suspendCoro();
+            pipeline.suspendFiber();
         },
 
         end: (fi: FiberEx, error?, value?) => {

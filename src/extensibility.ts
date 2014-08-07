@@ -2,8 +2,8 @@
 import assert = require('assert');
 import _ = require('./util');
 import pipeline = require('./pipeline');
-import fiberPoolFix = require('./mods/fiberPoolFix');
-import coroPool = require('./mods/coroPool');
+import fibersHotfix169 = require('./mods/fibersHotfix169');
+import fiberPool = require('./mods/fiberPool');
 import cpsKeyword = require('./mods/cpsKeyword');
 import maxSlots = require('./mods/maxSlots');
 import Mod = AsyncAwait.Mod;
@@ -94,7 +94,7 @@ export function resetMods() {
 
 
 /** Built-in mods that are always applied. Order is important. */
-export var internalMods = [ cpsKeyword, maxSlots, coroPool, fiberPoolFix ];
+export var internalMods = [ cpsKeyword, maxSlots, fiberPool, fibersHotfix169 ];
 
 
 /** Mods that have been explicitly registered via use(...). */

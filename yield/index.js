@@ -2,7 +2,7 @@
 
 var yield_ = function yield_(value) {
     // Ensure this function is executing inside a coroutine.
-    var co = pipeline.currentCoro();
+    var co = pipeline.currentFiber();
     if (!co)
         throw new Error('yield: may only be called inside a suspendable function.');
 

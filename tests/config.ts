@@ -14,7 +14,7 @@ describe('The config(...) function', () => {
 
     it('returns the current options when called with no arguments', () => {
         var opts = async.config();
-        expect(opts).to.contain.keys('maxSlots', 'coroPool');
+        expect(opts).to.contain.keys('maxSlots', 'fiberPool');
     });
 
     it('Updates the current options with the key/value pairs passed in its first argument', () => {
@@ -27,7 +27,7 @@ describe('The config(...) function', () => {
 
     it('fails if called with an argument after the first async(...) call', () => {
         var opts = async.config();
-        expect(opts).to.contain.keys('maxSlots', 'coroPool');
+        expect(opts).to.contain.keys('maxSlots', 'fiberPool');
         var foo = async (() => {});
         expect(() => async.config({maxSlots: 10})).to.throw();
     });

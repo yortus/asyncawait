@@ -26,7 +26,7 @@ var newBuilder = oldBuilder.mod({
             },
             elements: function (values, result) {
                 // TODO: temp testing...
-                var k = 0, co = pipeline.currentCoro();
+                var k = 0, co = pipeline.currentFiber();
                 values.forEach(function (value, i) {
                     if (i in values && values[i] === void 0) {
                         co.awaiting[k++] = function (err, res) {

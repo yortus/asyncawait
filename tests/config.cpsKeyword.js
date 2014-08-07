@@ -14,7 +14,7 @@ describe('The cpsKeyword mod', function () {
     function createFoo() {
         return async(function () {
             await(Promise.delay(20));
-            return pipeline.currentCoro().id;
+            return pipeline.currentFiber().id;
         });
     }
 

@@ -1,32 +1,34 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
 import Mod = AsyncAwait.Mod;
-export = fiberPoolFix;
+export = fibersHotfix169;
+
+
+//TODO: apply this by default? Check impact on benchmarks.
 
 
 /**
  *  Automatically manages Fiber.poolSize to work around an issue with node-fibers.
- *  Apply this mod when the peak number of concurrently executing fibers (there is
- *  one for each currently executing suspendable function) is likely to exceed 120.
- *  Memory leaks and slowdowns under heavy load is symptomatic of the issue this
- *  mod addresses.
- *  For more details see https://github.com/laverdet/node-fibers/issues/169.
+ *  This mod is recommended when the peak number of concurrently executing fibers
+ *  (there is one for each currently executing suspendable function) is likely to
+ *  exceed 120. Memory leaks and slowdowns under heavy load are symptomatic of the
+ *  issue fixed by this mod. See https://github.com/laverdet/node-fibers/issues/169.
  */
-var fiberPoolFix: Mod = {
+var fibersHotfix169: Mod = {
 
-    name: 'fiberPoolFix',
+    name: 'fibersHotfix169',
 
     overridePipeline: (base, options) => {
 
         // Override the pipeline if the option is selected.
-        return (!options.fiberPoolFix) ? null : {
-            acquireFiber: body => {
+        return (!options.fibersHotfix169) ? null : {
+            acquireFiber: (asyncProtocol, bodyFunc, bodyThis, bodyArgs) => {
                 inc();
-                return base.acquireFiber(body);
+                return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
             },
-            releaseFiber: fiber => {
+            releaseFiber: (asyncProtocol, fi) => {
                 dec();
-                return base.releaseFiber(fiber);
+                return base.releaseFiber(asyncProtocol, fi);
             }
         };
     },
@@ -37,7 +39,7 @@ var fiberPoolFix: Mod = {
     },
 
     defaultOptions: {
-        fiberPoolFix: false
+        fibersHotfix169: false
     }
 };
 

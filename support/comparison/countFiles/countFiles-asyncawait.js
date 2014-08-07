@@ -3,7 +3,7 @@ var path = require('path');
 var _ = require('lodash');
 var async = require('../../..').async;
 var await = require('../../..').await;
-async.config({ cpsKeyword: '___', fiberPoolFix: true });
+async.config({ cpsKeyword: '___', fibersHotfix169: true });
 
 
 /** Returns the number of files in the given directory. */

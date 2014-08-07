@@ -10,16 +10,16 @@ beforeEach(function () {
     extensibility.resetMods();
 });
 
-describe('The coroPool mod', function () {
+describe('The fiberPool mod', function () {
     function createFoo() {
         return async(function () {
             await(Promise.delay(20));
-            return pipeline.currentCoro().id;
+            return pipeline.currentFiber().id;
         });
     }
 
-    it('creates new coroutine instances on demand', async.cps(function () {
-        async.config({ coroPool: true });
+    it('creates new fiber instances on demand', async.cps(function () {
+        async.config({ fiberPool: true });
         var foo = createFoo();
         var ids = await([1, 2, 3, 4, 5].map(function () {
             return foo();
@@ -30,8 +30,8 @@ describe('The coroPool mod', function () {
         expect(ids).to.deep.equal(exp);
     }));
 
-    it('reuses coroutine instances which have returned to the pool', async.cps(function () {
-        async.config({ coroPool: true });
+    it('reuses fiber instances which have returned to the pool', async.cps(function () {
+        async.config({ fiberPool: true });
         var foo = createFoo();
         var ids = [1, 2, 3, 4, 5].map(function () {
             return await(foo());
@@ -42,8 +42,8 @@ describe('The coroPool mod', function () {
         expect(ids).to.deep.equal(exp);
     }));
 
-    it('does not reuse coroutine instances if inactivated', async.cps(function () {
-        async.config({ coroPool: false });
+    it('does not reuse fiber instances if inactivated', async.cps(function () {
+        async.config({ fiberPool: false });
         var foo = createFoo();
         var ids = [1, 2, 3, 4, 5].map(function () {
             return await(foo());
@@ -54,4 +54,4 @@ describe('The coroPool mod', function () {
         expect(ids).to.deep.equal(exp);
     }));
 });
-//# sourceMappingURL=config.coroPool.js.map
+//# sourceMappingURL=config.fiberPool.js.map
