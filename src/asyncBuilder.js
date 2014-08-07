@@ -4,10 +4,13 @@ var extensibility = require('./extensibility');
 var _ = require('./util');
 
 
-// Bootstrap an initial async builder using a base protocol, which:
-// - implements resume() in terms of Fiber's run() and throwInto().
-// - implements begin() and end() to just throw, since all protocols must override these.
-// - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
+/**
+*  Provides the base-level async() function from which all suspendable functions and async mods
+*  may be built. This base-level async() function implements a simple async protocol which:
+*  - implements resume() in terms of Fiber's run() and throwInto().
+*  - implements begin() and end() to just throw, since all protocols must override these.
+*  - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
+*/
 var asyncBuilder = createAsyncBuilder({
     overrideProtocol: function (base, options) {
         return ({
@@ -28,7 +31,7 @@ var asyncBuilder = createAsyncBuilder({
     defaultOptions: _.branch(extensibility.config())
 });
 
-/** Creates a new async builder function using the specified protocol settings. */
+/** Creates a new async builder function using the specified mod and protocol settings. */
 function createAsyncBuilder(currentMod, previousProtocol) {
     // Instantiate the protocol by calling the provided factory function.
     var protocolOverrides = currentMod.overrideProtocol(previousProtocol, currentMod.defaultOptions);
@@ -59,7 +62,7 @@ function createAsyncBuilder(currentMod, previousProtocol) {
     return builder;
 }
 
-/** Creates a mod() method appropriate to the given protocol settings. */
+/** Creates a mod() method appropriate for the given builder. */
 function createModMethod(builder, previousMod) {
     return function mod(mod) {
         // Validate the argument.
@@ -88,40 +91,41 @@ function createModMethod(builder, previousMod) {
 *  will be returned, which is helpful for step-through debugging sessions. However,
 *  this function will not report the correct arity (function.length) in most cases.
 */
-var createSuspendableFunction = _.DEBUG ? createSuspendableFunctionDebug : createSuspendableFunctionImpl;
-function createSuspendableFunctionImpl(protocol, invokee) {
+var createSuspendableFunction = _.DEBUG ? createDebugSuspendableFunction : createFastSuspendableFunction;
+function createFastSuspendableFunction(protocol, invokee) {
     // Get the formal arity of the invoker and invokee functions.
     var invokerArity = protocol.begin.length - 1;
     var invokeeArity = invokee.length;
 
-    // Resolve the second-level cache corresponding to the given invoker arity.
-    var cacheLevel2 = suspendableFactoryCache[invokerArity];
+    // From the top-level cache, resolve the second-level cache corresponding to the given invoker arity.
+    var cacheLevel1 = cacheOfSuspendableFunctionFactories;
+    var cacheLevel2 = cacheLevel1[invokerArity];
     if (!cacheLevel2) {
+        // No second-level cache found - preallocate a small one now.
         cacheLevel2 = [null, null, null, null, null, null, null, null];
-        suspendableFactoryCache[invokerArity] = cacheLevel2;
+        cacheLevel1[invokerArity] = cacheLevel2;
     }
 
-    // Resolve the factory function corresponding to the given invokee arity.
-    var suspendableFactory = cacheLevel2[invokeeArity];
-    if (!suspendableFactory) {
-        suspendableFactory = createSuspendableFactory(invokerArity, invokeeArity);
-        cacheLevel2[invokeeArity] = suspendableFactory;
+    // From the second-level cache, resolve the factory function corresponding to the given invokee arity.
+    var suspendableFunctionFactory = cacheLevel2[invokeeArity];
+    if (!suspendableFunctionFactory) {
+        // No factory function found - create and cache one now.
+        suspendableFunctionFactory = createSuspendableFunctionFactory(invokerArity, invokeeArity);
+        cacheLevel2[invokeeArity] = suspendableFunctionFactory;
     }
 
-    // Invoke the factory function to obtain an appropriate suspendable function.
-    var result = suspendableFactory(protocol, invokee);
-
-    // Return the suspendable function.
-    return result;
+    // Invoke the factory function to obtain an appropriate suspendable function, and return it.
+    var suspendableFunction = suspendableFunctionFactory(protocol, invokee);
+    return suspendableFunction;
 }
 
 // This is a two-level cache (array of arrays), holding the 'factory' functions
 // that are used to create suspendable functions for each invoker/invokee arity.
 // The first level is indexed by invoker arity, and the second level by invokee arity.
-var suspendableFactoryCache = [null, null, null, null];
+var cacheOfSuspendableFunctionFactories = [null, null, null, null];
 
-/** Create a factory for creating suspendable functions matching the given arities. */
-function createSuspendableFactory(invokerArity, invokeeArity) {
+/** Creates a factory function for creating suspendable functions matching the given arities. */
+function createSuspendableFunctionFactory(invokerArity, invokeeArity) {
     "use strict";
 
     // Calcluate appropriate values to be substituted into the template.
@@ -163,8 +167,8 @@ function createSuspendableFactory(invokerArity, invokeeArity) {
 }
 
 // DEBUG version of createSuspendableFunction(), with no eval.
-function createSuspendableFunctionDebug(asyncProtocol, invokee) {
-    // Get the formal arity of the invoker functions
+function createDebugSuspendableFunction(asyncProtocol, invokee) {
+    // Get the formal arity of the invoker function.
     var invokerArity = asyncProtocol.begin.length - 1;
 
     // Return the suspendable function.
