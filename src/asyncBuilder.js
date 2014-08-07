@@ -41,9 +41,7 @@ function createAsyncBuilder(currentMod, previousProtocol) {
     var builder = function asyncBuilder(invokee) {
         // Ensure mods are applied on first call to async.
         //TODO: get rid of this...
-        if (!extensibility.isLocked)
-            extensibility.applyMods();
-
+        //if (!extensibility.isLocked) extensibility.applyMods();
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
         assert(arguments.length === 1, 'async builder: expected a single argument');
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');

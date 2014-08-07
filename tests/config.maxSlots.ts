@@ -14,9 +14,9 @@ describe('The maxSlots mod', () => {
     var opA = async (() => { ++started; await (Promise.delay(20)); ++finished; });
     var opB = async (() => ({ started: started, finished: finished }));
     var setMaxSlots = n => {
-        extensibility.resetMods();
+        //extensibility.resetMods();
         extensibility.config({maxSlots: n});
-        extensibility.applyMods();
+        //extensibility.applyMods();
     };
 
     it('applies the specified concurrency factor to subsequent operations', done => {

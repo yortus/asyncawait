@@ -12,10 +12,15 @@ export var config: AsyncAwait.Config = <any> function config() {
     if (arguments.length === 0) return _options;
 
     // Reject operation if this subsystem is now locked.
-    assert(!isLocked, 'config: cannot alter config after first async(...) call');
+    //assert(!isLocked, 'config: cannot alter config after first async(...) call');
 
     // Merge the given value's own properties into the options object.
     _.mergeProps(_options, arguments[0]);
+
+    //TODO: temp testing...
+    // Re-apply all mods
+    resetMods();
+    applyMods();
 }
 
 
@@ -24,7 +29,7 @@ export var config: AsyncAwait.Config = <any> function config() {
 config.mod = function use(mod: Mod) {
 
     // Reject operation if this subsystem is now locked.
-    assert(!isLocked, 'use: cannot register mods after first async(...) call');
+    //assert(!isLocked, 'use: cannot register mods after first async(...) call');
 
     // Ensure mods are registered only once.
     assert(externalMods.indexOf(mod) === -1, 'use: mod already registered');
@@ -33,7 +38,7 @@ config.mod = function use(mod: Mod) {
     externalMods.push(mod);
 
     //TODO: temp testing...
-    //applyMod(mod);
+    applyMod(mod);
 
     // Incorporate the mod's default options, if any.
     _.mergeProps(_options, mod.defaultOptions);
@@ -44,7 +49,7 @@ config.mod = function use(mod: Mod) {
 export function applyMods() {
 
     // Reject operation if this subsystem is now locked.
-    assert(!isLocked, 'applyMods: mods already applied');
+    //assert(!isLocked, 'applyMods: mods already applied');
 
     // Create a combined mod list in the appropriate order.
     var allMods: Mod[] = internalMods.concat(externalMods);
@@ -58,7 +63,7 @@ export function applyMods() {
     allMods.forEach(applyMod);
 
     // Lock the subsystem against further changes.
-    isLocked = true;
+    //isLocked = true;
 }
 
 
@@ -78,7 +83,7 @@ function applyMod(mod: Mod) {
 export function resetMods() {
 
     // Call each registered mod's reset() function, if present.
-    var allMods = externalMods.concat(internalMods);
+    var allMods = internalMods.concat(externalMods);
     allMods.forEach(mod => { if (mod.reset) mod.reset(); });
 
     // Clear all external mod registrations.
@@ -88,11 +93,14 @@ export function resetMods() {
     _options = { };
     internalMods.forEach(mod => _.mergeProps(_options, mod.defaultOptions));
 
+    //TODO: temp testing...
+    internalMods.forEach(applyMod);
+
     // Restore the default jointProtocol.
     jointProtocol.restoreDefaults();
 
     // Unlock the subsystem.
-    isLocked = false;
+    //isLocked = false;
 }
 
 
@@ -106,20 +114,16 @@ export var internalMods = [
 ];
 
 
-//TODO: temp testing...
-//internalMods.forEach(applyMod);
-
-
 /** Mods that have been explicitly registered via use(...). */
 export var externalMods = [];
 
 
-/**
- *  This flag is set to true when all mods have been applied. Once it is set
- *  subsequent mod/config changes are not allowed. Calling reset() sets this
- *  flag back to false.
- */
-export var isLocked = false;
+///**
+// *  This flag is set to true when all mods have been applied. Once it is set
+// *  subsequent mod/config changes are not allowed. Calling reset() sets this
+// *  flag back to false.
+// */
+//export var isLocked = false;
 
 
 /** Global options hash accessed by the config() getter/getter function. */
@@ -127,3 +131,7 @@ export var isLocked = false;
 //TODO: then, pass options to both apply and reset, and have mods put ALL their state in there?
 var _options = { };
 internalMods.forEach(mod => _.mergeProps(_options, mod.defaultOptions));
+
+
+//TODO: temp testing...
+internalMods.forEach(applyMod);

@@ -17,9 +17,9 @@ describe('The maxSlots mod', function () {
         return ({ started: started, finished: finished });
     });
     var setMaxSlots = function (n) {
-        extensibility.resetMods();
+        //extensibility.resetMods();
         extensibility.config({ maxSlots: n });
-        extensibility.applyMods();
+        //extensibility.applyMods();
     };
 
     it('applies the specified concurrency factor to subsequent operations', function (done) {

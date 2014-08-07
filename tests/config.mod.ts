@@ -46,14 +46,15 @@ beforeEach(() => { extensibility.resetMods(); tracking = []; });
 
 describe('The config.mod(...) function', () => {
 
-    it('registers the specified mod, without applying it', () => {
-        expect(extensibility.externalMods).to.be.empty;
-        async.config.mod(testModA);
-        expect(extensibility.externalMods).to.deep.equal([testModA]);
-        async.config.mod(testModB);
-        expect(extensibility.externalMods).to.deep.equal([testModA, testModB]);
-        expect(tracking).to.be.empty;
-    });
+    // TODO: was...
+    //it('registers the specified mod, without applying it', () => {
+    //    expect(extensibility.externalMods).to.be.empty;
+    //    async.config.mod(testModA);
+    //    expect(extensibility.externalMods).to.deep.equal([testModA]);
+    //    async.config.mod(testModB);
+    //    expect(extensibility.externalMods).to.deep.equal([testModA, testModB]);
+    //    expect(tracking).to.be.empty;
+    //});
 
     it('adds the mod\'s defaults to config', () => {
         expect(async.config()).to.not.have.key('a');
@@ -69,43 +70,44 @@ describe('The config.mod(...) function', () => {
         expect(() => async.config.mod(testModB)).to.throw();
     });
 
-    it('rejects registrations after async(...) is called', () => {
-        async.config.mod(testModA);
-        var foo = async (()=>{});
-        expect(() => async.config.mod(testModB)).to.throw();
-    });
+    // TODO: was...
+    //it('rejects registrations after async(...) is called', () => {
+    //    async.config.mod(testModA);
+    //    var foo = async (()=>{});
+    //    expect(() => async.config.mod(testModB)).to.throw();
+    //});
 });
 
 
 describe('Registered mods', () => {
 
-    it('are applied when async(...) is first called', () => {
-        async.config.mod(testModA);
-        expect(tracking).to.be.empty;
-        var foo = async (()=>{});
-        expect(tracking).to.deep.equal(['apply A']);
-    });
+    // TODO: was...
+    //it('are applied when async(...) is first called', () => {
+    //    async.config.mod(testModA);
+    //    expect(tracking).to.be.empty;
+    //    var foo = async (()=>{});
+    //    expect(tracking).to.deep.equal(['apply A']);
+    //});
 
     it('are applied such that latest registrations are outermost in joint protocol call chains', () => {
+        expect(tracking).to.be.empty;
         async.config.mod(testModA);
         async.config.mod(testModB);
-        expect(tracking).to.be.empty;
-        var foo = async (()=>{});
         expect(tracking).to.deep.equal(['apply A', 'apply B']);
     });
 
     it('have their joint protocol overrides applied', async.cps(() => {
-        async.config.mod(testModA);
         expect(tracking).to.be.empty;
+        async.config.mod(testModA);
         var foo = async (()=>{});
         await (foo());
         expect(tracking).to.deep.equal(['apply A', 'acquire A', 'release A']);
     }));
 
     it('have their joint protocol overrides called with correct nesting', async.cps(() => {
+        expect(tracking).to.be.empty;
         async.config.mod(testModA);
         async.config.mod(testModB);
-        expect(tracking).to.be.empty;
         var foo = async (()=>{});
         await (foo());
         expect(tracking).to.deep.equal(['apply A', 'apply B', 'acquire B', 'acquire A', 'release B', 'release A']);

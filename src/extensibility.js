@@ -9,18 +9,21 @@ exports.config = function config() {
         return _options;
 
     // Reject operation if this subsystem is now locked.
-    assert(!exports.isLocked, 'config: cannot alter config after first async(...) call');
-
+    //assert(!isLocked, 'config: cannot alter config after first async(...) call');
     // Merge the given value's own properties into the options object.
     _.mergeProps(_options, arguments[0]);
+
+    //TODO: temp testing...
+    // Re-apply all mods
+    exports.resetMods();
+    exports.applyMods();
 };
 
 //TODO: rename to use()?
 /** Register the specified mod and add its default options to current config. */
 exports.config.mod = function use(mod) {
     // Reject operation if this subsystem is now locked.
-    assert(!exports.isLocked, 'use: cannot register mods after first async(...) call');
-
+    //assert(!isLocked, 'use: cannot register mods after first async(...) call');
     // Ensure mods are registered only once.
     assert(exports.externalMods.indexOf(mod) === -1, 'use: mod already registered');
 
@@ -28,7 +31,8 @@ exports.config.mod = function use(mod) {
     exports.externalMods.push(mod);
 
     //TODO: temp testing...
-    //applyMod(mod);
+    applyMod(mod);
+
     // Incorporate the mod's default options, if any.
     _.mergeProps(_options, mod.defaultOptions);
 };
@@ -36,8 +40,7 @@ exports.config.mod = function use(mod) {
 /** Apply all registered mods and lock the subsystem against further changes. */
 function applyMods() {
     // Reject operation if this subsystem is now locked.
-    assert(!exports.isLocked, 'applyMods: mods already applied');
-
+    //assert(!isLocked, 'applyMods: mods already applied');
     // Create a combined mod list in the appropriate order.
     var allMods = exports.internalMods.concat(exports.externalMods);
 
@@ -48,9 +51,8 @@ function applyMods() {
     // registered latest appear outermost in joint protocol call chains, which is the
     // design intention.
     allMods.forEach(applyMod);
-
     // Lock the subsystem against further changes.
-    exports.isLocked = true;
+    //isLocked = true;
 }
 exports.applyMods = applyMods;
 
@@ -69,7 +71,7 @@ function applyMod(mod) {
 */
 function resetMods() {
     // Call each registered mod's reset() function, if present.
-    var allMods = exports.externalMods.concat(exports.internalMods);
+    var allMods = exports.internalMods.concat(exports.externalMods);
     allMods.forEach(function (mod) {
         if (mod.reset)
             mod.reset();
@@ -84,11 +86,13 @@ function resetMods() {
         return _.mergeProps(_options, mod.defaultOptions);
     });
 
+    //TODO: temp testing...
+    exports.internalMods.forEach(applyMod);
+
     // Restore the default jointProtocol.
     jointProtocol.restoreDefaults();
-
     // Unlock the subsystem.
-    exports.isLocked = false;
+    //isLocked = false;
 }
 exports.resetMods = resetMods;
 
@@ -101,18 +105,15 @@ exports.internalMods = [
     require('./mods/promises')
 ];
 
-//TODO: temp testing...
-//internalMods.forEach(applyMod);
 /** Mods that have been explicitly registered via use(...). */
 exports.externalMods = [];
 
-/**
-*  This flag is set to true when all mods have been applied. Once it is set
-*  subsequent mod/config changes are not allowed. Calling reset() sets this
-*  flag back to false.
-*/
-exports.isLocked = false;
-
+///**
+// *  This flag is set to true when all mods have been applied. Once it is set
+// *  subsequent mod/config changes are not allowed. Calling reset() sets this
+// *  flag back to false.
+// */
+//export var isLocked = false;
 /** Global options hash accessed by the config() getter/getter function. */
 //TODO: make this GLOBAL to prevent errors where process has multiple asyncawaits loaded
 //TODO: then, pass options to both apply and reset, and have mods put ALL their state in there?
@@ -120,4 +121,7 @@ var _options = {};
 exports.internalMods.forEach(function (mod) {
     return _.mergeProps(_options, mod.defaultOptions);
 });
+
+//TODO: temp testing...
+exports.internalMods.forEach(applyMod);
 //# sourceMappingURL=extensibility.js.map
