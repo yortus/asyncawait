@@ -29,7 +29,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
 
         //TODO: can this be optimised more, eg like async builder's eval?
 
-        // Ensure this function is executing inside a coroutine.
+        // Ensure this function is executing inside a fiber.
         var co = pipeline.currentFiber();
         assert(co, 'await: may only be called inside a suspendable function');
 
@@ -116,7 +116,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
         //TODO: ...or just pass back value unchanged (i.e. await.value(...) is the built-in fallback.
         assert(handlerResult !== pipeline.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
 
-        // Suspend the coroutine until the await handler causes it to be resumed. NB: fi.suspend is bypassed here because:
+        // Suspend the fiber until the await handler causes it to be resumed. NB: fi.suspend is bypassed here because:
         // 1. it's custom handling is not appropriate for await, which always wants to simply suspend the fiber; and
         // 2. by not needing to special-case await calls, fi.suspend is simplified because it has a single use-case.
         return pipeline.suspendFiber(); 
