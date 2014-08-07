@@ -14,11 +14,11 @@ var newBuilder = oldBuilder.mod({
     overrideHandlers: (base, options) => ({
         singular: (co, arg) => {
             if (!_.isFunction(arg)) return pipeline.notHandled;
-            arg(co.enter);
+            arg(co.resume);
         },
         variadic: (co, args) => {
             if (!_.isFunction(args[0])) return pipeline.notHandled;
-            args[0](co.enter);
+            args[0](co.resume);
         },
 
         elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {

@@ -10,12 +10,12 @@ var newBuilder = oldBuilder.mod({
             singular: function (co, arg) {
                 if (!_.isFunction(arg))
                     return pipeline.notHandled;
-                arg(co.enter);
+                arg(co.resume);
             },
             variadic: function (co, args) {
                 if (!_.isFunction(args[0]))
                     return pipeline.notHandled;
-                args[0](co.enter);
+                args[0](co.resume);
             },
             elements: function (values, result) {
                 // TODO: temp testing...

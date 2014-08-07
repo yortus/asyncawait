@@ -16,12 +16,12 @@ var newBuilder = oldBuilder.mod({
 
             if (co.awaiting.length !== 1) {
                 // TODO: mismatch here - raise an error
-                co.enter(null, new Error('222'));
+                co.resume(null, new Error('222'));
             }
 
             co.awaiting[0] = (err, res) => {
                 co.awaiting = [];
-                co.enter(err, res);
+                co.resume(err, res);
             }
             
 

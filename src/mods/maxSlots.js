@@ -28,21 +28,21 @@ var maxSlots = {
                 if (!!base.currentCoro())
                     return base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
-                // This is a top-level acquisition. Return a 'placeholder' coroutine whose enter() method waits
+                // This is a top-level acquisition. Return a 'placeholder' coroutine whose resume() method waits
                 // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
                 var co = {
                     inSemaphore: true,
                     context: {},
-                    enter: function (error, value) {
+                    resume: function (error, value) {
                         // Upon execution, enter the semaphore.
                         enterSemaphore(function () {
                             // When the semaphore is ready, acquire a coroutine from the pipeline.
                             var c = base.acquireCoro(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
 
                             // There may still be outstanding references to the placeholder coroutine,
-                            // so ensure its enter() and leave() methods call the real coroutine.
-                            co.enter = c.enter;
-                            co.leave = c.leave;
+                            // so ensure its suspend() and resume() methods call the real coroutine.
+                            co.suspend = c.suspend;
+                            co.resume = c.resume;
 
                             // The context is already initialised on the placeholder, so copy in back.
                             c.context = co.context;
@@ -51,7 +51,7 @@ var maxSlots = {
                             c.inSemaphore = true;
 
                             // Begin execution.
-                            co.enter(error, value);
+                            co.resume(error, value);
                         });
                     }
                 };
