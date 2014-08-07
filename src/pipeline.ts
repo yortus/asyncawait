@@ -2,6 +2,8 @@
 //TODO: rename this file... should be jointProtocol
 
 
+// TODO: change co to fi throughout project and use correct type (Fiber/FiberEx)
+
 
 
 import references = require('references');

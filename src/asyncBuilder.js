@@ -4,8 +4,7 @@ var extensibility = require('./extensibility');
 var _ = require('./util');
 
 
-// TODO: change co to fi throughout and use correct type (Fiber/FiberEx)
-// Bootstrap an initial async builder using the base protocol. The base protocol:
+// Bootstrap an initial async builder using a base protocol, which:
 // - implements resume() in terms of Fiber's run() and throwInto().
 // - implements begin() and end() to just throw, since all protocols must override these.
 // - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
@@ -30,10 +29,10 @@ var asyncBuilder = createAsyncBuilder({
 });
 
 /** Creates a new async builder function using the specified protocol settings. */
-function createAsyncBuilder(effectiveMod, previousProtocol) {
+function createAsyncBuilder(currentMod, previousProtocol) {
     // Instantiate the protocol by calling the provided factory function.
-    var protocolOverrides = effectiveMod.overrideProtocol(previousProtocol, effectiveMod.defaultOptions);
-    var effectiveProtocol = _.mergeProps({}, previousProtocol, protocolOverrides);
+    var protocolOverrides = currentMod.overrideProtocol(previousProtocol, currentMod.defaultOptions);
+    var currentProtocol = _.mergeProps({}, previousProtocol, protocolOverrides);
 
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
@@ -47,21 +46,21 @@ function createAsyncBuilder(effectiveMod, previousProtocol) {
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
         // Create and return an appropriately configured suspendable function for the given protocol and body.
-        return createSuspendableFunction(effectiveProtocol, invokee);
+        return createSuspendableFunction(currentProtocol, invokee);
     };
 
     // Tack on the builder's other properties, and the mod() method.
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.protocol = effectiveProtocol;
-    builder.options = effectiveMod.defaultOptions;
-    builder.mod = createModMethod(effectiveProtocol, effectiveMod);
+    builder.protocol = currentProtocol;
+    builder.options = currentMod.defaultOptions;
+    builder.mod = createModMethod(builder, currentMod);
 
     // Return the async builder function.
     return builder;
 }
 
 /** Creates a mod() method appropriate to the given protocol settings. */
-function createModMethod(effectiveProtocol, effectiveMod) {
+function createModMethod(builder, previousMod) {
     return function mod(mod) {
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
@@ -70,11 +69,11 @@ function createModMethod(effectiveProtocol, effectiveMod) {
         assert(isOptionsOnly || _.isFunction(mod.overrideProtocol), 'mod: expected overrideProtocol to be a function');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
-        var overrideProtocol = isOptionsOnly ? effectiveMod.overrideProtocol : mod.overrideProtocol;
-        var defaultOptions = _.mergeProps(_.branch(effectiveMod.defaultOptions), isOptionsOnly ? mod : mod.defaultOptions);
+        var overrideProtocol = isOptionsOnly ? previousMod.overrideProtocol : mod.overrideProtocol;
+        var defaultOptions = _.mergeProps(_.branch(builder.options), isOptionsOnly ? mod : mod.defaultOptions);
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder({ overrideProtocol: overrideProtocol, defaultOptions: defaultOptions }, effectiveProtocol);
+        return createAsyncBuilder({ overrideProtocol: overrideProtocol, defaultOptions: defaultOptions }, builder.protocol);
     };
 }
 
