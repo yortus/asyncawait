@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import stream = require('stream');
 import oldBuilder = require('../src/asyncBuilder');
-import jointProtocol = require('../src/jointProtocol');
+import _ = require('../src/util');
 export = newBuilder;
 
 
@@ -29,11 +29,9 @@ var newBuilder = oldBuilder.mod({
             // TODO: handle by emitting error event?
             if (error) throw error; // NB: not handled - throw in fiber
 
-            //TODO: should setImmediate go here, or in jointProtocol?
+            // Ensure the fiber has yielded before the stream emits the value.
             setImmediate(() => fi.context.push(value));
-
-            // TODO: correct?
-            jointProtocol.suspendFiber();
+            _.yieldCurrentFiber();
         },
 
         end: (fi: FiberEx, error?, value?) => {

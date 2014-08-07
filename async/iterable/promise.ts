@@ -2,7 +2,6 @@
 import assert = require('assert');
 import Promise = require('bluebird');
 import oldBuilder = require('../../src/asyncBuilder');
-import jointProtocol = require('../../src/jointProtocol');
 import _ = require('../../src/util');
 export = newBuilder;
 
@@ -37,9 +36,7 @@ var newBuilder = oldBuilder.mod({
         suspend: (fi: FiberEx, error?, value?) => {
             if (error) throw error; // NB: not handled - throw in fiber
             fi.context.nextResolver.resolve({ done: false, value: value });
-
-            // TODO: correct?
-            jointProtocol.suspendFiber();
+            _.yieldCurrentFiber();
         },
 
         end: (fi: FiberEx, error?, value?) => {

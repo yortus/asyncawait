@@ -1,6 +1,7 @@
 ﻿var _ = require('../util');
 
 
+
 /**
 *  Limits the number of calls to suspendable functions that can be concurrently executing.
 *  Excess calls are queued until a slot becomes available. This only applies to calls made
@@ -21,13 +22,13 @@ var maxSlots = {
         // Return the joint protocol overrides.
         return {
             /** Create and return a new Fiber instance. */
-            acquireFiber: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
+            acquireFiber: function (asyncProtocol) {
                 // If fiber A invokes fiber B and awaits its results, then suspending fiber B until the
                 // semaphore clears could easily lead to deadlocks. Therefore, for nested fiber acquisitions,
-                // skip the semaphore and delegate to the existing jointProtocol. This means 'maxSlots' affects
+                // skip the semaphore and delegate to the base protocol. This means 'maxSlots' affects
                 // only the concurrency factor of fibers called directly from the main execution stack.
-                if (!!base.currentFiber())
-                    return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                if (!!_.currentFiber())
+                    return base.acquireFiber(asyncProtocol);
 
                 // This is a top-level acquisition. Return a 'fake' fiber whose resume() method waits
                 // on the semaphore, and then fills itself out fully and continues when the semaphore is ready.
@@ -37,16 +38,17 @@ var maxSlots = {
                     resume: function (error, value) {
                         // Upon execution, enter the semaphore.
                         enterSemaphore(function () {
-                            // When the semaphore is ready, acquire a real fiber from the jointProtocol.
-                            var real = base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                            // When the semaphore is ready, acquire a real fiber from the joint protocol.
+                            var real = base.acquireFiber(asyncProtocol);
 
                             // There may still be outstanding references to the fake fiber,
                             // so ensure its suspend() and resume() methods call the real fiber.
                             fake.suspend = real.suspend;
                             fake.resume = real.resume;
 
-                            // The context is already initialised on the fake, so copy it back.
+                            // The context and target are already initialised on the fake, so copy them to real.
                             real.context = fake.context;
+                            base.setFiberTarget(real, fake.bodyFunc, fake.bodyThis, fake.bodyArgs);
 
                             // Mark the real fiber so it is properly handled by releaseFiber().
                             real.inSemaphore = true;
@@ -66,7 +68,7 @@ var maxSlots = {
                     leaveSemaphore();
                 }
 
-                // Delegate to the existing jointProtocol.
+                // Delegate to the base protocol.
                 return base.releaseFiber(asyncProtocol, fi);
             }
         };

@@ -49,7 +49,7 @@ export function applyMods() {
     // Create a combined mod list in the appropriate order.
     var allMods: Mod[] = externalMods.concat(internalMods);
 
-    // Restore the jointProtocol to its default state.
+    // Restore the joint protocol to its default state.
     jointProtocol.restoreDefaults();
 
     // Apply all mods in reverse order of registration. This ensures that mods

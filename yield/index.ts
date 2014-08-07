@@ -1,12 +1,12 @@
 ﻿import references = require('references');
-import jointProtocol = require('../src/jointProtocol');
+import _ = require('../src/util');
 export = yield_;
 
 
 var yield_: AsyncAwait.Yield = <any> function yield_(value?: any) {
 
     // Ensure this function is executing inside a fiber.
-    var fi = jointProtocol.currentFiber();
+    var fi = _.currentFiber();
     if (!fi) throw new Error('yield: may only be called inside a suspendable function.');
 
     // Delegate to the appropriate protocol-specific behaviour.

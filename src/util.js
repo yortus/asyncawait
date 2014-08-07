@@ -1,4 +1,5 @@
 ﻿var assert = require('assert');
+var Fiber = require('fibers');
 
 /** Specify whether to execute in DEBUG mode. */
 exports.DEBUG = false;
@@ -70,4 +71,31 @@ function branch(proto) {
     return new O();
 }
 exports.branch = branch;
+
+/** Returns the currently executing fiber, if any. */
+function currentFiber() {
+    return Fiber.current;
+}
+exports.currentFiber = currentFiber;
+
+/** Yields control from the currently executing fiber back to its caller. */
+function yieldCurrentFiber(value) {
+    return Fiber.yield(value);
+}
+exports.yieldCurrentFiber = yieldCurrentFiber;
+
+/** Sentinel value that a function may return to indicate that it did no processing. */
+exports.notHandled = {};
+
+//TODO: this is not really a util! Move it! It is used by cpsKeyword, await.cps
+//TODO: temp testing... needed to move it here to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
+function createContinuation() {
+    var fi = exports.currentFiber();
+    var i = fi.awaiting.length++;
+    return function continue_(err, result) {
+        fi.awaiting[i](err, result);
+        fi = null;
+    };
+}
+exports.createContinuation = createContinuation;
 //# sourceMappingURL=util.js.map

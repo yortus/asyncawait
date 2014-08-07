@@ -11,47 +11,19 @@ var jointProtocol = {
     // The following methods comprise the overridable part of the jointProtocol API.
     acquireFiber: null,
     releaseFiber: null,
-    createFiberBody: null,
+    setFiberTarget: null,
     // The remaining items are for internal use and may not be overriden.
-    currentFiber: function () {
-        return Fiber.current;
-    },
-    suspendFiber: function (val) {
-        return Fiber.yield(val);
-    },
-    isCurrent: function (fi) {
-        var f = Fiber.current;
-        return f && f.id === fi.id;
-    },
-    nextCoroId: 1,
-    continueAfterYield: {},
-    notHandled: {},
     restoreDefaults: function () {
         return _.mergeProps(jointProtocol, defaultProtocol);
-    },
-    //TODO: temp testing... needed to move it to avoid circular ref cpsKeyword->cps->awaitBuilder->extensibility->cpsKeyword
-    continuation: function continuation() {
-        var fi = jointProtocol.currentFiber();
-        var i = fi.awaiting.length++;
-        return function continue_(err, result) {
-            fi.awaiting[i](err, result);
-            fi = null;
-        };
     }
 };
 
 /** Default implementations for the overrideable jointProtocol methods. */
 var defaultProtocol = {
     /** Create and return a new Fiber instance. */
-    acquireFiber: function (asyncProtocol, bodyFunc, bodyThis, bodyArgs) {
-        var fiberBody = jointProtocol.createFiberBody(asyncProtocol, function getFi() {
-            return fi;
-        });
-        var fi = Fiber(fiberBody);
-        fi.id = ++jointProtocol.nextCoroId;
-        fi.bodyFunc = bodyFunc;
-        fi.bodyThis = bodyThis;
-        fi.bodyArgs = bodyArgs;
+    acquireFiber: function (asyncProtocol) {
+        var fi = createFiber(asyncProtocol);
+        fi.id = ++nextFiberId;
         fi.context = {};
         fi.awaiting = [];
         fi.suspend = function (error, value) {
@@ -64,71 +36,82 @@ var defaultProtocol = {
     },
     /** Ensure the Fiber instance is disposed of cleanly. */
     releaseFiber: function (asyncProtocol, fi) {
+        jointProtocol.setFiberTarget(fi, null);
         fi.suspend = null;
         fi.resume = null;
         fi.context = null;
-        fi.bodyFunc = null;
-        fi.bodyThis = null;
-        fi.bodyArgs = null;
+        fi.awaiting = null; //TODO: finalise this...
     },
-    /** Create the body function to be executed inside a fiber. */
-    createFiberBody: function (asyncProtocol, getFi) {
-        // V8 may not optimise the following function due to the presence of
-        // try/catch/finally. Therefore it does as little as possible, only
-        // referencing the optimisable closures prepared below.
-        function fiberBody() {
-            try  {
-                tryBlock();
-            } catch (err) {
-                catchBlock(err);
-            } finally {
-                setImmediate(finallyBlock); /* Ensure the fiber exits before we clean it up. */ 
-            }
-        }
-
-        // These references are shared by the closures below.
-        var fi, result, error;
-
-        // Define the details of the body function's try/catch/finally clauses.
-        function tryBlock() {
-            // Lazy-load the fiber instance to use throughout the body function. This mechanism
-            // means that the instance need not be available at the time createFiberBody() is called.
-            fi = fi || getFi();
-
-            // Clear the error state.
-            error = null;
-
-            // Execute the entirety of bodyFunc, using the fastest feasible invocation approach.
-            var f = fi.bodyFunc, t = fi.bodyThis, a = fi.bodyArgs, noThis = !t || t === global;
-            if (noThis && a) {
-                switch (a.length) {
-                    case 0:
-                        result = f();
-                        break;
-                    case 1:
-                        result = f(a[0]);
-                        break;
-                    case 2:
-                        result = f(a[0], a[1]);
-                        break;
-                    default:
-                        result = f.apply(null, a);
-                }
-            } else {
-                result = !noThis ? f.apply(t, a) : f();
-            }
-        }
-        function catchBlock(err) {
-            error = err;
-        }
-        function finallyBlock() {
-            asyncProtocol.end(fi, error, result);
-            jointProtocol.releaseFiber(asyncProtocol, fi);
-        }
-
-        // Return the completed fiberBody closure.
-        return fiberBody;
+    setFiberTarget: function (fi, bodyFunc, bodyThis, bodyArgs) {
+        fi.bodyFunc = bodyFunc;
+        fi.bodyThis = bodyThis;
+        fi.bodyArgs = bodyArgs;
     }
 };
+
+/** Holds the id number to be assigned to the next new fiber. Every fiber gets a different id. */
+var nextFiberId = 0;
+
+/** Create a new fiber with a body function that is adapted to the given async protocol. */
+function createFiber(asyncProtocol) {
+    // V8 may not optimise the fiber's body function due to the presence of
+    // try/catch/finally. Therefore, the body function does as little as possible,
+    // delegating all the work to the optimisable closures below.
+    // Note the setImmediate in the finally clause, which ensures the finallyBlock
+    // is executed in the context of the fiber's caller, after the fiber exits.
+    var fi = Fiber(function fiberBody() {
+        try  {
+            tryBlock();
+        } catch (err) {
+            catchBlock(err);
+        } finally {
+            setImmediate(finallyBlock);
+        }
+    });
+
+    // These references are shared by the closures below.
+    var result, error;
+
+    // The job of the try block is to attempt to execute the fiber's target.
+    function tryBlock() {
+        error = null; // Clearing this is essential since the fiber may run more than once.
+
+        // Execute the entirety of bodyFunc, using the fastest feasible invocation approach.
+        var f = fi.bodyFunc, t = fi.bodyThis, a = fi.bodyArgs, noThis = !t || t === global;
+        if (noThis && a) {
+            switch (a.length) {
+                case 0:
+                    result = f();
+                    break;
+                case 1:
+                    result = f(a[0]);
+                    break;
+                case 2:
+                    result = f(a[0], a[1]);
+                    break;
+                default:
+                    result = f.apply(null, a);
+            }
+        } else if (noThis) {
+            result = f();
+        } else {
+            result = f.apply(t, a);
+        }
+    }
+
+    // The catch block just sets the error flag, which will be used in the finally block.
+    function catchBlock(err) {
+        error = err;
+    }
+
+    // The finally block delegates to the async protocol to handle the error/result, then cleans up the fiber.
+    function finallyBlock() {
+        asyncProtocol.end(fi, error, result);
+        jointProtocol.releaseFiber(asyncProtocol, fi);
+    }
+
+    // Return the newly created fiber.
+    return fi;
+}
 module.exports = jointProtocol;
 //# sourceMappingURL=jointProtocol.js.map

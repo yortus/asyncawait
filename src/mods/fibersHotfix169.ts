@@ -22,9 +22,9 @@ var fibersHotfix169: Mod = {
 
         // Override the joint protocol if the option is selected.
         return (!options.fibersHotfix169) ? null : {
-            acquireFiber: (asyncProtocol, bodyFunc, bodyThis, bodyArgs) => {
+            acquireFiber: (asyncProtocol) => {
                 inc();
-                return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                return base.acquireFiber(asyncProtocol);
             },
             releaseFiber: (asyncProtocol, fi) => {
                 dec();

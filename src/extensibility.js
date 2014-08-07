@@ -42,7 +42,7 @@ function applyMods() {
     // Create a combined mod list in the appropriate order.
     var allMods = exports.externalMods.concat(exports.internalMods);
 
-    // Restore the jointProtocol to its default state.
+    // Restore the joint protocol to its default state.
     jointProtocol.restoreDefaults();
 
     for (var i = allMods.length - 1; i >= 0; --i) {

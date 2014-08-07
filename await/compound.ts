@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import oldBuilder = require('../src/awaitBuilder');
-import jointProtocol = require('../src/jointProtocol');
+import _ = require('../src/util');
 export = newBuilder;
 
 
@@ -15,13 +15,13 @@ var newBuilder = oldBuilder.mod({
 
     overrideHandlers: (base, options) => ({
         singular: (fi, arg) => {
-            var handlers = options.handlers || [], len = handlers.length, result = jointProtocol.notHandled;
-            for (var i = 0; result === jointProtocol.notHandled && i < len; ++i) result = handlers[i].singular(fi, arg);
+            var handlers = options.handlers || [], len = handlers.length, result = _.notHandled;
+            for (var i = 0; result === _.notHandled && i < len; ++i) result = handlers[i].singular(fi, arg);
             return result;
         },
         variadic: (fi, args) => {
             //TODO: temp testing... handle allArgs too...
-            return jointProtocol.notHandled;
+            return _.notHandled;
         },
 
         elements: (futures: any[], present: (err: Error, value: any, index: number) => void) => {

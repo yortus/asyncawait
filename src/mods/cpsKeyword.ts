@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import jointProtocol = require('../jointProtocol');
+import _ = require('../util');
 import Mod = AsyncAwait.Mod;
 export = cpsKeyword;
 
@@ -24,9 +24,9 @@ var cpsKeyword: Mod = {
 
         // Define the global property accessor.
         _cpsKeyword = options.cpsKeyword;
-        Object.defineProperty(global, _cpsKeyword, { get: jointProtocol.continuation, configurable: true });
+        Object.defineProperty(global, _cpsKeyword, { get: _.createContinuation, configurable: true });
 
-        // Return an empty object, since we don't alter the jointProtocol here.
+        // Return nothing, since we don't override the joint protocol here.
         return null;
     },
 

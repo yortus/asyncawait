@@ -21,7 +21,7 @@ interface Fiber {
     bodyFunc: Function;
     bodyThis: any;
     bodyArgs: any[];
-    awaiting: AsyncAwait.Callback<any>[];
+    awaiting: AsyncAwait.Callback<any>[]; //TODO: finalise this...
 
     //TODO: ...
     suspend: (error?: Error, value?: any) => void;

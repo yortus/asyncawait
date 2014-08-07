@@ -152,11 +152,13 @@ function createSuspendableFunctionFactory(invokerArity, invokeeArity) {
         '    var t = this, l = arguments.length;',
         '    if ((!t || t===global) && l===$ARITY) {',
         '      var body = function f0() { return invokee($INVOKEE_ARGS); };',
-        '      var fi = jointProtocol.acquireFiber(asyncProtocol, body);',
+        '      var fi = jointProtocol.acquireFiber(asyncProtocol);',
+        '      jointProtocol.setFiberTarget(fi, body);',
         '    } else {',
         '      var a = new Array(l-$PN);',
         '      for (var i = 0; i < l-$PN; ++i) a[i] = arguments[i];',
-        '      var fi = jointProtocol.acquireFiber(asyncProtocol, invokee, t, a);',
+        '      var fi = jointProtocol.acquireFiber(asyncProtocol);',
+        '      jointProtocol.setFiberTarget(fi, invokee, t, a);',
         '    }',
         '    return asyncProtocol.begin($INVOKER_ARGS);',
         '  }',
@@ -171,13 +173,15 @@ function createSuspendableFunctionFactory(invokerArity, invokeeArity) {
                  srcLines[ 4].replace('$INVOKEE_ARGS', invokeeArgs.join(', ')) +
                  srcLines[ 5] +
                  srcLines[ 6] +
-                 srcLines[ 7].replace('$PN', invokerArity) +
+                 srcLines[ 7] +
                  srcLines[ 8].replace('$PN', invokerArity) +
-                 srcLines[ 9] +
+                 srcLines[ 9].replace('$PN', invokerArity) +
                  srcLines[10] +
-                 srcLines[11].replace('$INVOKER_ARGS', invokerArgs.join(', ')) +
+                 srcLines[11] +
                  srcLines[12] +
-                 srcLines[13];
+                 srcLines[13].replace('$INVOKER_ARGS', invokerArgs.join(', ')) +
+                 srcLines[14] +
+                 srcLines[15];
 
     // Reify and return the factory function.
     eval(source);
@@ -195,7 +199,8 @@ function createDebugSuspendableFunction(asyncProtocol: Protocol, invokee: Functi
     return function SUSP$DEBUG(args) {
         var t = this, l = arguments.length, a = new Array(l - invokerArity);
         for (var i = 0; i < l - invokerArity; ++i) a[i] = arguments[i];
-        var fi = jointProtocol.acquireFiber(asyncProtocol, invokee, t, a);
+        var fi = jointProtocol.acquireFiber(asyncProtocol);
+        jointProtocol.setFiberTarget(fi, invokee, t, a);
         var b = new Array(invokerArity + 1);
         b[0] = fi;
         for (var i = 0; i < invokerArity; ++i) b[i + 1] = arguments[l - invokerArity + i];

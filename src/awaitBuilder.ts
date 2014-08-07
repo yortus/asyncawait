@@ -1,6 +1,5 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import jointProtocol = require('./jointProtocol');
 import _ = require('./util');
 import extensibility = require('./extensibility');
 import Builder = AsyncAwait.Await.Builder;
@@ -30,7 +29,7 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
         //TODO: can this be optimised more, eg like async builder's eval?
 
         // Ensure this function is executing inside a fiber.
-        var fi = jointProtocol.currentFiber();
+        var fi = _.currentFiber();
         assert(fi, 'await: may only be called inside a suspendable function');
 
         // TODO: temp testing... fast/slow paths
@@ -114,12 +113,12 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
 
         // Ensure the passed-in value(s) were handled.
         //TODO: ...or just pass back value unchanged (i.e. await.value(...) is the built-in fallback.
-        assert(handlerResult !== jointProtocol.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
+        assert(handlerResult !== _.notHandled, 'await: the passed-in value(s) are not recognised as being awaitable.');
 
         // Suspend the fiber until the await handler causes it to be resumed. NB: fi.suspend is bypassed here because:
-        // 1. it's custom handling is not appropriate for await, which always wants to simply suspend the fiber; and
-        // 2. by not needing to special-case await calls, fi.suspend is simplified because it has a single use-case.
-        return jointProtocol.suspendFiber(); 
+        // 1. its custom handling is not appropriate for await, which always wants to simply suspend the fiber; and
+        // 2. its custom handling is simplified by not needing to special-case calls from awaitBuilder.
+        return _.yieldCurrentFiber();
     }
 
     // Tack on the handlers and options properties, and the mod() method.

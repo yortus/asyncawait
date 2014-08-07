@@ -1,5 +1,5 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
-var jointProtocol = require('../src/jointProtocol');
+var _ = require('../src/util');
 
 var newBuilder = oldBuilder.mod({
     name: 'cps',
@@ -8,7 +8,7 @@ var newBuilder = oldBuilder.mod({
         return ({
             singular: function (fi, arg) {
                 if (arg !== void 0)
-                    return jointProtocol.notHandled;
+                    return _.notHandled;
 
                 if (fi.awaiting.length !== 1) {
                     // TODO: mismatch here - raise an error
@@ -22,11 +22,11 @@ var newBuilder = oldBuilder.mod({
             },
             variadic: function (fi, args) {
                 if (args[0] !== void 0)
-                    return jointProtocol.notHandled;
+                    return _.notHandled;
             },
             elements: function (values, result) {
                 // TODO: temp testing...
-                var k = 0, fi = jointProtocol.currentFiber();
+                var k = 0, fi = _.currentFiber();
                 values.forEach(function (value, i) {
                     if (i in values && values[i] === void 0) {
                         fi.awaiting[k++] = function (err, res) {
@@ -47,6 +47,6 @@ var newBuilder = oldBuilder.mod({
 });
 
 //TODO: is jointProtocol the right place for this?
-newBuilder.continuation = jointProtocol.continuation;
+newBuilder.continuation = _.createContinuation;
 module.exports = newBuilder;
 //# sourceMappingURL=cps.js.map

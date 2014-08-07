@@ -1,19 +1,19 @@
 ﻿var oldBuilder = require('../src/awaitBuilder');
-var jointProtocol = require('../src/jointProtocol');
+var _ = require('../src/util');
 
 var newBuilder = oldBuilder.mod({
     name: 'compound',
     overrideHandlers: function (base, options) {
         return ({
             singular: function (fi, arg) {
-                var handlers = options.handlers || [], len = handlers.length, result = jointProtocol.notHandled;
-                for (var i = 0; result === jointProtocol.notHandled && i < len; ++i)
+                var handlers = options.handlers || [], len = handlers.length, result = _.notHandled;
+                for (var i = 0; result === _.notHandled && i < len; ++i)
                     result = handlers[i].singular(fi, arg);
                 return result;
             },
             variadic: function (fi, args) {
                 //TODO: temp testing... handle allArgs too...
-                return jointProtocol.notHandled;
+                return _.notHandled;
             },
             elements: function (futures, present) {
                 // TODO: temp testing...

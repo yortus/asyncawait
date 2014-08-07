@@ -2,7 +2,7 @@
 var oldBuilder = require('../src/asyncBuilder');
 
 
-
+/** Provides an async builder for producing suspendable functions that return promises. */
 var newBuilder = oldBuilder.mod({
     name: 'promise',
     type: null,
@@ -16,7 +16,7 @@ var newBuilder = oldBuilder.mod({
             suspend: function (fi, error, value) {
                 if (error)
                     throw error;
-                fi.context.progress(value); // NB: Fiber does NOT yield here
+                fi.context.progress(value); // NB: fiber does NOT yield here
             },
             end: function (fi, error, value) {
                 if (error)

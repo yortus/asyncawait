@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
 import oldBuilder = require('../src/asyncBuilder');
-import jointProtocol = require('../src/jointProtocol');
 export = newBuilder;
 
 
@@ -11,6 +10,7 @@ interface FiberEx extends Fiber {
 }
 
 
+/** Provides an async builder for producing suspendable functions that return promises. */
 var newBuilder = oldBuilder.mod({
 
     name: 'promise',
@@ -27,7 +27,7 @@ var newBuilder = oldBuilder.mod({
 
         suspend: (fi: FiberEx, error?, value?) => {
             if (error) throw error; // NB: not handled - throw in fiber
-            fi.context.progress(value); // NB: Fiber does NOT yield here
+            fi.context.progress(value); // NB: fiber does NOT yield here
         },
 
         end: (fi: FiberEx, error?, value?) => {

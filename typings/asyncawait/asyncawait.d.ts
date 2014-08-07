@@ -215,15 +215,15 @@ declare module AsyncAwait {
     }
 
     export interface JointProtocol {
-        acquireFiber: (asyncProtocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
+        acquireFiber: (asyncProtocol: Async.Protocol) => Fiber;
         releaseFiber: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
-        createFiberBody: (asyncProtocol: Async.Protocol, getCo: () => Fiber) => () => void;
+        setFiberTarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => void
     }
 
     export interface JointProtocolOverrides {
-        acquireFiber?: (asyncProtocol: Async.Protocol, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => Fiber;
+        acquireFiber?: (asyncProtocol: Async.Protocol) => Fiber;
         releaseFiber?: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
-        createFiberBody?: (asyncProtocol: Async.Protocol, getCo: () => Fiber) => () => void;
+        setFiberTarget?: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => void
     }
 
 

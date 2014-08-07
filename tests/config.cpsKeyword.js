@@ -2,8 +2,8 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-var jointProtocol = require('asyncawait/src/jointProtocol');
 var extensibility = require('asyncawait/src/extensibility');
+var _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
 beforeEach(function () {
@@ -14,7 +14,7 @@ describe('The cpsKeyword mod', function () {
     function createFoo() {
         return async(function () {
             await(Promise.delay(20));
-            return jointProtocol.currentFiber().id;
+            return _.currentFiber().id;
         });
     }
 

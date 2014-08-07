@@ -3,6 +3,12 @@ import Mod = AsyncAwait.Mod;
 export = fiberPool;
 
 
+/** Extended async protocol interface with fiber pool info. */
+interface AsyncProtocol extends AsyncAwait.Async.Protocol {
+    fiberPoolId: number;
+}
+
+
 /** Pools fiber instances across acquire/release cycles, for improved performance. */
 var fiberPool: Mod = {
 
@@ -14,21 +20,18 @@ var fiberPool: Mod = {
         return (!options.fiberPool) ? null : {
 
             /** Create and return a new Fiber instance. */
-            acquireFiber: (asyncProtocol: AsyncProtocol, bodyFunc: Function, bodyThis: any, bodyArgs: any[]) => {
+            acquireFiber: (asyncProtocol: AsyncProtocol) => {
 
                 // Resolve the fiber pool associated with the async protocol.
                 var fiberPoolId = asyncProtocol.fiberPoolId || (asyncProtocol.fiberPoolId = ++_nextPoolId);
                 var fiberPool = _pools[fiberPoolId] || (_pools[fiberPoolId] = []);
 
-                // If the pool is empty, create and return a new fiber via the jointProtocol.
-                if (fiberPool.length === 0) return base.acquireFiber(asyncProtocol, bodyFunc, bodyThis, bodyArgs);
+                // If the pool is empty, create and return a new fiber via the joint protocol.
+                if (fiberPool.length === 0) return base.acquireFiber(asyncProtocol);
 
                 // Reuse a fiber from the pool, and return it.
                 --_poolLevel;
                 var fi = fiberPool.pop();
-                fi.bodyFunc = bodyFunc;
-                fi.bodyThis = bodyThis;
-                fi.bodyArgs = bodyArgs;
                 fi.context = {};
                 return fi;
             },
@@ -40,14 +43,12 @@ var fiberPool: Mod = {
                 var fiberPoolId = asyncProtocol.fiberPoolId || (asyncProtocol.fiberPoolId = ++_nextPoolId);
                 var fiberPool = _pools[fiberPoolId] || (_pools[fiberPoolId] = []);
 
-                // If the pool is already full, release the fiber via the jointProtocol.
+                // If the pool is already full, release the fiber via the joint protocol.
                 if (_poolLevel >= _poolLimit) return base.releaseFiber(asyncProtocol, fi);
 
                 // Clear the fiber and add it to the pool.
                 ++_poolLevel;
-                fi.bodyFunc = null;
-                fi.bodyThis = null;
-                fi.bodyArgs = null;
+                base.setFiberTarget(fi, null);
                 fi.context = null;
                 fiberPool.push(fi);
             }
@@ -64,12 +65,6 @@ var fiberPool: Mod = {
         fiberPool: true
     }
 };
-
-
-/** Extended async protocol interface with fiber pool info. */
-interface AsyncProtocol extends AsyncAwait.Async.Protocol {
-    fiberPoolId: number;
-}
 
 
 // Private fiber pool state.

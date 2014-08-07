@@ -6,7 +6,7 @@
 };
 var stream = require('stream');
 var oldBuilder = require('../src/asyncBuilder');
-var jointProtocol = require('../src/jointProtocol');
+var _ = require('../src/util');
 
 
 var newBuilder = oldBuilder.mod({
@@ -25,13 +25,11 @@ var newBuilder = oldBuilder.mod({
                 if (error)
                     throw error;
 
-                //TODO: should setImmediate go here, or in jointProtocol?
+                // Ensure the fiber has yielded before the stream emits the value.
                 setImmediate(function () {
                     return fi.context.push(value);
                 });
-
-                // TODO: correct?
-                jointProtocol.suspendFiber();
+                _.yieldCurrentFiber();
             },
             end: function (fi, error, value) {
                 // TODO: if error, should we still push null to emit 'end' event as well? Check stream docs... I think errors are not considered final

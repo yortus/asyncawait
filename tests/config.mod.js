@@ -102,7 +102,7 @@ describe('Registered mods', function () {
         expect(tracking).to.deep.equal(['apply A']);
     });
 
-    it('are applied such that earliest registrations are outermost in jointProtocol call chains', function () {
+    it('are applied such that earliest registrations are outermost in joint protocol call chains', function () {
         async.config.mod(testModA);
         async.config.mod(testModB);
         expect(tracking).to.be.empty;
@@ -111,7 +111,7 @@ describe('Registered mods', function () {
         expect(tracking).to.deep.equal(['apply B', 'apply A']);
     });
 
-    it('have their jointProtocol overrides applied', async.cps(function () {
+    it('have their joint protocol overrides applied', async.cps(function () {
         async.config.mod(testModA);
         expect(tracking).to.be.empty;
         var foo = async(function () {
@@ -120,7 +120,7 @@ describe('Registered mods', function () {
         expect(tracking).to.deep.equal(['apply A', 'acquire A', 'release A']);
     }));
 
-    it('have their jointProtocol overrides called with correct nesting', async.cps(function () {
+    it('have their joint protocol overrides called with correct nesting', async.cps(function () {
         async.config.mod(testModA);
         async.config.mod(testModB);
         expect(tracking).to.be.empty;
