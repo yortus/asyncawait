@@ -54,18 +54,16 @@ function createAsyncBuilder(effectiveMod: AsyncAwait.Async.Mod, previousProtocol
     builder.name = null; //TODO:... implement, add all tests, use in error messages
     builder.protocol = effectiveProtocol;
     builder.options = effectiveMod.defaultOptions;
-    builder.mod = createModMethod(effectiveProtocol, effectiveMod, previousProtocol);
+    builder.mod = createModMethod(effectiveProtocol, effectiveMod);
 
     // Return the async builder function.
     return builder;
 }
 
 
-//TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
 /** Creates a mod() method appropriate to the given protocol settings. */
-function createModMethod(effectiveProtocol, effectiveMod: Mod, previousProtocol) {
+function createModMethod(effectiveProtocol, effectiveMod: Mod) {
     return function mod(mod: Mod) {
-        //TODO: revise all comments in here...
 
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
@@ -74,15 +72,11 @@ function createModMethod(effectiveProtocol, effectiveMod: Mod, previousProtocol)
         assert(isOptionsOnly || _.isFunction(mod.overrideProtocol), 'mod: expected overrideProtocol to be a function');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
-        var supersedingOptions = isOptionsOnly ? mod : mod.defaultOptions;
-        var options = _.mergeProps(_.branch(effectiveMod.defaultOptions), supersedingOptions);
+        var overrideProtocol = isOptionsOnly ? effectiveMod.overrideProtocol : mod.overrideProtocol;
+        var defaultOptions = _.mergeProps(_.branch(effectiveMod.defaultOptions), isOptionsOnly ? mod : mod.defaultOptions);
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        var supersedingMod: Mod = {
-            overrideProtocol: isOptionsOnly ? effectiveMod.overrideProtocol : mod.overrideProtocol,
-            defaultOptions: options
-        };
-        return createAsyncBuilder(supersedingMod, isOptionsOnly ? previousProtocol : effectiveProtocol);
+        return createAsyncBuilder({overrideProtocol: overrideProtocol, defaultOptions: defaultOptions}, effectiveProtocol);
     }
 }
 
