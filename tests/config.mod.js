@@ -102,13 +102,13 @@ describe('Registered mods', function () {
         expect(tracking).to.deep.equal(['apply A']);
     });
 
-    it('are applied such that earliest registrations are outermost in joint protocol call chains', function () {
+    it('are applied such that latest registrations are outermost in joint protocol call chains', function () {
         async.config.mod(testModA);
         async.config.mod(testModB);
         expect(tracking).to.be.empty;
         var foo = async(function () {
         });
-        expect(tracking).to.deep.equal(['apply B', 'apply A']);
+        expect(tracking).to.deep.equal(['apply A', 'apply B']);
     });
 
     it('have their joint protocol overrides applied', async.cps(function () {
@@ -127,9 +127,10 @@ describe('Registered mods', function () {
         var foo = async(function () {
         });
         await(foo());
-        expect(tracking).to.deep.equal(['apply B', 'apply A', 'acquire A', 'acquire B', 'release A', 'release B']);
+        expect(tracking).to.deep.equal(['apply A', 'apply B', 'acquire B', 'acquire A', 'release B', 'release A']);
     }));
 
+    //TODO: in a specific order? eg opposite of apply?
     it('have their reset() functions called when resetMods() is called', async.cps(function () {
         async.config.mod(testModA);
         async.config.mod(testModB);

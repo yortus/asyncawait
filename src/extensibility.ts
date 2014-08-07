@@ -47,15 +47,15 @@ export function applyMods() {
     assert(!isLocked, 'applyMods: mods already applied');
 
     // Create a combined mod list in the appropriate order.
-    var allMods: Mod[] = externalMods.concat(internalMods);
+    var allMods: Mod[] = internalMods.concat(externalMods);
 
     // Restore the joint protocol to its default state.
     jointProtocol.restoreDefaults();
 
-    // Apply all mods in reverse order of registration. This ensures that mods
-    // registered earliest remain outermost in joint protocol call chains, which is the
+    // Apply all mods in order of registration. This ensures that mods
+    // registered latest appear outermost in joint protocol call chains, which is the
     // design intention.
-    for (var i = allMods.length - 1; i >= 0; --i) {
+    for (var i = 0; i < allMods.length; ++i) {
         var mod = allMods[i];
         var protocolBeforeMod = _.mergeProps({}, jointProtocol);
         var protocolOverrides = (mod.overrideProtocol || <any> _.empty)(protocolBeforeMod, _options);
@@ -94,7 +94,12 @@ export function resetMods() {
 
 
 /** Built-in mods that are always applied. Order is important. */
-export var internalMods = [ cpsKeyword, maxSlots, fiberPool, fibersHotfix169 ];
+export var internalMods = [
+    fibersHotfix169,
+    fiberPool,
+    maxSlots,
+    cpsKeyword
+];
 
 
 /** Mods that have been explicitly registered via use(...). */
