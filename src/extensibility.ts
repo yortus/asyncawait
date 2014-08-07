@@ -2,10 +2,6 @@
 import assert = require('assert');
 import _ = require('./util');
 import jointProtocol = require('./jointProtocol');
-import fibersHotfix169 = require('./mods/fibersHotfix169');
-import fiberPool = require('./mods/fiberPool');
-import cpsKeyword = require('./mods/cpsKeyword');
-import maxSlots = require('./mods/maxSlots');
 import Mod = AsyncAwait.Mod;
 
 
@@ -23,6 +19,7 @@ export var config: AsyncAwait.Config = <any> function config() {
 }
 
 
+//TODO: rename to use()?
 /** Register the specified mod and add its default options to current config. */
 config.mod = function use(mod: Mod) {
 
@@ -34,6 +31,9 @@ config.mod = function use(mod: Mod) {
 
     // Add the mod to the list.
     externalMods.push(mod);
+
+    //TODO: temp testing...
+    //applyMod(mod);
 
     // Incorporate the mod's default options, if any.
     _.mergeProps(_options, mod.defaultOptions);
@@ -55,16 +55,19 @@ export function applyMods() {
     // Apply all mods in order of registration. This ensures that mods
     // registered latest appear outermost in joint protocol call chains, which is the
     // design intention.
-    for (var i = 0; i < allMods.length; ++i) {
-        var mod = allMods[i];
-        var protocolBeforeMod = _.mergeProps({}, jointProtocol);
-        var protocolOverrides = (mod.overrideProtocol || <any> _.empty)(protocolBeforeMod, _options);
-        _.mergeProps(jointProtocol, protocolOverrides);
-        if (mod.apply) mod.apply(_options);
-    }
+    allMods.forEach(applyMod);
 
     // Lock the subsystem against further changes.
     isLocked = true;
+}
+
+
+//TODO: temp testing...
+function applyMod(mod: Mod) {
+    var protocolBeforeMod = _.mergeProps({}, jointProtocol);
+    var protocolOverrides = (mod.overrideProtocol || <any> _.empty)(protocolBeforeMod, _options);
+    _.mergeProps(jointProtocol, protocolOverrides);
+    if (mod.apply) mod.apply(_options);
 }
 
 
@@ -95,11 +98,16 @@ export function resetMods() {
 
 /** Built-in mods that are always applied. Order is important. */
 export var internalMods = [
-    fibersHotfix169,
-    fiberPool,
-    maxSlots,
-    cpsKeyword
+    require('./mods/fibersHotfix169'),
+    require('./mods/fiberPool'),
+    require('./mods/maxSlots'),
+    require('./mods/cpsKeyword'),
+    require('./mods/promises')
 ];
+
+
+//TODO: temp testing...
+//internalMods.forEach(applyMod);
 
 
 /** Mods that have been explicitly registered via use(...). */

@@ -8,7 +8,8 @@ var iterable = require('./iterable/index');
 
 var api = promise;
 api.config = extensibility.config;
-api.promise = promise.mod({});
+
+// TODO: temp... api.promise = promise.mod({});
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;

@@ -4,7 +4,12 @@ import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
+import extensibility = require('asyncawait/src/extensibility');//TODO: temp...
 var expect = chai.expect;
+
+
+//TODO: temp testing... force apply mods
+beforeEach(() => { extensibility.resetMods(); async(()=>{}); });
 
 
 describe('A suspendable function returned by async.promise(...)', () => {

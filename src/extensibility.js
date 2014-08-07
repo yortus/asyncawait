@@ -1,10 +1,6 @@
 ﻿var assert = require('assert');
 var _ = require('./util');
 var jointProtocol = require('./jointProtocol');
-var fibersHotfix169 = require('./mods/fibersHotfix169');
-var fiberPool = require('./mods/fiberPool');
-var cpsKeyword = require('./mods/cpsKeyword');
-var maxSlots = require('./mods/maxSlots');
 
 /** Get or set global configuration values. */
 exports.config = function config() {
@@ -19,6 +15,7 @@ exports.config = function config() {
     _.mergeProps(_options, arguments[0]);
 };
 
+//TODO: rename to use()?
 /** Register the specified mod and add its default options to current config. */
 exports.config.mod = function use(mod) {
     // Reject operation if this subsystem is now locked.
@@ -30,6 +27,8 @@ exports.config.mod = function use(mod) {
     // Add the mod to the list.
     exports.externalMods.push(mod);
 
+    //TODO: temp testing...
+    //applyMod(mod);
     // Incorporate the mod's default options, if any.
     _.mergeProps(_options, mod.defaultOptions);
 };
@@ -45,19 +44,24 @@ function applyMods() {
     // Restore the joint protocol to its default state.
     jointProtocol.restoreDefaults();
 
-    for (var i = 0; i < allMods.length; ++i) {
-        var mod = allMods[i];
-        var protocolBeforeMod = _.mergeProps({}, jointProtocol);
-        var protocolOverrides = (mod.overrideProtocol || _.empty)(protocolBeforeMod, _options);
-        _.mergeProps(jointProtocol, protocolOverrides);
-        if (mod.apply)
-            mod.apply(_options);
-    }
+    // Apply all mods in order of registration. This ensures that mods
+    // registered latest appear outermost in joint protocol call chains, which is the
+    // design intention.
+    allMods.forEach(applyMod);
 
     // Lock the subsystem against further changes.
     exports.isLocked = true;
 }
 exports.applyMods = applyMods;
+
+//TODO: temp testing...
+function applyMod(mod) {
+    var protocolBeforeMod = _.mergeProps({}, jointProtocol);
+    var protocolOverrides = (mod.overrideProtocol || _.empty)(protocolBeforeMod, _options);
+    _.mergeProps(jointProtocol, protocolOverrides);
+    if (mod.apply)
+        mod.apply(_options);
+}
 
 /**
 *  Reset all registered mods and return the subsystem to an unlocked state. This
@@ -90,12 +94,15 @@ exports.resetMods = resetMods;
 
 /** Built-in mods that are always applied. Order is important. */
 exports.internalMods = [
-    fibersHotfix169,
-    fiberPool,
-    maxSlots,
-    cpsKeyword
+    require('./mods/fibersHotfix169'),
+    require('./mods/fiberPool'),
+    require('./mods/maxSlots'),
+    require('./mods/cpsKeyword'),
+    require('./mods/promises')
 ];
 
+//TODO: temp testing...
+//internalMods.forEach(applyMod);
 /** Mods that have been explicitly registered via use(...). */
 exports.externalMods = [];
 
