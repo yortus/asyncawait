@@ -1,11 +1,11 @@
 ﻿import references = require('references');
-import oldBuilder = require('../awaitBuilder');
-import _ = require('../util');
-export = newBuilder;
+import _ = require('../../util');
+export = mod;
 
 
-var newBuilder = oldBuilder.mod({
-
+//TODO:...
+var mod = {
+    
     name: 'cps',
 
     type: <AsyncAwait.Await.CPSBuilder> null,
@@ -49,8 +49,4 @@ var newBuilder = oldBuilder.mod({
             return k;
         }
     })
-});
-
-
-//TODO: is jointProtocol the right place for this?
-newBuilder.continuation = _.createContinuation;
+};

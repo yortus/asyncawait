@@ -1,18 +1,22 @@
 ﻿var assert = require('assert');
-var oldBuilder = require('../asyncBuilder');
-var _ = require('../util');
+var _ = require('../../util');
 
-
-var newBuilder = oldBuilder.mod({
+/** Provides an async builder for producing suspendable functions accept node-style callbacks. */
+var mod = {
+    /** Used for diagnostic purposes. */
     name: 'cps',
+    /** Used only for automatic type interence at TypeScript compile time. */
     type: null,
+    /** Provides appropriate handling for callback-accepting suspendable functions. */
     overrideProtocol: function (base, options) {
         return ({
+            /** Remembers the given callback and synchronously returns nothing. */
             begin: function (fi, callback) {
                 assert(_.isFunction(callback), 'Expected final argument to be a callback');
                 fi.context = callback;
                 fi.resume();
             },
+            /** Invokes the callback with a result or an error, depending on whether the function returned or threw. */
             end: function (fi, error, value) {
                 if (error)
                     fi.context(error);
@@ -21,6 +25,6 @@ var newBuilder = oldBuilder.mod({
             }
         });
     }
-});
-module.exports = newBuilder;
+};
+module.exports = mod;
 //# sourceMappingURL=cps.js.map

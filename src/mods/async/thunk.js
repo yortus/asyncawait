@@ -1,8 +1,10 @@
-﻿var oldBuilder = require('./cps');
-var _ = require('../util');
+﻿var _ = require('../../util');
 
-var newBuilder = oldBuilder.mod({
+//TODO: how to indicate that this must mod async.cps??
+var mod = {
     name: 'thunk',
+    //TODO: add checking in extensibility.ts or somehow for this:
+    base: 'cps',
     type: null,
     overrideProtocol: function (cps, options) {
         return ({
@@ -13,6 +15,6 @@ var newBuilder = oldBuilder.mod({
             }
         });
     }
-});
-module.exports = newBuilder;
+};
+module.exports = mod;
 //# sourceMappingURL=thunk.js.map

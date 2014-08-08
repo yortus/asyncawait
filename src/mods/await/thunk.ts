@@ -1,10 +1,9 @@
 ﻿import references = require('references');
-import oldBuilder = require('../awaitBuilder');
-import _ = require('../util');
-export = newBuilder;
+import _ = require('../../util');
+export = mod;
 
 
-var newBuilder = oldBuilder.mod({
+var mod = {
 
     name: 'thunk',
 
@@ -34,4 +33,4 @@ var newBuilder = oldBuilder.mod({
             return k;
         }
     })
-});
+};

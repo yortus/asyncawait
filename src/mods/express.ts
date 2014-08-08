@@ -1,27 +1,28 @@
 ﻿import references = require('references');
 import async = require('../async/index');
 import await = require('../await/index');
-import asyncMod = require('./async/promise');
-import awaitMod = require('./await/promise');
+import asyncMod = require('./async/express');
 import Mod = AsyncAwait.Mod;
 
 
 /** TODO */
+//TODO: how to indicate that this must mod async.cps??
 export var mod: Mod = {
 
-    name: 'promises',
+    name: 'express',
+
+    //TODO: add checking in extensibility.ts or somehow for this:
+    requires: ['cps'],
 
     overrideProtocol: (base, options) => ({
     
         startup: () => {
             base.startup();
-            async.promise = async.mod(asyncMod);
-            await.promise = await.mod(awaitMod);
+            async.express = async.cps.mod(asyncMod);
         },
 
         shutdown: () => {
-            async.promise = null;
-            await.promise = null;
+            async.express = null;
             base.shutdown();
         }
     }),

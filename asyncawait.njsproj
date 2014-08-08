@@ -71,8 +71,17 @@
     <TypeScriptCompile Include="src\await\TODO\thunk.ts" />
     <TypeScriptCompile Include="src\await\TODO\value.ts" />
     <TypeScriptCompile Include="config\index.ts" />
+    <TypeScriptCompile Include="src\mods\async\cps.ts" />
+    <TypeScriptCompile Include="src\mods\async\express.ts" />
+    <TypeScriptCompile Include="src\mods\async\promise.ts" />
+    <TypeScriptCompile Include="src\mods\async\thunk.ts" />
+    <TypeScriptCompile Include="src\mods\await\cps.ts" />
+    <TypeScriptCompile Include="src\mods\await\promise.ts" />
+    <TypeScriptCompile Include="src\mods\await\thunk.ts" />
     <TypeScriptCompile Include="src\mods\baseline.ts" />
     <TypeScriptCompile Include="src\mods\callbacks.ts" />
+    <TypeScriptCompile Include="src\mods\express.ts" />
+    <TypeScriptCompile Include="src\mods\thunks.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
     <TypeScriptCompile Include="src\startup.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
@@ -168,6 +177,8 @@
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
     <Folder Include="src\async\" />
+    <Folder Include="src\mods\async\" />
+    <Folder Include="src\mods\await\" />
     <Folder Include="support\comparison\" />
     <Folder Include="support\comparison\countFiles\" />
     <Folder Include="support\comparison\fibonacci\" />

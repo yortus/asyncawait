@@ -71,7 +71,9 @@ function useDefaults() {
         require('./mods/maxSlots').mod,
         require('./mods/cpsKeyword').mod,
         require('./mods/promises').mod,
-        require('./mods/callbacks').mod
+        require('./mods/callbacks').mod,
+        require('./mods/thunks').mod,
+        require('./mods/express').mod
     ];
     defaultMods.forEach(function (mod) {
         return exports.use(mod);

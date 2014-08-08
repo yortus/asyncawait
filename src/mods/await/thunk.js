@@ -1,7 +1,6 @@
-﻿var oldBuilder = require('../awaitBuilder');
-var _ = require('../util');
+﻿var _ = require('../../util');
 
-var newBuilder = oldBuilder.mod({
+var mod = {
     name: 'thunk',
     type: null,
     overrideHandlers: function (base, options) {
@@ -32,6 +31,6 @@ var newBuilder = oldBuilder.mod({
             }
         });
     }
-});
-module.exports = newBuilder;
+};
+module.exports = mod;
 //# sourceMappingURL=thunk.js.map

@@ -1,7 +1,7 @@
-﻿var oldBuilder = require('../awaitBuilder');
-var _ = require('../util');
+﻿var _ = require('../../util');
 
-var newBuilder = oldBuilder.mod({
+//TODO:...
+var mod = {
     name: 'cps',
     type: null,
     overrideHandlers: function (base, options) {
@@ -44,9 +44,6 @@ var newBuilder = oldBuilder.mod({
             }
         });
     }
-});
-
-//TODO: is jointProtocol the right place for this?
-newBuilder.continuation = _.createContinuation;
-module.exports = newBuilder;
+};
+module.exports = mod;
 //# sourceMappingURL=cps.js.map

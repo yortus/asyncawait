@@ -1,9 +1,11 @@
 ﻿import references = require('references');
 //TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
-import promisesMod = require('../mods/promises');
-import callbacksMod = require('../mods/callbacks');
+import awaitBuilder = require('../awaitBuilder');
+import promiseMod = require('../mods/await/promise');
+import cpsMod = require('../mods/await/cps');
+import thunkMod = require('../mods/await/thunk');
 //import cps = require('./cps');
-import thunk = require('./thunk');
+//import thunk = require('./thunk');
 export = api;
 
 
@@ -23,8 +25,9 @@ var value = {
 
 
 //TODO: temp testing...
-var promise = promisesMod.createAwaitBuilder();
-var cps = callbacksMod.createAwaitBuilder();
+var promise = awaitBuilder.mod(promiseMod);
+var cps = awaitBuilder.mod(cpsMod);
+var thunk = awaitBuilder.mod(thunkMod);
 var opts = { handlers: [ promise.handlers, cps.handlers, thunk.handlers, value ]};
 var api: AsyncAwait.Await.API = <any> compound.mod({ defaultOptions: opts });//TODO: review awkward syntax, just want to pass opts
 //api.cps = <any> cps;
