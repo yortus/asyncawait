@@ -5,11 +5,9 @@
     d.prototype = new __();
 };
 var stream = require('stream');
-var oldBuilder = require('../asyncBuilder');
-var _ = require('../util');
+var _ = require('../../util');
 
-
-var newBuilder = oldBuilder.mod({
+var mod = {
     name: 'stream',
     type: null,
     overrideProtocol: function (base, options) {
@@ -40,7 +38,7 @@ var newBuilder = oldBuilder.mod({
             }
         });
     }
-});
+};
 
 var Stream = (function (_super) {
     __extends(Stream, _super);
@@ -53,5 +51,5 @@ var Stream = (function (_super) {
     };
     return Stream;
 })(stream.Readable);
-module.exports = newBuilder;
+module.exports = mod;
 //# sourceMappingURL=stream.js.map

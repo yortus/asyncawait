@@ -73,6 +73,7 @@ function useDefaults() {
         require('./mods/promises').mod,
         require('./mods/callbacks').mod,
         require('./mods/thunks').mod,
+        require('./mods/streams').mod,
         require('./mods/express').mod
     ];
     defaultMods.forEach(function (mod) {

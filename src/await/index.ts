@@ -4,8 +4,6 @@ import awaitBuilder = require('../awaitBuilder');
 import promiseMod = require('../mods/await/promise');
 import cpsMod = require('../mods/await/cps');
 import thunkMod = require('../mods/await/thunk');
-//import cps = require('./cps');
-//import thunk = require('./thunk');
 export = api;
 
 
@@ -30,5 +28,3 @@ var cps = awaitBuilder.mod(cpsMod);
 var thunk = awaitBuilder.mod(thunkMod);
 var opts = { handlers: [ promise.handlers, cps.handlers, thunk.handlers, value ]};
 var api: AsyncAwait.Await.API = <any> compound.mod({ defaultOptions: opts });//TODO: review awkward syntax, just want to pass opts
-//api.cps = <any> cps;
-api.thunk = <any> thunk;

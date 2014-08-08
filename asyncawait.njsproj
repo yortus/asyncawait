@@ -48,18 +48,13 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="src\async\index.ts" />
-    <TypeScriptCompile Include="src\async\cps.ts" />
-    <TypeScriptCompile Include="src\async\stream.ts" />
-    <TypeScriptCompile Include="src\async\thunk.ts" />
-    <TypeScriptCompile Include="src\async\express.ts" />
+    <TypeScriptCompile Include="src\mods\async\stream.ts" />
     <TypeScriptCompile Include="src\async\iterable\index.ts" />
     <TypeScriptCompile Include="src\async\iterable\cps.ts" />
     <TypeScriptCompile Include="src\async\iterable\thunk.ts" />
     <TypeScriptCompile Include="src\async\iterable\promise.ts" />
     <TypeScriptCompile Include="src\await\compound.ts" />
-    <TypeScriptCompile Include="src\await\cps.ts" />
     <TypeScriptCompile Include="src\await\index.ts" />
-    <TypeScriptCompile Include="src\await\thunk.ts" />
     <TypeScriptCompile Include="src\await\TODO\stream.ts" />
     <TypeScriptCompile Include="src\await\TODO\array.ts" />
     <TypeScriptCompile Include="src\await\TODO\graph.ts" />
@@ -68,7 +63,6 @@
     <TypeScriptCompile Include="src\await\TODO\resource.ts" />
     <TypeScriptCompile Include="src\await\TODO\iterator.ts" />
     <TypeScriptCompile Include="src\await\TODO\cps.array.ts" />
-    <TypeScriptCompile Include="src\await\TODO\thunk.ts" />
     <TypeScriptCompile Include="src\await\TODO\value.ts" />
     <TypeScriptCompile Include="config\index.ts" />
     <TypeScriptCompile Include="src\mods\async\cps.ts" />
@@ -81,6 +75,7 @@
     <TypeScriptCompile Include="src\mods\baseline.ts" />
     <TypeScriptCompile Include="src\mods\callbacks.ts" />
     <TypeScriptCompile Include="src\mods\express.ts" />
+    <TypeScriptCompile Include="src\mods\streams.ts" />
     <TypeScriptCompile Include="src\mods\thunks.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
     <TypeScriptCompile Include="src\startup.ts" />
