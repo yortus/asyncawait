@@ -9,25 +9,32 @@ var _ = require('../util');
 */
 var cpsKeyword = {
     name: 'cpsKeyword',
-    apply: function (options) {
-        // Do nothing if the option is not selected.
-        if (!options.cpsKeyword)
-            return;
+    overrideProtocol: function (base, options) {
+        return ({
+            startup: function () {
+                base.startup();
 
-        // Ensure the symbol is not already defined
-        assert(!global[options.cpsKeyword], 'cpsKeyword: identifier already exists on global object');
+                // Do nothing if the option is not selected.
+                if (!options.cpsKeyword)
+                    return;
 
-        // Define the global property accessor.
-        _cpsKeyword = options.cpsKeyword;
-        Object.defineProperty(global, _cpsKeyword, { get: _.createContinuation, configurable: true });
+                // Ensure the symbol is not already defined
+                assert(!global[options.cpsKeyword], 'cpsKeyword: identifier already exists on global object');
 
-        // Return nothing, since we don't override the joint protocol here.
-        return null;
-    },
-    reset: function () {
-        if (_cpsKeyword)
-            delete global[_cpsKeyword];
-        _cpsKeyword = null;
+                // Define the global property accessor.
+                _cpsKeyword = options.cpsKeyword;
+                Object.defineProperty(global, _cpsKeyword, { get: _.createContinuation, configurable: true });
+
+                // Return nothing, since we don't override the joint protocol here.
+                return null;
+            },
+            shutdown: function () {
+                if (_cpsKeyword)
+                    delete global[_cpsKeyword];
+                _cpsKeyword = null;
+                base.shutdown();
+            }
+        });
     },
     defaultOptions: {
         cpsKeyword: null

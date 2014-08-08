@@ -21,12 +21,13 @@ var fibersHotfix169 = {
             releaseFiber: function (asyncProtocol, fi) {
                 dec();
                 return base.releaseFiber(asyncProtocol, fi);
+            },
+            shutdown: function () {
+                _fiberPoolSize = Fiber.poolSize;
+                _activeFiberCount = 0;
+                base.shutdown();
             }
         };
-    },
-    reset: function () {
-        _fiberPoolSize = Fiber.poolSize;
-        _activeFiberCount = 0;
     },
     defaultOptions: {
         fibersHotfix169: false

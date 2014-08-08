@@ -21,19 +21,19 @@ describe('The cpsKeyword mod', () => {
     }
 
     it('defines the requested symbol globally', async.cps(() => {
-        async.config({cpsKeyword: '__'});
+        async.config.mod({cpsKeyword: '__'});
         expect(global.__).to.not.exist;
         var foo = createFoo();
         expect(global.__).to.exist;
     }));
 
     it('fails if the requested symbol is already defined', async.cps(() => {
-        async.config({cpsKeyword: 'console'});
+        async.config.mod({cpsKeyword: 'console'});
         expect(() => createFoo()).to.throw();
     }));
 
     it('does not define the symbol if inactivated', async.cps(() => {
-        async.config({cpsKeyword: null});
+        async.config.mod({cpsKeyword: null});
         expect(global.__).to.not.exist;
         var foo = createFoo();
         expect(global.__).to.not.exist;

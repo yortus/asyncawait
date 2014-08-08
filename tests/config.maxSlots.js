@@ -18,7 +18,7 @@ describe('The maxSlots mod', function () {
     });
     var setMaxSlots = function (n) {
         //extensibility.resetMods();
-        extensibility.config({ maxSlots: n });
+        extensibility.config.mod({ maxSlots: n });
         //extensibility.applyMods();
     };
 

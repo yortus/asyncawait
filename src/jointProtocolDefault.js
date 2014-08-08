@@ -30,6 +30,10 @@ var defaultProtocol = {
         fi.bodyFunc = bodyFunc;
         fi.bodyThis = bodyThis;
         fi.bodyArgs = bodyArgs;
+    },
+    startup: function () {
+    },
+    shutdown: function () {
     }
 };
 

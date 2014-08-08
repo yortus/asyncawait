@@ -70,12 +70,13 @@ var maxSlots = {
 
                 // Delegate to the base protocol.
                 return base.releaseFiber(asyncProtocol, fi);
+            },
+            shutdown: function () {
+                _size = _avail = null;
+                _queued = [];
+                base.shutdown();
             }
         };
-    },
-    reset: function () {
-        _size = _avail = null;
-        _queued = [];
     },
     defaultOptions: {
         maxSlots: null

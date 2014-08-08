@@ -194,10 +194,12 @@ declare module AsyncAwait {
     //------------------------- Extensibility -------------------------
     export interface Config {
         (): ConfigOptions;
-        (options: ConfigOptions): void;
-        mod: (mod: Mod) => void;
+        //TODO: was... (options: ConfigOptions): void;
+        mod(mod: Mod): void;
+        mod(options: {}): void;
     }
 
+    //TODO: really type these defaults?
     export interface ConfigOptions {
         fibersHotfix169?: boolean;
         fiberPool?: boolean;
@@ -206,24 +208,27 @@ declare module AsyncAwait {
     }
 
     // TODO: should be AsyncAwait.Config.Mod - need another namespace
+    //TODO: make similar to async protocol typings
     export interface Mod {
-        name?: string;
-        overrideProtocol?: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
-        apply?: (options: ConfigOptions) => void;
-        reset?: () => void;
+        overrideProtocol: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
         defaultOptions?: {};
+        name?: string;
     }
 
     export interface JointProtocol {
         acquireFiber: (asyncProtocol: Async.Protocol) => Fiber;
         releaseFiber: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
         setFiberTarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => void
+        startup: () => void;
+        shutdown: () => void;
     }
 
     export interface JointProtocolOverrides {
         acquireFiber?: (asyncProtocol: Async.Protocol) => Fiber;
         releaseFiber?: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
         setFiberTarget?: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => void
+        startup?: () => void;
+        shutdown?: () => void;
     }
 
 

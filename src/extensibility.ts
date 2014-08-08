@@ -6,24 +6,23 @@ import _ = require('./util');
 import Mod = AsyncAwait.Mod;
 
 
+//TODO: default options SHOULD NOT override pre-existing options with same keys
+//TODO: if isOptionsOnly, then this SHOULD override any existing options
+
+
 //TODO: doc...
 /** Resets ... */
 function resetAll() {
 
-    // Call each registered mod's reset() function, if present.
-    for (var i = _mods.length - 1; i >= 0; --i) {
-        var mod = _mods[i];
-        if (mod.reset) mod.reset();
-    }
+    // Reset and restore the joint protocol to its default state.
+    if (jointProtocol.shutdown) jointProtocol.shutdown();
+    _.mergeProps(jointProtocol, defaultProtocol);
 
     // Clear all external mod registrations.
     _mods = [];
 
     // Restore options to its initial state.
     _options = {};
-
-    // Restore the default jointProtocol.
-    _.mergeProps(jointProtocol, defaultProtocol);
 }
 
 
@@ -33,18 +32,24 @@ export var config: AsyncAwait.Config = <any> function config(value?: any) {
     // If called as a getter, return a reference to the options object.
     if (arguments.length === 0) return _options;
 
-    // Create a pseudo-mod that has the given config values as its default options.
-    var mod: Mod = { defaultOptions: value };
+    //// Create a pseudo-mod that has the given config values as its default options.
+    //var mod: Mod = { defaultOptions: value };
 
-    // Apply the pseudo-mod.
-    use(mod);
+    //// Apply the pseudo-mod.
+    //use(mod);
+
+    //TODO: delegate to use()
+    use(value);
 }
 
 
+//TODO: bring this in line with async's createModMethod
 /** Registers the specified mod and adds its default options to current config. */
 export function use(mod: Mod) {
 
-    // Prevent duplicate registration.
+
+    //TODO: appropriate if isOptionsOnly? Do this in inner loop?
+    // Prevent simple duplicate registrations.
     assert(_mods.indexOf(mod) === -1, 'use: mod already registered');
 
     // Retain a reference to the current mod list.
@@ -58,15 +63,21 @@ export function use(mod: Mod) {
     _mods.push(mod);
 
     // Accumulate all config/options changes.
-    _mods.forEach(mod => _.mergeProps(_options, mod.defaultOptions));
+    _mods.forEach(mod => {
+        var isOptionsOnly = !mod.overrideProtocol;
+        var propsToMerge = isOptionsOnly ? mod : _.mergeProps({}, mod.defaultOptions, _options);
+        _.mergeProps(_options, propsToMerge);
+    });
 
-    // Apply all mods and their protocols.
+    // Form the new protocol stack
     _mods.forEach(mod => {
         var protocolBeforeMod = _.mergeProps({}, jointProtocol);
         var protocolOverrides = (mod.overrideProtocol || <any> _.empty)(protocolBeforeMod, _options);
         _.mergeProps(jointProtocol, protocolOverrides);
-        if (mod.apply) mod.apply(_options);
     });
+
+    //TODO: startup...
+    jointProtocol.startup();
 }
 
 

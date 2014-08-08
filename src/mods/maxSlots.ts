@@ -86,13 +86,15 @@ var maxSlots: Mod = {
 
                 // Delegate to the base protocol.
                 return base.releaseFiber(asyncProtocol, fi);
-            }
-        };
-    },
+            },
 
-    reset: () => {
-        _size = _avail = null;
-        _queued = [];
+            shutdown: () => {
+                _size = _avail = null;
+                _queued = [];
+                base.shutdown();
+            }
+
+        };
     },
 
     defaultOptions: {

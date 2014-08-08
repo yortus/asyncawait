@@ -70,6 +70,8 @@ function createModMethod(builder, previousMod) {
         assert(isOptionsOnly || _.isFunction(mod.overrideProtocol), 'mod: expected overrideProtocol to be a function');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
+        //TODO: default options SHOULD NOT override pre-existing options with same keys
+        //TODO: if isOptionsOnly, then this SHOULD override any existing options
         var overrideProtocol = isOptionsOnly ? previousMod.overrideProtocol : mod.overrideProtocol;
         var defaultOptions = _.mergeProps(_.branch(builder.options), isOptionsOnly ? mod : mod.defaultOptions);
 

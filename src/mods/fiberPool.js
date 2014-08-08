@@ -37,13 +37,14 @@ var fiberPool = {
                 base.setFiberTarget(fi, null);
                 fi.context = null;
                 fiberPool.push(fi);
+            },
+            shutdown: function () {
+                _poolLevel = 0;
+                _poolLimit = 100;
+                _pools = [];
+                base.shutdown();
             }
         };
-    },
-    reset: function () {
-        _poolLevel = 0;
-        _poolLimit = 100;
-        _pools = [];
     },
     defaultOptions: {
         fiberPool: true

@@ -33,7 +33,11 @@ var defaultProtocol: JointProtocol = {
         fi.bodyFunc = bodyFunc;
         fi.bodyThis = bodyThis;
         fi.bodyArgs = bodyArgs;
-    }
+    },
+
+    startup: () => { /* no-op */ },
+
+    shutdown: () => { /* no-op */ }
 };
 
 

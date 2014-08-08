@@ -51,14 +51,16 @@ var fiberPool: Mod = {
                 base.setFiberTarget(fi, null);
                 fi.context = null;
                 fiberPool.push(fi);
-            }
-        };
-    },
+            },
 
-    reset: () => {
-        _poolLevel = 0;
-        _poolLimit = 100;
-        _pools = [];
+            shutdown: () => {
+                _poolLevel = 0;
+                _poolLimit = 100;
+                _pools = [];
+                base.shutdown();
+            }
+
+        };
     },
 
     defaultOptions: {

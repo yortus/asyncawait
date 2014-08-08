@@ -10,17 +10,20 @@ var promises: Mod = {
 
     name: 'promises',
 
-    overrideProtocol: (base, options) => ({}),
+    overrideProtocol: (base, options) => ({
+    
+        startup: () => {
+            base.startup();
+            var api = require('../../async');
+            api.promise = createBuilder();
+        },
 
-    apply: (options) => {
-        var api = require('../../async');
-        api.promise = createBuilder();
-    },
-
-    reset: () => {
-        var api = require('../../async');
-        delete api.promise;
-    },
+        shutdown: () => {
+            var api = require('../../async');
+            delete api.promise;
+            base.shutdown();
+        }
+    }),
 
     defaultOptions: {
     }

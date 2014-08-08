@@ -22,20 +22,23 @@ var fibersHotfix169: Mod = {
 
         // Override the joint protocol if the option is selected.
         return (!options.fibersHotfix169) ? null : {
+
             acquireFiber: (asyncProtocol) => {
                 inc();
                 return base.acquireFiber(asyncProtocol);
             },
+
             releaseFiber: (asyncProtocol, fi) => {
                 dec();
                 return base.releaseFiber(asyncProtocol, fi);
+            },
+
+            shutdown: () => {
+                _fiberPoolSize = Fiber.poolSize;
+                _activeFiberCount = 0;
+                base.shutdown();
             }
         };
-    },
-
-    reset: () => {
-        _fiberPoolSize = Fiber.poolSize;
-        _activeFiberCount = 0;
     },
 
     defaultOptions: {

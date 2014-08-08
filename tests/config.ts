@@ -20,7 +20,7 @@ describe('The config(...) function', () => {
     it('Updates the current options with the key/value pairs passed in its first argument', () => {
         expect(async.config().maxSlots).to.be.null;
         expect(async.config()).to.not.contain.keys('abc');
-        async.config({maxSlots: 10, abc: '123'});
+        async.config.mod({maxSlots: 10, abc: '123'});
         expect(async.config().maxSlots).to.equal(10);
         expect(async.config()['abc']).to.equal('123');
     });
@@ -29,6 +29,6 @@ describe('The config(...) function', () => {
         var opts = async.config();
         expect(opts).to.contain.keys('maxSlots', 'fiberPool');
         var foo = async (() => {});
-        expect(() => async.config({maxSlots: 10})).to.throw();
+        expect(() => async.config.mod({maxSlots: 10})).to.throw();
     });
 });

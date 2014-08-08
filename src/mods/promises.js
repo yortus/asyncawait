@@ -6,15 +6,18 @@ var oldBuilder = require('../asyncBuilder');
 var promises = {
     name: 'promises',
     overrideProtocol: function (base, options) {
-        return ({});
-    },
-    apply: function (options) {
-        var api = require('../../async');
-        api.promise = createBuilder();
-    },
-    reset: function () {
-        var api = require('../../async');
-        delete api.promise;
+        return ({
+            startup: function () {
+                base.startup();
+                var api = require('../../async');
+                api.promise = createBuilder();
+            },
+            shutdown: function () {
+                var api = require('../../async');
+                delete api.promise;
+                base.shutdown();
+            }
+        });
     },
     defaultOptions: {}
 };

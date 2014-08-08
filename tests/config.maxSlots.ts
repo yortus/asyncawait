@@ -15,7 +15,7 @@ describe('The maxSlots mod', () => {
     var opB = async (() => ({ started: started, finished: finished }));
     var setMaxSlots = n => {
         //extensibility.resetMods();
-        extensibility.config({maxSlots: n});
+        extensibility.config.mod({maxSlots: n});
         //extensibility.applyMods();
     };
 

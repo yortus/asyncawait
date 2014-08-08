@@ -23,7 +23,7 @@ describe('The fibersHotfix169 mod', function () {
     }
 
     it('adjusts Fiber.poolSize so it always exceeds the number of executing fibers', async.cps(function () {
-        async.config({ fibersHotfix169: true });
+        async.config.mod({ fibersHotfix169: true });
         expect(Fiber.poolSize).to.equal(120);
         var foo = createFoo();
         await(Array.apply(0, new Array(200)).map(foo));
@@ -31,7 +31,7 @@ describe('The fibersHotfix169 mod', function () {
     }));
 
     it('does not adjust Fiber.poolSize if inactivated', async.cps(function () {
-        async.config({ fibersHotfix169: false });
+        async.config.mod({ fibersHotfix169: false });
         expect(Fiber.poolSize).to.equal(120);
         var foo = createFoo();
         await(Array.apply(0, new Array(200)).map(foo));
