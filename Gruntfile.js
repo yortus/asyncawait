@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         clean: {
             main: {
                 src: [
-                    'src/**/*.js', 'config/**/*.js', 'yield/**/*.js', 'tests/**/*.js',
-                    'src/**/*.js.map', 'config/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map'
+                    'src/**/*.js', 'tests/**/*.js',
+                    'src/**/*.js.map', 'tests/**/*.js.map'
                 ]
             }
         },
@@ -18,8 +18,6 @@ module.exports = function(grunt) {
             main: {
                 src: [
                     'src/**/*.ts',
-                    'config/**/*.ts',
-                    'yield/**/*.ts',
                     'tests/**/*.ts'
                 ],
                 dest: '.',
@@ -36,7 +34,7 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 expand: true,
-                src: ['src/**/*.js', 'async.js', 'await.js', 'config/**/*.js', 'yield/**/*.js', 'mods/**/*.js', 'index.js'],
+                src: ['src/**/*.js', 'async.js', 'await.js', 'config.js', 'yield.js', 'index.js'],
                 dest: 'node_modules/asyncawait'
             }
         },

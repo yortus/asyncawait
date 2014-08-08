@@ -1,4 +1,7 @@
-﻿import references = require('references');
+﻿//TODO: rename to config.ts?
+
+
+import references = require('references');
 import assert = require('assert');
 import jointProtocol = require('./jointProtocol');
 import _ = require('./util');

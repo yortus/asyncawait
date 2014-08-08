@@ -64,7 +64,6 @@
     <TypeScriptCompile Include="src\await\TODO\iterator.ts" />
     <TypeScriptCompile Include="src\await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="src\await\TODO\value.ts" />
-    <TypeScriptCompile Include="config\index.ts" />
     <TypeScriptCompile Include="src\mods\async\cps.ts" />
     <TypeScriptCompile Include="src\mods\async\express.ts" />
     <TypeScriptCompile Include="src\mods\async\promise.ts" />
@@ -131,6 +130,7 @@
   <ItemGroup>
     <Compile Include="await.js" />
     <Compile Include="async.js" />
+    <Compile Include="config.js" />
     <Compile Include="support\comparison\benchmark.js" />
     <Compile Include="support\comparison\countFiles\countFiles-async.js" />
     <Compile Include="support\comparison\countFiles\countFiles-asyncawait.js" />
@@ -168,7 +168,6 @@
     <Folder Include="src\async\iterable\" />
     <Folder Include="src\await\" />
     <Folder Include="src\await\TODO\" />
-    <Folder Include="config\" />
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
     <Folder Include="src\async\" />

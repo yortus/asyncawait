@@ -1,4 +1,5 @@
-﻿var assert = require('assert');
+﻿//TODO: rename to config.ts?
+var assert = require('assert');
 var jointProtocol = require('./jointProtocol');
 var _ = require('./util');
 

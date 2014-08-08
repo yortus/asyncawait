@@ -1,6 +1,5 @@
-﻿require('../src/startup');
-import references = require('references');
-import _ = require('../src/util');
+﻿import references = require('references');
+import _ = require('../util');
 export = yield_;
 
 
