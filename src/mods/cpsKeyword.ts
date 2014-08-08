@@ -2,7 +2,6 @@
 import assert = require('assert');
 import _ = require('../util');
 import Mod = AsyncAwait.Mod;
-export = cpsKeyword;
 
 
 /**
@@ -10,7 +9,7 @@ export = cpsKeyword;
  * await.cps.continuation(). This is purely for convenience and clarity
  * for reading and writing async code.
  */
-var cpsKeyword: Mod = {
+export var mod: Mod = {
 
     name: 'cpsKeyword',
 

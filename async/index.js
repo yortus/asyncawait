@@ -1,5 +1,5 @@
 ﻿var startup = require('../src/startup');
-var promise = require('./promise');
+var promisesMod = require('../src/mods/promises');
 var cps = require('./cps');
 var thunk = require('./thunk');
 var express = require('./express');
@@ -9,9 +9,7 @@ var iterable = require('./iterable/index');
 //TODO: testing...
 startup.go();
 
-var api = promise;
-
-// TODO: temp... api.promise = promise.mod({});
+var api = promisesMod.createAsyncBuilder();
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;

@@ -65,12 +65,12 @@ function useDefaults() {
     // TODO: apply the default mods.
     // TODO: define this list in a separate file. Perhaps as part of joint protocol?
     var defaultMods = [
-        require('./mods/baseline'),
-        require('./mods/fibersHotfix169'),
-        require('./mods/fiberPool'),
-        require('./mods/maxSlots'),
-        require('./mods/cpsKeyword'),
-        require('./mods/promises')
+        require('./mods/baseline').mod,
+        require('./mods/fibersHotfix169').mod,
+        require('./mods/fiberPool').mod,
+        require('./mods/maxSlots').mod,
+        require('./mods/cpsKeyword').mod,
+        require('./mods/promises').mod
     ];
     defaultMods.forEach(function (mod) {
         return exports.use(mod);

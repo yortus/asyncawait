@@ -1,20 +1,21 @@
 ﻿var Promise = require('bluebird');
-var oldBuilder = require('../asyncBuilder');
-
+var asyncBuilder = require('../asyncBuilder');
+var awaitBuilder = require('../awaitBuilder');
+var _ = require('../util');
 
 /** TODO */
-var promises = {
+exports.mod = {
     name: 'promises',
     overrideProtocol: function (base, options) {
         return ({
             startup: function () {
                 base.startup();
-                var api = require('../../async');
-                api.promise = createAsyncBuilder();
+                require('../../async').promise = exports.createAsyncBuilder();
+                require('../../await').promise = exports.createAwaitBuilder();
             },
             shutdown: function () {
-                var api = require('../../async');
-                delete api.promise;
+                delete require('../../async').promise;
+                delete require('../../await').promise;
                 base.shutdown();
             }
         });
@@ -24,8 +25,8 @@ var promises = {
 
 
 /** Provides an async builder for producing suspendable functions that return promises. */
-var createAsyncBuilder = function () {
-    return oldBuilder.mod({
+exports.createAsyncBuilder = function () {
+    return asyncBuilder.mod({
         /** Used for diagnostic purposes. */
         name: 'promise',
         /** Used only for automatic type interence at TypeScript compile time. */
@@ -56,5 +57,47 @@ var createAsyncBuilder = function () {
         }
     });
 };
-module.exports = promises;
+
+//TODO: but overrideHandler call needs (REALLY??? check) to happen *after* user has a chance to set options
+//      with config(...). So, builders must call the override...() func lazily ie when first
+//      async(...) or await(...) call is made.
+exports.createAwaitBuilder = function () {
+    return awaitBuilder.mod({
+        name: 'promise',
+        type: null,
+        overrideHandlers: function (base, options) {
+            return ({
+                singular: function (fi, arg) {
+                    if (!_.isPromise(arg))
+                        return _.notHandled;
+                    arg.then(function (val) {
+                        return fi.resume(null, val);
+                    }, fi.resume);
+                },
+                variadic: function (fi, args) {
+                    if (!_.isPromise(args[0]))
+                        return _.notHandled;
+                    args[0].then(function (val) {
+                        return fi.resume(null, val);
+                    }, fi.resume);
+                },
+                elements: function (values, result) {
+                    // TODO: temp testing...
+                    var k = 0;
+                    values.forEach(function (value, i) {
+                        if (_.isPromise(value)) {
+                            value.then(function (val) {
+                                return result(null, val, i);
+                            }, function (err) {
+                                return result(err, null, i);
+                            });
+                            ++k;
+                        }
+                    });
+                    return k;
+                }
+            });
+        }
+    });
+};
 //# sourceMappingURL=promises.js.map

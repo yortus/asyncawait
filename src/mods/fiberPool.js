@@ -1,7 +1,6 @@
 ﻿
-
 /** Pools fiber instances across acquire/release cycles, for improved performance. */
-var fiberPool = {
+exports.mod = {
     name: 'fiberPool',
     overrideProtocol: function (base, options) {
         // Override the joint protocol if the option is selected.
@@ -57,5 +56,4 @@ var _poolLevel = 0;
 var _poolLimit = 100;
 var _nextPoolId = 0;
 var _pools = [];
-module.exports = fiberPool;
 //# sourceMappingURL=fiberPool.js.map

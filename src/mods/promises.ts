@@ -1,12 +1,13 @@
 ﻿import references = require('references');
 import Promise = require('bluebird');
-import oldBuilder = require('../asyncBuilder');
+import asyncBuilder = require('../asyncBuilder');
+import awaitBuilder = require('../awaitBuilder');
+import _ = require('../util');
 import Mod = AsyncAwait.Mod;
-export = promises;
 
 
 /** TODO */
-var promises: Mod = {
+export var mod: Mod = {
 
     name: 'promises',
 
@@ -14,13 +15,13 @@ var promises: Mod = {
     
         startup: () => {
             base.startup();
-            var api = require('../../async');
-            api.promise = createAsyncBuilder();
+            require('../../async').promise = createAsyncBuilder();
+            require('../../await').promise = createAwaitBuilder();
         },
 
         shutdown: () => {
-            var api = require('../../async');
-            delete api.promise;
+            delete require('../../async').promise;
+            delete require('../../await').promise;
             base.shutdown();
         }
     }),
@@ -37,7 +38,7 @@ interface FiberEx extends Fiber {
 
 
 /** Provides an async builder for producing suspendable functions that return promises. */
-var createAsyncBuilder = () => oldBuilder.mod({
+export var createAsyncBuilder = () => asyncBuilder.mod({
 
     /** Used for diagnostic purposes. */
     name: 'promise',
@@ -64,6 +65,41 @@ var createAsyncBuilder = () => oldBuilder.mod({
         /** Resolves or rejects the promise, depending on whether the function returned or threw. */
         end: (fi: FiberEx, error?, value?) => {
             if (error) fi.context.reject(error); else fi.context.resolve(value);
+        }
+    })
+});
+
+
+//TODO: but overrideHandler call needs (REALLY??? check) to happen *after* user has a chance to set options
+//      with config(...). So, builders must call the override...() func lazily ie when first
+//      async(...) or await(...) call is made.
+export var createAwaitBuilder = () => awaitBuilder.mod({
+
+    name: 'promise',
+
+    type: <AsyncAwait.Await.PromiseBuilder> null,
+
+    overrideHandlers: (base, options) => ({
+        singular: (fi, arg) => {
+            if (!_.isPromise(arg)) return _.notHandled;
+            arg.then(val => fi.resume(null, val), fi.resume);
+        },
+        variadic: (fi, args) => {
+            if (!_.isPromise(args[0])) return _.notHandled;
+            args[0].then(val => fi.resume(null, val), fi.resume);
+        },
+
+        elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {
+
+            // TODO: temp testing...
+            var k = 0;
+            values.forEach((value, i) => {
+                if (_.isPromise(value)) {
+                    value.then(val => result(null, val, i), err => result(err, null, i));
+                    ++k;
+                }
+            });
+            return k;
         }
     })
 });

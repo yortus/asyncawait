@@ -4,11 +4,10 @@ import jointProtocol = require('../jointProtocol');
 import JointProtocol = AsyncAwait.JointProtocol;
 import AsyncProtocol = AsyncAwait.Async.Protocol;
 import Mod = AsyncAwait.Mod;
-export = baseline;
 
 
 /** Provides the baseline method implementations for the joint protocol. */
-var baseline: Mod = {
+export var mod: Mod = {
 
     name: 'baseline',
 

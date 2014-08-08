@@ -2,7 +2,6 @@
 import _ = require('../util');
 import Mod = AsyncAwait.Mod;
 import AsyncProtocol = AsyncAwait.Async.Protocol;
-export = maxSlots;
 
 
 /** Fiber interface extended with semaphore info. */
@@ -17,7 +16,7 @@ interface FiberEx extends Fiber {
  *  from the main execution stack (i.e., not calls from other suspendable functions), to
  *  prevent deadlocks.
  */
-var maxSlots: Mod = {
+export var mod: Mod = {
 
     name: 'maxSlots',
 

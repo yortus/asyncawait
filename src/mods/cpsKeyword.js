@@ -1,13 +1,12 @@
 ﻿var assert = require('assert');
 var _ = require('../util');
 
-
 /**
 * Creates a global property accessor with the given name, which calls
 * await.cps.continuation(). This is purely for convenience and clarity
 * for reading and writing async code.
 */
-var cpsKeyword = {
+exports.mod = {
     name: 'cpsKeyword',
     overrideProtocol: function (base, options) {
         return ({
@@ -47,5 +46,4 @@ var cpsKeyword = {
 // Private keyword state.
 //TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _cpsKeyword = null;
-module.exports = cpsKeyword;
 //# sourceMappingURL=cpsKeyword.js.map

@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import startup = require('../src/startup');
-import promise = require('./promise');
+import promisesMod = require('../src/mods/promises');
 import cps = require('./cps');
 import thunk = require('./thunk');
 import express = require('./express');
@@ -13,8 +13,7 @@ export = api;
 startup.go();
 
 
-var api: AsyncAwait.Async.API = <any> promise;
-// TODO: temp... api.promise = promise.mod({});
+var api: AsyncAwait.Async.API = <any> promisesMod.createAsyncBuilder();
 api.cps = cps;
 api.thunk = thunk;
 api.express = express;

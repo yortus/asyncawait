@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
 import Mod = AsyncAwait.Mod;
-export = fibersHotfix169;
 
 
 //TODO: apply this by default? Check impact on benchmarks.
@@ -14,7 +13,7 @@ export = fibersHotfix169;
  *  exceed 120. Memory leaks and slowdowns under heavy load are symptomatic of the
  *  issue fixed by this mod. See https://github.com/laverdet/node-fibers/issues/169.
  */
-var fibersHotfix169: Mod = {
+export var mod: Mod = {
 
     name: 'fibersHotfix169',
 

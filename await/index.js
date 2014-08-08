@@ -1,7 +1,7 @@
 ﻿var startup = require('../src/startup');
 
 //TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
-var promise = require('./promise');
+var promisesMod = require('../src/mods/promises');
 var cps = require('./cps');
 var thunk = require('./thunk');
 
@@ -27,9 +27,9 @@ var value = {
 };
 
 //TODO: temp testing...
+var promise = promisesMod.createAwaitBuilder();
 var opts = { handlers: [promise.handlers, cps.handlers, thunk.handlers, value] };
 var api = compound.mod({ defaultOptions: opts });
-api.promise = promise;
 api.cps = cps;
 api.thunk = thunk;
 module.exports = api;

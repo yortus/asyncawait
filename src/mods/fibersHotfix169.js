@@ -1,6 +1,5 @@
 ﻿var Fiber = require('fibers');
 
-
 //TODO: apply this by default? Check impact on benchmarks.
 /**
 *  Automatically manages Fiber.poolSize to work around an issue with node-fibers.
@@ -9,7 +8,7 @@
 *  exceed 120. Memory leaks and slowdowns under heavy load are symptomatic of the
 *  issue fixed by this mod. See https://github.com/laverdet/node-fibers/issues/169.
 */
-var fibersHotfix169 = {
+exports.mod = {
     name: 'fibersHotfix169',
     overrideProtocol: function (base, options) {
         // Override the joint protocol if the option is selected.
@@ -52,5 +51,4 @@ function dec() {
 //TODO: should this be global, in case multiple asyncawait instances are loaded in the process?
 var _fiberPoolSize = Fiber.poolSize;
 var _activeFiberCount = 0;
-module.exports = fibersHotfix169;
 //# sourceMappingURL=fibersHotfix169.js.map

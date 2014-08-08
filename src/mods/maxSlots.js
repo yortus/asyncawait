@@ -1,14 +1,13 @@
 ﻿var _ = require('../util');
 
 
-
 /**
 *  Limits the number of calls to suspendable functions that can be concurrently executing.
 *  Excess calls are queued until a slot becomes available. This only applies to calls made
 *  from the main execution stack (i.e., not calls from other suspendable functions), to
 *  prevent deadlocks.
 */
-var maxSlots = {
+exports.mod = {
     name: 'maxSlots',
     overrideProtocol: function (base, options) {
         // Do nothing if the option is not selected.
@@ -117,5 +116,4 @@ function semaphoreSize(n) {
 var _size = null;
 var _avail = null;
 var _queued = [];
-module.exports = maxSlots;
 //# sourceMappingURL=maxSlots.js.map
