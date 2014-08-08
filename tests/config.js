@@ -1,5 +1,4 @@
 ﻿var chai = require('chai');
-var async = require('asyncawait/async');
 
 var config = require('asyncawait/config');
 var expect = chai.expect;
@@ -10,7 +9,7 @@ beforeEach(function () {
 
 describe('The config(...) function', function () {
     it('returns the current options when called with no arguments', function () {
-        var opts = async.options();
+        var opts = config.options();
         expect(opts).to.contain.keys('maxSlots', 'fiberPool');
     });
 
@@ -21,15 +20,12 @@ describe('The config(...) function', function () {
         expect(config.options().maxSlots).to.equal(10);
         expect(config.options()['abc']).to.equal('123');
     });
-
-    it('fails if called with an argument after the first async(...) call', function () {
-        var opts = config.options();
-        expect(opts).to.contain.keys('maxSlots', 'fiberPool');
-        var foo = async(function () {
-        });
-        expect(function () {
-            return config.options({ maxSlots: 10 });
-        }).to.throw();
-    });
+    // TODO: was... restore/modify/fix all tests in here...
+    //it('fails if called with an argument after the first async(...) call', () => {
+    //    var opts = config.options();
+    //    expect(opts).to.contain.keys('maxSlots', 'fiberPool');
+    //    var foo = async (() => {});
+    //    expect(() => config.options({maxSlots: 10})).to.throw();
+    //});
 });
 //# sourceMappingURL=config.js.map

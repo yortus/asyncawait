@@ -1,7 +1,12 @@
-﻿//TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
+﻿var startup = require('../src/startup');
+
+//TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
 var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
+
+//TODO: testing...
+startup.go();
 
 //TODO: temp testing...
 var compound = require('./compound');

@@ -90,7 +90,7 @@ describe('The config.mod(...) function', function () {
 });
 
 describe('Registered mods', function () {
-    // TODO: was...
+    // TODO: was... restore/modify/fix all tests in here...
     //it('are applied when async(...) is first called', () => {
     //    async.config.mod(testModA);
     //    expect(tracking).to.be.empty;

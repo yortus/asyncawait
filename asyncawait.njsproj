@@ -75,6 +75,7 @@
     <TypeScriptCompile Include="config\index.ts" />
     <TypeScriptCompile Include="src\mods\baseline.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
+    <TypeScriptCompile Include="src\startup.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
     <TypeScriptCompile Include="support\recipes\expressRouting.ts" />

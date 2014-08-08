@@ -1,4 +1,8 @@
-﻿var _ = require('../src/util');
+﻿var startup = require('../src/startup');
+var _ = require('../src/util');
+
+//TODO: testing...
+startup.go();
 
 var yield_ = function yield_(value) {
     // Ensure this function is executing inside a fiber.

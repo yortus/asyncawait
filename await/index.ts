@@ -1,9 +1,14 @@
 ﻿import references = require('references');
+import startup = require('../src/startup');
 //TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
 import promise = require('./promise');
 import cps = require('./cps');
 import thunk = require('./thunk');
 export = api;
+
+
+//TODO: testing...
+startup.go();
 
 
 

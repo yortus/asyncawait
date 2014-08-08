@@ -112,7 +112,3 @@ var _options = {};
 
 /** Holds the list of registered mods, in order of registration. */
 var _mods: Mod[] = [];
-
-
-// TODO: and... break cycle...
-setImmediate(useDefaults);

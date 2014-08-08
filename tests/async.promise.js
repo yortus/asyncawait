@@ -3,11 +3,8 @@ var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var yield_ = require('asyncawait/yield');
-
 var expect = chai.expect;
 
-//TODO: temp testing... force apply mods
-//beforeEach(() => { extensibility.resetAll(); async(()=>{}); });
 describe('A suspendable function returned by async.promise(...)', function () {
     it('synchronously returns a promise', function () {
         var foo = async.promise(function () {

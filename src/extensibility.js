@@ -104,7 +104,4 @@ var _options = {};
 
 /** Holds the list of registered mods, in order of registration. */
 var _mods = [];
-
-// TODO: and... break cycle...
-setImmediate(exports.useDefaults);
 //# sourceMappingURL=extensibility.js.map

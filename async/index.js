@@ -1,9 +1,13 @@
-﻿var promise = require('./promise');
+﻿var startup = require('../src/startup');
+var promise = require('./promise');
 var cps = require('./cps');
 var thunk = require('./thunk');
 var express = require('./express');
 var stream = require('./stream');
 var iterable = require('./iterable/index');
+
+//TODO: testing...
+startup.go();
 
 var api = promise;
 

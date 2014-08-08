@@ -14,24 +14,27 @@ var cpsKeyword = {
             startup: function () {
                 base.startup();
 
-                // Do nothing if the option is not selected.
+                // Delete the previously defined global property accessor, if any.
+                if (_cpsKeyword)
+                    delete global[_cpsKeyword];
+
+                // TODO:...
                 if (!options.cpsKeyword)
                     return;
 
-                // Ensure the symbol is not already defined
+                // Ensure the symbol is not already defined.
                 assert(!global[options.cpsKeyword], 'cpsKeyword: identifier already exists on global object');
 
                 // Define the global property accessor.
                 _cpsKeyword = options.cpsKeyword;
                 Object.defineProperty(global, _cpsKeyword, { get: _.createContinuation, configurable: true });
-
-                // Return nothing, since we don't override the joint protocol here.
-                return null;
             },
             shutdown: function () {
+                // Delete the previously defined global property accessor, if any.
                 if (_cpsKeyword)
                     delete global[_cpsKeyword];
                 _cpsKeyword = null;
+
                 base.shutdown();
             }
         });

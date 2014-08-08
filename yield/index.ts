@@ -1,6 +1,11 @@
 ﻿import references = require('references');
+import startup = require('../src/startup');
 import _ = require('../src/util');
 export = yield_;
+
+
+//TODO: testing...
+startup.go();
 
 
 var yield_: AsyncAwait.Yield = <any> function yield_(value?: any) {
