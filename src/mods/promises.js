@@ -10,12 +10,12 @@ exports.mod = {
         return ({
             startup: function () {
                 base.startup();
-                require('../../async').promise = exports.createAsyncBuilder();
-                require('../../await').promise = exports.createAwaitBuilder();
+                require('../async').promise = exports.createAsyncBuilder();
+                require('../await').promise = exports.createAwaitBuilder();
             },
             shutdown: function () {
-                delete require('../../async').promise;
-                delete require('../../await').promise;
+                delete require('../async').promise;
+                delete require('../await').promise;
                 base.shutdown();
             }
         });

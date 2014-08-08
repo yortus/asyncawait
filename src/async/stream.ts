@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import stream = require('stream');
-import oldBuilder = require('../src/asyncBuilder');
-import _ = require('../src/util');
+import oldBuilder = require('../asyncBuilder');
+import _ = require('../util');
 export = newBuilder;
 
 

@@ -3,6 +3,4 @@ import extensibility = require('./extensibility');
 
 
 //TODO: testing...
-export function go() {
-    extensibility.useDefaults();
-}
+extensibility.useDefaults();

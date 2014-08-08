@@ -1,6 +1,6 @@
 ﻿import references = require('references');
-import oldBuilder = require('../src/awaitBuilder');
-import _ = require('../src/util');
+import oldBuilder = require('../awaitBuilder');
+import _ = require('../util');
 export = newBuilder;
 
 

@@ -1,5 +1,5 @@
 ﻿var oldBuilder = require('./cps');
-var _ = require('../src/util');
+var _ = require('../util');
 
 var newBuilder = oldBuilder.mod({
     name: 'thunk',

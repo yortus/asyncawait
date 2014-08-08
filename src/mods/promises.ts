@@ -15,13 +15,13 @@ export var mod: Mod = {
     
         startup: () => {
             base.startup();
-            require('../../async').promise = createAsyncBuilder();
-            require('../../await').promise = createAwaitBuilder();
+            require('../async').promise = createAsyncBuilder();
+            require('../await').promise = createAwaitBuilder();
         },
 
         shutdown: () => {
-            delete require('../../async').promise;
-            delete require('../../await').promise;
+            delete require('../async').promise;
+            delete require('../await').promise;
             base.shutdown();
         }
     }),

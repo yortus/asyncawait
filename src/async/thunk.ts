@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import oldBuilder = require('./cps');
-import _ = require('../src/util');
+import _ = require('../util');
 export = newBuilder;
 
 

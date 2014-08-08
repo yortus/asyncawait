@@ -1,16 +1,14 @@
-﻿var startup = require('../src/startup');
-var promisesMod = require('../src/mods/promises');
-var cps = require('./cps');
+﻿var promisesMod = require('../mods/promises');
+
+//import cps = require('./cps');
 var thunk = require('./thunk');
 var express = require('./express');
 var stream = require('./stream');
 var iterable = require('./iterable/index');
 
-//TODO: testing...
-startup.go();
-
 var api = promisesMod.createAsyncBuilder();
-api.cps = cps;
+
+//api.cps = cps;
 api.thunk = thunk;
 api.express = express;
 api.stream = stream;

@@ -70,7 +70,8 @@ function useDefaults() {
         require('./mods/fiberPool').mod,
         require('./mods/maxSlots').mod,
         require('./mods/cpsKeyword').mod,
-        require('./mods/promises').mod
+        require('./mods/promises').mod,
+        require('./mods/callbacks').mod
     ];
     defaultMods.forEach(function (mod) {
         return exports.use(mod);

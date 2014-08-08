@@ -1,8 +1,5 @@
 ﻿var extensibility = require('./extensibility');
 
 //TODO: testing...
-function go() {
-    extensibility.useDefaults();
-}
-exports.go = go;
+extensibility.useDefaults();
 //# sourceMappingURL=startup.js.map

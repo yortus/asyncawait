@@ -1,5 +1,5 @@
-﻿var oldBuilder = require('../src/awaitBuilder');
-var _ = require('../src/util');
+﻿var oldBuilder = require('../awaitBuilder');
+var _ = require('../util');
 
 var newBuilder = oldBuilder.mod({
     name: 'thunk',

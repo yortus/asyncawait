@@ -1,11 +1,7 @@
-﻿import references = require('references');
-import startup = require('../src/startup');
+﻿require('../src/startup');
+import references = require('references');
 import extensibility = require('../src/extensibility');
 export = config;
-
-
-//TODO: testing...
-startup.go();
 
 
 var config: AsyncAwait.Config = extensibility;

@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
-var oldBuilder = require('../../src/asyncBuilder');
-var _ = require('../../src/util');
+var oldBuilder = require('../../asyncBuilder');
+var _ = require('../../util');
 
 
 var newBuilder = oldBuilder.mod({
