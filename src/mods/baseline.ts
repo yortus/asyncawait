@@ -1,43 +1,54 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
-import jointProtocol = require('./jointProtocol');
+import jointProtocol = require('../jointProtocol');
 import JointProtocol = AsyncAwait.JointProtocol;
 import AsyncProtocol = AsyncAwait.Async.Protocol;
-export = defaultProtocol;
+import Mod = AsyncAwait.Mod;
+export = baseline;
 
 
-/** Default implementation of the joint protocol. */
-var defaultProtocol: JointProtocol = {
+/** Provides the baseline method implementations for the joint protocol. */
+var baseline: Mod = {
 
-    /** Create and return a new Fiber instance. */
-    acquireFiber: (asyncProtocol: AsyncProtocol) => {
-        var fi = createFiber(asyncProtocol);
-        fi.id = ++nextFiberId;
-        fi.context = {};
-        fi.awaiting = [];
-        fi.suspend = (error?: Error, value?) => asyncProtocol.suspend(fi, error, value);
-        fi.resume = (error?: Error, value?) => asyncProtocol.resume(fi, error, value);
-        return fi;
-    },
+    name: 'baseline',
 
-    /** Ensure the Fiber instance is disposed of cleanly. */
-    releaseFiber: (asyncProtocol: AsyncProtocol, fi: Fiber) => {
-        jointProtocol.setFiberTarget(fi, null);
-        fi.suspend = null;
-        fi.resume = null;
-        fi.context = null;
-        fi.awaiting = null; //TODO: finalise this...
-    },
+    overrideProtocol: (base, options) => ({
 
-    setFiberTarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => {
-        fi.bodyFunc = bodyFunc;
-        fi.bodyThis = bodyThis;
-        fi.bodyArgs = bodyArgs;
-    },
+        /** Create and return a new Fiber instance. */
+        acquireFiber: (asyncProtocol: AsyncProtocol) => {
+            var fi = createFiber(asyncProtocol);
+            fi.id = ++nextFiberId;
+            fi.context = {};
+            fi.awaiting = [];
+            fi.suspend = (error?: Error, value?) => asyncProtocol.suspend(fi, error, value);
+            fi.resume = (error?: Error, value?) => asyncProtocol.resume(fi, error, value);
+            return fi;
+        },
 
-    startup: () => { /* no-op */ },
+        /** Ensure the Fiber instance is disposed of cleanly. */
+        releaseFiber: (asyncProtocol: AsyncProtocol, fi: Fiber) => {
+            jointProtocol.setFiberTarget(fi, null);
+            fi.suspend = null;
+            fi.resume = null;
+            fi.context = null;
+            fi.awaiting = null; //TODO: finalise this...
+        },
 
-    shutdown: () => { /* no-op */ }
+        //TODO: comment...
+        setFiberTarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => {
+            fi.bodyFunc = bodyFunc;
+            fi.bodyThis = bodyThis;
+            fi.bodyArgs = bodyArgs;
+        },
+
+        //TODO: comment...
+        startup: () => { /* no-op */ },
+
+        //TODO: comment...
+        shutdown: () => { /* no-op */ }
+    }),
+
+    defaultOptions: { /* none */ }
 };
 
 

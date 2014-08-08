@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import jointProtocol = require('./jointProtocol');
-import defaultProtocol = require('./jointProtocolDefault');
 import _ = require('./util');
 import Mod = AsyncAwait.Mod;
 
@@ -68,6 +67,7 @@ export function useDefaults() {
     // TODO: apply the default mods.
     // TODO: define this list in a separate file. Perhaps as part of joint protocol?
     var defaultMods = [
+        require('./mods/baseline'),
         require('./mods/fibersHotfix169'),
         require('./mods/fiberPool'),
         require('./mods/maxSlots'),
@@ -84,7 +84,13 @@ function resetAll() {
 
     // Reset and restore the joint protocol to its default state.
     if (jointProtocol.shutdown) jointProtocol.shutdown();
-    _.mergeProps(jointProtocol, defaultProtocol);
+    _.mergeProps(jointProtocol, {
+        acquireFiber: null,
+        releaseFiber: null,
+        setFiberTarget: null,
+        startup: null,
+        shutdown: null
+    });
 
     // Clear all external mod registrations.
     _mods = [];
