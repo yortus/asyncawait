@@ -7,7 +7,7 @@ import Mod = AsyncAwait.Mod;
 var expect = chai.expect;
 
 
-beforeEach(() => { extensibility.resetMods(); });
+beforeEach(() => { extensibility.restoreDefaults(); });
 
 
 describe('The config(...) function', () => {

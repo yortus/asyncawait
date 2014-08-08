@@ -6,7 +6,7 @@ var extensibility = require('asyncawait/src/extensibility');
 var expect = chai.expect;
 
 beforeEach(function () {
-    extensibility.resetMods();
+    extensibility.restoreDefaults();
 });
 
 describe('The config(...) function', function () {

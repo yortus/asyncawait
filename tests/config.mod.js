@@ -1,6 +1,6 @@
 ﻿var chai = require('chai');
 var async = require('asyncawait/async');
-var await = require('asyncawait/await');
+
 var extensibility = require('asyncawait/src/extensibility');
 
 var expect = chai.expect;
@@ -51,7 +51,7 @@ var testModB = {
 };
 
 beforeEach(function () {
-    extensibility.resetMods();
+    extensibility.restoreDefaults();
     tracking = [];
 });
 
@@ -98,43 +98,37 @@ describe('Registered mods', function () {
     //    var foo = async (()=>{});
     //    expect(tracking).to.deep.equal(['apply A']);
     //});
-    it('are applied such that latest registrations are outermost in joint protocol call chains', function () {
-        expect(tracking).to.be.empty;
-        async.config.mod(testModA);
-        async.config.mod(testModB);
-        expect(tracking).to.deep.equal(['apply A', 'apply B']);
-    });
-
-    it('have their joint protocol overrides applied', async.cps(function () {
-        expect(tracking).to.be.empty;
-        async.config.mod(testModA);
-        var foo = async(function () {
-        });
-        await(foo());
-        expect(tracking).to.deep.equal(['apply A', 'acquire A', 'release A']);
-    }));
-
-    it('have their joint protocol overrides called with correct nesting', async.cps(function () {
-        expect(tracking).to.be.empty;
-        async.config.mod(testModA);
-        async.config.mod(testModB);
-        var foo = async(function () {
-        });
-        await(foo());
-        expect(tracking).to.deep.equal(['apply A', 'apply B', 'acquire B', 'acquire A', 'release B', 'release A']);
-    }));
-
-    //TODO: in a specific order? eg opposite of apply?
-    it('have their reset() functions called when resetMods() is called', async.cps(function () {
-        async.config.mod(testModA);
-        async.config.mod(testModB);
-        var foo = async(function () {
-        });
-        await(foo());
-        tracking = [];
-        extensibility.resetMods();
-        expect(tracking).to.contain('reset A');
-        expect(tracking).to.contain('reset B');
-    }));
+    //it('are applied such that latest registrations are outermost in joint protocol call chains', () => {
+    //    expect(tracking).to.be.empty;
+    //    async.config.mod(testModA);
+    //    async.config.mod(testModB);
+    //    expect(tracking).to.deep.equal(['apply A', 'apply B']);
+    //});
+    //it('have their joint protocol overrides applied', async.cps(() => {
+    //    expect(tracking).to.be.empty;
+    //    async.config.mod(testModA);
+    //    var foo = async (()=>{});
+    //    await (foo());
+    //    expect(tracking).to.deep.equal(['apply A', 'acquire A', 'release A']);
+    //}));
+    //it('have their joint protocol overrides called with correct nesting', async.cps(() => {
+    //    expect(tracking).to.be.empty;
+    //    async.config.mod(testModA);
+    //    async.config.mod(testModB);
+    //    var foo = async (()=>{});
+    //    await (foo());
+    //    expect(tracking).to.deep.equal(['apply A', 'apply B', 'acquire B', 'acquire A', 'release B', 'release A']);
+    //}));
+    ////TODO: in a specific order? eg opposite of apply?
+    //it('have their reset() functions called when resetMods() is called', async.cps(() => {
+    //    async.config.mod(testModA);
+    //    async.config.mod(testModB);
+    //    var foo = async (()=>{});
+    //    await (foo());
+    //    tracking = [];
+    //    extensibility.resetAll();
+    //    expect(tracking).to.contain('reset A');
+    //    expect(tracking).to.contain('reset B');
+    //}));
 });
 //# sourceMappingURL=config.mod.js.map

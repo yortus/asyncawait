@@ -19,7 +19,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{efac13bd-e32b-4e96-ad85-0a3d8b686fec}</ProjectGuid>
+    <ProjectGuid>{330c5f49-70cc-42b2-b036-7e7c0c4e604d}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>support\examples\profiler.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
@@ -72,6 +72,8 @@
     <TypeScriptCompile Include="await\TODO\cps.array.ts" />
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="await\TODO\value.ts" />
+    <TypeScriptCompile Include="config\index.ts" />
+    <TypeScriptCompile Include="src\jointProtocolDefault.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
@@ -161,6 +163,7 @@
     <Folder Include="async\iterable\" />
     <Folder Include="await\" />
     <Folder Include="await\TODO\" />
+    <Folder Include="config\" />
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
     <Folder Include="support\comparison\" />

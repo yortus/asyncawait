@@ -9,7 +9,7 @@ var expect = chai.expect;
 
 
 //TODO: temp testing... force apply mods
-beforeEach(() => { extensibility.resetMods(); async(()=>{}); });
+//beforeEach(() => { extensibility.resetAll(); async(()=>{}); });
 
 
 describe('A suspendable function returned by async.promise(...)', () => {

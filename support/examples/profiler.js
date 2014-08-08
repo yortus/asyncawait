@@ -25,61 +25,87 @@ async.config({
 
 
 // ========== experiment ==========
-var f = Fiber(function (a) {
-    Fiber.yield(a * 2);
-});
+    var started = 0, finished = 0;
+    var opA = async (function () {
+        ++started;
+        await (Promise.delay(20));
+        ++finished;
+    });
+    var opB = async (function () {
+        return { started: started, finished: finished };
+    });
+    var setMaxSlots = function (n) {
+        //extensibility.resetMods();
+        async.config({maxSlots: n});
+        //extensibility.applyMods();
+    };
 
 
-var x = f.run(3);
-var y = f.run(10);
-var z = f.run(5);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var counter = 0, n = 25000;
-var startTime = new Date().getTime();
-
-
-// ========== async.cps ==========
-//var program = function (a, cb) {
-//    (async.cps (function prog(a) {
-//        //return await (a);
-//        return a;
-//    }))(a, cb);
-//};
-var program = async.cps (function prog(a) {
-    //return await (Promise.resolve(a));
-    //return await (a);
-    return a;
-    //var result = await ([fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___)]);
-    //return result;
-});
-function doOne() { program(1, doneOne); }
-doOne();
-function doneOne(err, val) {
-    if (err) return console.log(err);
-    ++counter;
-    if (counter < n) {
-        doOne();
-        //setImmediate(doOne);
+    function doTasks(maxCon) {
+        started = finished = 0;
+        setMaxSlots(maxCon);
+        return Promise
+            .all([opA(), opA(), opA(), opA(), opA(), opB()])
+            .then(function (r) { return r[5]; });
     }
-    else {
-        console.log('results: ' + n);
-        var endTime = new Date().getTime();
-        console.log('seconds: ' + ((endTime - startTime) / 1000.0));
-    }
-}
+
+    doTasks(1)
+    //.then(r => expect(r.finished).to.equal(0))
+    //.then(() => Promise.delay(40))
+    //.then(() => doTasks(1))
+    //.then(r => expect(r.finished).to.equal(5))
+    //.then(() => Promise.delay(40))
+    //.then(() => doTasks(5))
+    //.then(r => expect(r.finished).to.be.greaterThan(0))
+    //.then(() => Promise.delay(40))
+    //.then(() => done())
+    //.catch(done);
+
+
+
+
+
+
+
+
+
+
+
+
+
+//var counter = 0, n = 25000;
+//var startTime = new Date().getTime();
+
+
+//// ========== async.cps ==========
+////var program = function (a, cb) {
+////    (async.cps (function prog(a) {
+////        //return await (a);
+////        return a;
+////    }))(a, cb);
+////};
+//var program = async.cps (function prog(a) {
+//    //return await (Promise.resolve(a));
+//    //return await (a);
+//    return a;
+//    //var result = await ([fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___), fs.stat(__filename, ___)]);
+//    //return result;
+//});
+//function doOne() { program(1, doneOne); }
+//doOne();
+//function doneOne(err, val) {
+//    if (err) return console.log(err);
+//    ++counter;
+//    if (counter < n) {
+//        doOne();
+//        //setImmediate(doOne);
+//    }
+//    else {
+//        console.log('results: ' + n);
+//        var endTime = new Date().getTime();
+//        console.log('seconds: ' + ((endTime - startTime) / 1000.0));
+//    }
+//}
 
 
 // ========== bluebird ==========

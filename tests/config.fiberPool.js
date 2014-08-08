@@ -7,7 +7,7 @@ var _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
 beforeEach(function () {
-    extensibility.resetMods();
+    extensibility.restoreDefaults();
 });
 
 describe('The fiberPool mod', function () {

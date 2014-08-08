@@ -82,7 +82,7 @@ describe('The maxSlots mod', function () {
             return 'done';
         });
 
-        // Single file
+        // Serial
         setMaxSlots(1);
         var arr = [], promises = [1, 2, 3].map(function (n) {
             return foo(n, arr).forEach(function () {

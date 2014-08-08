@@ -8,8 +8,8 @@ module.exports = function(grunt) {
         clean: {
             main: {
                 src: [
-                    'src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'tests/**/*.js', 'mods/**.*.js',
-                    'src/**/*.js.map', 'async/**/*.js.map', 'await/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map', 'mods/**.*.js'
+                    'src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'config/**/*.js', 'yield/**/*.js', 'tests/**/*.js', 'mods/**.*.js',
+                    'src/**/*.js.map', 'async/**/*.js.map', 'await/**/*.js.map', 'config/**/*.js.map', 'yield/**/*.js.map', 'tests/**/*.js.map', 'mods/**.*.js'
                 ]
             }
         },
@@ -20,8 +20,9 @@ module.exports = function(grunt) {
                     'src/**/*.ts',
                     'async/**/*.ts',
                     'await/**/*.ts',
+                    'config/**/*.ts',
                     'yield/**/*.ts',
-                    'mods/**.*.js',
+                    'mods/**.*.ts',
                     'tests/**/*.ts'
                 ],
                 dest: '.',
@@ -38,7 +39,7 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 expand: true,
-                src: ['src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'yield/**/*.js', 'mods/**/*.js', 'index.js'],
+                src: ['src/**/*.js', 'async/**/*.js', 'await/**/*.js', 'config/**/*.js', 'yield/**/*.js', 'mods/**/*.js', 'index.js'],
                 dest: 'node_modules/asyncawait'
             }
         },
@@ -66,7 +67,7 @@ module.exports = function(grunt) {
                     //'tests/config.fiberPool.js',
                     //'tests/config.cpsKeyword.js',
                     //'tests/config.fibersHotfix169.js',
-                    'tests/config.maxSlots.js',
+                    //'tests/config.maxSlots.js',
                     'tests/config.mod.js',
                     //'tests/config.js'
                 ]

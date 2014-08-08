@@ -8,7 +8,7 @@ import extensibility = require('asyncawait/src/extensibility');
 var expect = chai.expect;
 
 
-beforeEach(() => { extensibility.resetMods(); peak = 0; Fiber.poolSize = 120; });
+beforeEach(() => { extensibility.restoreDefaults(); peak = 0; Fiber.poolSize = 120; });
 var peak = 0;
 
 

@@ -63,8 +63,7 @@ describe('The maxSlots mod', () => {
             return 'done';
         });
 
-
-        // Single file
+        // Serial
         setMaxSlots(1);
         var arr = [], promises = [1,2,3].map(n => foo(n, arr).forEach(() => {}));
         Promise.all(promises)
@@ -79,6 +78,5 @@ describe('The maxSlots mod', () => {
         .then(() => expect(arr).to.deep.equal([111, 111, 111, 222, 222, 333]))
         .then(() => done())
         .catch(done);
-        
     });
 });
