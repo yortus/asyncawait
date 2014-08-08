@@ -73,7 +73,7 @@
     <TypeScriptCompile Include="await\TODO\thunk.ts" />
     <TypeScriptCompile Include="await\TODO\value.ts" />
     <TypeScriptCompile Include="config\index.ts" />
-    <TypeScriptCompile Include="src\jointProtocolDefault.ts" />
+    <TypeScriptCompile Include="src\mods\baseline.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />

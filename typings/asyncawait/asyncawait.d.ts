@@ -195,7 +195,6 @@ declare module AsyncAwait {
         options(): ConfigOptions;
         options(value: ConfigOptions): void;
         use(mod: Mod): void;
-        use(options: {}): void;
         useDefaults(): void;
     }
 

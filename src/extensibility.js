@@ -11,17 +11,24 @@ function options(value) {
         return _options;
 
     // If called as a setter, delegate to use().
-    exports.use(value);
+    useInternal(value);
 }
 exports.options = options;
 
-//TODO: bring this in line with async's createModMethod
-/** Registers the specified mod and adds its default options to current config. */
 function use(mod) {
-    //TODO: appropriate if isOptionsOnly? Do this in inner loop?
-    // Prevent simple duplicate registrations.
+    // Validate argument
+    assert(arguments.length === 1, 'use: expected a single argument');
+    assert(mod.overrideProtocol, "use: expected mod to have a 'overrideProtocol' property");
     assert(_mods.indexOf(mod) === -1, 'use: mod already registered');
 
+    // Delegate to private implementation.
+    return useInternal(mod);
+}
+exports.use = use;
+
+//TODO: bring this in line with async's createModMethod
+/** Registers the specified mod and adds its default options to current config. */
+function useInternal(mod) {
     // Retain a reference to the current mod list.
     var allMods = _mods;
 
@@ -49,7 +56,6 @@ function use(mod) {
     //TODO: startup...
     jointProtocol.startup();
 }
-exports.use = use;
 
 //TODO: ...
 function useDefaults() {
@@ -66,7 +72,9 @@ function useDefaults() {
         require('./mods/cpsKeyword'),
         require('./mods/promises')
     ];
-    defaultMods.forEach(exports.use);
+    defaultMods.forEach(function (mod) {
+        return exports.use(mod);
+    });
 }
 exports.useDefaults = useDefaults;
 

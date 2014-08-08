@@ -16,17 +16,24 @@ export function options(value?: any) {
     if (arguments.length === 0) return _options;
 
     // If called as a setter, delegate to use().
-    use(value);
+    useInternal(value);
+}
+
+export function use(mod: Mod) {
+
+    // Validate argument
+    assert(arguments.length === 1, 'use: expected a single argument');
+    assert(mod.overrideProtocol, "use: expected mod to have a 'overrideProtocol' property");
+    assert(_mods.indexOf(mod) === -1, 'use: mod already registered');
+
+    // Delegate to private implementation.
+    return useInternal(mod);
 }
 
 
 //TODO: bring this in line with async's createModMethod
 /** Registers the specified mod and adds its default options to current config. */
-export function use(mod: Mod) {
-
-    //TODO: appropriate if isOptionsOnly? Do this in inner loop?
-    // Prevent simple duplicate registrations.
-    assert(_mods.indexOf(mod) === -1, 'use: mod already registered');
+function useInternal(mod: Mod) {
 
     // Retain a reference to the current mod list.
     var allMods = _mods;
@@ -74,7 +81,7 @@ export function useDefaults() {
         require('./mods/cpsKeyword'),
         require('./mods/promises')
     ];
-    defaultMods.forEach(use);
+    defaultMods.forEach(mod => use(mod));
 }
 
 
