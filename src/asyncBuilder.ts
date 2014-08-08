@@ -23,7 +23,7 @@ var asyncBuilder = createAsyncBuilder({
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
         end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
     }),
-    defaultOptions: _.branch(extensibility.config())
+    defaultOptions: _.branch(extensibility.options())
 });
 
 
@@ -73,6 +73,7 @@ function createModMethod(builder: Builder, previousMod: Mod) {
         // Determine the appropriate options to pass to createAsyncBuilder.
 //TODO: default options SHOULD NOT override pre-existing options with same keys
 //TODO: if isOptionsOnly, then this SHOULD override any existing options
+//TODO: see also joint protocol - same thing applies there
         var overrideProtocol = isOptionsOnly ? previousMod.overrideProtocol : mod.overrideProtocol;
         var defaultOptions = _.mergeProps(_.branch(builder.options), isOptionsOnly ? mod : mod.defaultOptions);
 

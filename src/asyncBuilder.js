@@ -28,7 +28,7 @@ var asyncBuilder = createAsyncBuilder({
             }
         });
     },
-    defaultOptions: _.branch(extensibility.config())
+    defaultOptions: _.branch(extensibility.options())
 });
 
 /** Creates a new async builder function using the specified mod and protocol settings. */
@@ -72,6 +72,7 @@ function createModMethod(builder, previousMod) {
         // Determine the appropriate options to pass to createAsyncBuilder.
         //TODO: default options SHOULD NOT override pre-existing options with same keys
         //TODO: if isOptionsOnly, then this SHOULD override any existing options
+        //TODO: see also joint protocol - same thing applies there
         var overrideProtocol = isOptionsOnly ? previousMod.overrideProtocol : mod.overrideProtocol;
         var defaultOptions = _.mergeProps(_.branch(builder.options), isOptionsOnly ? mod : mod.defaultOptions);
 

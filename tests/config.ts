@@ -2,33 +2,32 @@
 import chai = require('chai');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
-import extensibility = require('asyncawait/src/extensibility');
-import Mod = AsyncAwait.Mod;
+import config = require('asyncawait/config');
 var expect = chai.expect;
 
 
-beforeEach(() => { extensibility.restoreDefaults(); });
+beforeEach(() => { config.useDefaults(); });
 
 
 describe('The config(...) function', () => {
 
     it('returns the current options when called with no arguments', () => {
-        var opts = async.config();
+        var opts = async.options();
         expect(opts).to.contain.keys('maxSlots', 'fiberPool');
     });
 
     it('Updates the current options with the key/value pairs passed in its first argument', () => {
-        expect(async.config().maxSlots).to.be.null;
-        expect(async.config()).to.not.contain.keys('abc');
-        async.config.mod({maxSlots: 10, abc: '123'});
-        expect(async.config().maxSlots).to.equal(10);
-        expect(async.config()['abc']).to.equal('123');
+        expect(config.options().maxSlots).to.be.null;
+        expect(config.options()).to.not.contain.keys('abc');
+        config.options({maxSlots: 10, abc: '123'});
+        expect(config.options().maxSlots).to.equal(10);
+        expect(config.options()['abc']).to.equal('123');
     });
 
     it('fails if called with an argument after the first async(...) call', () => {
-        var opts = async.config();
+        var opts = config.options();
         expect(opts).to.contain.keys('maxSlots', 'fiberPool');
         var foo = async (() => {});
-        expect(() => async.config.mod({maxSlots: 10})).to.throw();
+        expect(() => config.options({maxSlots: 10})).to.throw();
     });
 });

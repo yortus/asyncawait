@@ -2,12 +2,12 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-var extensibility = require('asyncawait/src/extensibility');
+var config = require('asyncawait/config');
 var _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
 beforeEach(function () {
-    extensibility.restoreDefaults();
+    config.useDefaults();
 });
 
 describe('The fiberPool mod', function () {
@@ -19,7 +19,7 @@ describe('The fiberPool mod', function () {
     }
 
     it('creates new fiber instances on demand', async.cps(function () {
-        async.config.mod({ fiberPool: true });
+        config.options({ fiberPool: true });
         var foo = createFoo();
         var ids = await([1, 2, 3, 4, 5].map(function () {
             return foo();
@@ -31,7 +31,7 @@ describe('The fiberPool mod', function () {
     }));
 
     it('reuses fiber instances which have returned to the pool', async.cps(function () {
-        async.config.mod({ fiberPool: true });
+        config.options({ fiberPool: true });
         var foo = createFoo();
         var ids = [1, 2, 3, 4, 5].map(function () {
             return await(foo());
@@ -43,7 +43,7 @@ describe('The fiberPool mod', function () {
     }));
 
     it('does not reuse fiber instances if inactivated', async.cps(function () {
-        async.config.mod({ fiberPool: false });
+        config.options({ fiberPool: false });
         var foo = createFoo();
         var ids = [1, 2, 3, 4, 5].map(function () {
             return await(foo());

@@ -4,11 +4,11 @@ import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
-import extensibility = require('asyncawait/src/extensibility');
+import config = require('asyncawait/config');
 var expect = chai.expect;
 
 
-beforeEach(() => { extensibility.restoreDefaults(); peak = 0; Fiber.poolSize = 120; });
+beforeEach(() => { config.useDefaults(); peak = 0; Fiber.poolSize = 120; });
 var peak = 0;
 
 
@@ -22,7 +22,7 @@ describe('The fibersHotfix169 mod', () => {
     }
 
     it('adjusts Fiber.poolSize so it always exceeds the number of executing fibers', async.cps(() => {
-        async.config.mod({fibersHotfix169: true});
+        config.options({fibersHotfix169: true});
         expect(Fiber.poolSize).to.equal(120);
         var foo = createFoo();
         await (Array.apply(0, new Array(200)).map(foo));
@@ -30,7 +30,7 @@ describe('The fibersHotfix169 mod', () => {
     }));
 
     it('does not adjust Fiber.poolSize if inactivated', async.cps(() => {
-        async.config.mod({fibersHotfix169: false});
+        config.options({fibersHotfix169: false});
         expect(Fiber.poolSize).to.equal(120);
         var foo = createFoo();
         await (Array.apply(0, new Array(200)).map(foo));

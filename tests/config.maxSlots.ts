@@ -4,7 +4,7 @@ import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
-import extensibility = require('asyncawait/src/extensibility');
+import config = require('asyncawait/config');
 var expect = chai.expect;
 
 
@@ -15,7 +15,7 @@ describe('The maxSlots mod', () => {
     var opB = async (() => ({ started: started, finished: finished }));
     var setMaxSlots = n => {
         //extensibility.resetMods();
-        extensibility.config.mod({maxSlots: n});
+        config.options({maxSlots: n});
         //extensibility.applyMods();
     };
 

@@ -1,7 +1,6 @@
 ﻿var chai = require('chai');
-var async = require('asyncawait/async');
 
-var extensibility = require('asyncawait/src/extensibility');
+var config = require('asyncawait/config');
 
 var expect = chai.expect;
 
@@ -17,14 +16,14 @@ var testModA = {
             releaseFiber: function () {
                 tracking.push('release A');
                 base.releaseFiber.apply(null, arguments);
+            },
+            startup: function () {
+                return tracking.push('apply A');
+            },
+            shutdown: function () {
+                return tracking.push('reset A');
             }
         });
-    },
-    apply: function () {
-        return tracking.push('apply A');
-    },
-    reset: function () {
-        return tracking.push('reset A');
     },
     defaultOptions: { a: 1 }
 };
@@ -38,20 +37,20 @@ var testModB = {
             releaseFiber: function () {
                 tracking.push('release B');
                 base.releaseFiber.apply(null, arguments);
+            },
+            startup: function () {
+                return tracking.push('apply B');
+            },
+            shutdown: function () {
+                return tracking.push('reset B');
             }
         });
-    },
-    apply: function () {
-        return tracking.push('apply B');
-    },
-    reset: function () {
-        return tracking.push('reset B');
     },
     defaultOptions: { b: 2 }
 };
 
 beforeEach(function () {
-    extensibility.restoreDefaults();
+    config.useDefaults();
     tracking = [];
 });
 
@@ -66,20 +65,20 @@ describe('The config.mod(...) function', function () {
     //    expect(tracking).to.be.empty;
     //});
     it('adds the mod\'s defaults to config', function () {
-        expect(async.config()).to.not.have.key('a');
-        async.config.mod(testModA);
-        expect(async.config()).to.haveOwnProperty('a');
-        expect(async.config()['a']).to.equal(1);
+        expect(config.options()).to.not.have.key('a');
+        config.use(testModA);
+        expect(config.options()).to.haveOwnProperty('a');
+        expect(config.options()['a']).to.equal(1);
     });
 
     it('rejects multiple registrations of the same mod', function () {
-        async.config.mod(testModA);
+        config.use(testModA);
         expect(function () {
-            return async.config.mod(testModA);
+            return config.use(testModA);
         }).to.throw();
-        async.config.mod(testModB);
+        config.use(testModB);
         expect(function () {
-            return async.config.mod(testModB);
+            return config.use(testModB);
         }).to.throw();
     });
     // TODO: was...

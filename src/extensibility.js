@@ -5,34 +5,16 @@ var _ = require('./util');
 
 //TODO: default options SHOULD NOT override pre-existing options with same keys
 //TODO: if isOptionsOnly, then this SHOULD override any existing options
-//TODO: doc...
-/** Resets ... */
-function resetAll() {
-    // Reset and restore the joint protocol to its default state.
-    if (jointProtocol.shutdown)
-        jointProtocol.shutdown();
-    _.mergeProps(jointProtocol, defaultProtocol);
-
-    // Clear all external mod registrations.
-    _mods = [];
-
-    // Restore options to its initial state.
-    _options = {};
-}
-
 /** Gets or sets global configuration values. */
-exports.config = function config(value) {
+function options(value) {
     // If called as a getter, return a reference to the options object.
     if (arguments.length === 0)
         return _options;
 
-    //// Create a pseudo-mod that has the given config values as its default options.
-    //var mod: Mod = { defaultOptions: value };
-    //// Apply the pseudo-mod.
-    //use(mod);
-    //TODO: delegate to use()
+    // If called as a setter, delegate to use().
     exports.use(value);
-};
+}
+exports.options = options;
 
 //TODO: bring this in line with async's createModMethod
 /** Registers the specified mod and adds its default options to current config. */
@@ -70,17 +52,8 @@ function use(mod) {
 }
 exports.use = use;
 
-//TODO: rename to use()? Remove?
-exports.config.mod = exports.use;
-
-/** References the global options hash. */
-var _options = {};
-
-/** Holds the list of registered mods, in order of registration. */
-var _mods = [];
-
 //TODO: ...
-function restoreDefaults() {
+function useDefaults() {
     //TODO: ...
     resetAll();
 
@@ -95,6 +68,29 @@ function restoreDefaults() {
     ];
     defaultMods.forEach(exports.use);
 }
-exports.restoreDefaults = restoreDefaults;
-exports.restoreDefaults();
+exports.useDefaults = useDefaults;
+
+//TODO: doc...
+/** Resets ... */
+function resetAll() {
+    // Reset and restore the joint protocol to its default state.
+    if (jointProtocol.shutdown)
+        jointProtocol.shutdown();
+    _.mergeProps(jointProtocol, defaultProtocol);
+
+    // Clear all external mod registrations.
+    _mods = [];
+
+    // Restore options to its initial state.
+    _options = {};
+}
+
+/** References the global options hash. */
+var _options = {};
+
+/** Holds the list of registered mods, in order of registration. */
+var _mods = [];
+
+// TODO: and... break cycle...
+setImmediate(exports.useDefaults);
 //# sourceMappingURL=extensibility.js.map

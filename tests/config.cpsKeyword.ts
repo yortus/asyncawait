@@ -3,12 +3,12 @@ import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
-import extensibility = require('asyncawait/src/extensibility');
+import config = require('asyncawait/config');
 import _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
 
-beforeEach(() => { extensibility.restoreDefaults(); });
+beforeEach(() => { config.useDefaults(); });
 
 
 describe('The cpsKeyword mod', () => {
@@ -21,19 +21,19 @@ describe('The cpsKeyword mod', () => {
     }
 
     it('defines the requested symbol globally', async.cps(() => {
-        async.config.mod({cpsKeyword: '__'});
+        config.options({cpsKeyword: '__'});
         expect(global.__).to.not.exist;
         var foo = createFoo();
         expect(global.__).to.exist;
     }));
 
     it('fails if the requested symbol is already defined', async.cps(() => {
-        async.config.mod({cpsKeyword: 'console'});
+        config.options({cpsKeyword: 'console'});
         expect(() => createFoo()).to.throw();
     }));
 
     it('does not define the symbol if inactivated', async.cps(() => {
-        async.config.mod({cpsKeyword: null});
+        config.options({cpsKeyword: null});
         expect(global.__).to.not.exist;
         var foo = createFoo();
         expect(global.__).to.not.exist;

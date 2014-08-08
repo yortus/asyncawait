@@ -141,7 +141,7 @@ function createModMethod(handlers, handlersFactory, options, baseHandlers) {
         var hasHandlersFactory = !!mod.overrideHandlers;
 
         // Determine the appropriate options to pass to createAwaitBuilder.
-        var opts = _.branch(extensibility.config());
+        var opts = _.branch(extensibility.options());
         _.mergeProps(opts, options, mod.defaultOptions);
 
         // Determine the appropriate handlersFactory and baseHandlers to pass to createAwaitBuilder.

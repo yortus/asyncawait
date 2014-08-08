@@ -14,7 +14,6 @@ declare module AsyncAwait {
     export module Async {
         
         export interface API extends PromiseBuilder {
-            config: Config;
             promise: PromiseBuilder;
             cps: CPSBuilder;
             thunk: ThunkBuilder;
@@ -193,10 +192,11 @@ declare module AsyncAwait {
 
     //------------------------- Extensibility -------------------------
     export interface Config {
-        (): ConfigOptions;
-        //TODO: was... (options: ConfigOptions): void;
-        mod(mod: Mod): void;
-        mod(options: {}): void;
+        options(): ConfigOptions;
+        options(value: ConfigOptions): void;
+        use(mod: Mod): void;
+        use(options: {}): void;
+        useDefaults(): void;
     }
 
     //TODO: really type these defaults?
@@ -246,10 +246,12 @@ declare module AsyncAwait {
 declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
+    export import config = require("asyncawait/config");
     export import yield_ = require("asyncawait/yield");
 }
 declare module "asyncawait/async" { var api: AsyncAwait.Async.API; export = api; }
 declare module "asyncawait/await" { var api: AsyncAwait.Await.API; export = api; }
+declare module "asyncawait/config" { var api: AsyncAwait.Config; export = api; }
 declare module "asyncawait/yield" { var api: AsyncAwait.Yield; export = api; }
 declare module "asyncawait/async/promise" { var api: AsyncAwait.Async.PromiseBuilder; export = api; }
 declare module "asyncawait/async/cps" { var api: AsyncAwait.Async.CPSBuilder; export = api; }

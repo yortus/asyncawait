@@ -1,6 +1,5 @@
-﻿//export = config;
-// config.options() => value
-// config.options(value) => void
-// config.use
-//var iterableAPI: AsyncAwait.Async.IterableAPI = <any> promise;
+﻿var extensibility = require('../src/extensibility');
+
+var config = extensibility;
+module.exports = config;
 //# sourceMappingURL=index.js.map
