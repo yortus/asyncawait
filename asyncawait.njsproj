@@ -70,7 +70,6 @@
     <TypeScriptCompile Include="src\mods\streams.ts" />
     <TypeScriptCompile Include="src\mods\thunks.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
-    <TypeScriptCompile Include="src\startup.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
     <TypeScriptCompile Include="support\recipes\expressRouting.ts" />
@@ -96,7 +95,6 @@
     <Content Include="references.d.ts" />
     <Content Include="src\asyncBuilder.ts" />
     <Content Include="src\awaitBuilder.ts" />
-    <Content Include="src\extensibility.ts" />
     <Content Include="src\mods\fiberPool.ts" />
     <Content Include="src\mods\cpsKeyword.ts" />
     <Content Include="src\mods\fibersHotfix169.ts" />
