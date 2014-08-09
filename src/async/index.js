@@ -1,36 +1,19 @@
-﻿var asyncBuilder = require('../asyncBuilder');
-
-//import promiseMod = require('../mods/async/promise');
+﻿var assert = require('assert');
+var asyncBuilder = require('../asyncBuilder');
 var iterable = require('./iterable/index');
-var extensibility = require('../extensibility');
+var internalState = require('../config/internalState');
 
-// TODO: was...
-//var api: AsyncAwait.Async.API = <any> asyncBuilder.mod(promiseMod);
-//api.iterable = iterable;
-var api = function () {
-    var globalOptions = extensibility.options().defaults;
-
-    //var key = globalOptions.asyncDefault || 'NEVER'; //TODO: better way to do this? See also /src/startup
-    //var val = api[key] || asyncBuilder.mod(promiseMod);
-    var val = globalOptions.async || asyncBuilder;
-
-    for (var l = arguments.length, a = new Array(l), i = 0; i < l; ++i)
-        a[i] = arguments[i];
-    return val.apply(this, a);
+var api = function (invokee) {
+    assert(arguments.length === 1, 'async: expected a single argument');
+    var async = internalState.options.defaults.async || asyncBuilder;
+    return async(invokee);
 };
 api.mod = function mod(mod) {
-    var globalOptions = extensibility.options().defaults;
-
-    //var key = globalOptions.asyncDefault || 'NEVER'; //TODO: better way to do this? See also /src/startup
-    //var val = api[key] || asyncBuilder.mod(promiseMod);
-    var val = globalOptions.async || asyncBuilder;
-
-    for (var l = arguments.length, a = new Array(l), i = 0; i < l; ++i)
-        a[i] = arguments[i];
-    return val.mod.apply(this, a);
+    assert(arguments.length === 1, 'async.mod: expected a single argument');
+    var async = internalState.options.defaults.async || asyncBuilder;
+    return async.mod(mod);
 };
 
-//TODO: need to handle async.options and async.protocol as well (actually, get rid of them altogether throughout)
 //TODO: temp
 api.iterable = iterable;
 module.exports = api;

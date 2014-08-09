@@ -48,6 +48,8 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="src\async\index.ts" />
+    <TypeScriptCompile Include="src\config\internalState.ts" />
+    <TypeScriptCompile Include="src\config\index.ts" />
     <TypeScriptCompile Include="src\mods\async\stream.ts" />
     <TypeScriptCompile Include="src\async\iterable\index.ts" />
     <TypeScriptCompile Include="src\async\iterable\cps.ts" />
@@ -164,6 +166,7 @@
     <Folder Include="src\async\" />
     <Folder Include="src\mods\async\" />
     <Folder Include="src\mods\await\" />
+    <Folder Include="src\config\" />
     <Folder Include="support\comparison\" />
     <Folder Include="support\comparison\countFiles\" />
     <Folder Include="support\comparison\fibonacci\" />

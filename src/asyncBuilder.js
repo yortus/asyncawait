@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var jointProtocol = require('./jointProtocol');
-var extensibility = require('./extensibility');
+var internalState = require('./config/internalState');
 var _ = require('./util');
 
 
@@ -28,7 +28,7 @@ var asyncBuilder = createAsyncBuilder({
             }
         });
     },
-    defaultOptions: _.branch(extensibility.options())
+    defaultOptions: _.branch(internalState.options)
 });
 
 /** Creates a new async builder function using the specified mod and protocol settings. */
@@ -49,16 +49,14 @@ function createAsyncBuilder(currentMod, previousProtocol) {
 
     // Tack on the builder's other properties, and the mod() method.
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.protocol = currentProtocol;
-    builder.options = currentMod.defaultOptions;
-    builder.mod = createModMethod(builder, currentMod);
+    builder.mod = createModMethod(currentProtocol, currentMod.defaultOptions, currentMod);
 
     // Return the async builder function.
     return builder;
 }
 
 /** Creates a mod() method appropriate for the given builder. */
-function createModMethod(builder, previousMod) {
+function createModMethod(builderProtocol, builderOptions, previousMod) {
     return function mod(mod) {
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
@@ -71,10 +69,10 @@ function createModMethod(builder, previousMod) {
         //TODO: if isOptionsOnly, then this SHOULD override any existing options
         //TODO: see also joint protocol - same thing applies there
         var overrideProtocol = isOptionsOnly ? previousMod.overrideProtocol : mod.overrideProtocol;
-        var defaultOptions = _.mergeProps(_.branch(builder.options), isOptionsOnly ? mod : mod.defaultOptions);
+        var defaultOptions = _.mergeProps(_.branch(builderOptions), isOptionsOnly ? mod : mod.defaultOptions);
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder({ overrideProtocol: overrideProtocol, defaultOptions: defaultOptions }, builder.protocol);
+        return createAsyncBuilder({ overrideProtocol: overrideProtocol, defaultOptions: defaultOptions }, builderProtocol);
     };
 }
 

@@ -50,30 +50,30 @@ function runTestsFor(variant?: string, acceptsCallback = false) {
             }
         });
 
-        //TODO: review this test...
-        it('has an options property that matches the passed-in options', () => {
-            var func2 = func.mod({ special: 777 });
-            expect(func2.options).to.exist;
-            expect(func2.options['special']).to.equal(777);
-            var func2 = func.mod({ other: 'blah' });
-            expect(func2.options['special']).to.not.exist;
-            var func2 = func.mod({ overrideProtocol: () => { }, defaultOptions: { special: 555 }});
-            expect(func2.options).to.exist;
-            expect(func2.options['special']).to.equal(555);
-            expect(func2.options['blah']).to.not.exist;
-        });
+        //TODO: was... remove
+        //it('has an options property that matches the passed-in options', () => {
+        //    var func2 = func.mod({ special: 777 });
+        //    expect(func2.options).to.exist;
+        //    expect(func2.options['special']).to.equal(777);
+        //    var func2 = func.mod({ other: 'blah' });
+        //    expect(func2.options['special']).to.not.exist;
+        //    var func2 = func.mod({ overrideProtocol: () => { }, defaultOptions: { special: 555 }});
+        //    expect(func2.options).to.exist;
+        //    expect(func2.options['special']).to.equal(555);
+        //    expect(func2.options['blah']).to.not.exist;
+        //});
 
-        //TODO: review this test...
-        it('has a protocol property that matches the passed-in protocol', () => {
-            var begin = (fi, arg) => 'blah';
-            var func2 = func.mod({ overrideProtocol: () => ({ begin: begin })});
-            expect(func2.protocol).to.exist;
-            expect(func2.protocol.begin).to.equal(begin);
-            var func3 = func.mod({ overrideProtocol: () => ({ a:1 })});
-            expect(func3.protocol).to.exist;
-            expect(func3.protocol.begin).to.not.equal(begin);
+        //TODO: was... remove
+        //it('has a protocol property that matches the passed-in protocol', () => {
+        //    var begin = (fi, arg) => 'blah';
+        //    var func2 = func.mod({ overrideProtocol: () => ({ begin: begin })});
+        //    expect(func2.protocol).to.exist;
+        //    expect(func2.protocol.begin).to.equal(begin);
+        //    var func3 = func.mod({ overrideProtocol: () => ({ a:1 })});
+        //    expect(func3.protocol).to.exist;
+        //    expect(func3.protocol.begin).to.not.equal(begin);
 
-        });
+        //});
     });
 }
 runTestsFor(null);

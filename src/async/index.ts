@@ -1,39 +1,23 @@
 ﻿import references = require('references');
+import assert = require('assert');
 import asyncBuilder = require('../asyncBuilder');
-//import promiseMod = require('../mods/async/promise');
 import iterable = require('./iterable/index');
-import extensibility = require('../extensibility');
+import internalState = require('../config/internalState');
 export = api;
 
 
-// TODO: was...
-//var api: AsyncAwait.Async.API = <any> asyncBuilder.mod(promiseMod);
-//api.iterable = iterable;
-
-
-var api: AsyncAwait.Async.API = <any> function () {
-    var globalOptions: any = extensibility.options().defaults;
-    //var key = globalOptions.asyncDefault || 'NEVER'; //TODO: better way to do this? See also /src/startup
-    //var val = api[key] || asyncBuilder.mod(promiseMod);
-    var val = globalOptions.async || asyncBuilder;
-
-    //TODO: really need all this? can be say just one arg, always?
-    for (var l = arguments.length, a = new Array(l), i = 0; i < l; ++i) a[i] = arguments[i];
-    return val.apply(this, a);
+var api: AsyncAwait.Async.API = <any> function (invokee: Function) {
+    assert(arguments.length === 1, 'async: expected a single argument');
+    var async = internalState.options.defaults.async || asyncBuilder;
+    return async(invokee);
 };
 api.mod = function mod(mod) {
-    var globalOptions: any = extensibility.options().defaults;
-    //var key = globalOptions.asyncDefault || 'NEVER'; //TODO: better way to do this? See also /src/startup
-    //var val = api[key] || asyncBuilder.mod(promiseMod);
-    var val = globalOptions.async || asyncBuilder;
-
-    //TODO: really need all this? can be say just one arg, always?
-    for (var l = arguments.length, a = new Array(l), i = 0; i < l; ++i) a[i] = arguments[i];
-    return val.mod.apply(this, a);
+    assert(arguments.length === 1, 'async.mod: expected a single argument');
+    var async = internalState.options.defaults.async || asyncBuilder;
+    return async.mod(mod);
 };
 
 
-//TODO: need to handle async.options and async.protocol as well (actually, get rid of them altogether throughout)
 
 
 //TODO: temp

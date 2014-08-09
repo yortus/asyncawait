@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var _ = require('./util');
-var extensibility = require('./extensibility');
+var internalState = require('./config/internalState');
 
 
 // Bootstrap a basic await builder using a no-op handler.
@@ -122,7 +122,7 @@ function createModMethod(handlers, handlersFactory, options, baseHandlers) {
         var hasHandlersFactory = !!mod.overrideHandlers;
 
         // Determine the appropriate options to pass to createAwaitBuilder.
-        var opts = _.branch(extensibility.options());
+        var opts = _.branch(internalState.options);
         _.mergeProps(opts, options, mod.defaultOptions);
 
         // Determine the appropriate handlersFactory and baseHandlers to pass to createAwaitBuilder.

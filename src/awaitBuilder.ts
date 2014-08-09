@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import _ = require('./util');
-import extensibility = require('./extensibility');
+import internalState = require('./config/internalState');
 import Builder = AsyncAwait.Await.Builder;
 import Mod = AsyncAwait.Await.Mod;
 import Handlers = AsyncAwait.Await.Handlers;
@@ -141,7 +141,7 @@ function createModMethod(handlers, handlersFactory, options, baseHandlers) {
         var hasHandlersFactory = !!mod.overrideHandlers;
 
         // Determine the appropriate options to pass to createAwaitBuilder.
-        var opts = _.branch(extensibility.options());
+        var opts = _.branch(internalState.options);
         _.mergeProps(opts, options, mod.defaultOptions);
 
         // Determine the appropriate handlersFactory and baseHandlers to pass to createAwaitBuilder.

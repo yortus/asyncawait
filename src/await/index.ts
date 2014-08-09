@@ -1,5 +1,4 @@
 ﻿import references = require('references');
-//TODO: temp... require('../src/extensibility').config({ handlers: [ promise.handler, cps.handler, thunk.handler, general, value ]});
 import awaitBuilder = require('../awaitBuilder');
 import promiseMod = require('../mods/await/promise');
 import cpsMod = require('../mods/await/cps');

@@ -1,2 +1,1 @@
-﻿require('./src/startup');
-module.exports = require('./src/extensibility');
+﻿module.exports = require('./src/config');
