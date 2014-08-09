@@ -55,7 +55,8 @@ function useInternal(mod) {
     });
 
     //TODO: startup...
-    jointProtocol.startup();
+    if (jointProtocol.startup)
+        jointProtocol.startup();
 }
 
 //TODO: ...
@@ -64,19 +65,7 @@ function useDefaults() {
     resetAll();
 
     // TODO: apply the default mods.
-    // TODO: define this list in a separate file. Perhaps as part of joint protocol?
-    var defaultMods = [
-        require('./mods/baseline').mod,
-        require('./mods/fibersHotfix169').mod,
-        require('./mods/fiberPool').mod,
-        require('./mods/maxSlots').mod,
-        require('./mods/cpsKeyword').mod,
-        require('./mods/promises').mod,
-        require('./mods/callbacks').mod,
-        require('./mods/thunks').mod,
-        require('./mods/streams').mod,
-        require('./mods/express').mod
-    ];
+    var defaultMods = _options.defaults.mods;
     defaultMods.forEach(function (mod) {
         return exports.use(mod);
     });
@@ -100,8 +89,9 @@ function resetAll() {
     // Clear all external mod registrations.
     _mods = [];
 
-    // Restore options to its initial state.
-    _options = {};
+    // Clear all options, except anything in the the 'defaults' key.
+    var defaults = _options.defaults;
+    _options = { defaults: defaults };
 }
 
 /** References the global options hash. */
@@ -109,4 +99,23 @@ var _options = {};
 
 /** Holds the list of registered mods, in order of registration. */
 var _mods = [];
+
+//TODO: temp testing...
+// TODO: define these in a separate file. Perhaps as part of joint protocol?
+_options.defaults = {
+    mods: [
+        require('./mods/baseline').mod,
+        require('./mods/fibersHotfix169').mod,
+        require('./mods/fiberPool').mod,
+        require('./mods/maxSlots').mod,
+        require('./mods/cpsKeyword').mod,
+        require('./mods/promises').mod,
+        require('./mods/callbacks').mod,
+        require('./mods/thunks').mod,
+        require('./mods/streams').mod,
+        require('./mods/express').mod
+    ],
+    async: null,
+    await: null
+};
 //# sourceMappingURL=extensibility.js.map

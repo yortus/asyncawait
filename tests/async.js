@@ -2,6 +2,7 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+
 var yield_ = require('asyncawait/yield');
 var _ = require('asyncawait/src/util');
 var expect = chai.expect;

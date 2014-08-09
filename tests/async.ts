@@ -3,6 +3,7 @@ import chai = require('chai');
 import Promise = require('bluebird');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
+import config = require('asyncawait/config');
 import yield_ = require('asyncawait/yield');
 import _ = require('asyncawait/src/util');
 var expect = chai.expect;

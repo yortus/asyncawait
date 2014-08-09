@@ -55,15 +55,6 @@
     <TypeScriptCompile Include="src\async\iterable\promise.ts" />
     <TypeScriptCompile Include="src\await\compound.ts" />
     <TypeScriptCompile Include="src\await\index.ts" />
-    <TypeScriptCompile Include="src\await\TODO\stream.ts" />
-    <TypeScriptCompile Include="src\await\TODO\array.ts" />
-    <TypeScriptCompile Include="src\await\TODO\graph.ts" />
-    <TypeScriptCompile Include="src\await\TODO\all.ts" />
-    <TypeScriptCompile Include="src\await\TODO\race.ts" />
-    <TypeScriptCompile Include="src\await\TODO\resource.ts" />
-    <TypeScriptCompile Include="src\await\TODO\iterator.ts" />
-    <TypeScriptCompile Include="src\await\TODO\cps.array.ts" />
-    <TypeScriptCompile Include="src\await\TODO\value.ts" />
     <TypeScriptCompile Include="src\mods\async\cps.ts" />
     <TypeScriptCompile Include="src\mods\async\express.ts" />
     <TypeScriptCompile Include="src\mods\async\promise.ts" />
@@ -125,9 +116,10 @@
     <TypeScriptCompile Include="tests\config.fiberPool.ts" />
     <TypeScriptCompile Include="tests\config.mod.ts" />
     <TypeScriptCompile Include="tests\config.ts" />
-    <TypeScriptCompile Include="yield\index.ts" />
+    <TypeScriptCompile Include="src\yield\index.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="yield.js" />
     <Compile Include="await.js" />
     <Compile Include="async.js" />
     <Compile Include="config.js" />
@@ -167,7 +159,6 @@
   <ItemGroup>
     <Folder Include="src\async\iterable\" />
     <Folder Include="src\await\" />
-    <Folder Include="src\await\TODO\" />
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
     <Folder Include="src\async\" />
@@ -190,7 +181,7 @@
     <Folder Include="typings\mocha\" />
     <Folder Include="typings\node-fibers\" />
     <Folder Include="typings\node\" />
-    <Folder Include="yield\" />
+    <Folder Include="src\yield\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>

@@ -63,7 +63,7 @@ function useInternal(mod: Mod) {
     });
 
     //TODO: startup...
-    jointProtocol.startup();
+    if (jointProtocol.startup) jointProtocol.startup();
 }
 
 
@@ -73,21 +73,8 @@ export function useDefaults() {
     //TODO: ...
     resetAll();
 
-
     // TODO: apply the default mods.
-    // TODO: define this list in a separate file. Perhaps as part of joint protocol?
-    var defaultMods = [
-        require('./mods/baseline').mod,
-        require('./mods/fibersHotfix169').mod,
-        require('./mods/fiberPool').mod,
-        require('./mods/maxSlots').mod,
-        require('./mods/cpsKeyword').mod,
-        require('./mods/promises').mod,
-        require('./mods/callbacks').mod,
-        require('./mods/thunks').mod,
-        require('./mods/streams').mod,
-        require('./mods/express').mod
-    ];
+    var defaultMods = _options.defaults.mods;
     defaultMods.forEach(mod => use(mod));
 }
 
@@ -109,13 +96,34 @@ function resetAll() {
     // Clear all external mod registrations.
     _mods = [];
 
-    // Restore options to its initial state.
-    _options = {};
+    // Clear all options, except anything in the the 'defaults' key.
+    var defaults = _options.defaults;
+    _options = { defaults: defaults };
 }
 
 /** References the global options hash. */
-var _options = {};
+var _options: any = {};
 
 
 /** Holds the list of registered mods, in order of registration. */
 var _mods: Mod[] = [];
+
+
+//TODO: temp testing...
+// TODO: define these in a separate file. Perhaps as part of joint protocol?
+_options.defaults = {
+    mods: [
+        require('./mods/baseline').mod, //TODO: treat this differently (builtin), then also dont need startup/shutdown guards
+        require('./mods/fibersHotfix169').mod,
+        require('./mods/fiberPool').mod,
+        require('./mods/maxSlots').mod,
+        require('./mods/cpsKeyword').mod,
+        require('./mods/promises').mod,
+        require('./mods/callbacks').mod,
+        require('./mods/thunks').mod,
+        require('./mods/streams').mod,
+        require('./mods/express').mod
+    ],
+    async: null,
+    await: null
+};

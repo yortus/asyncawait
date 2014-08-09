@@ -3,22 +3,24 @@ var Promise = require('bluebird');
 var Fiber = require('fibers');
 var async = require('../../async');
 var await = require('../../await');
-async.config({
-    cpsKeyword: '___',
-    maxSlots: 2,
-    fiberPool: true,
+//async.config({
+//    cpsKeyword: '___',
+//    maxSlots: 2,
+//    fiberPool: true,
 
-    awaitOrder: [ 'promise', 'cps', 'thunk', 'promise[]', 'value' ],
+//    awaitOrder: [ 'promise', 'cps', 'thunk', 'promise[]', 'value' ],
 
-    //TODO: rename continuation() to complete()
-    keywords: {
-        cps: '___',
-        yield: 'yield_',
-        await: 'await'
-    }
-});
+//    //TODO: rename continuation() to complete()
+//    keywords: {
+//        cps: '___',
+//        yield: 'yield_',
+//        await: 'await'
+//    }
+//});
 
 
+var config = require('../../config');
+var options = config.options();
 
 
 
@@ -35,9 +37,7 @@ async.config({
         return { started: started, finished: finished };
     });
     var setMaxSlots = function (n) {
-        //extensibility.resetMods();
-        async.config({maxSlots: n});
-        //extensibility.applyMods();
+        config.options({maxSlots: n});
     };
 
 
