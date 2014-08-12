@@ -229,6 +229,29 @@ declare module AsyncAwait {
     }
 
 
+    //TODO: finalise and rename...
+    export interface Mod2<TMembers, TOptions> {
+        override: (baseMembers: TMembers, options: TOptions) => any;
+        defaults?: TOptions;
+        name?: string;
+    }
+
+    //TODO: don't need this here (its a private impl detail), but just to scope it out...
+    export class Protocol<TMembers, TOptions> {
+        constructor(members: TMembers, options: TOptions);
+        members: TMembers; // NB: immutable - don't modify directly!
+        options: TOptions; // NB: immutable - don't modify directly!
+        mod(mod: Mod2<TMembers, TOptions>): Protocol<TMembers, TOptions>;
+        mod(options: TOptions): Protocol<TMembers, TOptions>;
+        private _mods: Mod2<TMembers, TOptions>[];
+    }
+
+    //TODO: temp...
+    export interface EgProtocol {
+        begin: Function;
+        end: Function;        
+    }
+
     //------------------------- Common -------------------------
     export interface Callback<TResult> {
         (err: Error, result: TResult): void;

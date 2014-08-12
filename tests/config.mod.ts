@@ -7,6 +7,8 @@ import Mod = AsyncAwait.Mod;
 var expect = chai.expect;
 
 
+//TODO: need more tests for various scenarios...
+
 // Define test mods
 var tracking = [];
 var testModA: Mod = {
