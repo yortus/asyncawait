@@ -2,7 +2,7 @@
 import Fiber = require('fibers');
 import jointProtocol = require('../jointProtocol');
 import JointProtocol = AsyncAwait.JointProtocol;
-import AsyncProtocol = AsyncAwait.Async.Protocol;
+import AsyncProtocol = AsyncAwait.Async.AsyncProtocol;
 import JointMod = AsyncAwait.JointMod;
 
 

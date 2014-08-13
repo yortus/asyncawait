@@ -79,38 +79,38 @@ declare module AsyncAwait {
         }
 
         export interface TypedBuilder<TBuilder extends Builder> extends Builder {
-            mod<TBuilder2 extends Builder>(mod: TypedMod<TBuilder2>): TBuilder2;
-            mod(mod: Mod): TBuilder;
+            mod<TBuilder2 extends Builder>(mod: TypedAsyncMod<TBuilder2>): TBuilder2;
+            mod(mod: AsyncMod): TBuilder;
             mod(options: {}): TBuilder;
         }
 
         export interface Builder {
             (fn: Function): Function;
             name: string;
-            mod<TBuilder extends Builder>(mod: TypedMod<TBuilder>): TBuilder;
-            mod(mod: Mod): Builder;
+            mod<TBuilder extends Builder>(mod: TypedAsyncMod<TBuilder>): TBuilder;
+            mod(mod: AsyncMod): Builder;
             mod(options: {}): Builder;
         }
 
-        export interface TypedMod<TBuilder extends Builder> extends Mod {
+        export interface TypedAsyncMod<TBuilder extends Builder> extends AsyncMod {
             type: TBuilder;
         }
 
-        export interface Mod {
-            override: (base: Protocol, options: any) => ProtocolOverrides;
+        export interface AsyncMod {
+            override: (base: AsyncProtocol, options: any) => AsyncProtocolOverrides;
             defaults?: {};
             name?: string;
         }
 
         //TODO: doc these methods
-        export interface Protocol {
+        export interface AsyncProtocol {
             begin: (fi: Fiber, ...protocolArgs) => any;
             suspend: (fi: Fiber, error?: Error, value?: any) => any;
             resume: (fi: Fiber, error?: Error, value?: any) => any;
             end: (fi: Fiber, error?: Error, value?: any) => any;
         }
 
-        export interface ProtocolOverrides {
+        export interface AsyncProtocolOverrides {
             begin?: (fi: Fiber, ...protocolArgs) => any;
             suspend?: (fi: Fiber, error?: Error, value?: any) => any;
             resume?: (fi: Fiber, error?: Error, value?: any) => any;
@@ -205,45 +205,24 @@ declare module AsyncAwait {
         cpsKeyword?: string;
     }
 
-    // TODO: should be AsyncAwait.Config.Mod - need another namespace
-    //TODO: make similar to async protocol typings
-    //export interface Mod {
-    //    override: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
-    //    defaults?: {};
-    //    name?: string;
-    //}
-
-    export interface JointMod extends Mod2<JointProtocol, any> { }
+    export interface JointMod extends Mod<JointProtocol, any> { }
 
     export interface JointProtocol {
-        acquireFiber: (asyncProtocol: Async.Protocol) => Fiber;
-        releaseFiber: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
+        acquireFiber: (asyncProtocol: Async.AsyncProtocol) => Fiber;
+        releaseFiber: (asyncProtocol: Async.AsyncProtocol, fi: Fiber) => void;
         setFiberTarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => void
         startup: () => void;
         shutdown: () => void;
     }
 
     export interface JointProtocolOverrides {
-        acquireFiber?: (asyncProtocol: Async.Protocol) => Fiber;
-        releaseFiber?: (asyncProtocol: Async.Protocol, fi: Fiber) => void;
+        acquireFiber?: (asyncProtocol: Async.AsyncProtocol) => Fiber;
+        releaseFiber?: (asyncProtocol: Async.AsyncProtocol, fi: Fiber) => void;
         setFiberTarget?: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => void
         startup?: () => void;
         shutdown?: () => void;
     }
 
-
-    //TODO: finalise and rename...
-    export interface Mod2<TMembers, TOptions> {
-        override: (baseMembers: TMembers, options: TOptions) => any;
-        defaults?: TOptions;
-        name?: string;
-    }
-
-    //TODO: temp...
-    export interface EgProtocol {
-        begin: Function;
-        end: Function;        
-    }
 
     //------------------------- Common -------------------------
     export interface Callback<TResult> {
@@ -252,6 +231,13 @@ declare module AsyncAwait {
 
     export interface Thunk<TResult> {
         (callback?: Callback<TResult>): void;
+    }
+
+    //TODO: finalise and rename...
+    export interface Mod<TMembers, TOptions> {
+        override: (baseMembers: TMembers, options: TOptions) => any;
+        defaults?: TOptions;
+        name?: string;
     }
 }
 

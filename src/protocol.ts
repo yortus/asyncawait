@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import _ = require('./util');
-import Mod = AsyncAwait.Mod2;
+import Mod = AsyncAwait.Mod;
 export = Protocol;
 
 

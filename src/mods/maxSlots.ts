@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import _ = require('../util');
 import JointMod = AsyncAwait.JointMod;
-import AsyncProtocol = AsyncAwait.Async.Protocol;
+import AsyncProtocol = AsyncAwait.Async.AsyncProtocol;
 
 
 /** Fiber interface extended with semaphore info. */

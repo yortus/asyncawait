@@ -5,8 +5,8 @@ import internalState = require('./config/internalState');
 import Protocol = require('./protocol');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
-import AsyncMod = AsyncAwait.Async.Mod;
-import AsyncProtocol = AsyncAwait.Async.Protocol;
+import AsyncMod = AsyncAwait.Async.AsyncMod;
+import AsyncProtocol = AsyncAwait.Async.AsyncProtocol;
 export = asyncBuilder;
 
 

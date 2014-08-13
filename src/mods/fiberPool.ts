@@ -3,7 +3,7 @@ import JointMod = AsyncAwait.JointMod;
 
 
 /** Extended async protocol interface with fiber pool info. */
-interface AsyncProtocol extends AsyncAwait.Async.Protocol {
+interface AsyncProtocol extends AsyncAwait.Async.AsyncProtocol {
     fiberPoolId: number;
 }
 
