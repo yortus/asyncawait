@@ -71,7 +71,7 @@
     <TypeScriptCompile Include="src\mods\streams.ts" />
     <TypeScriptCompile Include="src\mods\thunks.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
-    <TypeScriptCompile Include="src\protocols\protocol.ts" />
+    <TypeScriptCompile Include="src\protocol.ts" />
     <TypeScriptCompile Include="support\examples\ts\express.ts" />
     <TypeScriptCompile Include="support\examples\ts\mocha.ts" />
     <TypeScriptCompile Include="support\recipes\expressRouting.ts" />
@@ -119,7 +119,7 @@
     <TypeScriptCompile Include="tests\config.mod.ts" />
     <TypeScriptCompile Include="tests\config.ts" />
     <TypeScriptCompile Include="src\yield\index.ts" />
-    <TypeScriptCompile Include="tests\protocols.ts" />
+    <TypeScriptCompile Include="tests\protocol.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="yield.js" />
@@ -168,7 +168,6 @@
     <Folder Include="src\mods\async\" />
     <Folder Include="src\mods\await\" />
     <Folder Include="src\config\" />
-    <Folder Include="src\protocols\" />
     <Folder Include="support\comparison\" />
     <Folder Include="support\comparison\countFiles\" />
     <Folder Include="support\comparison\fibonacci\" />

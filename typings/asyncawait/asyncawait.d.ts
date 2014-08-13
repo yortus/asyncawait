@@ -7,6 +7,7 @@
 ///<reference path="../bluebird/bluebird.d.ts" />
 
 
+//TODO: reorganise this by mods (so they *could* be split into separate files/projects)
 declare module AsyncAwait {
 
 
@@ -234,16 +235,6 @@ declare module AsyncAwait {
         override: (baseMembers: TMembers, options: TOptions) => any;
         defaults?: TOptions;
         name?: string;
-    }
-
-    //TODO: don't need this here (its a private impl detail), but just to scope it out...
-    export class Protocol<TMembers, TOptions> {
-        constructor(members: TMembers, options: TOptions);
-        members: TMembers; // NB: immutable - don't modify directly!
-        options: TOptions; // NB: immutable - don't modify directly!
-        mod(mod: Mod2<TMembers, TOptions>): Protocol<TMembers, TOptions>;
-        mod(options: TOptions): Protocol<TMembers, TOptions>;
-        private _mods: Mod2<TMembers, TOptions>[];
     }
 
     //TODO: temp...

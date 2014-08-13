@@ -65,7 +65,7 @@ module.exports = function(grunt) {
                     //'tests/config.maxSlots.js',
                     //'tests/config.mod.js',
                     //'tests/config.js',
-                    'tests/protocols.js'
+                    'tests/protocol.js'
                 ]
             }
         },
