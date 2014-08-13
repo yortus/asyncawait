@@ -11,7 +11,7 @@ var newBuilder = oldBuilder.mod({
 
     type: <AsyncAwait.Async.IterableThunkBuilder> null,
 
-    overrideProtocol: (cps, options) => ({
+    override: (cps, options) => ({
         begin: (fi) => {
             var iter = cps.begin(fi);
             return {

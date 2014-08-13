@@ -6,7 +6,7 @@ var _ = require('../../util');
 var newBuilder = oldBuilder.mod({
     name: 'iterable.cps',
     type: null,
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             begin: function (fi) {
                 var ctx = fi.context = { nextCallback: null, done: false };

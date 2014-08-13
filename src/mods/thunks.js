@@ -9,7 +9,7 @@ exports.mod = {
     name: 'thunks',
     //TODO: add checking in extensibility.ts or somehow for this:
     requires: ['cps'],
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             startup: function () {
                 base.startup();
@@ -23,6 +23,6 @@ exports.mod = {
             }
         });
     },
-    defaultOptions: {}
+    defaults: {}
 };
 //# sourceMappingURL=thunks.js.map

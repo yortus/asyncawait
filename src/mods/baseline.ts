@@ -11,7 +11,7 @@ export var mod: Mod = {
 
     name: 'baseline',
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
 
         /** Create and return a new Fiber instance. */
         acquireFiber: (asyncProtocol: AsyncProtocol) => {
@@ -47,7 +47,7 @@ export var mod: Mod = {
         shutdown: () => { /* no-op */ }
     }),
 
-    defaultOptions: { /* none */ }
+    defaults: { /* none */ }
 };
 
 

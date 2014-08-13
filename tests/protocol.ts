@@ -39,7 +39,6 @@ describe('An instance of the Protocol class', () => {
         expect(p2.members).to.have.keys('foo', 'bar');
         expect(p2.members.foo).to.equal(_.empty);
     });
-
 });
 
 

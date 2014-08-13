@@ -8,7 +8,7 @@ var mod = {
     /** Used only for automatic type interence at TypeScript compile time. */
     type: null,
     /** Provides appropriate handling for callback-accepting suspendable functions. */
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             /** Remembers the given callback and synchronously returns nothing. */
             begin: function (fi, callback) {

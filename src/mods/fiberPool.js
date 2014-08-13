@@ -2,7 +2,7 @@
 /** Pools fiber instances across acquire/release cycles, for improved performance. */
 exports.mod = {
     name: 'fiberPool',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         // Override the joint protocol if the option is selected.
         return (!options.fiberPool) ? null : {
             /** Create and return a new Fiber instance. */
@@ -45,7 +45,7 @@ exports.mod = {
             }
         };
     },
-    defaultOptions: {
+    defaults: {
         fiberPool: true
     }
 };

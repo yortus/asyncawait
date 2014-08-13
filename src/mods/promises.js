@@ -6,7 +6,7 @@ var awaitMod = require('./await/promise');
 /** TODO */
 exports.mod = {
     name: 'promises',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             startup: function () {
                 base.startup();
@@ -20,6 +20,6 @@ exports.mod = {
             }
         });
     },
-    defaultOptions: {}
+    defaults: {}
 };
 //# sourceMappingURL=promises.js.map

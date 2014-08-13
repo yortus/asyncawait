@@ -1,6 +1,11 @@
 ﻿import references = require('references');
+import Protocol = require('../protocol');
+import _ = require('../util');
 import Mod = AsyncAwait.Mod;
+//export = protocol;
 
+
+//var protocol = new Protocol(<any> {}, _.empty);
 
 /** Holds the global options hash. */
 export var options: any = {};

@@ -4,7 +4,7 @@ var asyncMod = require('./async/stream');
 /** TODO */
 exports.mod = {
     name: 'streams',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             startup: function () {
                 base.startup();
@@ -16,6 +16,6 @@ exports.mod = {
             }
         });
     },
-    defaultOptions: {}
+    defaults: {}
 };
 //# sourceMappingURL=streams.js.map

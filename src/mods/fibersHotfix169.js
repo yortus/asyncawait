@@ -10,7 +10,7 @@
 */
 exports.mod = {
     name: 'fibersHotfix169',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         // Override the joint protocol if the option is selected.
         return (!options.fibersHotfix169) ? null : {
             acquireFiber: function (asyncProtocol) {
@@ -28,7 +28,7 @@ exports.mod = {
             }
         };
     },
-    defaultOptions: {
+    defaults: {
         fibersHotfix169: false
     }
 };

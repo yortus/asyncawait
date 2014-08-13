@@ -8,7 +8,7 @@ var expect = chai.expect;
 // Define test mods
 var tracking = [];
 var testModA = {
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             acquireFiber: function () {
                 tracking.push('acquire A');
@@ -26,10 +26,10 @@ var testModA = {
             }
         });
     },
-    defaultOptions: { a: 1 }
+    defaults: { a: 1 }
 };
 var testModB = {
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             acquireFiber: function () {
                 tracking.push('acquire B');
@@ -47,7 +47,7 @@ var testModB = {
             }
         });
     },
-    defaultOptions: { b: 2 }
+    defaults: { b: 2 }
 };
 
 beforeEach(function () {

@@ -6,7 +6,7 @@ var mod = {
     /** Used only for automatic type interence at TypeScript compile time. */
     type: null,
     /** Provides appropriate handling for promise-returning suspendable functions. */
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             /** Sets up a promise resolver and synchronously returns a promise. */
             begin: function (fi) {

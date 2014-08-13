@@ -11,7 +11,7 @@ export var mod: Mod = {
 
     name: 'promises',
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
     
         startup: () => {
             base.startup();
@@ -26,5 +26,5 @@ export var mod: Mod = {
         }
     }),
 
-    defaultOptions: { }
+    defaults: { }
 };

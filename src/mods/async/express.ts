@@ -12,7 +12,7 @@ var mod = {
 
     type: <AsyncAwait.Async.CPSBuilder> null,
 
-    overrideProtocol: (cps, options) => ({
+    override: (cps, options) => ({
         end: (fi, error?, value?) => {
             if (error) return cps.end(fi, error);
             if (value === 'next') return cps.end(fi);

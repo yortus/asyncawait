@@ -12,7 +12,7 @@ var mod = {
     type: <AsyncAwait.Async.PromiseBuilder> null,
 
     /** Provides appropriate handling for promise-returning suspendable functions. */
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
 
         /** Sets up a promise resolver and synchronously returns a promise. */
         begin: (fi) => {

@@ -14,7 +14,7 @@ var mod = {
     type: <AsyncAwait.Async.CPSBuilder> null,
 
     /** Provides appropriate handling for callback-accepting suspendable functions. */
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
 
         /** Remembers the given callback and synchronously returns nothing. */
         begin: (fi, callback: AsyncAwait.Callback<any>) => {

@@ -26,4 +26,4 @@ var promise = awaitBuilder.mod(promiseMod);
 var cps = awaitBuilder.mod(cpsMod);
 var thunk = awaitBuilder.mod(thunkMod);
 var opts = { handlers: [ promise.handlers, cps.handlers, thunk.handlers, value ]};
-var api: AsyncAwait.Await.API = <any> compound.mod({ defaultOptions: opts });//TODO: review awkward syntax, just want to pass opts
+var api: AsyncAwait.Await.API = <any> compound.mod({ defaults: opts });//TODO: review awkward syntax, just want to pass opts

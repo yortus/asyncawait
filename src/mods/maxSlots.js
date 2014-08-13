@@ -9,7 +9,7 @@
 */
 exports.mod = {
     name: 'maxSlots',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         // Do nothing if the option is not selected.
         var n = options.maxSlots;
         if (!n || !_.isNumber(n))
@@ -77,7 +77,7 @@ exports.mod = {
             }
         };
     },
-    defaultOptions: {
+    defaults: {
         maxSlots: null
     }
 };

@@ -8,7 +8,7 @@ var _ = require('../util');
 */
 exports.mod = {
     name: 'cpsKeyword',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             startup: function () {
                 base.startup();
@@ -38,7 +38,7 @@ exports.mod = {
             }
         });
     },
-    defaultOptions: {
+    defaults: {
         cpsKeyword: null
     }
 };

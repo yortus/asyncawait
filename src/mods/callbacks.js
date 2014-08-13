@@ -7,7 +7,7 @@ var _ = require('../util');
 /** TODO */
 exports.mod = {
     name: 'callbacks',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             startup: function () {
                 base.startup();
@@ -24,6 +24,6 @@ exports.mod = {
             }
         });
     },
-    defaultOptions: {}
+    defaults: {}
 };
 //# sourceMappingURL=callbacks.js.map

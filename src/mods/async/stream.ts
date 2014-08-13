@@ -10,7 +10,7 @@ var mod = {
 
     type: <AsyncAwait.Async.StreamBuilder> null,
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
 
         begin: (fi) => {
             var stream = fi.context = new Stream(() => fi.resume());

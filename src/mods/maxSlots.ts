@@ -20,7 +20,7 @@ export var mod: Mod = {
 
     name: 'maxSlots',
 
-    overrideProtocol: (base, options) => {
+    override: (base, options) => {
 
         // Do nothing if the option is not selected.
         var n = options.maxSlots;
@@ -96,7 +96,7 @@ export var mod: Mod = {
         };
     },
 
-    defaultOptions: {
+    defaults: {
         maxSlots: null
     }
 };

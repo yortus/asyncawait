@@ -13,7 +13,7 @@ export var mod: Mod = {
 
     name: 'fiberPool',
 
-    overrideProtocol: (base, options) => {
+    override: (base, options) => {
 
         // Override the joint protocol if the option is selected.
         return (!options.fiberPool) ? null : {
@@ -62,7 +62,7 @@ export var mod: Mod = {
         };
     },
 
-    defaultOptions: {
+    defaults: {
         fiberPool: true
     }
 };

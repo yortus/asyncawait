@@ -6,7 +6,7 @@ var mod = {
     //TODO: add checking in extensibility.ts or somehow for this:
     base: 'cps',
     type: null,
-    overrideProtocol: function (cps, options) {
+    override: function (cps, options) {
         return ({
             begin: function (fi) {
                 return function (callback) {

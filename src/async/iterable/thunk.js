@@ -5,7 +5,7 @@ var _ = require('../../util');
 var newBuilder = oldBuilder.mod({
     name: 'iterable.thunk',
     type: null,
-    overrideProtocol: function (cps, options) {
+    override: function (cps, options) {
         return ({
             begin: function (fi) {
                 var iter = cps.begin(fi);

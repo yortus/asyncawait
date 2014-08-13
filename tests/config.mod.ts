@@ -12,7 +12,7 @@ var expect = chai.expect;
 // Define test mods
 var tracking = [];
 var testModA: Mod = {
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
         acquireFiber: () => {
             tracking.push('acquire A');
             return base.acquireFiber.apply(null, arguments);
@@ -24,10 +24,10 @@ var testModA: Mod = {
         startup: () => tracking.push('apply A'),
         shutdown: () => tracking.push('reset A')
     }),
-    defaultOptions: { a: 1 }
+    defaults: { a: 1 }
 };
 var testModB: Mod = {
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
         acquireFiber: () => {
             tracking.push('acquire B');
             return base.acquireFiber.apply(null, arguments);    
@@ -39,7 +39,7 @@ var testModB: Mod = {
         startup: () => tracking.push('apply B'),
         shutdown: () => tracking.push('reset B')
     }),
-    defaultOptions: { b: 2 }
+    defaults: { b: 2 }
 };
 
 

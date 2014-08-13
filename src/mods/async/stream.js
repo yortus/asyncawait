@@ -10,7 +10,7 @@ var _ = require('../../util');
 var mod = {
     name: 'stream',
     type: null,
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             begin: function (fi) {
                 var stream = fi.context = new Stream(function () {

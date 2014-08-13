@@ -20,7 +20,7 @@ async.config({ cpsKeyword: '___', fibersHotfix169: true });
 var largest = async.cps (function self(dir, options) {
 
     // Parse arguments.
-    options = options || defaultOptions;
+    options = options || defaults;
 
     // Enumerate all files and subfolders in 'dir' to get their stats.
     var files = await (fs.readdir(dir, ___));
@@ -54,7 +54,7 @@ var largest = async.cps (function self(dir, options) {
 });
 
 
-var defaultOptions = { recurse: false, preview: false };
+var defaults = { recurse: false, preview: false };
 var recurseOptions = { recurse: true,  preview: false };
 
 

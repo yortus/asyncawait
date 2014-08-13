@@ -12,7 +12,7 @@ export var mod: Mod = {
 
     name: 'callbacks',
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
     
         startup: () => {
             base.startup();
@@ -31,5 +31,5 @@ export var mod: Mod = {
         }
     }),
 
-    defaultOptions: { }
+    defaults: { }
 };

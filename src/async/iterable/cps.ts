@@ -20,7 +20,7 @@ var newBuilder = oldBuilder.mod({
 
     type: <AsyncAwait.Async.IterableCPSBuilder> null,
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
 
         begin: (fi: FiberEx) => {
             var ctx = fi.context = { nextCallback: null, done: false };

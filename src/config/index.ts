@@ -1,16 +1,9 @@
-﻿//TODO: rename to config.ts?
-
-
-import references = require('references');
+﻿import references = require('references');
 import assert = require('assert');
 import internalState = require('./internalState');
 import jointProtocol = require('../jointProtocol');
 import _ = require('../util');
 import Mod = AsyncAwait.Mod;
-
-
-//TODO: default options SHOULD NOT override pre-existing options with same keys
-//TODO: if isOptionsOnly, then this SHOULD override any existing options
 
 
 /** Gets or sets global configuration values. */
@@ -27,7 +20,8 @@ export function use(mod: Mod) {
 
     // Validate argument
     assert(arguments.length === 1, 'use: expected a single argument');
-    assert(mod.overrideProtocol, "use: expected mod to have a 'overrideProtocol' property");
+    assert(mod.override, "use: expected mod to have an 'override' property");
+    //TODO: restore this somehow...
     assert(internalState.mods.indexOf(mod) === -1, 'use: mod already registered');
 
     // Delegate to private implementation.
@@ -51,15 +45,15 @@ function useInternal(mod: Mod) {
 
     // Accumulate all config/options changes.
     internalState.mods.forEach(mod => {
-        var isOptionsOnly = !mod.overrideProtocol;
-        var propsToMerge = isOptionsOnly ? mod : _.mergeProps({}, mod.defaultOptions, internalState.options);
+        var isOptionsOnly = !mod.override;
+        var propsToMerge = isOptionsOnly ? mod : _.mergeProps({}, mod.defaults, internalState.options);
         _.mergeProps(internalState.options, propsToMerge);
     });
 
     // Form the new protocol stack
     internalState.mods.forEach(mod => {
         var protocolBeforeMod = _.mergeProps({}, jointProtocol);
-        var protocolOverrides = (mod.overrideProtocol || <any> _.empty)(protocolBeforeMod, internalState.options);
+        var protocolOverrides = (mod.override || <any> _.empty)(protocolBeforeMod, internalState.options);
         _.mergeProps(jointProtocol, protocolOverrides);
     });
 

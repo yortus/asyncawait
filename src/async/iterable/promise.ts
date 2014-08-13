@@ -21,7 +21,7 @@ var newBuilder = oldBuilder.mod({
 
     type: <AsyncAwait.Async.IterablePromiseBuilder> null,
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
 
         begin: (fi: FiberEx) => {
             var ctx = fi.context = { nextResolver: null, done: false };

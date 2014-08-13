@@ -97,8 +97,8 @@ declare module AsyncAwait {
         }
 
         export interface Mod {
-            overrideProtocol: (base: Protocol, options: any) => ProtocolOverrides;
-            defaultOptions?: {};
+            override: (base: Protocol, options: any) => ProtocolOverrides;
+            defaults?: {};
             name?: string;
         }
 
@@ -162,7 +162,7 @@ declare module AsyncAwait {
             name?: string;
             type?: TBuilder;
             overrideHandlers?: (base: Handlers, options: any) => HandlerOverrides; //TODO: new...
-            defaultOptions?: {};
+            defaults?: {};
         }
 
         // TODO: new...
@@ -208,8 +208,8 @@ declare module AsyncAwait {
     // TODO: should be AsyncAwait.Config.Mod - need another namespace
     //TODO: make similar to async protocol typings
     export interface Mod {
-        overrideProtocol: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
-        defaultOptions?: {};
+        override: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
+        defaults?: {};
         name?: string;
     }
 

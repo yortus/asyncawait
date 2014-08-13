@@ -26,6 +26,6 @@ var promise = awaitBuilder.mod(promiseMod);
 var cps = awaitBuilder.mod(cpsMod);
 var thunk = awaitBuilder.mod(thunkMod);
 var opts = { handlers: [promise.handlers, cps.handlers, thunk.handlers, value] };
-var api = compound.mod({ defaultOptions: opts });
+var api = compound.mod({ defaults: opts });
 module.exports = api;
 //# sourceMappingURL=index.js.map

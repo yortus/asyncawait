@@ -123,7 +123,7 @@ function createModMethod(handlers, handlersFactory, options, baseHandlers) {
 
         // Determine the appropriate options to pass to createAwaitBuilder.
         var opts = _.branch(internalState.options);
-        _.mergeProps(opts, options, mod.defaultOptions);
+        _.mergeProps(opts, options, mod.defaults);
 
         // Determine the appropriate handlersFactory and baseHandlers to pass to createAwaitBuilder.
         var newHandlersFactory = hasHandlersFactory ? mod.overrideHandlers : handlersFactory;

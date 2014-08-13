@@ -17,13 +17,13 @@ export = asyncBuilder;
  *  - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
  */
 var asyncBuilder = createAsyncBuilder({
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
         begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
         suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
         end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
     }),
-    defaultOptions: _.branch(internalState.options)
+    defaults: _.branch(internalState.options)
 });
 
 
@@ -31,7 +31,7 @@ var asyncBuilder = createAsyncBuilder({
 function createAsyncBuilder(currentMod: Mod, previousProtocol?: Protocol) {
 
     // Instantiate the protocol by calling the provided factory function.
-    var protocolOverrides = currentMod.overrideProtocol(previousProtocol, currentMod.defaultOptions);
+    var protocolOverrides = currentMod.override(previousProtocol, currentMod.defaults);
     var currentProtocol: Protocol = <any> _.mergeProps({}, previousProtocol, protocolOverrides);
 
     // Create the builder function.
@@ -47,7 +47,7 @@ function createAsyncBuilder(currentMod: Mod, previousProtocol?: Protocol) {
 
     // Tack on the builder's other properties, and the mod() method.
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.mod = createModMethod(currentProtocol, currentMod.defaultOptions, currentMod);
+    builder.mod = createModMethod(currentProtocol, currentMod.defaults, currentMod);
 
     // Return the async builder function.
     return builder;
@@ -61,18 +61,18 @@ function createModMethod(builderProtocol: Protocol, builderOptions: any, previou
         // Validate the argument.
         assert(arguments.length === 1, 'mod: expected one argument');
         assert(_.isObject(mod), 'mod: expected argument to be an object');
-        var isOptionsOnly = !mod.overrideProtocol;
-        assert(isOptionsOnly || _.isFunction(mod.overrideProtocol), 'mod: expected overrideProtocol to be a function');
+        var isOptionsOnly = !mod.override;
+        assert(isOptionsOnly || _.isFunction(mod.override), 'mod: expected override to be a function');
 
         // Determine the appropriate options to pass to createAsyncBuilder.
 //TODO: default options SHOULD NOT override pre-existing options with same keys
 //TODO: if isOptionsOnly, then this SHOULD override any existing options
 //TODO: see also joint protocol - same thing applies there
-        var overrideProtocol = isOptionsOnly ? previousMod.overrideProtocol : mod.overrideProtocol;
-        var defaultOptions = _.mergeProps(_.branch(builderOptions), isOptionsOnly ? mod : mod.defaultOptions);
+        var override = isOptionsOnly ? previousMod.override : mod.override;
+        var defaults = _.mergeProps(_.branch(builderOptions), isOptionsOnly ? mod : mod.defaults);
 
         // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder({overrideProtocol: overrideProtocol, defaultOptions: defaultOptions}, builderProtocol);
+        return createAsyncBuilder({override: override, defaults: defaults}, builderProtocol);
     }
 }
 

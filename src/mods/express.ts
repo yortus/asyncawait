@@ -13,7 +13,7 @@ export var mod: Mod = {
     //TODO: add checking in extensibility.ts or somehow for this:
     requires: ['cps'],
 
-    overrideProtocol: (base, options) => ({
+    override: (base, options) => ({
     
         startup: () => {
             base.startup();
@@ -26,5 +26,5 @@ export var mod: Mod = {
         }
     }),
 
-    defaultOptions: { }
+    defaults: { }
 };

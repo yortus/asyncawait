@@ -50,7 +50,6 @@
     <TypeScriptCompile Include="src\async\index.ts" />
     <TypeScriptCompile Include="src\config\internalState.ts" />
     <TypeScriptCompile Include="src\config\index.ts" />
-    <TypeScriptCompile Include="src\modMaker.ts" />
     <TypeScriptCompile Include="src\mods\async\stream.ts" />
     <TypeScriptCompile Include="src\async\iterable\index.ts" />
     <TypeScriptCompile Include="src\async\iterable\cps.ts" />

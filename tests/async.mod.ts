@@ -7,7 +7,7 @@ var expect = chai.expect;
 
 
 var testMod = {
-    overrideProtocol: (base, options) => {
+    override: (base, options) => {
         var prefix = options.prefix || '';
         var suffix = options.suffix || '';
         return {

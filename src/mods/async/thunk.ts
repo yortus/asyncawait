@@ -14,7 +14,7 @@ var mod = {
 
     type: <AsyncAwait.Async.ThunkBuilder> null,
 
-    overrideProtocol: (cps, options) => ({
+    override: (cps, options) => ({
         begin: (fi) => {
             return (callback: AsyncAwait.Callback<any>) => cps.begin(fi, callback || _.empty);
         }

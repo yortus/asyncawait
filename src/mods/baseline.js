@@ -4,7 +4,7 @@ var jointProtocol = require('../jointProtocol');
 /** Provides the baseline method implementations for the joint protocol. */
 exports.mod = {
     name: 'baseline',
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         return ({
             /** Create and return a new Fiber instance. */
             acquireFiber: function (asyncProtocol) {
@@ -42,7 +42,7 @@ exports.mod = {
             }
         });
     },
-    defaultOptions: {}
+    defaults: {}
 };
 
 /** Holds the id number to be assigned to the next new fiber. Every fiber gets a different id. */

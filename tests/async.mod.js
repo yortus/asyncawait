@@ -5,7 +5,7 @@ var async = require('asyncawait/async');
 var expect = chai.expect;
 
 var testMod = {
-    overrideProtocol: function (base, options) {
+    override: function (base, options) {
         var prefix = options.prefix || '';
         var suffix = options.suffix || '';
         return {

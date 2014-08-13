@@ -17,7 +17,7 @@ export var mod: Mod = {
 
     name: 'fibersHotfix169',
 
-    overrideProtocol: (base, options) => {
+    override: (base, options) => {
 
         // Override the joint protocol if the option is selected.
         return (!options.fibersHotfix169) ? null : {
@@ -40,7 +40,7 @@ export var mod: Mod = {
         };
     },
 
-    defaultOptions: {
+    defaults: {
         fibersHotfix169: false
     }
 };
