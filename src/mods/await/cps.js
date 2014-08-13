@@ -4,7 +4,7 @@
 var mod = {
     name: 'cps',
     type: null,
-    overrideHandlers: function (base, options) {
+    override: function (base, options) {
         return ({
             singular: function (fi, arg) {
                 if (arg !== void 0)

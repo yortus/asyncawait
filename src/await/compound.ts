@@ -5,7 +5,7 @@ export = newBuilder;
 
 
 interface CompoundOptions {
-    handlers?: AsyncAwait.Await.Handlers[];
+    handlers?: AsyncAwait.Await.AwaitProtocol[];
 }
 
 
@@ -13,7 +13,7 @@ var newBuilder = oldBuilder.mod({
 
     name: 'compound',
 
-    overrideHandlers: (base, options) => ({
+    override: (base, options) => ({
         singular: (fi, arg) => {
             var handlers = options.handlers || [], len = handlers.length, result = _.notHandled;
             for (var i = 0; result === _.notHandled && i < len; ++i) result = handlers[i].singular(fi, arg);

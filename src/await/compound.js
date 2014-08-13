@@ -3,7 +3,7 @@ var _ = require('../util');
 
 var newBuilder = oldBuilder.mod({
     name: 'compound',
-    overrideHandlers: function (base, options) {
+    override: function (base, options) {
         return ({
             singular: function (fi, arg) {
                 var handlers = options.handlers || [], len = handlers.length, result = _.notHandled;

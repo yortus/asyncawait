@@ -10,10 +10,15 @@
 //TODO: reorganise this by mods (so they *could* be split into separate files/projects)
 declare module AsyncAwait {
 
+    //TODO: new stuff... ------------------------- ? -------------------------
+
+
+
+
 
     //------------------------- Async -------------------------
     export module Async {
-        
+
         export interface API extends PromiseBuilder {
             promise: PromiseBuilder;
             cps: CPSBuilder;
@@ -153,15 +158,15 @@ declare module AsyncAwait {
 
         export interface Builder {
             (...args: any[]): any;
-            handlers: Handlers;
-            options: any;
+            name: string;//TODO: support this...
+            handlers: AwaitProtocol;//TODO: deprecating? or not?
             mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
         }
 
         export interface Mod<TBuilder extends Builder> {
             name?: string;
             type?: TBuilder;
-            overrideHandlers?: (base: Handlers, options: any) => HandlerOverrides; //TODO: new...
+            override?: (base: AwaitProtocol, options: any) => AwaitProtocolOverrides; //TODO: new...
             defaults?: {};
         }
 
@@ -169,14 +174,14 @@ declare module AsyncAwait {
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
         // TODO: doc: handlers *must* resume coro asynchronously
         // TODO: doc: arg/allArgs fast/slow paths
-        export interface Handlers {
+        export interface AwaitProtocol {
             singular: (fi: Fiber, arg: any) => any;
             variadic: (fi: Fiber, args: any[]) => any;
             elements?: (values: any[], result: (err: Error, value: any, index: number) => void) => number;
         }
 
         // TODO: new...
-        export interface HandlerOverrides {
+        export interface AwaitProtocolOverrides {
             singular?: (fi: Fiber, arg: any) => any;
             variadic?: (fi: Fiber, args: any[]) => any;
         }

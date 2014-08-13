@@ -14,7 +14,7 @@ var mod = {
 
     type: <AsyncAwait.Await.PromiseBuilder> null,
 
-    overrideHandlers: (base, options) => ({
+    override: (base, options) => ({
         singular: (fi, arg) => {
             if (!_.isPromise(arg)) return _.notHandled;
             arg.then(val => fi.resume(null, val), fi.resume);

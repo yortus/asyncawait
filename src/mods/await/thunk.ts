@@ -9,7 +9,7 @@ var mod = {
 
     type: <AsyncAwait.Await.ThunkBuilder> null,
 
-    overrideHandlers: (base, options) => ({
+    override: (base, options) => ({
         singular: (fi, arg) => {
             if (!_.isFunction(arg)) return _.notHandled;
             arg(fi.resume);

@@ -2,26 +2,34 @@
 import assert = require('assert');
 import _ = require('./util');
 import internalState = require('./config/internalState');
+import Protocol = require('./protocol');
 import Builder = AsyncAwait.Await.Builder;
-import Mod = AsyncAwait.Await.Mod;
-import Handlers = AsyncAwait.Await.Handlers;
-import HandlerOverrides = AsyncAwait.Await.HandlerOverrides;
+import AwaitMod = AsyncAwait.Await.Mod;
+import AwaitProtocol = AsyncAwait.Await.AwaitProtocol;
 export = awaitBuilder;
 
 
 // Bootstrap a basic await builder using a no-op handler.
 //TODO: need to work out appropriate 'base' functioanlity/behaviour here...
-var awaitBuilder = createAwaitBuilder<Builder>(_.empty, {}, {
-    singular: (fi, arg) => fi.resume(null, arg),
-    variadic: (fi, args) => fi.resume(null, args[0])
+var awaitBuilder = createAwaitBuilder<Builder>({
+    override: (base, options) => ({
+        singular: (fi, arg) => fi.resume(null, arg),
+        variadic: (fi, args) => fi.resume(null, args[0])
+    }),
+    defaults: _.branch(internalState.options)
 });
 
 
 /** Creates a new await builder function using the specified handler settings. */
-function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHandlers: Handlers, options: {}) => HandlerOverrides, options: {}, baseHandlers: Handlers) {
+//function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHandlers: AwaitProtocol, options: {}) => AsyncAwait.Await.AwaitProtocolOverrides, options: {}, baseHandlers: AwaitProtocol) {
+
+function createAwaitBuilder<TBuilder extends Builder>(currentMod: AwaitMod<TBuilder>, previousProtocol_?: Protocol<any, any>) {
+
+    var previousProtocol = previousProtocol_ || new Protocol({}, _.empty);
+    var currentProtocol = previousProtocol.mod(currentMod);
 
     // Instantiate the handlers by calling the provided factory function.
-    var handlers: Handlers = <any> _.mergeProps({}, baseHandlers, handlersFactory(baseHandlers, options));
+    var handlers: AwaitProtocol = currentProtocol.members;
 
     // Create the builder function.
     var builder: TBuilder = <any> function await(arg) {
@@ -122,33 +130,11 @@ function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHand
     }
 
     // Tack on the handlers and options properties, and the mod() method.
+    //TODO: ...
+    builder.name = null; //TODO:... implement, add all tests, use in error messages
+    builder.mod = (mod: AwaitMod<Builder>) => createAwaitBuilder(mod, currentProtocol);
     builder.handlers = handlers;
-    builder.options = options;
-    builder.mod = createModMethod(handlers, handlersFactory, options, baseHandlers);
 
     // Return the await builder function.
     return builder;
-}
-
-
-//TODO: review this method! use name? use type? clarity how overrides/defaults are used, no more 'factory'
-/** Creates a mod() method appropriate to the given handler settings. */
-function createModMethod(handlers, handlersFactory, options, baseHandlers) {
-    return function mod(mod: Mod<Builder>) {
-
-        // Validate the argument.
-        assert(arguments.length === 1, 'mod: expected one argument');
-        var hasHandlersFactory = !!mod.overrideHandlers;
-
-        // Determine the appropriate options to pass to createAwaitBuilder.
-        var opts = _.branch(internalState.options);
-        _.mergeProps(opts, options, mod.defaults);
-
-        // Determine the appropriate handlersFactory and baseHandlers to pass to createAwaitBuilder.
-        var newHandlersFactory = hasHandlersFactory ? mod.overrideHandlers : handlersFactory;
-        var newBaseHandlers = hasHandlersFactory ? handlers : baseHandlers;
-
-        // Delegate to createAwaitBuilder to return a new async builder function.
-        return createAwaitBuilder(newHandlersFactory, opts, newBaseHandlers);
-    }
 }

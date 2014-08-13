@@ -10,7 +10,7 @@ var mod = {
 
     type: <AsyncAwait.Await.CPSBuilder> null,
 
-    overrideHandlers: (base, options) => ({
+    override: (base, options) => ({
         singular: (fi, arg) => {
             if (arg !== void 0) return _.notHandled;
 

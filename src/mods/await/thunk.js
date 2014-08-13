@@ -3,7 +3,7 @@
 var mod = {
     name: 'thunk',
     type: null,
-    overrideHandlers: function (base, options) {
+    override: function (base, options) {
         return ({
             singular: function (fi, arg) {
                 if (!_.isFunction(arg))

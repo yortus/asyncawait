@@ -6,7 +6,7 @@
 var mod = {
     name: 'promise',
     type: null,
-    overrideHandlers: function (base, options) {
+    override: function (base, options) {
         return ({
             singular: function (fi, arg) {
                 if (!_.isPromise(arg))
