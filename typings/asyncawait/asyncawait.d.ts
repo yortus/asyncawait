@@ -33,11 +33,7 @@ declare module AsyncAwait {
             type: TBuilder;
         }
 
-        export interface AsyncMod {
-            override: (base: AsyncProtocol, options: any) => AsyncProtocolOverrides;
-            defaults?: {};
-            name?: string;
-        }
+        export interface AsyncMod extends Mod<AsyncProtocol, any> { }
 
         //TODO: doc these methods
         export interface AsyncProtocol {
@@ -46,13 +42,6 @@ declare module AsyncAwait {
             resume: (fi: Fiber, error?: Error, value?: any) => any;
             end: (fi: Fiber, error?: Error, value?: any) => any;
         }
-
-        export interface AsyncProtocolOverrides {
-            begin?: (fi: Fiber, ...protocolArgs) => any;
-            suspend?: (fi: Fiber, error?: Error, value?: any) => any;
-            resume?: (fi: Fiber, error?: Error, value?: any) => any;
-            end?: (fi: Fiber, error?: Error, value?: any) => any;
-        }
     }
 
 
@@ -60,25 +49,31 @@ declare module AsyncAwait {
     export module Await {
 
         export interface API extends Builder {
-
             //TODO: was...
             //in: AwaitFunction;
             //top(n: number): AwaitFunction;
+        }
+
+        export interface TypedBuilder<TBuilder extends Builder> extends Builder {
+            mod<TBuilder2 extends Builder>(mod: TypedAwaitMod<TBuilder2>): TBuilder2;
+            mod(mod: AwaitMod): TBuilder;
+            mod(options: {}): TBuilder;
         }
 
         export interface Builder {
             (...args: any[]): any;
             name: string;//TODO: support this...
             handlers: AwaitProtocol;//TODO: deprecating? or not?
-            mod<TBuilder extends Builder>(mod: Mod<TBuilder>): TBuilder;
+            mod<TBuilder extends Builder>(mod: TypedAwaitMod<TBuilder>): TBuilder;
+            mod(mod: AwaitMod): Builder;
+            mod(options: {}): Builder;
         }
 
-        export interface Mod<TBuilder extends Builder> {
-            name?: string;
-            type?: TBuilder;
-            override?: (base: AwaitProtocol, options: any) => AwaitProtocolOverrides; //TODO: new...
-            defaults?: {};
+        export interface TypedAwaitMod<TBuilder extends Builder> extends AwaitMod {
+            type: TBuilder;
         }
+
+        export interface AwaitMod extends Mod<AwaitProtocol, any> { }
 
         // TODO: new...
         // TODO: better doc how handler indicates it *won't* handle an expr. Could that indicator also be async (ie not known by sync return time)?
@@ -88,12 +83,6 @@ declare module AsyncAwait {
             singular: (fi: Fiber, arg: any) => any;
             variadic: (fi: Fiber, args: any[]) => any;
             elements?: (values: any[], result: (err: Error, value: any, index: number) => void) => number;
-        }
-
-        // TODO: new...
-        export interface AwaitProtocolOverrides {
-            singular?: (fi: Fiber, arg: any) => any;
-            variadic?: (fi: Fiber, args: any[]) => any;
         }
     }
 

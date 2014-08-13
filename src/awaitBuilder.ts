@@ -4,14 +4,14 @@ import _ = require('./util');
 import config = require('./config/index');
 import Protocol = require('./protocol');
 import Builder = AsyncAwait.Await.Builder;
-import AwaitMod = AsyncAwait.Await.Mod;
+import AwaitMod = AsyncAwait.Await.AwaitMod;
 import AwaitProtocol = AsyncAwait.Await.AwaitProtocol;
 export = awaitBuilder;
 
 
 // Bootstrap a basic await builder using a no-op handler.
 //TODO: need to work out appropriate 'base' functioanlity/behaviour here...
-var awaitBuilder = createAwaitBuilder<Builder>({
+var awaitBuilder = createAwaitBuilder({
     override: (base, options) => ({
         singular: (fi, arg) => fi.resume(null, arg),
         variadic: (fi, args) => fi.resume(null, args[0])
@@ -23,7 +23,7 @@ var awaitBuilder = createAwaitBuilder<Builder>({
 /** Creates a new await builder function using the specified handler settings. */
 //function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHandlers: AwaitProtocol, options: {}) => AsyncAwait.Await.AwaitProtocolOverrides, options: {}, baseHandlers: AwaitProtocol) {
 
-function createAwaitBuilder<TBuilder extends Builder>(currentMod: AwaitMod<TBuilder>, previousProtocol_?: Protocol<any, any>) {
+function createAwaitBuilder(currentMod: AwaitMod, previousProtocol_?: Protocol<any, any>) {
 
     var previousProtocol = previousProtocol_ || new Protocol({}, _.empty);
     var currentProtocol = previousProtocol.mod(currentMod);
@@ -32,7 +32,7 @@ function createAwaitBuilder<TBuilder extends Builder>(currentMod: AwaitMod<TBuil
     var handlers: AwaitProtocol = currentProtocol.members;
 
     // Create the builder function.
-    var builder: TBuilder = <any> function await(arg) {
+    var builder: Builder = <any> function await(arg) {
 
         //TODO: can this be optimised more, eg like async builder's eval?
 
@@ -132,7 +132,7 @@ function createAwaitBuilder<TBuilder extends Builder>(currentMod: AwaitMod<TBuil
     // Tack on the handlers and options properties, and the mod() method.
     //TODO: ...
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.mod = (mod: AwaitMod<Builder>) => createAwaitBuilder(mod, currentProtocol);
+    builder.mod = (mod: AwaitMod) => createAwaitBuilder(mod, currentProtocol);
     builder.handlers = handlers;
 
     // Return the await builder function.
