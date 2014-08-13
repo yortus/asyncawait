@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import jointProtocol = require('./jointProtocol');
-import internalState = require('./config/internalState');
+import config = require('./config/index');
 import Protocol = require('./protocol');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
@@ -24,7 +24,7 @@ var asyncBuilder = createAsyncBuilder({
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
         end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
     }),
-    defaults: _.branch(internalState.options)
+    defaults: _.branch(config.options())
 });
 
 

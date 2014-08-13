@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var jointProtocol = require('./jointProtocol');
-var internalState = require('./config/internalState');
+var config = require('./config/index');
 var Protocol = require('./protocol');
 var _ = require('./util');
 
@@ -29,7 +29,7 @@ var asyncBuilder = createAsyncBuilder({
             }
         });
     },
-    defaults: _.branch(internalState.options)
+    defaults: _.branch(config.options())
 });
 
 /** Creates a new async builder function using the specified mod and protocol settings. */

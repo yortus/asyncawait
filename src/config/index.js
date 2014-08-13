@@ -1,17 +1,17 @@
 ﻿var assert = require('assert');
-var internalState = require('./internalState');
 var jointProtocol = require('../jointProtocol');
 var Protocol = require('../protocol');
 var _ = require('../util');
 
 //TODO: temp testing...
 var protocol = null;
+var _options = {};
 
 /** Gets or sets global configuration values. */
 function options(value) {
     // If called as a getter, return a reference to the options object.
     if (arguments.length === 0)
-        return internalState.options;
+        return _options;
 
     // If called as a setter, delegate to use().
     useInternal(value);
@@ -39,7 +39,7 @@ function useInternal(mod) {
         jointProtocol.shutdown();
 
     protocol = protocol.mod(mod);
-    _.mergeProps(internalState.options, protocol.options);
+    _.mergeProps(_options, protocol.options);
     _.mergeProps(jointProtocol, protocol.members);
 
     //TODO: startup...
@@ -53,7 +53,7 @@ function useDefaults() {
     resetAll();
 
     // TODO: apply the default mods.
-    var defaultMods = internalState.options.defaults.mods;
+    var defaultMods = _options.defaults.mods;
     defaultMods.forEach(function (mod) {
         return exports.use(mod);
     });
@@ -75,9 +75,9 @@ function resetAll() {
     });
 
     // Clear all options, except anything in the the 'defaults' key.
-    var defaults = internalState.options.defaults;
-    internalState.options = { defaults: defaults };
-    protocol = new Protocol(internalState.options, function () {
+    var defaults = _options.defaults;
+    _options = { defaults: defaults };
+    protocol = new Protocol(_options, function () {
     });
 }
 
@@ -85,7 +85,7 @@ function resetAll() {
 // TODO: define these in a separate file. Perhaps as part of joint protocol?
 var asyncBuilder = require('../asyncBuilder');
 var promiseMod = require('../mods/async/promise');
-internalState.options.defaults = {
+_options.defaults = {
     mods: [
         require('../mods/baseline').mod,
         require('../mods/fibersHotfix169').mod,

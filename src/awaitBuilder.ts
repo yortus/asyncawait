@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import _ = require('./util');
-import internalState = require('./config/internalState');
+import config = require('./config/index');
 import Protocol = require('./protocol');
 import Builder = AsyncAwait.Await.Builder;
 import AwaitMod = AsyncAwait.Await.Mod;
@@ -16,7 +16,7 @@ var awaitBuilder = createAwaitBuilder<Builder>({
         singular: (fi, arg) => fi.resume(null, arg),
         variadic: (fi, args) => fi.resume(null, args[0])
     }),
-    defaults: _.branch(internalState.options)
+    defaults: _.branch(config.options())
 });
 
 
@@ -43,7 +43,7 @@ function createAwaitBuilder<TBuilder extends Builder>(currentMod: AwaitMod<TBuil
         // TODO: temp testing... fast/slow paths
         if (arguments.length === 1) {
 
-            // TODO: singular case...
+            // TODO: single argument case...
             if (!Array.isArray(arg)) {
                 var handlerResult = handlers.singular(fi, arg);
             }

@@ -1,6 +1,5 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import internalState = require('./internalState');
 import jointProtocol = require('../jointProtocol');
 import Protocol = require('../protocol');
 import _ = require('../util');
@@ -9,13 +8,13 @@ import JointMod = AsyncAwait.JointMod;
 
 //TODO: temp testing...
 var protocol: Protocol<any, any> = null;
-
+var _options: any = {};
 
 /** Gets or sets global configuration values. */
 export function options(value?: any) {
 
     // If called as a getter, return a reference to the options object.
-    if (arguments.length === 0) return internalState.options;
+    if (arguments.length === 0) return _options;
 
     // If called as a setter, delegate to use().
     useInternal(value);
@@ -43,7 +42,7 @@ function useInternal(mod: JointMod) {
     if (jointProtocol.shutdown) jointProtocol.shutdown();
 
     protocol = protocol.mod(mod);
-    _.mergeProps(internalState.options, protocol.options);
+    _.mergeProps(_options, protocol.options);
     _.mergeProps(jointProtocol, protocol.members);
 
     //TODO: startup...
@@ -58,7 +57,7 @@ export function useDefaults() {
     resetAll();
 
     // TODO: apply the default mods.
-    var defaultMods = internalState.options.defaults.mods;
+    var defaultMods = _options.defaults.mods;
     defaultMods.forEach(mod => use(mod));
 }
 
@@ -78,9 +77,9 @@ function resetAll() {
     });
 
     // Clear all options, except anything in the the 'defaults' key.
-    var defaults = internalState.options.defaults;
-    internalState.options = { defaults: defaults };
-    protocol = new Protocol(internalState.options, () => {});
+    var defaults = _options.defaults;
+    _options = { defaults: defaults };
+    protocol = new Protocol(_options, () => {});
 }
 
 
@@ -88,7 +87,7 @@ function resetAll() {
 // TODO: define these in a separate file. Perhaps as part of joint protocol?
 var asyncBuilder = require('../asyncBuilder');
 var promiseMod = require('../mods/async/promise');
-internalState.options.defaults = {
+_options.defaults = {
     mods: [
         require('../mods/baseline').mod, //TODO: treat this differently (builtin), then also dont need startup/shutdown guards
         require('../mods/fibersHotfix169').mod,

@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var _ = require('./util');
-var internalState = require('./config/internalState');
+var config = require('./config/index');
 var Protocol = require('./protocol');
 
 
@@ -17,7 +17,7 @@ var awaitBuilder = createAwaitBuilder({
             }
         });
     },
-    defaults: _.branch(internalState.options)
+    defaults: _.branch(config.options())
 });
 
 /** Creates a new await builder function using the specified handler settings. */
@@ -38,7 +38,7 @@ function createAwaitBuilder(currentMod, previousProtocol_) {
 
         // TODO: temp testing... fast/slow paths
         if (arguments.length === 1) {
-            // TODO: singular case...
+            // TODO: single argument case...
             if (!Array.isArray(arg)) {
                 var handlerResult = handlers.singular(fi, arg);
             } else {
