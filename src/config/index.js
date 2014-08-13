@@ -1,7 +1,11 @@
 ﻿var assert = require('assert');
 var internalState = require('./internalState');
 var jointProtocol = require('../jointProtocol');
+var Protocol = require('../protocol');
 var _ = require('../util');
+
+//TODO: temp testing...
+var protocol = null;
 
 /** Gets or sets global configuration values. */
 function options(value) {
@@ -20,8 +24,7 @@ function use(mod) {
     assert(mod.override, "use: expected mod to have an 'override' property");
 
     //TODO: restore this somehow...
-    assert(internalState.mods.indexOf(mod) === -1, 'use: mod already registered');
-
+    //assert(internalState.mods.indexOf(mod) === -1, 'use: mod already registered');
     // Delegate to private implementation.
     return useInternal(mod);
 }
@@ -30,29 +33,14 @@ exports.use = use;
 //TODO: bring this in line with async's createModMethod
 /** Registers the specified mod and adds its default options to current config. */
 function useInternal(mod) {
-    // Retain a reference to the current mod list.
-    var allMods = internalState.mods;
-
     // Reset everything.
-    resetAll();
+    //TODO: was... resetAll();
+    if (jointProtocol.shutdown)
+        jointProtocol.shutdown();
 
-    // Restore the retained mod list, adding the new mod to it.
-    internalState.mods = allMods;
-    internalState.mods.push(mod);
-
-    // Accumulate all config/options changes.
-    internalState.mods.forEach(function (mod) {
-        var isOptionsOnly = !mod.override;
-        var propsToMerge = isOptionsOnly ? mod : _.mergeProps({}, mod.defaults, internalState.options);
-        _.mergeProps(internalState.options, propsToMerge);
-    });
-
-    // Form the new protocol stack
-    internalState.mods.forEach(function (mod) {
-        var protocolBeforeMod = _.mergeProps({}, jointProtocol);
-        var protocolOverrides = (mod.override || _.empty)(protocolBeforeMod, internalState.options);
-        _.mergeProps(jointProtocol, protocolOverrides);
-    });
+    protocol = protocol.mod(mod);
+    _.mergeProps(internalState.options, protocol.options);
+    _.mergeProps(jointProtocol, protocol.members);
 
     //TODO: startup...
     if (jointProtocol.startup)
@@ -86,12 +74,12 @@ function resetAll() {
         shutdown: null
     });
 
-    // Clear all external mod registrations.
-    internalState.mods = [];
-
     // Clear all options, except anything in the the 'defaults' key.
     var defaults = internalState.options.defaults;
     internalState.options = { defaults: defaults };
+    protocol = new Protocol(internalState.options, function () {
+        return ({});
+    });
 }
 
 //TODO: temp testing...

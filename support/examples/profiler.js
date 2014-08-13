@@ -22,7 +22,7 @@ var await = require('../../await');
 var config = require('../../config');
 var options = config.options();
 
-
+config.options({ maxSlots: 5 });
 
 
 
