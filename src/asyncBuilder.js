@@ -34,14 +34,9 @@ var asyncBuilder = createAsyncBuilder({
 
 /** Creates a new async builder function using the specified mod and protocol settings. */
 function createAsyncBuilder(currentMod, previousProtocol_) {
-    var previousProtocol = previousProtocol_ || new Protocol({}, function () {
-        return ({});
-    });
+    var previousProtocol = previousProtocol_ || new Protocol({}, _.empty);
     var currentProtocol = previousProtocol.mod(currentMod);
 
-    // Instantiate the protocol by calling the provided factory function.
-    //var protocolOverrides = currentMod.override(previousProtocol, currentMod.defaults);
-    //var currentProtocol: Protocol = <any> _.mergeProps({}, previousProtocol, protocolOverrides);
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
@@ -53,35 +48,15 @@ function createAsyncBuilder(currentMod, previousProtocol_) {
     };
 
     // Tack on the builder's other properties, and the mod() method.
+    builder.name = null; //TODO:... implement, add all tests, use in error messages
     builder.mod = function (mod) {
         return createAsyncBuilder(mod, currentProtocol);
     };
 
-    builder.name = null; //TODO:... implement, add all tests, use in error messages
-
-    //    builder.mod = createModMethod(currentProtocol, currentMod.defaults, currentMod);
     // Return the async builder function.
     return builder;
 }
 
-/** Creates a mod() method appropriate for the given builder. */
-//function createModMethod(builderProtocol: Protocol, builderOptions: any, previousMod: Mod) {
-//    return function mod(mod: Mod) {
-//        // Validate the argument.
-//        assert(arguments.length === 1, 'mod: expected one argument');
-//        assert(_.isObject(mod), 'mod: expected argument to be an object');
-//        var isOptionsOnly = !mod.override;
-//        assert(isOptionsOnly || _.isFunction(mod.override), 'mod: expected override to be a function');
-//        // Determine the appropriate options to pass to createAsyncBuilder.
-////TODO: default options SHOULD NOT override pre-existing options with same keys
-////TODO: if isOptionsOnly, then this SHOULD override any existing options
-////TODO: see also joint protocol - same thing applies there
-//        var override = isOptionsOnly ? previousMod.override : mod.override;
-//        var defaults = _.mergeProps(_.branch(builderOptions), isOptionsOnly ? mod : mod.defaults);
-//        // Delegate to createAsyncBuilder to return a new async builder function.
-//        return createAsyncBuilder({override: override, defaults: defaults}, builderProtocol);
-//    }
-//}
 /**
 *  Creates a suspendable function configured for the given protocol and invokee.
 *  This function is not on the hot path, but the suspendable function it returns

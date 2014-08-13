@@ -193,7 +193,7 @@ declare module AsyncAwait {
     export interface Config {
         options(): ConfigOptions;
         options(value: ConfigOptions): void;
-        use(mod: Mod): void;
+        use(mod: JointMod): void;
         useDefaults(): void;
     }
 
@@ -207,11 +207,13 @@ declare module AsyncAwait {
 
     // TODO: should be AsyncAwait.Config.Mod - need another namespace
     //TODO: make similar to async protocol typings
-    export interface Mod {
-        override: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
-        defaults?: {};
-        name?: string;
-    }
+    //export interface Mod {
+    //    override: (base: JointProtocol, options: ConfigOptions) => JointProtocolOverrides;
+    //    defaults?: {};
+    //    name?: string;
+    //}
+
+    export interface JointMod extends Mod2<JointProtocol, any> { }
 
     export interface JointProtocol {
         acquireFiber: (asyncProtocol: Async.Protocol) => Fiber;

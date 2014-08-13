@@ -1,12 +1,12 @@
 ﻿import references = require('references');
 import async = require('../async/index');
 import asyncMod = require('./async/express');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /** TODO */
 //TODO: how to indicate that this must mod async.cps??
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'express',
 

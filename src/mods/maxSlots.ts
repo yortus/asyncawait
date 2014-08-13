@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import _ = require('../util');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 import AsyncProtocol = AsyncAwait.Async.Protocol;
 
 
@@ -16,7 +16,7 @@ interface FiberEx extends Fiber {
  *  from the main execution stack (i.e., not calls from other suspendable functions), to
  *  prevent deadlocks.
  */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'maxSlots',
 

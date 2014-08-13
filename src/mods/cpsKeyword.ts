@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import _ = require('../util');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /**
@@ -9,7 +9,7 @@ import Mod = AsyncAwait.Mod;
  * await.cps.continuation(). This is purely for convenience and clarity
  * for reading and writing async code.
  */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'cpsKeyword',
 

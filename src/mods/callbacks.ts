@@ -4,11 +4,11 @@ import await = require('../await/index');
 import asyncMod = require('./async/cps');
 import awaitMod = require('./await/cps');
 import _ = require('../util');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /** TODO */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'callbacks',
 

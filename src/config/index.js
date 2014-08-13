@@ -78,7 +78,6 @@ function resetAll() {
     var defaults = internalState.options.defaults;
     internalState.options = { defaults: defaults };
     protocol = new Protocol(internalState.options, function () {
-        return ({});
     });
 }
 

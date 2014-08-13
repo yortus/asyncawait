@@ -4,7 +4,7 @@ import internalState = require('./internalState');
 import jointProtocol = require('../jointProtocol');
 import Protocol = require('../protocol');
 import _ = require('../util');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 //TODO: temp testing...
@@ -21,7 +21,7 @@ export function options(value?: any) {
     useInternal(value);
 }
 
-export function use(mod: Mod) {
+export function use(mod: JointMod) {
 
     // Validate argument
     assert(arguments.length === 1, 'use: expected a single argument');
@@ -36,7 +36,7 @@ export function use(mod: Mod) {
 
 //TODO: bring this in line with async's createModMethod
 /** Registers the specified mod and adds its default options to current config. */
-function useInternal(mod: Mod) {
+function useInternal(mod: JointMod) {
 
     // Reset everything.
     //TODO: was... resetAll();
@@ -80,10 +80,7 @@ function resetAll() {
     // Clear all options, except anything in the the 'defaults' key.
     var defaults = internalState.options.defaults;
     internalState.options = { defaults: defaults };
-    protocol = new Protocol(internalState.options, () => ({
-        //startup: _.empty,
-        //shutdown: _.empty
-    }));
+    protocol = new Protocol(internalState.options, () => {});
 }
 
 

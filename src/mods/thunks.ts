@@ -3,12 +3,12 @@ import async = require('../async/index');
 import await = require('../await/index');
 import asyncMod = require('./async/thunk');
 import awaitMod = require('./await/thunk');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /** TODO */
 //TODO: how to indicate that this must mod async.cps??
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'thunks',
 

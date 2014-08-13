@@ -3,7 +3,7 @@ import chai = require('chai');
 import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import config = require('asyncawait/config');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 var expect = chai.expect;
 
 
@@ -11,7 +11,7 @@ var expect = chai.expect;
 
 // Define test mods
 var tracking = [];
-var testModA: Mod = {
+var testModA: JointMod = {
     override: (base, options) => ({
         acquireFiber: () => {
             tracking.push('acquire A');
@@ -26,7 +26,7 @@ var testModA: Mod = {
     }),
     defaults: { a: 1 }
 };
-var testModB: Mod = {
+var testModB: JointMod = {
     override: (base, options) => ({
         acquireFiber: () => {
             tracking.push('acquire B');

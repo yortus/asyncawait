@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /** Extended async protocol interface with fiber pool info. */
@@ -9,7 +9,7 @@ interface AsyncProtocol extends AsyncAwait.Async.Protocol {
 
 
 /** Pools fiber instances across acquire/release cycles, for improved performance. */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'fiberPool',
 

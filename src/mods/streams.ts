@@ -1,11 +1,11 @@
 ﻿import references = require('references');
 import async = require('../async/index');
 import asyncMod = require('./async/stream');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /** TODO */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'streams',
 

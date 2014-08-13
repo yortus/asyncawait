@@ -3,11 +3,11 @@ import Fiber = require('fibers');
 import jointProtocol = require('../jointProtocol');
 import JointProtocol = AsyncAwait.JointProtocol;
 import AsyncProtocol = AsyncAwait.Async.Protocol;
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 /** Provides the baseline method implementations for the joint protocol. */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'baseline',
 

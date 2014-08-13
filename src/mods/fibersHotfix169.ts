@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
-import Mod = AsyncAwait.Mod;
+import JointMod = AsyncAwait.JointMod;
 
 
 //TODO: apply this by default? Check impact on benchmarks.
@@ -13,7 +13,7 @@ import Mod = AsyncAwait.Mod;
  *  exceed 120. Memory leaks and slowdowns under heavy load are symptomatic of the
  *  issue fixed by this mod. See https://github.com/laverdet/node-fibers/issues/169.
  */
-export var mod: Mod = {
+export var mod: JointMod = {
 
     name: 'fibersHotfix169',
 
