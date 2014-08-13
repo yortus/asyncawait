@@ -2,10 +2,11 @@
 import assert = require('assert');
 import jointProtocol = require('./jointProtocol');
 import internalState = require('./config/internalState');
+import Protocol = require('./protocol');
 import _ = require('./util');
 import Builder = AsyncAwait.Async.Builder;
 import Mod = AsyncAwait.Async.Mod;
-import Protocol = AsyncAwait.Async.Protocol;
+import AsyncProtocol = AsyncAwait.Async.Protocol;
 export = asyncBuilder;
 
 
@@ -28,11 +29,15 @@ var asyncBuilder = createAsyncBuilder({
 
 
 /** Creates a new async builder function using the specified mod and protocol settings. */
-function createAsyncBuilder(currentMod: Mod, previousProtocol?: Protocol) {
+function createAsyncBuilder(currentMod: Mod, previousProtocol_?: Protocol<any, any>) {
+
+    var previousProtocol = previousProtocol_ || new Protocol({}, () => ({}));
+    var currentProtocol = previousProtocol.mod(currentMod);
+
 
     // Instantiate the protocol by calling the provided factory function.
-    var protocolOverrides = currentMod.override(previousProtocol, currentMod.defaults);
-    var currentProtocol: Protocol = <any> _.mergeProps({}, previousProtocol, protocolOverrides);
+    //var protocolOverrides = currentMod.override(previousProtocol, currentMod.defaults);
+    //var currentProtocol: Protocol = <any> _.mergeProps({}, previousProtocol, protocolOverrides);
 
     // Create the builder function.
     var builder: Builder = <any> function asyncBuilder(invokee: Function) {
@@ -42,12 +47,14 @@ function createAsyncBuilder(currentMod: Mod, previousProtocol?: Protocol) {
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
         // Create and return an appropriately configured suspendable function for the given protocol and body.
-        return createSuspendableFunction(currentProtocol, invokee);
+        return createSuspendableFunction(currentProtocol.members, invokee);
     };
 
     // Tack on the builder's other properties, and the mod() method.
+    builder.mod = (mod: Mod) => createAsyncBuilder(mod, currentProtocol);
+
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.mod = createModMethod(currentProtocol, currentMod.defaults, currentMod);
+//    builder.mod = createModMethod(currentProtocol, currentMod.defaults, currentMod);
 
     // Return the async builder function.
     return builder;
@@ -55,26 +62,26 @@ function createAsyncBuilder(currentMod: Mod, previousProtocol?: Protocol) {
 
 
 /** Creates a mod() method appropriate for the given builder. */
-function createModMethod(builderProtocol: Protocol, builderOptions: any, previousMod: Mod) {
-    return function mod(mod: Mod) {
+//function createModMethod(builderProtocol: Protocol, builderOptions: any, previousMod: Mod) {
+//    return function mod(mod: Mod) {
 
-        // Validate the argument.
-        assert(arguments.length === 1, 'mod: expected one argument');
-        assert(_.isObject(mod), 'mod: expected argument to be an object');
-        var isOptionsOnly = !mod.override;
-        assert(isOptionsOnly || _.isFunction(mod.override), 'mod: expected override to be a function');
+//        // Validate the argument.
+//        assert(arguments.length === 1, 'mod: expected one argument');
+//        assert(_.isObject(mod), 'mod: expected argument to be an object');
+//        var isOptionsOnly = !mod.override;
+//        assert(isOptionsOnly || _.isFunction(mod.override), 'mod: expected override to be a function');
 
-        // Determine the appropriate options to pass to createAsyncBuilder.
-//TODO: default options SHOULD NOT override pre-existing options with same keys
-//TODO: if isOptionsOnly, then this SHOULD override any existing options
-//TODO: see also joint protocol - same thing applies there
-        var override = isOptionsOnly ? previousMod.override : mod.override;
-        var defaults = _.mergeProps(_.branch(builderOptions), isOptionsOnly ? mod : mod.defaults);
+//        // Determine the appropriate options to pass to createAsyncBuilder.
+////TODO: default options SHOULD NOT override pre-existing options with same keys
+////TODO: if isOptionsOnly, then this SHOULD override any existing options
+////TODO: see also joint protocol - same thing applies there
+//        var override = isOptionsOnly ? previousMod.override : mod.override;
+//        var defaults = _.mergeProps(_.branch(builderOptions), isOptionsOnly ? mod : mod.defaults);
 
-        // Delegate to createAsyncBuilder to return a new async builder function.
-        return createAsyncBuilder({override: override, defaults: defaults}, builderProtocol);
-    }
-}
+//        // Delegate to createAsyncBuilder to return a new async builder function.
+//        return createAsyncBuilder({override: override, defaults: defaults}, builderProtocol);
+//    }
+//}
 
 
 /**
@@ -89,7 +96,7 @@ function createModMethod(builderProtocol: Protocol, builderOptions: any, previou
  *  this function will not report the correct arity (function.length) in most cases.
  */
 var createSuspendableFunction = _.DEBUG ? createDebugSuspendableFunction : createFastSuspendableFunction;
-function createFastSuspendableFunction(protocol: Protocol, invokee: Function) {
+function createFastSuspendableFunction(protocol: AsyncProtocol, invokee: Function) {
 
     // Get the formal arity of the invoker and invokee functions.
     var invokerArity = protocol.begin.length - 1; // Skip the 'fi' parameter.
@@ -187,7 +194,7 @@ function createSuspendableFunctionFactory(invokerArity, invokeeArity) {
 
 
 // DEBUG version of createSuspendableFunction(), with no eval.
-function createDebugSuspendableFunction(asyncProtocol: Protocol, invokee: Function) {
+function createDebugSuspendableFunction(asyncProtocol: AsyncProtocol, invokee: Function) {
 
     // Get the formal arity of the invoker function.
     var invokerArity = asyncProtocol.begin.length - 1; // Skip the 'fi' parameter.
