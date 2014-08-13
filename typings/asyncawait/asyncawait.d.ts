@@ -10,78 +10,10 @@
 //TODO: reorganise this by mods (so they *could* be split into separate files/projects)
 declare module AsyncAwait {
 
-    //TODO: new stuff... ------------------------- ? -------------------------
-
-
-
-
-
     //------------------------- Async -------------------------
     export module Async {
 
-        export interface API extends PromiseBuilder {
-            promise: PromiseBuilder;
-            cps: CPSBuilder;
-            thunk: ThunkBuilder;
-            stream: StreamBuilder;
-            express: CPSBuilder;
-            iterable: IterableAPI;
-        }
-
-        export interface IterableAPI extends IterablePromiseBuilder {
-            promise: IterablePromiseBuilder;
-            cps: IterableCPSBuilder;
-            thunk: IterableThunkBuilder;
-        }
-
-        export interface PromiseBuilder extends TypedBuilder<PromiseBuilder> {
-            <TResult>(fn: () => TResult): () => Promise<TResult>;
-            <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
-            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
-            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Promise<TResult>;
-            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
-        }
-
-        export interface CPSBuilder extends TypedBuilder<CPSBuilder> {
-            <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
-            <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
-            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
-            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => void;
-            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
-        }
-
-        export interface ThunkBuilder extends TypedBuilder<ThunkBuilder> {
-            <TResult>(fn: () => TResult): () => Thunk<TResult>;
-            <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
-            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
-            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
-            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
-        }
-
-        export interface StreamBuilder extends TypedBuilder<StreamBuilder> {
-            (fn: Function): (...args: any[]) => NodeJS.ReadableStream;
-        }
-
-        export interface IterablePromiseBuilder extends TypedBuilder<IterablePromiseBuilder> {
-            (fn: Function): (...args: any[]) => {
-                next(): Promise<{ done: boolean; value?: any; }>;
-                forEach(callback: (value) => void): Promise<void>;
-            };
-        }
-
-        export interface IterableCPSBuilder extends TypedBuilder<IterableCPSBuilder> {
-            (fn: Function): (...args: any[]) => {
-                next(callback?: Callback<any>): void;
-                forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
-            };
-        }
-
-        export interface IterableThunkBuilder extends TypedBuilder<IterableThunkBuilder> {
-            (fn: Function): (...args: any[]) => {
-                next(): Thunk<{ done: boolean; value?: any; }>;
-                forEach(callback: (value) => void): Thunk<void>;
-            };
-        }
+        export interface API extends PromiseBuilder { }
 
         export interface TypedBuilder<TBuilder extends Builder> extends Builder {
             mod<TBuilder2 extends Builder>(mod: TypedAsyncMod<TBuilder2>): TBuilder2;
@@ -128,32 +60,10 @@ declare module AsyncAwait {
     export module Await {
 
         export interface API extends Builder {
-            promise: PromiseBuilder;
-            cps: CPSBuilder;
-            thunk: ThunkBuilder;
 
             //TODO: was...
             //in: AwaitFunction;
             //top(n: number): AwaitFunction;
-        }
-
-        //TODO: Review this after making extensible
-        export interface PromiseBuilder extends Builder {
-            <T>(expr: Promise.Thenable<T>): T;
-        }
-
-        export interface CPSBuilder extends Builder {
-            (expr: any): any;
-            continuation: () => Callback<any>;
-        }
-
-        export interface ThunkBuilder extends Builder {
-            <T>(expr: Thunk<T>): T;
-        }
-
-        //TODO: ...?
-        export interface PromiseArrayBuilder extends Builder {
-            <T>(expr: Promise.Thenable<T>[]): T[];
         }
 
         export interface Builder {
@@ -247,6 +157,144 @@ declare module AsyncAwait {
 }
 
 
+// ------------------------- Mod: promises -------------------------
+declare module AsyncAwait {
+    export module Async {
+        export interface API {
+            promise: PromiseBuilder;
+        }
+        export interface PromiseBuilder extends TypedBuilder<PromiseBuilder> {
+            <TResult>(fn: () => TResult): () => Promise<TResult>;
+            <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
+            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
+            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Promise<TResult>;
+            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
+        }
+    }
+    export module Await {
+        export interface API {
+            promise: PromiseBuilder;
+        }
+        //TODO: Review this after making extensible
+        export interface PromiseBuilder extends Builder {
+            <T>(expr: Promise.Thenable<T>): T;
+        }
+    }
+}
+
+
+// ------------------------- Mod: callbacks -------------------------
+declare module AsyncAwait {
+    export module Async {
+        export interface API {
+            cps: CPSBuilder;
+        }
+        export interface CPSBuilder extends TypedBuilder<CPSBuilder> {
+            <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
+            <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
+            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
+            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => void;
+            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
+        }
+    }
+    export module Await {
+        export interface API {
+            cps: CPSBuilder;
+        }
+        export interface CPSBuilder extends Builder {
+            (expr: any): any;
+            continuation: () => Callback<any>;
+        }
+    }
+}
+
+
+// ------------------------- Mod: thunks -------------------------
+declare module AsyncAwait {
+    export module Async {
+        export interface API {
+            thunk: ThunkBuilder;
+        }
+        export interface ThunkBuilder extends TypedBuilder<ThunkBuilder> {
+            <TResult>(fn: () => TResult): () => Thunk<TResult>;
+            <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
+            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
+            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
+            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
+        }
+    }
+    export module Await {
+        export interface API {
+            thunk: ThunkBuilder;
+        }
+        export interface ThunkBuilder extends Builder {
+            <T>(expr: Thunk<T>): T;
+        }
+    }
+}
+
+
+// ------------------------- Mod: streams -------------------------
+declare module AsyncAwait {
+    export module Async {
+        export interface API {
+            stream: StreamBuilder;
+        }
+        export interface StreamBuilder extends TypedBuilder<StreamBuilder> {
+            (fn: Function): (...args: any[]) => NodeJS.ReadableStream;
+        }
+    }
+}
+
+
+// ------------------------- Mod: express -------------------------
+declare module AsyncAwait {
+    export module Async {
+        export interface API {
+            express: CPSBuilder;
+        }
+    }
+}
+
+
+// ------------------------- TODO: iterable stuff... -------------------------
+declare module AsyncAwait {
+    export module Async {
+        export interface API {
+            iterable: IterableAPI;
+        }
+
+        export interface IterableAPI extends IterablePromiseBuilder {
+            promise: IterablePromiseBuilder;
+            cps: IterableCPSBuilder;
+            thunk: IterableThunkBuilder;
+        }
+
+        export interface IterablePromiseBuilder extends TypedBuilder<IterablePromiseBuilder> {
+            (fn: Function): (...args: any[]) => {
+                next(): Promise<{ done: boolean; value?: any; }>;
+                forEach(callback: (value) => void): Promise<void>;
+            };
+        }
+
+        export interface IterableCPSBuilder extends TypedBuilder<IterableCPSBuilder> {
+            (fn: Function): (...args: any[]) => {
+                next(callback?: Callback<any>): void;
+                forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
+            };
+        }
+
+        export interface IterableThunkBuilder extends TypedBuilder<IterableThunkBuilder> {
+            (fn: Function): (...args: any[]) => {
+                next(): Thunk<{ done: boolean; value?: any; }>;
+                forEach(callback: (value) => void): Thunk<void>;
+            };
+        }
+    }
+}
+
+
+// ------------------------- TODO:... -------------------------
 declare module "asyncawait" {
     export import async = require("asyncawait/async");
     export import await = require("asyncawait/await");
