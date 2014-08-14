@@ -10,6 +10,7 @@ import JointMod = AsyncAwait.JointMod;
 var protocol: Protocol<any, any> = null;
 var _options: any = {};
 
+
 /** Gets or sets global configuration values. */
 export function options(value?: any) {
 

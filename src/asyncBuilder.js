@@ -12,31 +12,25 @@ var _ = require('./util');
 *  - implements begin() and end() to just throw, since all protocols must override these.
 *  - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
 */
-var asyncBuilder = createAsyncBuilder({
-    override: function (base, options) {
-        return ({
-            begin: function (fi) {
-                throw new Error('begin: not implemented. All async mods must override this method.');
-            },
-            suspend: function (fi, error, value) {
-                throw new Error('suspend: not supported by this type of suspendable function');
-            },
-            resume: function (fi, error, value) {
-                return error ? fi.throwInto(error) : fi.run(value);
-            },
-            end: function (fi, error, value) {
-                throw new Error('end: not implemented. All async mods must override this method.');
-            }
-        });
-    },
-    defaults: _.branch(config.options())
-});
+var asyncBuilder = createAsyncBuilder(new Protocol(_.branch(config.options()), function () {
+    return ({
+        begin: function (fi) {
+            throw new Error('begin: not implemented. All async mods must override this method.');
+        },
+        suspend: function (fi, error, value) {
+            throw new Error('suspend: not supported by this type of suspendable function');
+        },
+        resume: function (fi, error, value) {
+            return error ? fi.throwInto(error) : fi.run(value);
+        },
+        end: function (fi, error, value) {
+            throw new Error('end: not implemented. All async mods must override this method.');
+        }
+    });
+}));
 
 /** Creates a new async builder function using the specified mod and protocol settings. */
-function createAsyncBuilder(currentMod, previousProtocol_) {
-    var previousProtocol = previousProtocol_ || new Protocol({}, _.empty);
-    var currentProtocol = previousProtocol.mod(currentMod);
-
+function createAsyncBuilder(protocol) {
     // Create the builder function.
     var builder = function asyncBuilder(invokee) {
         // Validate the argument, which is expected to be a closure defining the body of the suspendable function.
@@ -44,13 +38,13 @@ function createAsyncBuilder(currentMod, previousProtocol_) {
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
         // Create and return an appropriately configured suspendable function for the given protocol and body.
-        return createSuspendableFunction(currentProtocol.members, invokee);
+        return createSuspendableFunction(protocol.members, invokee);
     };
 
     // Tack on the builder's other properties, and the mod() method.
     builder.name = null; //TODO:... implement, add all tests, use in error messages
     builder.mod = function (mod) {
-        return createAsyncBuilder(mod, currentProtocol);
+        return createAsyncBuilder(protocol.mod(mod));
     };
 
     // Return the async builder function.

@@ -17,22 +17,16 @@ export = asyncBuilder;
  *  - implements begin() and end() to just throw, since all protocols must override these.
  *  - implements suspend() to just throw, since yield() must be explicitly supported by a protocol.
  */
-var asyncBuilder = createAsyncBuilder({
-    override: (base, options) => ({
-        begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
-        suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
-        resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
-        end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
-    }),
-    defaults: _.branch(config.options())
-});
+var asyncBuilder = createAsyncBuilder(new Protocol(_.branch(config.options()), () => ({
+    begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
+    suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
+    resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
+    end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
+})));
 
 
 /** Creates a new async builder function using the specified mod and protocol settings. */
-function createAsyncBuilder(currentMod: AsyncMod, previousProtocol_?: Protocol<any, any>) {
-
-    var previousProtocol = previousProtocol_ || new Protocol({}, _.empty);
-    var currentProtocol = previousProtocol.mod(currentMod);
+function createAsyncBuilder(protocol: Protocol<any, any>) {
 
     // Create the builder function.
     var builder: Builder = <any> function asyncBuilder(invokee: Function) {
@@ -42,12 +36,12 @@ function createAsyncBuilder(currentMod: AsyncMod, previousProtocol_?: Protocol<a
         assert(_.isFunction(invokee), 'async builder: expected argument to be a function');
 
         // Create and return an appropriately configured suspendable function for the given protocol and body.
-        return createSuspendableFunction(currentProtocol.members, invokee);
+        return createSuspendableFunction(protocol.members, invokee);
     };
 
     // Tack on the builder's other properties, and the mod() method.
     builder.name = null; //TODO:... implement, add all tests, use in error messages
-    builder.mod = (mod: AsyncMod) => createAsyncBuilder(mod, currentProtocol);
+    builder.mod = (mod: AsyncMod) => createAsyncBuilder(protocol.mod(mod));
 
     // Return the async builder function.
     return builder;

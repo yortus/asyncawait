@@ -6,28 +6,22 @@ var Protocol = require('./protocol');
 
 // Bootstrap a basic await builder using a no-op handler.
 //TODO: need to work out appropriate 'base' functioanlity/behaviour here...
-var awaitBuilder = createAwaitBuilder({
-    override: function (base, options) {
-        return ({
-            singular: function (fi, arg) {
-                return fi.resume(null, arg);
-            },
-            variadic: function (fi, args) {
-                return fi.resume(null, args[0]);
-            }
-        });
-    },
-    defaults: _.branch(config.options())
-});
+var awaitBuilder = createAwaitBuilder(new Protocol(_.branch(config.options()), function () {
+    return ({
+        singular: function (fi, arg) {
+            return fi.resume(null, arg);
+        },
+        variadic: function (fi, args) {
+            return fi.resume(null, args[0]);
+        }
+    });
+}));
 
 /** Creates a new await builder function using the specified handler settings. */
 //function createAwaitBuilder<TBuilder extends Builder>(handlersFactory: (baseHandlers: AwaitProtocol, options: {}) => AsyncAwait.Await.AwaitProtocolOverrides, options: {}, baseHandlers: AwaitProtocol) {
-function createAwaitBuilder(currentMod, previousProtocol_) {
-    var previousProtocol = previousProtocol_ || new Protocol({}, _.empty);
-    var currentProtocol = previousProtocol.mod(currentMod);
-
+function createAwaitBuilder(protocol) {
     // Instantiate the handlers by calling the provided factory function.
-    var handlers = currentProtocol.members;
+    var handlers = protocol.members;
 
     // Create the builder function.
     var builder = function await(arg) {
@@ -118,7 +112,7 @@ function createAwaitBuilder(currentMod, previousProtocol_) {
     //TODO: ...
     builder.name = null; //TODO:... implement, add all tests, use in error messages
     builder.mod = function (mod) {
-        return createAwaitBuilder(mod, currentProtocol);
+        return createAwaitBuilder(protocol.mod(mod));
     };
     builder.handlers = handlers;
 
