@@ -7,6 +7,12 @@ import Fiber = require('fibers');
 export var DEBUG = false;
 
 
+/** Determines whether the given object is a string. */
+export function isString(obj) {
+    return typeof obj === 'string';
+}
+
+
 /** Determines whether the given object is a function. */
 export function isFunction(obj) {
     return typeof obj === 'function';

@@ -4,6 +4,12 @@ var Fiber = require('fibers');
 /** Specify whether to execute in DEBUG mode. */
 exports.DEBUG = false;
 
+/** Determines whether the given object is a string. */
+function isString(obj) {
+    return typeof obj === 'string';
+}
+exports.isString = isString;
+
 /** Determines whether the given object is a function. */
 function isFunction(obj) {
     return typeof obj === 'function';

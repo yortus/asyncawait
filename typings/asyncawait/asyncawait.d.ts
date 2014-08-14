@@ -13,7 +13,10 @@ declare module AsyncAwait {
     //------------------------- Async -------------------------
     export module Async {
 
-        export interface API extends PromiseBuilder { }
+        export interface API extends PromiseBuilder {
+            use(mod: AsyncMod, expose?: boolean): void;
+            mods: { [name: string]: AsyncMod; }
+        }
 
         export interface TypedBuilder<TBuilder extends Builder> extends Builder {
             mod<TBuilder2 extends Builder>(mod: TypedAsyncMod<TBuilder2>): TBuilder2;

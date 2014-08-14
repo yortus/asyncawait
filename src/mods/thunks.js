@@ -13,10 +13,13 @@ exports.mod = {
         return ({
             startup: function () {
                 base.startup();
-                async.thunk = async.cps.mod(asyncMod);
+                async.use(asyncMod); //TODO: temp testing...
+
+                //async.thunk = async.cps.mod(asyncMod);
                 await.thunk = await.mod(awaitMod);
             },
             shutdown: function () {
+                delete async.mods['thunk']; //TODO: temp testing...
                 async.thunk = null;
                 await.thunk = null;
                 base.shutdown();
