@@ -1,21 +1,11 @@
 ﻿import references = require('references');
 import assert = require('assert');
 import Promise = require('bluebird');
-import oldBuilder = require('../../asyncBuilder');
-import _ = require('../../util');
-export = newBuilder;
+import _ = require('../util');
+export = mod;
 
 
-/** Fiber interface extended with type information for 'context'. */
-interface FiberEx extends Fiber {
-    context: {
-        nextResolver: Promise.Resolver<any>;
-        done: boolean;
-    };
-}
-
-
-var newBuilder = oldBuilder.mod({
+var mod = {
 
     name: 'iterable.promise',
 
@@ -23,29 +13,29 @@ var newBuilder = oldBuilder.mod({
 
     override: (base, options) => ({
 
-        begin: (fi: FiberEx) => {
+        begin: (fi) => {
             var ctx = fi.context = { nextResolver: null, done: false };
             var next = () => {
                 var res = ctx.nextResolver = Promise.defer<any>();
                 if (ctx.done) res.reject(new Error('iterated past end')); else fi.resume();
                 return ctx.nextResolver.promise;
             }
-            return new AsyncIterator(next);
+            return <any> new AsyncIterator(next);
         },
 
-        suspend: (fi: FiberEx, error?, value?) => {
+        suspend: (fi, error?, value?) => {
             if (error) throw error; // NB: not handled - throw in fiber
             fi.context.nextResolver.resolve({ done: false, value: value });
             _.yieldCurrentFiber();
         },
 
-        end: (fi: FiberEx, error?, value?) => {
+        end: (fi, error?, value?) => {
             var ctx = fi.context;
             ctx.done = true;
             if (error) ctx.nextResolver.reject(error); else ctx.nextResolver.resolve({ done: true, value: value });
         }
     })
-});
+};
 
 
 //TODO: also support send(), throw(), close()...

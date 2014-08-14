@@ -1,7 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import asyncBuilder = require('../asyncBuilder');
-import iterable = require('./iterable/index');
+import asyncBuilder = require('../async/builder');
 import config = require('../config/index');
 import _ = require('../util');
 export = api;
@@ -17,10 +16,6 @@ api.mod = function mod(mod) {
     var async = config.options().defaults.async || asyncBuilder;
     return async.mod(mod);
 };
-
-
-//TODO: temp
-api.iterable = iterable;
 
 
 //TODO: temp
@@ -51,7 +46,7 @@ api.use = function(mod, expose = true) {
             var namePart = nameParts.shift();
             //TODO: ensure namePart is a valid JS identifier and is not (yet) an own property of host
             if (nameParts.length === 0) { host[namePart] = modded; break; }
-            host = host[namePart] = {};
+            host = host[namePart] || (host[namePart] = {});
         }
     }
 }

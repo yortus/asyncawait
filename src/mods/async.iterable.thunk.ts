@@ -1,13 +1,15 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import oldBuilder = require('./cps');
-import _ = require('../../util');
-export = newBuilder;
+import _ = require('../util');
+export = mod;
 
 
-var newBuilder = oldBuilder.mod({
+var mod = {
 
     name: 'iterable.thunk',
+
+    //TODO: ...
+    base: 'iterable.cps',
 
     type: <AsyncAwait.Async.IterableThunkBuilder> null,
 
@@ -28,4 +30,4 @@ var newBuilder = oldBuilder.mod({
             };
         }
     })
-});
+};

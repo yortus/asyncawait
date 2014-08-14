@@ -1,20 +1,10 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import oldBuilder = require('../../asyncBuilder');
-import _ = require('../../util');
-export = newBuilder;
+import _ = require('../util');
+export = mod;
 
 
-/** Fiber interface extended with type information for 'context'. */
-interface FiberEx extends Fiber {
-    context: {
-        nextCallback: (error?, value?) => void;
-        done: boolean;
-    };
-}
-
-
-var newBuilder = oldBuilder.mod({
+var mod = {
 
     name: 'iterable.cps',
 
@@ -22,30 +12,33 @@ var newBuilder = oldBuilder.mod({
 
     override: (base, options) => ({
 
-        begin: (fi: FiberEx) => {
+        begin: (fi) => {
             var ctx = fi.context = { nextCallback: null, done: false };
             var next = (callback?: (err, item?: { done: boolean; value?: any; }) => void) => {
                 ctx.nextCallback = callback || _.empty;
                 if (ctx.done) ctx.nextCallback(new Error('iterated past end')); else fi.resume();
             }
-            return new AsyncIterator(next);
+            return <any> new AsyncIterator(next);
         },
 
-        suspend: (fi: FiberEx, error?, value?) => {
+        suspend: (fi, error?, value?) => {
             if (error) throw error; // NB: not handled - throw in fiber
             fi.context.nextCallback(null, { done: false, value: value });
             _.yieldCurrentFiber();
         },
 
-        end: (fi: FiberEx, error?, value?) => {
+        end: (fi, error?, value?) => {
             var ctx = fi.context;
             ctx.done = true;
             if (error) ctx.nextCallback(error); else ctx.nextCallback(null, { done: true, value: value });
         }
     })
-});
+};
 
 
+//TODO: also support send(), throw(), close()...
+//TODO: see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators
+//TODO: also for other iterable variants...
 class AsyncIterator {
 
     constructor(public next: (callback?: (err, item?: { done: boolean; value?: any; }) => void) => void) { }

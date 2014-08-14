@@ -1,6 +1,5 @@
 ﻿var assert = require('assert');
-var asyncBuilder = require('../asyncBuilder');
-var iterable = require('./iterable/index');
+var asyncBuilder = require('../async/builder');
 var config = require('../config/index');
 var _ = require('../util');
 
@@ -14,9 +13,6 @@ api.mod = function mod(mod) {
     var async = config.options().defaults.async || asyncBuilder;
     return async.mod(mod);
 };
-
-//TODO: temp
-api.iterable = iterable;
 
 //TODO: temp
 api.mods = [];
@@ -52,7 +48,7 @@ api.use = function (mod, expose) {
                 host[namePart] = modded;
                 break;
             }
-            host = host[namePart] = {};
+            host = host[namePart] || (host[namePart] = {});
         }
     }
 };

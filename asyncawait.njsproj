@@ -47,13 +47,13 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="src\async\createSuspendableFunction.ts" />
     <TypeScriptCompile Include="src\async\index.ts" />
     <TypeScriptCompile Include="src\config\index.ts" />
+    <TypeScriptCompile Include="src\mods\async.iterable.thunk.ts" />
+    <TypeScriptCompile Include="src\mods\async.iterable.cps.ts" />
+    <TypeScriptCompile Include="src\mods\async.iterable.promise.ts" />
     <TypeScriptCompile Include="src\mods\async.stream.ts" />
-    <TypeScriptCompile Include="src\async\iterable\index.ts" />
-    <TypeScriptCompile Include="src\async\iterable\cps.ts" />
-    <TypeScriptCompile Include="src\async\iterable\thunk.ts" />
-    <TypeScriptCompile Include="src\async\iterable\promise.ts" />
     <TypeScriptCompile Include="src\await\compound.ts" />
     <TypeScriptCompile Include="src\await\index.ts" />
     <TypeScriptCompile Include="src\mods\async.cps.ts" />
@@ -66,6 +66,7 @@
     <TypeScriptCompile Include="src\mods\baseline.ts" />
     <TypeScriptCompile Include="src\mods\callbacks.ts" />
     <TypeScriptCompile Include="src\mods\express.ts" />
+    <TypeScriptCompile Include="src\mods\iterables.ts" />
     <TypeScriptCompile Include="src\mods\streams.ts" />
     <TypeScriptCompile Include="src\mods\thunks.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
@@ -93,7 +94,7 @@
     <TypeScriptCompile Include="tests\await.promise.ts" />
     <TypeScriptCompile Include="tests\await.ts" />
     <Content Include="references.d.ts" />
-    <Content Include="src\asyncBuilder.ts" />
+    <Content Include="src\async\builder.ts" />
     <Content Include="src\awaitBuilder.ts" />
     <Content Include="src\mods\fiberPool.ts" />
     <Content Include="src\mods\cpsKeyword.ts" />
@@ -159,7 +160,6 @@
     <Compile Include="index.js" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\async\iterable\" />
     <Folder Include="src\await\" />
     <Folder Include="src\" />
     <Folder Include="src\mods\" />

@@ -1,9 +1,10 @@
 ﻿var assert = require('assert');
-var oldBuilder = require('./cps');
-var _ = require('../../util');
+var _ = require('../util');
 
-var newBuilder = oldBuilder.mod({
+var mod = {
     name: 'iterable.thunk',
+    //TODO: ...
+    base: 'iterable.cps',
     type: null,
     override: function (cps, options) {
         return ({
@@ -29,6 +30,6 @@ var newBuilder = oldBuilder.mod({
             }
         });
     }
-});
-module.exports = newBuilder;
-//# sourceMappingURL=thunk.js.map
+};
+module.exports = mod;
+//# sourceMappingURL=async.iterable.thunk.js.map

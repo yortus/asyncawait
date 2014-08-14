@@ -83,7 +83,7 @@ function resetAll() {
 
 //TODO: temp testing...
 // TODO: define these in a separate file. Perhaps as part of joint protocol?
-var asyncBuilder = require('../asyncBuilder');
+var asyncBuilder = require('../async/builder');
 var promiseMod = require('../mods/async.promise');
 _options.defaults = {
     mods: [
@@ -96,7 +96,8 @@ _options.defaults = {
         require('../mods/callbacks').mod,
         require('../mods/thunks').mod,
         require('../mods/streams').mod,
-        require('../mods/express').mod
+        require('../mods/express').mod,
+        require('../mods/iterables').mod
     ],
     async: asyncBuilder.mod(promiseMod),
     await: null

@@ -47,7 +47,7 @@ function runTestsFor(variant, acceptsCallback) {
 
         it('returns a function whose arity matches that of its definition', function () {
             // TODO: review this... maybe even debug mode should attempt to get correct arity
-            // Skip this test in DEBUG mode (see comments about DEBUG in src/asyncBuilder).
+            // Skip this test in DEBUG mode (see comments about DEBUG in src/async/builder).
             if (_.DEBUG)
                 return;
 
