@@ -1,5 +1,5 @@
 ﻿var async = require('../async/index');
-var asyncMod = require('./async/express');
+var asyncMod = require('./async.express');
 
 /** TODO */
 //TODO: how to indicate that this must mod async.cps??

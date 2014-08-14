@@ -1,7 +1,7 @@
 ﻿var async = require('../async/index');
 var await = require('../await/index');
-var asyncMod = require('./async/cps');
-var awaitMod = require('./await/cps');
+var asyncMod = require('./async.cps');
+var awaitMod = require('./await.cps');
 var _ = require('../util');
 
 /** TODO */

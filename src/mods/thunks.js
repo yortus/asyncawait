@@ -1,7 +1,7 @@
 ﻿var async = require('../async/index');
 var await = require('../await/index');
-var asyncMod = require('./async/thunk');
-var awaitMod = require('./await/thunk');
+var asyncMod = require('./async.thunk');
+var awaitMod = require('./await.thunk');
 
 /** TODO */
 //TODO: how to indicate that this must mod async.cps??

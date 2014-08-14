@@ -1,8 +1,8 @@
 ﻿import references = require('references');
 import async = require('../async/index');
 import await = require('../await/index');
-import asyncMod = require('./async/cps');
-import awaitMod = require('./await/cps');
+import asyncMod = require('./async.cps');
+import awaitMod = require('./await.cps');
 import _ = require('../util');
 import JointMod = AsyncAwait.JointMod;
 

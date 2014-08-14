@@ -1,5 +1,5 @@
 ﻿var async = require('../async/index');
-var asyncMod = require('./async/stream');
+var asyncMod = require('./async.stream');
 
 /** TODO */
 exports.mod = {

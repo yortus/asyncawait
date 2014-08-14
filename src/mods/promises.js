@@ -1,7 +1,7 @@
 ﻿var async = require('../async/index');
 var await = require('../await/index');
-var asyncMod = require('./async/promise');
-var awaitMod = require('./await/promise');
+var asyncMod = require('./async.promise');
+var awaitMod = require('./await.promise');
 
 /** TODO */
 exports.mod = {

@@ -1,6 +1,6 @@
 ﻿import references = require('references');
-import oldBuilder = require('./cps');
-import _ = require('../../util');
+import oldBuilder = require('./async.cps');
+import _ = require('../util');
 export = mod;
 
 

@@ -1,7 +1,7 @@
 ﻿var awaitBuilder = require('../awaitBuilder');
-var promiseMod = require('../mods/await/promise');
-var cpsMod = require('../mods/await/cps');
-var thunkMod = require('../mods/await/thunk');
+var promiseMod = require('../mods/await.promise');
+var cpsMod = require('../mods/await.cps');
+var thunkMod = require('../mods/await.thunk');
 
 //TODO: temp testing...
 var compound = require('./compound');

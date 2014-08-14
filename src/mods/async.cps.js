@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var _ = require('../../util');
+var _ = require('../util');
 
 /** Provides an async builder for producing suspendable functions accept node-style callbacks. */
 var mod = {
@@ -27,4 +27,4 @@ var mod = {
     }
 };
 module.exports = mod;
-//# sourceMappingURL=cps.js.map
+//# sourceMappingURL=async.cps.js.map

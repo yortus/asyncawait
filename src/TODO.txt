@@ -1,0 +1,48 @@
+﻿//
+mods: name-based lookup:
+- put mod names in config
+- register mods (binds names to mods)
+- central mod register and lookup
+- things needing mods need to lookup mod by name
+
+
+
+
+config.use(mod)
+- distinguishes between joint mods, async mods, await mods?
+- registers a joint mod by name (rejects duplicate names)
+- applies the mod
+
+config.use(mod, false)
+- registers a joint mod by name (rejects duplicate names)
+- does NOT apply the mod
+
+
+config.options() => {
+    defaults: {
+        mods: [ /* list of joint mod names */],
+        async: 'name of default async mod',
+        await: 'name of default await mod',
+        ... /* eg handlers for await.compound */
+    }
+}
+
+
+config.use(jointmod, expose?)
+async.use(asyncmod, expose?)
+await.use(awaitmod, expose?)
+
+config.mods[name] => jointmod
+async.mods[name] => asyncmod
+await.mods[name] => awaitmod
+
+
+
+
+
+var jointProtocol = new Protocol<TMembers, TOptions>()
+jointProtocol.members => TMembers
+jointProtocol.options => TOptions
+jointProtocol.mod(mod) => Protocol
+
+

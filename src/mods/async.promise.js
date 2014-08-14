@@ -31,4 +31,4 @@ var mod = {
     }
 };
 module.exports = mod;
-//# sourceMappingURL=promise.js.map
+//# sourceMappingURL=async.promise.js.map

@@ -84,7 +84,7 @@ function resetAll() {
 //TODO: temp testing...
 // TODO: define these in a separate file. Perhaps as part of joint protocol?
 var asyncBuilder = require('../asyncBuilder');
-var promiseMod = require('../mods/async/promise');
+var promiseMod = require('../mods/async.promise');
 _options.defaults = {
     mods: [
         require('../mods/baseline').mod,

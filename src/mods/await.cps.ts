@@ -1,5 +1,5 @@
 ﻿import references = require('references');
-import _ = require('../../util');
+import _ = require('../util');
 export = mod;
 
 

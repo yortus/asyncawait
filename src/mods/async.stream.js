@@ -5,7 +5,7 @@
     d.prototype = new __();
 };
 var stream = require('stream');
-var _ = require('../../util');
+var _ = require('../util');
 
 var mod = {
     name: 'stream',
@@ -52,4 +52,4 @@ var Stream = (function (_super) {
     return Stream;
 })(stream.Readable);
 module.exports = mod;
-//# sourceMappingURL=stream.js.map
+//# sourceMappingURL=async.stream.js.map

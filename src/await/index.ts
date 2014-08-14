@@ -1,8 +1,8 @@
 ﻿import references = require('references');
 import awaitBuilder = require('../awaitBuilder');
-import promiseMod = require('../mods/await/promise');
-import cpsMod = require('../mods/await/cps');
-import thunkMod = require('../mods/await/thunk');
+import promiseMod = require('../mods/await.promise');
+import cpsMod = require('../mods/await.cps');
+import thunkMod = require('../mods/await.thunk');
 export = api;
 
 

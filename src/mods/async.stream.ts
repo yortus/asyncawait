@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import stream = require('stream');
-import _ = require('../../util');
+import _ = require('../util');
 export = mod;
 
 

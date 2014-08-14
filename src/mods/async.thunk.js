@@ -1,4 +1,4 @@
-﻿var _ = require('../../util');
+﻿var _ = require('../util');
 
 //TODO: how to indicate that this must mod async.cps??
 var mod = {
@@ -17,4 +17,4 @@ var mod = {
     }
 };
 module.exports = mod;
-//# sourceMappingURL=thunk.js.map
+//# sourceMappingURL=async.thunk.js.map

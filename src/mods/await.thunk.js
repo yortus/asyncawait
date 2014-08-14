@@ -1,4 +1,4 @@
-﻿var _ = require('../../util');
+﻿var _ = require('../util');
 
 var mod = {
     name: 'thunk',
@@ -33,4 +33,4 @@ var mod = {
     }
 };
 module.exports = mod;
-//# sourceMappingURL=thunk.js.map
+//# sourceMappingURL=await.thunk.js.map

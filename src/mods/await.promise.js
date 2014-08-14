@@ -1,4 +1,4 @@
-﻿var _ = require('../../util');
+﻿var _ = require('../util');
 
 //TODO: but overrideHandler call needs (REALLY??? check) to happen *after* user has a chance to set options
 //      with config(...). So, builders must call the override...() func lazily ie when first
@@ -41,4 +41,4 @@ var mod = {
     }
 };
 module.exports = mod;
-//# sourceMappingURL=promise.js.map
+//# sourceMappingURL=await.promise.js.map

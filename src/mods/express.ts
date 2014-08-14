@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import async = require('../async/index');
-import asyncMod = require('./async/express');
+import asyncMod = require('./async.express');
 import JointMod = AsyncAwait.JointMod;
 
 
