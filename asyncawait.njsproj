@@ -48,6 +48,7 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\options.ts" />
     <TypeScriptCompile Include="src\yield.ts" />
     <TypeScriptCompile Include="src\async.ts" />
     <TypeScriptCompile Include="src\await.ts" />
