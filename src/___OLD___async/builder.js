@@ -1,5 +1,5 @@
 ﻿var assert = require('assert');
-var config = require('../config/index');
+var config = require('../config');
 var Protocol = require('../protocol');
 var _ = require('../util');
 var createSuspendableFunction = require('./createSuspendableFunction');

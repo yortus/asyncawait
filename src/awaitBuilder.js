@@ -1,6 +1,6 @@
 ﻿var assert = require('assert');
 var _ = require('./util');
-var config = require('./config/index');
+var config = require('./config');
 var Protocol = require('./protocol');
 
 

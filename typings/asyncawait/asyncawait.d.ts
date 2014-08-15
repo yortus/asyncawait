@@ -8,6 +8,38 @@
 
 
 //TODO: reorganise this by mods (so they *could* be split into separate files/projects)
+
+declare module AsyncAwait2 {
+    export interface ConfigAPI {
+        options(): any;
+        options(value: any): ConfigAPI; // Will trigger reload of all joint/async/await mods
+        use(mod: Mod): ConfigAPI;       // Will trigger reload of all joint/async/await mods
+    }
+    export interface AsyncAPI {
+        (invokee: Function): Function;
+    }
+    export interface AwaitAPI {
+        (...args: any[]): any;
+    }
+    export interface YieldAPI {
+        (expr?: any): any;
+    }
+
+    export interface Mod {
+        type: string; // 'async', 'await', 'fiber'
+        name: string;
+        base?: string;
+        override(base, options): any; // function returning protocol methods
+        defaults?: any;
+        apply(options: any): void;
+        reset(options: any): void;
+    }
+}
+
+
+
+
+
 declare module AsyncAwait {
 
     //------------------------- Async -------------------------

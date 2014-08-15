@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import config = require('../config/index');
+import config = require('../config');
 import Protocol = require('../protocol');
 import _ = require('../util');
 import createSuspendableFunction = require('./createSuspendableFunction');

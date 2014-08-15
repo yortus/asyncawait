@@ -1,26 +1,26 @@
-﻿import references = require('references');
-import async = require('../async/index');
-import asyncMod = require('./async.stream');
-import JointMod = AsyncAwait.JointMod;
+﻿//import references = require('references');
+//import async = require('../async');
+//import asyncMod = require('./async.stream');
+//import JointMod = AsyncAwait.JointMod;
 
 
-/** TODO */
-export var mod: JointMod = {
+///** TODO */
+//export var mod: JointMod = {
 
-    name: 'streams',
+//    name: 'streams',
 
-    override: (base, options) => ({
+//    override: (base, options) => ({
     
-        startup: () => {
-            base.startup();
-            async.stream = async.mod(asyncMod);
-        },
+//        startup: () => {
+//            base.startup();
+//            async.stream = async.mod(asyncMod);
+//        },
 
-        shutdown: () => {
-            async.stream = null;
-            base.shutdown();
-        }
-    }),
+//        shutdown: () => {
+//            async.stream = null;
+//            base.shutdown();
+//        }
+//    }),
 
-    defaults: { }
-};
+//    defaults: { }
+//};

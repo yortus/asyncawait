@@ -1,10 +1,8 @@
 ﻿var Promise = require('bluebird');
 
 var mod = {
-    /** Used for diagnostic purposes. */
+    type: 'async',
     name: 'promise',
-    /** Used only for automatic type interence at TypeScript compile time. */
-    type: null,
     /** Provides appropriate handling for promise-returning suspendable functions. */
     override: function (base, options) {
         return ({

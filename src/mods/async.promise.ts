@@ -4,12 +4,8 @@ export = mod;
 
 
 var mod = {
-
-    /** Used for diagnostic purposes. */
+    type: 'async',
     name: 'promise',
-
-    /** Used only for automatic type interence at TypeScript compile time. */
-    type: <AsyncAwait.Async.PromiseBuilder> null,
 
     /** Provides appropriate handling for promise-returning suspendable functions. */
     override: (base, options) => ({

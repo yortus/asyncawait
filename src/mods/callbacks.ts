@@ -1,35 +1,35 @@
-﻿import references = require('references');
-import async = require('../async/index');
-import await = require('../await/index');
-import asyncMod = require('./async.cps');
-import awaitMod = require('./await.cps');
-import _ = require('../util');
-import JointMod = AsyncAwait.JointMod;
+﻿//import references = require('references');
+//import async = require('../async');
+//import await = require('../await');
+//import asyncMod = require('./async.cps');
+//import awaitMod = require('./await.cps');
+//import _ = require('../util');
+//import JointMod = AsyncAwait.JointMod;
 
 
-/** TODO */
-export var mod: JointMod = {
+///** TODO */
+//export var mod: JointMod = {
 
-    name: 'callbacks',
+//    name: 'callbacks',
 
-    override: (base, options) => ({
+//    override: (base, options) => ({
     
-        startup: () => {
-            base.startup();
-            async.cps = async.mod(asyncMod);
-            await.cps = await.mod(awaitMod);
+//        startup: () => {
+//            base.startup();
+//            async.cps = async.mod(asyncMod);
+//            await.cps = await.mod(awaitMod);
 
-            //TODO: right place for this?
-            await.cps.continuation = _.createContinuation;
+//            //TODO: right place for this?
+//            await.cps.continuation = _.createContinuation;
 
-        },
+//        },
 
-        shutdown: () => {
-            async.cps = null;
-            await.cps = null;
-            base.shutdown();
-        }
-    }),
+//        shutdown: () => {
+//            async.cps = null;
+//            await.cps = null;
+//            base.shutdown();
+//        }
+//    }),
 
-    defaults: { }
-};
+//    defaults: { }
+//};

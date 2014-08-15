@@ -1,36 +1,36 @@
-﻿import references = require('references');
-import async = require('../async/index');
-import await = require('../await/index');
-import asyncMod = require('./async.thunk');
-import awaitMod = require('./await.thunk');
-import JointMod = AsyncAwait.JointMod;
+﻿//import references = require('references');
+//import async = require('../async');
+//import await = require('../await');
+//import asyncMod = require('./async.thunk');
+//import awaitMod = require('./await.thunk');
+//import JointMod = AsyncAwait.JointMod;
 
 
-/** TODO */
-//TODO: how to indicate that this must mod async.cps??
-export var mod: JointMod = {
+///** TODO */
+////TODO: how to indicate that this must mod async.cps??
+//export var mod: JointMod = {
 
-    name: 'thunks',
+//    name: 'thunks',
 
-    //TODO: add checking in extensibility.ts or somehow for this:
-    requires: ['cps'],
+//    //TODO: add checking in extensibility.ts or somehow for this:
+//    requires: ['cps'],
 
-    override: (base, options) => ({
+//    override: (base, options) => ({
     
-        startup: () => {
-            base.startup();
-            async.use(asyncMod);//TODO: temp testing...
-            //async.thunk = async.cps.mod(asyncMod);
-            await.thunk = await.mod(awaitMod);
-        },
+//        startup: () => {
+//            base.startup();
+//            async.use(asyncMod);//TODO: temp testing...
+//            //async.thunk = async.cps.mod(asyncMod);
+//            await.thunk = await.mod(awaitMod);
+//        },
 
-        shutdown: () => {
-            delete async.mods['thunk']; //TODO: temp testing...
-            async.thunk = null;
-            await.thunk = null;
-            base.shutdown();
-        }
-    }),
+//        shutdown: () => {
+//            delete async.mods['thunk']; //TODO: temp testing...
+//            async.thunk = null;
+//            await.thunk = null;
+//            base.shutdown();
+//        }
+//    }),
 
-    defaults: { }
-};
+//    defaults: { }
+//};

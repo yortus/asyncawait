@@ -27,39 +27,70 @@ config.options({ maxSlots: 5 });
 
 
 // ========== experiment ==========
-    var started = 0, finished = 0;
-    var opA = async (function () {
-        ++started;
-        await (Promise.delay(20));
-        ++finished;
-    });
-    var opB = async (function () {
-        return { started: started, finished: finished };
-    });
-    var setMaxSlots = function (n) {
-        config.options({maxSlots: n});
-    };
+var f1 = async(function (msg) {
+    console.log(msg);
+    throw new Error('aaaaarrr');
+});
+f1('blah!')
+.then(function (res) {
+    console.log('result: ' + res);
+})
+.catch(function (error) {
+    console.log('error:' + error);
+});
 
 
-    function doTasks(maxCon) {
-        started = finished = 0;
-        setMaxSlots(maxCon);
-        return Promise
-            .all([opA(), opA(), opA(), opA(), opA(), opB()])
-            .then(function (r) { return r[5]; });
-    }
 
-    doTasks(1)
-    //.then(r => expect(r.finished).to.equal(0))
-    //.then(() => Promise.delay(40))
-    //.then(() => doTasks(1))
-    //.then(r => expect(r.finished).to.equal(5))
-    //.then(() => Promise.delay(40))
-    //.then(() => doTasks(5))
-    //.then(r => expect(r.finished).to.be.greaterThan(0))
-    //.then(() => Promise.delay(40))
-    //.then(() => done())
-    //.catch(done);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //var started = 0, finished = 0;
+    //var opA = async (function () {
+    //    ++started;
+    //    await (Promise.delay(20));
+    //    ++finished;
+    //});
+    //var opB = async (function () {
+    //    return { started: started, finished: finished };
+    //});
+    //var setMaxSlots = function (n) {
+    //    config.options({maxSlots: n});
+    //};
+
+
+    //function doTasks(maxCon) {
+    //    started = finished = 0;
+    //    setMaxSlots(maxCon);
+    //    return Promise
+    //        .all([opA(), opA(), opA(), opA(), opA(), opB()])
+    //        .then(function (r) { return r[5]; });
+    //}
+
+    //doTasks(1)
+    ////.then(r => expect(r.finished).to.equal(0))
+    ////.then(() => Promise.delay(40))
+    ////.then(() => doTasks(1))
+    ////.then(r => expect(r.finished).to.equal(5))
+    ////.then(() => Promise.delay(40))
+    ////.then(() => doTasks(5))
+    ////.then(r => expect(r.finished).to.be.greaterThan(0))
+    ////.then(() => Promise.delay(40))
+    ////.then(() => done())
+    ////.catch(done);
 
 
 

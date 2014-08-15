@@ -1,12 +1,9 @@
-﻿import references = require('references');
-import assert = require('assert');
-import asyncBuilder = require('../async/builder');
-import config = require('../config/index');
-import _ = require('../util');
-export = api;
+﻿var assert = require('assert');
+var asyncBuilder = require('./builder');
+var config = require('../config');
+var _ = require('../util');
 
-
-var api: AsyncAwait.Async.API = <any> function (invokee: Function) {
+var api = function (invokee) {
     assert(arguments.length === 1, 'async: expected a single argument');
     var async = config.options().defaults.async || asyncBuilder;
     return async(invokee);
@@ -17,11 +14,10 @@ api.mod = function mod(mod) {
     return async.mod(mod);
 };
 
-
 //TODO: temp
-api.mods = <any> [];
-api.use = function(mod, expose = true) {
-
+api.mods = [];
+api.use = function (mod, expose) {
+    if (typeof expose === "undefined") { expose = true; }
     assert(mod && _.isFunction(mod.override), 'use: expected mod to have an override function');
     assert(mod.name && _.isString(mod.name), 'use: expected mod to have a name');
     assert(!api.mods.hasOwnProperty(mod.name), "use: duplicate registration of mod name '" + mod.name + "'");
@@ -30,23 +26,31 @@ api.use = function(mod, expose = true) {
 
     if (expose) {
         var base = api;
+
         //TODO: temp testing... actually just get it directly from api.mods
         if (mod['base']) {
-            var nameParts: string[] = mod['base'].split('.');
+            var nameParts = mod['base'].split('.');
             while (nameParts.length > 0) {
                 var namePart = nameParts.shift();
+
                 //TODO: ensure namePart is a valid JS identifier and *is* an own property of host
                 base = base[namePart];
             }
         }
         var modded = base.mod(mod);
         var nameParts = mod.name.split('.');
-        var host: any = api;
+        var host = api;
         while (true) {
             var namePart = nameParts.shift();
+
             //TODO: ensure namePart is a valid JS identifier and is not (yet) an own property of host
-            if (nameParts.length === 0) { host[namePart] = modded; break; }
+            if (nameParts.length === 0) {
+                host[namePart] = modded;
+                break;
+            }
             host = host[namePart] || (host[namePart] = {});
         }
     }
-}
+};
+module.exports = api;
+//# sourceMappingURL=index.js.map
