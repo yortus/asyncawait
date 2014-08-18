@@ -1,7 +1,7 @@
 ﻿import references = require('references');
 import config = require('./config');
 
-var async: AsyncAwait2.AsyncAPI;
+var async: AsyncAwait.AsyncAPI;
 var x = async((a: number): string => null);
 
 //TODO: side effects!
