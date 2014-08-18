@@ -1,5 +1,10 @@
 ﻿var config = require('./config');
 
+var async;
+var x = async(function (a) {
+    return null;
+});
+
 //TODO: side effects!
 console.log('MAIN!!!!!!!!!!!!!!!');
 

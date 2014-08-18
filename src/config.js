@@ -20,7 +20,7 @@ exports.options = options;
 
 // TODO:...
 function use(mod) {
-    switch (mod.type) {
+    switch (mod.base.split('.')[0]) {
         case 'async':
             async.createVariant(mod);
             break;

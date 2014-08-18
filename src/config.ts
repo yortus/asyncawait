@@ -24,12 +24,12 @@ export function options(value?: any): any {
 
 
 // TODO:...
-export function use(mod: Mod): any {
+export function use(mod: Mod<any>): any {
 
     // TODO: validate mod...
 
     // TODO: Handle mod...
-    switch (mod.type) {
+    switch (mod.base.split('.')[0]) {//TODO: fix...
         case 'async':
             async.createVariant(mod);
             break;

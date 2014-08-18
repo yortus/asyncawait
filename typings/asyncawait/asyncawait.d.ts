@@ -12,32 +12,109 @@
 declare module AsyncAwait2 {
     export interface ConfigAPI {
         options(): any;
-        options(value: any): ConfigAPI; // Will trigger reload of all joint/async/await mods
-        use(mod: Mod): ConfigAPI;       // Will trigger reload of all joint/async/await mods
-    }
-    export interface AsyncAPI {
-        (invokee: Function): Function;
-    }
-    export interface AwaitAPI {
-        (...args: any[]): any;
-    }
-    export interface YieldAPI {
-        (expr?: any): any;
+        options(value: any): ConfigAPI;             // Will trigger reload of all async/await/fiber mods
+        use(mods: Mod<any>[]): ConfigAPI;           // Will trigger reload of all async/await/fiber mods
+        use(mod: Mod<AsyncProtocol>): ConfigAPI;    // Will trigger reload of all async/await/fiber mods
+        use(mod: Mod<AwaitProtocol>): ConfigAPI;    // Will trigger reload of all async/await/fiber mods
+        use(mod: Mod<FiberProtocol>): ConfigAPI;    // Will trigger reload of all async/await/fiber mods
+        use(mod: Mod<SetupProtocol>): ConfigAPI;    // Will trigger reload of all async/await/fiber mods
     }
 
-    export interface Mod {
-        type: string; // 'async', 'await', 'fiber'
-        name: string;
-        base?: string;
-        override(base, options): any; // function returning protocol methods
-        defaults?: any;
-        apply(options: any): void;
-        reset(options: any): void;
+    export function AsyncAPI(...args: any[]): any;
+
+    export function AwaitAPI(...args: any[]): any;
+
+    export interface YieldAPI {
+        (value?: any): any;
     }
+
+    export interface Mod<TProtocol> {
+        name: string; // 'async.aaa'
+        base: string; // 'async[.IDENT]*', 'await[.IDENT]*', 'fiber', 'setup'
+        override(baseProtocol: TProtocol, options: any): TProtocol;
+        defaults?: any;
+    }
+
+    export interface AsyncProtocol {
+        begin?(fi: Fiber, ...protocolArgs: any[]): any;
+        suspend?(fi: Fiber, error?: Error, value?: any): any;
+        resume?(fi: Fiber, error?: Error, value?: any): any;
+        end?(fi: Fiber, error?: Error, value?: any): any;
+    }
+
+    export interface AwaitProtocol {
+        singular?(fi: Fiber, arg: any): any;
+        variadic?(fi: Fiber, args: any[]): any;
+        elements?(values: any[], result: (err: Error, value: any, index: number) => void): number;
+    }
+
+    export interface FiberProtocol {
+        acquire?(asyncProtocol: AsyncProtocol): Fiber;
+        release?(asyncProtocol: AsyncProtocol, fi: Fiber): void;
+        retarget?(fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]): void
+    }
+
+    export interface SetupProtocol {
+        startup?(): void;
+        shutdown?(): void;
+    }
+
+    //----------
+    export interface Fiber {
+        reset: () => any;
+        run: (param?: any) => any;
+        throwInto: (ex: any) => any;
+    }
+    export function Fiber(fn: Function): Fiber;
+    export module Fiber {
+        export var current: Fiber;
+        export function yield(value?: any): any
+        export var poolSize: number;
+        export var fibersCreated: number;
+    }
+    export interface Fiber {
+        id: number;//TODO: doc: useful for debugging/assertions
+        bodyFunc: Function;
+        bodyThis: any;
+        bodyArgs: any[];
+        awaiting: AsyncAwait.Callback<any>[]; //TODO: finalise this...
+
+        //TODO: ...
+        suspend: (error?: Error, value?: any) => void;
+        resume: (error?: Error, value?: any) => void;
+        context: any;
+    }
+    //----------
 }
 
 
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//TODO: typings for built-in mods with default config...
+declare module AsyncAwait2 {
 
+    // Default async and await behaviour
+    export interface AsyncAPI extends AsyncPromise { }
+    export interface AwaitAPI extends AwaitPromise { }
+
+    export interface AsyncAPI {
+        promise: AsyncPromise;
+    }
+    export interface AsyncPromise {
+        <TResult>(fn: () => TResult): () => Promise<TResult>;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Promise<TResult>;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Promise<TResult>;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
+    }
+    export interface AwaitAPI {
+        promise: AwaitPromise;
+    }
+    //TODO: Review this after making extensible
+    export interface AwaitPromise {
+        <T>(expr: Promise.Thenable<T>): T;
+    }
+}
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 declare module AsyncAwait {

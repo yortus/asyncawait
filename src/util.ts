@@ -53,6 +53,7 @@ export function isPromise(obj) {
 export function empty(): any { }
 
 
+//TODO: recursively merge own props that are plain objects? Would be nice for config.
 /** Equivalent to lodash's _.assign() function. */
 export var mergeProps: (...args) => any = () => {
     var len = arguments.length, target = arguments[0];

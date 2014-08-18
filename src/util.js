@@ -51,6 +51,7 @@ function empty() {
 }
 exports.empty = empty;
 
+//TODO: recursively merge own props that are plain objects? Would be nice for config.
 /** Equivalent to lodash's _.assign() function. */
 exports.mergeProps = function () {
     var len = arguments.length, target = arguments[0];

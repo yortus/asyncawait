@@ -38,7 +38,7 @@ export var api: AsyncAwait2.AsyncAPI = <any> function () {
 
 
 // TODO:...
-export function createVariant(mod: Mod) {
+export function createVariant(mod: Mod<any>) {
 
     // Get the appropriate base variant.
     var baseVariant = _variants[mod.base || ''];
@@ -75,7 +75,7 @@ _variants[''] = (() => {
 
 // TODO:...
 interface Variant {
-    mod: Mod;
+    mod: Mod<any>;
     protocol: Protocol<any, any>;
     impl: Function;
 }
