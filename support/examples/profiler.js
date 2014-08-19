@@ -29,7 +29,7 @@ config.options({ maxSlots: 5 });
 // ========== experiment ==========
 var f1 = async(function (msg) {
     console.log(msg);
-    throw new Error('aaaaarrr');
+    //throw new Error('aaaaarrr');
 });
 f1('blah!')
 .then(function (res) {

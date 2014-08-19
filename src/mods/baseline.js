@@ -1,13 +1,14 @@
 ﻿var Fiber = require('fibers');
-var jointProtocol = require('../jointProtocol');
+var fiberProtocol = require('../fiberProtocol');
 
 /** Provides the baseline method implementations for the joint protocol. */
 exports.mod = {
     name: 'baseline',
+    base: '???',
     override: function (base, options) {
         return ({
             /** Create and return a new Fiber instance. */
-            acquireFiber: function (asyncProtocol) {
+            acquire: function (asyncProtocol) {
                 var fi = createFiber(asyncProtocol);
                 fi.id = ++nextFiberId;
                 fi.context = {};
@@ -21,24 +22,18 @@ exports.mod = {
                 return fi;
             },
             /** Ensure the Fiber instance is disposed of cleanly. */
-            releaseFiber: function (asyncProtocol, fi) {
-                jointProtocol.setFiberTarget(fi, null);
+            release: function (asyncProtocol, fi) {
+                fiberProtocol.retarget(fi, null);
                 fi.suspend = null;
                 fi.resume = null;
                 fi.context = null;
                 fi.awaiting = null; //TODO: finalise this...
             },
             //TODO: comment...
-            setFiberTarget: function (fi, bodyFunc, bodyThis, bodyArgs) {
+            retarget: function (fi, bodyFunc, bodyThis, bodyArgs) {
                 fi.bodyFunc = bodyFunc;
                 fi.bodyThis = bodyThis;
                 fi.bodyArgs = bodyArgs;
-            },
-            //TODO: comment...
-            startup: function () {
-            },
-            //TODO: comment...
-            shutdown: function () {
             }
         });
     },
@@ -103,7 +98,7 @@ function createFiber(asyncProtocol) {
     // The finally block delegates to the async protocol to handle the error/result, then cleans up the fiber.
     function finallyBlock() {
         asyncProtocol.end(fi, error, result);
-        jointProtocol.releaseFiber(asyncProtocol, fi);
+        fiberProtocol.release(asyncProtocol, fi);
     }
 
     // Return the newly created fiber.

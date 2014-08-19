@@ -8,17 +8,37 @@ module.exports = function(grunt) {
         clean: {
             main: {
                 src: [
-                    'src/**/*.js', 'tests/**/*.js',
-                    'src/**/*.js.map', 'tests/**/*.js.map'
+                    'src/**/*.js', 'test/**/*.js',
+                    'src/**/*.js.map', 'test/**/*.js.map'
                 ]
             }
         },
 
         typescript: {
             main: {
+                //src: [
+                //    'src/**/*.ts',
+                //    'test/**/*.ts'
+                //],
                 src: [
-                    'src/**/*.ts',
-                    'tests/**/*.ts'
+                    //'src/___OLD___async/builder.ts',
+                    //'src/___OLD___async/createSuspendableFunction.ts',
+                    //'src/___OLD___async/index.ts',
+                    'src/mods/async.promise.ts',
+                    //'src/mods/await.promise.ts',
+                    'src/mods/baseline.ts',
+                    //'src/mods/promises.ts',
+                    'src/async.ts',
+                    //'src/await.ts',
+                    //'src/awaitBuilder.ts',
+                    'src/createSuspendableFunction.ts',
+                    'src/fiberProtocol.ts',
+                    //'src/jointProtocol.ts',
+                    'src/main.ts',
+                    'src/options.ts',
+                    'src/protocol.ts',
+                    'src/util.ts',
+                    'test/protocol.ts'
                 ],
                 dest: '.',
                 options: {
@@ -42,30 +62,30 @@ module.exports = function(grunt) {
         mochaTest: {
             main: {
                 options: { reporter: 'list' },
-                //src: ['tests/**/*.js']
+                //src: ['test/**/*.js']
                 src: [
-                    //'tests/async.cps.js',
-                    //'tests/async.express.js',
-                    //'tests/async.iterable.cps.js',
-                    //'tests/async.iterable.promise.js',
-                    //'tests/async.iterable.thunk.js',
-                    //'tests/async.iterable.js',
-                    //'tests/async.mod.js',
-                    //'tests/async.promise.js',
-                    //'tests/async.stream.js',
-                    //'tests/async.thunk.js',
-                    //'tests/async.js',
-                    //'tests/await.cps.js',
-                    //'tests/await.promise.js',
-                    //'tests/await.thunk.js',
-                    //'tests/await.js',
-                    //'tests/config.fiberPool.js',
-                    //'tests/config.cpsKeyword.js',
-                    //'tests/config.fibersHotfix169.js',
-                    //'tests/config.maxSlots.js',
-                    //'tests/config.mod.js',
-                    //'tests/config.js',
-                    'tests/protocol.js'
+                    //'test/async.cps.js',
+                    //'test/async.express.js',
+                    //'test/async.iterable.cps.js',
+                    //'test/async.iterable.promise.js',
+                    //'test/async.iterable.thunk.js',
+                    //'test/async.iterable.js',
+                    //'test/async.mod.js',
+                    //'test/async.promise.js',
+                    //'test/async.stream.js',
+                    //'test/async.thunk.js',
+                    //'test/async.js',
+                    //'test/await.cps.js',
+                    //'test/await.promise.js',
+                    //'test/await.thunk.js',
+                    //'test/await.js',
+                    //'test/config.fiberPool.js',
+                    //'test/config.cpsKeyword.js',
+                    //'test/config.fibersHotfix169.js',
+                    //'test/config.maxSlots.js',
+                    //'test/config.mod.js',
+                    //'test/config.js',
+                    'test/protocol.js'
                 ]
             }
         },

@@ -1,9 +1,8 @@
 ﻿var assert = require('assert');
-
-var opts = require('./options');
+var options = require('./options');
 var Protocol = require('./protocol');
 var _ = require('./util');
-var createSuspendableFunction = require('./___OLD___async/createSuspendableFunction');
+var createSuspendableFunction = require('./createSuspendableFunction');
 
 //TODO: ============================================================================================= ASYNC
 // function asyncAPI() - proxying function
@@ -21,7 +20,7 @@ exports.api = function () {
 
     // Find the appropriate implementation to delegate to.
     //TODO: ...
-    var name = opts.get().defaults.async || '';
+    var name = options().defaults.async || '';
     var async = _variants[name].impl;
 
     // Delegate to the implementation.
@@ -31,7 +30,8 @@ exports.api = function () {
 // TODO:...
 function createVariant(mod) {
     // Get the appropriate base variant.
-    var baseVariant = _variants[mod.base || ''];
+    var base = mod.base.split('.').slice(1).join('.');
+    var baseVariant = _variants[base];
     assert(baseVariant, "use: async mod '" + mod.name + "' refers to unknown base mod '" + mod.base + "'");
 
     // Apply the mod to get a new protocol.
@@ -52,7 +52,7 @@ var _variants = {};
 
 // TODO:...
 _variants[''] = (function () {
-    var protocol = new Protocol(_.branch(opts.get()), function () {
+    var protocol = new Protocol(_.branch(options()), function () {
         return ({
             begin: function (fi) {
                 throw new Error('begin: not implemented. All async mods must override this method.');

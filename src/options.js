@@ -1,23 +1,26 @@
 ﻿var _ = require('./util');
 
-function get() {
-    return _options;
-}
-exports.get = get;
+// TODO:...
+function options(value) {
+    //TODO: as getter...
+    if (arguments.length === 0)
+        return _options;
 
-function set(value) {
+    //TODO: as setter...
     _.mergeProps(_options, value);
+    // 1. merge
+    // 2. reload all joint/async/await mods
 }
-exports.set = set;
 
+//TODO: expose this as non-enum 'private' property on _options...
 function clear() {
     _options = {};
 }
-exports.clear = clear;
 
 // TODO: side-effect
-exports.clear();
+clear();
 
 // TODO: private impl
 var _options;
+module.exports = options;
 //# sourceMappingURL=options.js.map

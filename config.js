@@ -1,2 +1,3 @@
 ﻿require('./src/main');
-module.exports = require('./src/config');
+exports.options = require('./src/options');
+exports.use = require('./src/use');

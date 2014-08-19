@@ -1,20 +1,22 @@
 ﻿import references = require('references');
 import Fiber = require('fibers');
-import jointProtocol = require('../jointProtocol');
-import JointProtocol = AsyncAwait.JointProtocol;
-import AsyncProtocol = AsyncAwait.Async.AsyncProtocol;
-import JointMod = AsyncAwait.JointMod;
+import fiberProtocol = require('../fiberProtocol');
+import FiberProtocol = AsyncAwait.FiberProtocol;
+import AsyncProtocol = AsyncAwait.AsyncProtocol;
+import Mod = AsyncAwait.Mod;
 
 
 /** Provides the baseline method implementations for the joint protocol. */
-export var mod: JointMod = {
+export var mod: Mod<FiberProtocol> = {
 
     name: 'baseline',
+
+    base: '???',
 
     override: (base, options) => ({
 
         /** Create and return a new Fiber instance. */
-        acquireFiber: (asyncProtocol: AsyncProtocol) => {
+        acquire: (asyncProtocol: AsyncProtocol) => {
             var fi = createFiber(asyncProtocol);
             fi.id = ++nextFiberId;
             fi.context = {};
@@ -25,8 +27,8 @@ export var mod: JointMod = {
         },
 
         /** Ensure the Fiber instance is disposed of cleanly. */
-        releaseFiber: (asyncProtocol: AsyncProtocol, fi: Fiber) => {
-            jointProtocol.setFiberTarget(fi, null);
+        release: (asyncProtocol: AsyncProtocol, fi: Fiber) => {
+            fiberProtocol.retarget(fi, null);
             fi.suspend = null;
             fi.resume = null;
             fi.context = null;
@@ -34,17 +36,11 @@ export var mod: JointMod = {
         },
 
         //TODO: comment...
-        setFiberTarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => {
+        retarget: (fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]) => {
             fi.bodyFunc = bodyFunc;
             fi.bodyThis = bodyThis;
             fi.bodyArgs = bodyArgs;
-        },
-
-        //TODO: comment...
-        startup: () => { /* no-op */ },
-
-        //TODO: comment...
-        shutdown: () => { /* no-op */ }
+        }
     }),
 
     defaults: { /* none */ }
@@ -102,7 +98,7 @@ function createFiber(asyncProtocol: AsyncProtocol) {
     // The finally block delegates to the async protocol to handle the error/result, then cleans up the fiber.
     function finallyBlock() {
         asyncProtocol.end(fi, error, result);
-        jointProtocol.releaseFiber(asyncProtocol, fi);
+        fiberProtocol.release(asyncProtocol, fi);
     }
 
     // Return the newly created fiber.

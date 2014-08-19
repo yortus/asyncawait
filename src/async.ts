@@ -1,11 +1,10 @@
 ﻿import references = require('references');
 import assert = require('assert');
-import config = require('./config');
-import opts = require('./options');
+import options = require('./options');
 import Protocol = require('./protocol');
 import _ = require('./util');
-import createSuspendableFunction = require('./___OLD___async/createSuspendableFunction');//TODO:...
-import Mod = AsyncAwait2.Mod;
+import createSuspendableFunction = require('./createSuspendableFunction');//TODO:...
+import Mod = AsyncAwait.Mod;
 
 
 
@@ -20,7 +19,7 @@ import Mod = AsyncAwait2.Mod;
 // function createAsyncImpl(protocol)
 // function registerAsyncVariant(variant, expose?)
 
-export var api: AsyncAwait2.AsyncAPI = <any> function () {
+export var api: AsyncAwait.AsyncAPI = <any> function () {
 
     // Collect all arguments into an array.
     var len = arguments.length, args = new Array(len);
@@ -29,7 +28,7 @@ export var api: AsyncAwait2.AsyncAPI = <any> function () {
     // Find the appropriate implementation to delegate to.
     //TODO: ...
 
-    var name = opts.get().defaults.async || '';
+    var name = options().defaults.async || '';
     var async = _variants[name].impl;
 
     // Delegate to the implementation.
@@ -41,7 +40,8 @@ export var api: AsyncAwait2.AsyncAPI = <any> function () {
 export function createVariant(mod: Mod<any>) {
 
     // Get the appropriate base variant.
-    var baseVariant = _variants[mod.base || ''];
+    var base = mod.base.split('.').slice(1).join('.');
+    var baseVariant = _variants[base];
     assert(baseVariant, "use: async mod '" + mod.name + "' refers to unknown base mod '" + mod.base + "'");
 
     // Apply the mod to get a new protocol.
@@ -63,7 +63,7 @@ var _variants: { [name: string]: Variant } = {};
 
 // TODO:...
 _variants[''] = (() => {
-    var protocol = new Protocol(_.branch(opts.get()), () => ({
+    var protocol = new Protocol(_.branch(options()), () => ({
         begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
         suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
