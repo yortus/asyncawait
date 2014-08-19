@@ -1,5 +1,6 @@
 ﻿import references = require('references');
 import async = require('./async');
+import await = require('./await');
 export = use;
 
 
@@ -14,6 +15,7 @@ function use(mod: any) {
             async.createVariant(mod);
             break;
         case 'await':
+            await.createVariant(mod);
             break;
         case 'fiber':
             break;

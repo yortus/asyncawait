@@ -12,12 +12,12 @@ import Mod = AsyncAwait.Mod;
 
 //TODO: ============================================================================================= ASYNC
 // function asyncAPI() - proxying function
-// var _asyncVariants
+// var _variants
 // side-effect: initialise 'root' variant
-// interface Variant  - holds: mod, protocol, asyncImplFunc
-// function createAsyncVariant(mod) => variant
-// function createAsyncImpl(protocol)
-// function registerAsyncVariant(variant, expose?)
+// interface Variant  - holds: mod, protocol, impl
+// function createVariant(mod) => variant
+// function createImpl(protocol)
+// function registerVariant(variant, expose?)
 
 export var api: AsyncAwait.AsyncAPI = <any> function () {
 
@@ -40,13 +40,13 @@ export var api: AsyncAwait.AsyncAPI = <any> function () {
 export function createVariant(mod: Mod<any>) {
 
     // Get the appropriate base variant.
-    var base = mod.base.split('.').slice(1).join('.');
+    var base = mod.base.split('.').slice(1).join('.'); //TODO: slice=yuk...
     var baseVariant = _variants[base];
     assert(baseVariant, "use: async mod '" + mod.name + "' refers to unknown base mod '" + mod.base + "'");
 
     // Apply the mod to get a new protocol.
     var moddedProtocol = baseVariant.protocol.mod(mod);
-    var moddedImpl = createAsyncImpl(moddedProtocol);
+    var moddedImpl = createImpl(moddedProtocol);
 
     // Create and return the new variant.
     var moddedVariant = { mod: mod, protocol: moddedProtocol, impl: moddedImpl };
@@ -69,7 +69,7 @@ _variants[''] = (() => {
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },
         end: (fi, error?, value?) => { throw new Error('end: not implemented. All async mods must override this method.'); }
     }));
-    return { mod: null, protocol: protocol, impl: createAsyncImpl(protocol) };
+    return { mod: null, protocol: protocol, impl: createImpl(protocol) };
 })();
 
 
@@ -82,7 +82,7 @@ interface Variant {
 
 
 // TODO:...
-function createAsyncImpl(protocol: Protocol<any, any>) {
+function createImpl(protocol: Protocol<any, any>) {
     return function asyncImpl(invokee: Function) {
         assert(arguments.length === 1, 'async: expected a single argument');
         assert(_.isFunction(invokee), 'async: expected argument to be a function');
@@ -99,7 +99,7 @@ function registerVariant(variant: Variant, expose = true) {
     _variants[name] = variant;
 
     if (expose) {
-        var nameParts = name.split('.');
+        var nameParts = name.split('.').slice(1); //TODO: slice=yuk...
         var hostObj = api;
         while (true) {
             var namePart = nameParts.shift();

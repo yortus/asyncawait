@@ -10,9 +10,9 @@ export = mod;
 //      async(...) or await(...) call is made.
 var mod = {
 
-    name: 'promise',
+    name: 'await.promise',
 
-    type: <AsyncAwait.Await.PromiseBuilder> null,
+    base: 'await.', //TODO: yuk
 
     override: (base, options) => ({
         singular: (fi, arg) => {

@@ -16,12 +16,15 @@ console.log('MAIN!!!!!!!!!!!!!!!');
 
 options({
     defaults: {
-        async: 'async.promise'
+        async: 'async.promise',
+        await: 'await.promise'
     }
 });
 
 
 var mod = require('./mods/async.promise');
+use(mod);
+var mod = require('./mods/await.promise');
 use(mod);
 
 

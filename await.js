@@ -1,2 +1,2 @@
 ﻿require('./src/main');
-module.exports = require('./src/await');
+module.exports = require('./src/await').api;

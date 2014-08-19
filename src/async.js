@@ -6,12 +6,12 @@ var createSuspendableFunction = require('./createSuspendableFunction');
 
 //TODO: ============================================================================================= ASYNC
 // function asyncAPI() - proxying function
-// var _asyncVariants
+// var _variants
 // side-effect: initialise 'root' variant
-// interface Variant  - holds: mod, protocol, asyncImplFunc
-// function createAsyncVariant(mod) => variant
-// function createAsyncImpl(protocol)
-// function registerAsyncVariant(variant, expose?)
+// interface Variant  - holds: mod, protocol, impl
+// function createVariant(mod) => variant
+// function createImpl(protocol)
+// function registerVariant(variant, expose?)
 exports.api = function () {
     // Collect all arguments into an array.
     var len = arguments.length, args = new Array(len);
@@ -36,7 +36,7 @@ function createVariant(mod) {
 
     // Apply the mod to get a new protocol.
     var moddedProtocol = baseVariant.protocol.mod(mod);
-    var moddedImpl = createAsyncImpl(moddedProtocol);
+    var moddedImpl = createImpl(moddedProtocol);
 
     // Create and return the new variant.
     var moddedVariant = { mod: mod, protocol: moddedProtocol, impl: moddedImpl };
@@ -68,12 +68,12 @@ _variants[''] = (function () {
             }
         });
     });
-    return { mod: null, protocol: protocol, impl: createAsyncImpl(protocol) };
+    return { mod: null, protocol: protocol, impl: createImpl(protocol) };
 })();
 
 
 // TODO:...
-function createAsyncImpl(protocol) {
+function createImpl(protocol) {
     return function asyncImpl(invokee) {
         assert(arguments.length === 1, 'async: expected a single argument');
         assert(_.isFunction(invokee), 'async: expected argument to be a function');
@@ -91,7 +91,7 @@ function registerVariant(variant, expose) {
     _variants[name] = variant;
 
     if (expose) {
-        var nameParts = name.split('.');
+        var nameParts = name.split('.').slice(1);
         var hostObj = exports.api;
         while (true) {
             var namePart = nameParts.shift();

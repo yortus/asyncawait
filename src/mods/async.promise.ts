@@ -4,9 +4,10 @@ export = mod;
 
 
 var mod = {
+
     name: 'async.promise',
 
-    base: 'async.',
+    base: 'async.', //TODO: yuk
 
     /** Provides appropriate handling for promise-returning suspendable functions. */
     override: (base, options) => ({

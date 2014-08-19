@@ -1,4 +1,5 @@
 ﻿var async = require('./async');
+var await = require('./await');
 
 function use(mod) {
     switch (mod.base.split('.')[0]) {
@@ -6,6 +7,7 @@ function use(mod) {
             async.createVariant(mod);
             break;
         case 'await':
+            await.createVariant(mod);
             break;
         case 'fiber':
             break;

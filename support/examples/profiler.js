@@ -28,6 +28,7 @@ config.options({ maxSlots: 5 });
 
 // ========== experiment ==========
 var f1 = async(function (msg) {
+    await (Promise.delay(200));
     console.log(msg);
     //throw new Error('aaaaarrr');
 });
