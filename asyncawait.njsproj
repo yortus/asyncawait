@@ -55,8 +55,6 @@
     <TypeScriptCompile Include="src\yield.ts" />
     <TypeScriptCompile Include="src\async.ts" />
     <TypeScriptCompile Include="src\await.ts" />
-    <TypeScriptCompile Include="src\___OLD___async\createSuspendableFunction.ts" />
-    <TypeScriptCompile Include="src\___OLD___async\index.ts" />
     <TypeScriptCompile Include="src\___OLD___config\index.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.thunk.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.cps.ts" />
@@ -102,7 +100,6 @@
     <TypeScriptCompile Include="test\await.promise.ts" />
     <TypeScriptCompile Include="test\await.ts" />
     <Content Include="references.d.ts" />
-    <Content Include="src\___OLD___async\builder.ts" />
     <Content Include="src\awaitBuilder.ts" />
     <Content Include="src\mods\fiberPool.ts" />
     <Content Include="src\mods\cpsKeyword.ts" />
@@ -171,7 +168,6 @@
     <Folder Include="src\___OLD___await\" />
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
-    <Folder Include="src\___OLD___async\" />
     <Folder Include="src\___OLD___config\" />
     <Folder Include="support\comparison\" />
     <Folder Include="support\comparison\countFiles\" />
