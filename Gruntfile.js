@@ -21,7 +21,9 @@ module.exports = function(grunt) {
                 //    'test/**/*.ts'
                 //],
                 src: [
+                    'src/mods/async.cps.ts',
                     'src/mods/async.promise.ts',
+                    'src/mods/async.thunk.ts',
                     'src/mods/await.compound.ts',
                     'src/mods/await.cps.ts',
                     'src/mods/await.promise.ts',
@@ -38,7 +40,7 @@ module.exports = function(grunt) {
                     'src/protocol.ts',
                     'src/util.ts',
                     'src/yield.ts',
-                    //'test/async.cps.ts',
+                    'test/async.cps.ts',
                     //'test/async.express.ts',
                     //'test/async.iterable.cps.ts',
                     //'test/async.iterable.promise.ts',
@@ -47,7 +49,7 @@ module.exports = function(grunt) {
                     //'test/async.mod.ts',
                     'test/async.promise.ts',
                     //'test/async.stream.ts',
-                    //'test/async.thunk.ts',
+                    'test/async.thunk.ts',
                     //'test/async.ts',
                     'test/await.cps.ts',
                     'test/await.promise.ts',
@@ -79,7 +81,7 @@ module.exports = function(grunt) {
                 options: { reporter: 'list' },
                 //src: ['test/**/*.js']
                 src: [
-                    //'test/async.cps.js',
+                    'test/async.cps.js',
                     //'test/async.express.js',
                     //'test/async.iterable.cps.js',
                     //'test/async.iterable.promise.js',
@@ -88,7 +90,7 @@ module.exports = function(grunt) {
                     //'test/async.mod.js',
                     'test/async.promise.js',
                     //'test/async.stream.js',
-                    //'test/async.thunk.js',
+                    'test/async.thunk.js',
                     //'test/async.js',
                     //TODO: add(create) await.compound, await.value test files
                     'test/await.cps.js',

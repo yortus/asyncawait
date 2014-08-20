@@ -7,11 +7,9 @@ export = mod;
 /** Provides an async builder for producing suspendable functions accept node-style callbacks. */
 var mod = {
 
-    /** Used for diagnostic purposes. */
-    name: 'cps',
+    name: 'async.cps',
 
-    /** Used only for automatic type interence at TypeScript compile time. */
-    type: <AsyncAwait.Async.CPSBuilder> null,
+    base: '',
 
     /** Provides appropriate handling for callback-accepting suspendable functions. */
     override: (base, options) => ({

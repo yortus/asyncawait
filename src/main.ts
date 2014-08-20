@@ -26,7 +26,9 @@ options({
 });
 
 
+use(require('./mods/async.cps'));
 use(require('./mods/async.promise'));
+use(require('./mods/async.thunk'));
 use(require('./mods/await.promise'));
 use(require('./mods/await.cps'));
 use(require('./mods/await.thunk'));
