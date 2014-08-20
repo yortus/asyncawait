@@ -6,9 +6,9 @@ export = mod;
 
 var mod = {
 
-    name: 'iterable.cps',
+    name: 'async.iterable.cps',
 
-    type: <AsyncAwait.Async.IterableCPSBuilder> null,
+    base: '',
 
     override: (base, options) => ({
 

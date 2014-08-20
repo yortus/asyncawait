@@ -27,8 +27,14 @@ options({
 
 
 use(require('./mods/async.cps'));
+use(require('./mods/async.express'));
+use(require('./mods/async.iterable'));
+use(require('./mods/async.iterable.cps'));
+use(require('./mods/async.iterable.promise'));
+use(require('./mods/async.iterable.thunk'));
 use(require('./mods/async.promise'));
 use(require('./mods/async.thunk'));
+use(require('./mods/async.stream'));
 use(require('./mods/await.promise'));
 use(require('./mods/await.cps'));
 use(require('./mods/await.thunk'));

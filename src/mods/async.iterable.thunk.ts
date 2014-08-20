@@ -6,12 +6,9 @@ export = mod;
 
 var mod = {
 
-    name: 'iterable.thunk',
+    name: 'async.iterable.thunk',
 
-    //TODO: ...
-    base: 'iterable.cps',
-
-    type: <AsyncAwait.Async.IterableThunkBuilder> null,
+    base: 'async.iterable.cps',
 
     override: (cps, options) => ({
         begin: (fi) => {

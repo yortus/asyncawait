@@ -104,6 +104,8 @@ declare module AsyncAwait {
         promise: AsyncPromise;
         cps: AsyncCPS;
         thunk: AsyncThunk;
+        express: AsyncCPS;
+        stream: AsyncStream;
     }
     export interface AwaitAPI {
         promise: AwaitPromise;
@@ -133,6 +135,9 @@ declare module AsyncAwait {
         <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
     }
+    export interface AsyncStream {
+        (fn: Function): (...args: any[]) => NodeJS.ReadableStream;
+    }
 
 
     export interface AwaitPromise {
@@ -144,6 +149,35 @@ declare module AsyncAwait {
     }
     export interface AwaitThunk {
         <T>(expr: Thunk<T>): T;
+    }
+}
+// ------------------------- TODO: iterable stuff... -------------------------
+declare module AsyncAwait {
+    export interface AsyncAPI {
+        iterable: AsyncIterableAPI;
+    }
+    export interface AsyncIterableAPI extends AsyncIterablePromise {
+        promise: AsyncIterablePromise;
+        cps: AsyncIterableCPS;
+        thunk: AsyncIterableThunk;
+    }
+    export interface AsyncIterablePromise {
+        (fn: Function): (...args: any[]) => {
+            next(): Promise<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void): Promise<void>;
+        };
+    }
+    export interface AsyncIterableCPS {
+        (fn: Function): (...args: any[]) => {
+            next(callback?: Callback<any>): void;
+            forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
+        };
+    }
+    export interface AsyncIterableThunk {
+        (fn: Function): (...args: any[]) => {
+            next(): Thunk<{ done: boolean; value?: any; }>;
+            forEach(callback: (value) => void): Thunk<void>;
+        };
     }
 }
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -167,7 +201,9 @@ declare module AsyncAwaitOLD {
     }
 
 }
-    //------------------------- Common -------------------------
+
+
+//------------------------- Common -------------------------
 //TODO:...
 declare module AsyncAwait {
     export interface Callback<TResult> {
@@ -176,91 +212,6 @@ declare module AsyncAwait {
 
     export interface Thunk<TResult> {
         (callback?: Callback<TResult>): void;
-    }
-}
-
-
-// ------------------------- Mod: thunks -------------------------
-declare module AsyncAwait.OLD {
-    export module Async {
-        export interface API {
-            thunk: ThunkBuilder;
-        }
-        export interface ThunkBuilder {
-            <TResult>(fn: () => TResult): () => Thunk<TResult>;
-            <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
-            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
-            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
-            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
-        }
-    }
-    export module Await {
-        export interface API {
-            thunk: ThunkBuilder;
-        }
-        export interface ThunkBuilder {
-            <T>(expr: Thunk<T>): T;
-        }
-    }
-}
-
-
-// ------------------------- Mod: streams -------------------------
-declare module AsyncAwait.OLD {
-    export module Async {
-        export interface API {
-            stream: StreamBuilder;
-        }
-        export interface StreamBuilder {
-            (fn: Function): (...args: any[]) => NodeJS.ReadableStream;
-        }
-    }
-}
-
-
-// ------------------------- Mod: express -------------------------
-declare module AsyncAwait.OLD {
-    export module Async {
-        export interface API {
-//TODO: was...            express: CPSBuilder;
-        }
-    }
-}
-
-
-// ------------------------- TODO: iterable stuff... -------------------------
-declare module AsyncAwait {
-    export module Async {
-        export interface API {
-            iterable: IterableAPI;
-        }
-
-        export interface IterableAPI extends IterablePromiseBuilder {
-            promise: IterablePromiseBuilder;
-            cps: IterableCPSBuilder;
-            thunk: IterableThunkBuilder;
-        }
-
-        export interface IterablePromiseBuilder {
-            (fn: Function): (...args: any[]) => {
-                next(): Promise<{ done: boolean; value?: any; }>;
-                forEach(callback: (value) => void): Promise<void>;
-            };
-        }
-
-        export interface IterableCPSBuilder {
-            (fn: Function): (...args: any[]) => {
-                next(callback?: Callback<any>): void;
-                forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
-            };
-        }
-
-        export interface IterableThunkBuilder {
-            (fn: Function): (...args: any[]) => {
-                next(): Thunk<{ done: boolean; value?: any; }>;
-                forEach(callback: (value) => void): Thunk<void>;
-            };
-        }
     }
 }
 

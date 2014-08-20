@@ -7,9 +7,9 @@ export = mod;
 
 var mod = {
 
-    name: 'iterable.promise',
+    name: 'async.iterable.promise',
 
-    type: <AsyncAwait.Async.IterablePromiseBuilder> null,
+    base: '',
 
     override: (base, options) => ({
 

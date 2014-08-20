@@ -2,15 +2,11 @@
 export = mod;
 
 
-//TODO: how to indicate that this must mod async.cps??
 var mod = {
 
-    name: 'express',
+    name: 'async.express',
 
-    //TODO: add checking in extensibility.ts or somehow for this:
-    base: 'cps',
-
-    type: <AsyncAwait.Async.CPSBuilder> null,
+    base: 'async.cps',
 
     override: (cps, options) => ({
         end: (fi, error?, value?) => {

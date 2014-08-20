@@ -6,9 +6,9 @@ export = mod;
 
 var mod = {
 
-    name: 'stream',
+    name: 'async.stream',
 
-    type: <AsyncAwait.Async.StreamBuilder> null,
+    base: '',
 
     override: (base, options) => ({
 
