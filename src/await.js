@@ -26,10 +26,13 @@ exports.api = function () {
     return await.apply(this, args);
 };
 
+//TODO: we don't really want this here. Should be in callbacks mod...
+exports.api.continuation = _.createContinuation;
+
 // TODO:...
 function createVariant(mod) {
     // Get the appropriate base variant.
-    var base = mod.base.split('.').slice(1).join('.');
+    var base = mod.base || '';
     var baseVariant = _variants[base];
     assert(baseVariant, "use: await mod '" + mod.name + "' refers to unknown base mod '" + mod.base + "'");
 

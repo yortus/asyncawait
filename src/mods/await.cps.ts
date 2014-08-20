@@ -6,9 +6,9 @@ export = mod;
 //TODO:...
 var mod = {
     
-    name: 'cps',
+    name: 'await.cps',
 
-    type: <AsyncAwait.Await.CPSBuilder> null,
+    base: null,
 
     override: (base, options) => ({
         singular: (fi, arg) => {

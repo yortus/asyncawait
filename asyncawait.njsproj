@@ -62,8 +62,6 @@
     <TypeScriptCompile Include="src\mods\async.iterable.cps.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.promise.ts" />
     <TypeScriptCompile Include="src\mods\async.stream.ts" />
-    <TypeScriptCompile Include="src\___OLD___await\compound.ts" />
-    <TypeScriptCompile Include="src\___OLD___await\index.ts" />
     <TypeScriptCompile Include="src\mods\async.cps.ts" />
     <TypeScriptCompile Include="src\mods\async.express.ts" />
     <TypeScriptCompile Include="src\mods\async.promise.ts" />
@@ -102,12 +100,10 @@
     <TypeScriptCompile Include="test\await.promise.ts" />
     <TypeScriptCompile Include="test\await.ts" />
     <Content Include="references.d.ts" />
-    <Content Include="src\awaitBuilder.ts" />
     <Content Include="src\mods\fiberPool.ts" />
     <Content Include="src\mods\cpsKeyword.ts" />
     <Content Include="src\mods\fibersHotfix169.ts" />
     <Content Include="src\mods\maxSlots.ts" />
-    <Content Include="src\jointProtocol.ts" />
     <Content Include="src\TODO.txt" />
     <Content Include="src\util.ts" />
     <Content Include="support\comparison\README.md" />
@@ -125,7 +121,6 @@
     <TypeScriptCompile Include="test\config.fiberPool.ts" />
     <TypeScriptCompile Include="test\config.mod.ts" />
     <TypeScriptCompile Include="test\config.ts" />
-    <TypeScriptCompile Include="src\___OLD___yield\index.ts" />
     <TypeScriptCompile Include="test\protocol.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +162,6 @@
     <Compile Include="index.js" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\___OLD___await\" />
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
     <Folder Include="src\___OLD___config\" />
@@ -188,7 +182,6 @@
     <Folder Include="typings\mocha\" />
     <Folder Include="typings\node-fibers\" />
     <Folder Include="typings\node\" />
-    <Folder Include="src\___OLD___yield\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>

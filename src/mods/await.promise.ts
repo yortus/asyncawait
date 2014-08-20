@@ -12,7 +12,7 @@ var mod = {
 
     name: 'await.promise',
 
-    base: 'await.', //TODO: yuk
+    base: null, //TODO: yuk
 
     override: (base, options) => ({
         singular: (fi, arg) => {

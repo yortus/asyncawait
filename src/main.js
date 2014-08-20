@@ -7,18 +7,23 @@ var fiberProtocol = require('./fiberProtocol');
 //var async: AsyncAwait.AsyncAPI;
 //var x = async((a: number): string => null);
 //TODO: side effects!
-console.log('MAIN!!!!!!!!!!!!!!!');
-
 options({
     defaults: {
         async: 'async.promise',
         await: 'await.compound',
-        awaitVariants: ['await.promise', 'await.value']
+        awaitVariants: [
+            'await.promise',
+            'await.cps',
+            'await.thunk',
+            'await.value'
+        ]
     }
 });
 
 use(require('./mods/async.promise'));
 use(require('./mods/await.promise'));
+use(require('./mods/await.cps'));
+use(require('./mods/await.thunk'));
 use(require('./mods/await.value'));
 use(require('./mods/await.compound'));
 

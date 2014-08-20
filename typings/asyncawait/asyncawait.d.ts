@@ -97,11 +97,21 @@ declare module AsyncAwait {
 
     // Default async and await behaviour
     export interface AsyncAPI extends AsyncPromise { }
-    export interface AwaitAPI extends AwaitPromise { }
+    export interface AwaitAPI extends AwaitPromise, AwaitCPS, AwaitThunk { }
+
 
     export interface AsyncAPI {
         promise: AsyncPromise;
+        cps: AsyncCPS;
+        thunk: AsyncThunk;
     }
+    export interface AwaitAPI {
+        promise: AwaitPromise;
+        cps: AwaitCPS;
+        thunk: AwaitThunk;
+    }
+
+
     export interface AsyncPromise {
         <TResult>(fn: () => TResult): () => Promise<TResult>;
         <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Promise<TResult>;
@@ -109,12 +119,31 @@ declare module AsyncAwait {
         <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Promise<TResult>;
         <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Promise<TResult>;
     }
-    export interface AwaitAPI {
-        promise: AwaitPromise;
+    export interface AsyncCPS {
+        <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => void;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
     }
-    //TODO: Review this after making extensible
+    export interface AsyncThunk {
+        <TResult>(fn: () => TResult): () => Thunk<TResult>;
+        <T, TResult>(fn: (arg: T) => TResult): (arg: T) => Thunk<TResult>;
+        <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2) => Thunk<TResult>;
+        <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3) => Thunk<TResult>;
+        <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => Thunk<TResult>;
+    }
+
+
     export interface AwaitPromise {
         <T>(expr: Promise.Thenable<T>): T;
+    }
+    export interface AwaitCPS {
+        (expr: any): any;
+        continuation: () => Callback<any>;
+    }
+    export interface AwaitThunk {
+        <T>(expr: Thunk<T>): T;
     }
 }
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -147,33 +176,6 @@ declare module AsyncAwait {
 
     export interface Thunk<TResult> {
         (callback?: Callback<TResult>): void;
-    }
-}
-
-
-
-// ------------------------- Mod: callbacks -------------------------
-declare module AsyncAwait.OLD {
-    export module Async {
-        export interface API {
-            cps: CPSBuilder;
-        }
-        export interface CPSBuilder {
-            <TResult>(fn: () => TResult): (callback?: Callback<TResult>) => void;
-            <T, TResult>(fn: (arg: T) => TResult): (arg: T, callback?: Callback<TResult>) => void;
-            <T1, T2, TResult>(fn: (arg1: T1, arg2: T2) => TResult): (arg1: T1, arg2: T2, callback?: Callback<TResult>) => void;
-            <T1, T2, T3, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3) => TResult): (arg1: T1, arg2: T2, arg3: T3, callback?: Callback<TResult>) => void;
-            <T1, T2, T3, T4, TResult>(fn: (arg1: T1, arg2: T2, arg3: T3, arg4: T4) => TResult): (arg1: T1, arg2: T2, arg3: T3, arg4: T4, callback?: Callback<TResult>) => void;
-        }
-    }
-    export module Await {
-        export interface API {
-            cps: CPSBuilder;
-        }
-        export interface CPSBuilder {
-            (expr: any): any;
-            continuation: () => Callback<any>;
-        }
     }
 }
 
@@ -220,7 +222,7 @@ declare module AsyncAwait.OLD {
 declare module AsyncAwait.OLD {
     export module Async {
         export interface API {
-            express: CPSBuilder;
+//TODO: was...            express: CPSBuilder;
         }
     }
 }

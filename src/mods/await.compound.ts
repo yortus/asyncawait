@@ -8,7 +8,7 @@ var mod = {
 
     name: 'await.compound',
 
-    base: 'await.',
+    base: null,
 
     override: (base, options) => {
 

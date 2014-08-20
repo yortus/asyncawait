@@ -30,7 +30,7 @@ exports.api = function () {
 // TODO:...
 function createVariant(mod) {
     // Get the appropriate base variant.
-    var base = mod.base.split('.').slice(1).join('.');
+    var base = mod.base || '';
     var baseVariant = _variants[base];
     assert(baseVariant, "use: async mod '" + mod.name + "' refers to unknown base mod '" + mod.base + "'");
 

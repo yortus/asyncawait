@@ -2,7 +2,7 @@
 var await = require('./await');
 
 function use(mod) {
-    switch (mod.base.split('.')[0]) {
+    switch (mod.name.split('.')[0]) {
         case 'async':
             async.createVariant(mod);
             break;

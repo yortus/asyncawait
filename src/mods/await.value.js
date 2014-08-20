@@ -1,7 +1,7 @@
 ﻿
 var mod = {
     name: 'await.value',
-    base: 'await.',
+    base: null,
     // TODO: setImmediate correct/needed here?
     override: function (base, options) {
         return ({

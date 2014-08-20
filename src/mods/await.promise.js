@@ -5,7 +5,7 @@
 //      async(...) or await(...) call is made.
 var mod = {
     name: 'await.promise',
-    base: 'await.',
+    base: null,
     override: function (base, options) {
         return ({
             singular: function (fi, arg) {

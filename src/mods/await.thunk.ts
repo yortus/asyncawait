@@ -5,9 +5,9 @@ export = mod;
 
 var mod = {
 
-    name: 'thunk',
+    name: 'await.thunk',
 
-    type: <AsyncAwait.Await.ThunkBuilder> null,
+    base: 'await.cps',
 
     override: (base, options) => ({
         singular: (fi, arg) => {

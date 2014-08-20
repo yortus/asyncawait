@@ -5,7 +5,7 @@ import async = require('asyncawait/async');
 import await = require('asyncawait/await');
 import yield_ = require('asyncawait/yield');
 var expect = chai.expect;
-var cont = await.cps.continuation;
+var cont = await.continuation;
 
 
 

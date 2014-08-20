@@ -35,11 +35,21 @@ export var api: AsyncAwait.AwaitAPI = <any> function () {
 };
 
 
+//TODO: we don't really want this here. Should be in callbacks mod...
+api.continuation = _.createContinuation;
+
+
+
+
+
+
+
+
 // TODO:...
 export function createVariant(mod: Mod<any>) {
 
     // Get the appropriate base variant.
-    var base = mod.base.split('.').slice(1).join('.'); //TODO: slice=yuk...
+    var base = mod.base || '';
     var baseVariant = _variants[base];
     assert(baseVariant, "use: await mod '" + mod.name + "' refers to unknown base mod '" + mod.base + "'");
 

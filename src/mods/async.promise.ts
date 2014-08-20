@@ -7,7 +7,7 @@ var mod = {
 
     name: 'async.promise',
 
-    base: 'async.', //TODO: yuk
+    base: null,
 
     /** Provides appropriate handling for promise-returning suspendable functions. */
     override: (base, options) => ({

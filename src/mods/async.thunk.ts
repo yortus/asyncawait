@@ -1,18 +1,13 @@
 ﻿import references = require('references');
-import oldBuilder = require('./async.cps');
 import _ = require('../util');
 export = mod;
 
 
-//TODO: how to indicate that this must mod async.cps??
 var mod = {
 
-    name: 'thunk',
+    name: 'async.thunk',
 
-    //TODO: add checking in extensibility.ts or somehow for this:
-    base: 'cps',
-
-    type: <AsyncAwait.Async.ThunkBuilder> null,
+    base: 'async.cps',
 
     override: (cps, options) => ({
         begin: (fi) => {

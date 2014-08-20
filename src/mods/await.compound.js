@@ -3,7 +3,7 @@ var _ = require('../util');
 
 var mod = {
     name: 'await.compound',
-    base: 'await.',
+    base: null,
     override: function (base, options) {
         var variants = options.defaults.awaitVariants || [];
         var handlers = variants.map(function (variant) {
