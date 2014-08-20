@@ -50,6 +50,7 @@
     <TypeScriptCompile Include="src\createSuspendableFunction.ts" />
     <TypeScriptCompile Include="src\fiberProtocol.ts" />
     <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\mods\async.iterable.ts" />
     <TypeScriptCompile Include="src\mods\await.value.ts" />
     <TypeScriptCompile Include="src\mods\await.compound.ts" />
     <TypeScriptCompile Include="src\options.ts" />
@@ -57,7 +58,6 @@
     <TypeScriptCompile Include="src\yield.ts" />
     <TypeScriptCompile Include="src\async.ts" />
     <TypeScriptCompile Include="src\await.ts" />
-    <TypeScriptCompile Include="src\___OLD___config\index.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.thunk.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.cps.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.promise.ts" />
@@ -94,10 +94,8 @@
     <TypeScriptCompile Include="test\async.ts" />
     <TypeScriptCompile Include="test\async.stream.ts" />
     <TypeScriptCompile Include="test\async.thunk.ts" />
-    <TypeScriptCompile Include="test\async.promise.ts" />
     <TypeScriptCompile Include="test\await.cps.ts" />
     <TypeScriptCompile Include="test\await.thunk.ts" />
-    <TypeScriptCompile Include="test\await.promise.ts" />
     <TypeScriptCompile Include="test\await.ts" />
     <Content Include="references.d.ts" />
     <Content Include="src\mods\fiberPool.ts" />
@@ -164,7 +162,6 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\mods\" />
-    <Folder Include="src\___OLD___config\" />
     <Folder Include="support\comparison\" />
     <Folder Include="support\comparison\countFiles\" />
     <Folder Include="support\comparison\fibonacci\" />
