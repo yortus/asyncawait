@@ -46,25 +46,27 @@ function createVariant(mod) {
 }
 exports.createVariant = createVariant;
 
+//TODO:...
+function getProtocolFor(name) {
+    return _variants[name].protocol;
+}
+exports.getProtocolFor = getProtocolFor;
+
 // TODO:...
 var _variants = {};
 
 // TODO:...
 _variants[''] = (function () {
-    var protocol = new Protocol(_.branch(options()), function () {
+    var protocol = new Protocol(options(), function () {
         return ({
             singular: function (fi, arg) {
-                setImmediate(function () {
-                    fi.resume(null, arg);
-                });
+                return _.notHandled;
             },
             variadic: function (fi, args) {
-                setImmediate(function () {
-                    fi.resume(null, args[0]);
-                });
+                return _.notHandled;
             },
             elements: function () {
-                return 0;
+                return _.notHandled;
             }
         });
     });

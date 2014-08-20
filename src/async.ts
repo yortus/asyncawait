@@ -63,7 +63,7 @@ var _variants: { [name: string]: Variant } = {};
 
 // TODO:...
 _variants[''] = (() => {
-    var protocol = new Protocol(_.branch(options()), () => ({
+    var protocol = new Protocol(options(), () => ({
         begin: (fi) => { throw new Error('begin: not implemented. All async mods must override this method.'); },
         suspend: (fi, error?, value?) => { throw new Error('suspend: not supported by this type of suspendable function'); },
         resume: (fi, error?, value?) => { return error ? fi.throwInto(error) : fi.run(value); },

@@ -50,6 +50,8 @@
     <TypeScriptCompile Include="src\createSuspendableFunction.ts" />
     <TypeScriptCompile Include="src\fiberProtocol.ts" />
     <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\mods\await.value.ts" />
+    <TypeScriptCompile Include="src\mods\await.compound.ts" />
     <TypeScriptCompile Include="src\options.ts" />
     <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\yield.ts" />

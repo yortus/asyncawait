@@ -17,15 +17,16 @@ console.log('MAIN!!!!!!!!!!!!!!!');
 options({
     defaults: {
         async: 'async.promise',
-        await: 'await.promise'
+        await: 'await.compound',
+        awaitVariants: ['await.promise', 'await.value']
     }
 });
 
 
-var mod = require('./mods/async.promise');
-use(mod);
-var mod = require('./mods/await.promise');
-use(mod);
+use(require('./mods/async.promise'));
+use(require('./mods/await.promise'));
+use(require('./mods/await.value'));
+use(require('./mods/await.compound'));
 
 
 

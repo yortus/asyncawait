@@ -56,16 +56,22 @@ export function createVariant(mod: Mod<any>) {
 }
 
 
+//TODO:...
+export function getProtocolFor(name) {
+    return _variants[name].protocol;
+}
+
+
 // TODO:...
 var _variants: { [name: string]: Variant } = {};
 
 
 // TODO:...
 _variants[''] = (() => {
-    var protocol = new Protocol(_.branch(options()), () => ({
-        singular: (fi, arg) => { setImmediate(() => { fi.resume(null, arg); }); },
-        variadic: (fi, args) => { setImmediate(() => { fi.resume(null, args[0]); }); },
-        elements: () => 0
+    var protocol = new Protocol(options(), () => ({
+        singular: (fi, arg) => _.notHandled,
+        variadic: (fi, args) => _.notHandled,
+        elements: () => _.notHandled
     }));
     return { mod: null, protocol: protocol, impl: createImpl(protocol) };
 })();

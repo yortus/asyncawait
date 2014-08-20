@@ -52,7 +52,7 @@ var _variants = {};
 
 // TODO:...
 _variants[''] = (function () {
-    var protocol = new Protocol(_.branch(options()), function () {
+    var protocol = new Protocol(options(), function () {
         return ({
             begin: function (fi) {
                 throw new Error('begin: not implemented. All async mods must override this method.');
