@@ -56,7 +56,7 @@ module.exports = function(grunt) {
                     'test/async.promise.ts',
                     'test/async.stream.ts',
                     'test/async.thunk.ts',
-                    //'test/async.ts',
+                    'test/async.ts',
                     'test/await.cps.ts',
                     'test/await.promise.ts',
                     'test/await.thunk.ts',
@@ -97,7 +97,7 @@ module.exports = function(grunt) {
                     'test/async.promise.js',
                     'test/async.stream.js',
                     'test/async.thunk.js',
-                    //'test/async.js',
+                    'test/async.js',
                     //TODO: add(create) await.compound, await.value test files
                     'test/await.cps.js',
                     'test/await.promise.js',

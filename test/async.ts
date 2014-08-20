@@ -38,7 +38,7 @@ function runTestsFor(variant?: string, acceptsCallback = false) {
             // Skip this test in DEBUG mode (see comments about DEBUG in src/async/builder).
             if (_.DEBUG) return;
 
-            var defns = [
+            var defns: any[] = [
                 (a, b, c) => {},
                 () => {},
                 (a, b, c, d, e, f, g, h, i, j, k, l, m, n) => {},
