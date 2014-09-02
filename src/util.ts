@@ -4,7 +4,7 @@ import Fiber = require('fibers');
 
 
 /** Specify whether to execute in DEBUG mode. */
-export var DEBUG = false;
+export var DEBUG = true;
 
 
 /** Determines whether the given object is a string. */

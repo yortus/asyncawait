@@ -105,4 +105,10 @@ function registerVariant(variant, expose) {
         }
     }
 }
+
+//TODO: temp testing...
+function getVariant(name) {
+    return _variants[name];
+}
+exports.getVariant = getVariant;
 //# sourceMappingURL=async.js.map

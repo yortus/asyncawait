@@ -1,36 +1,55 @@
-﻿//import references = require('references');
-//import async = require('../async');
-//import await = require('../await');
-//import asyncMod = require('./async.thunk');
-//import awaitMod = require('./await.thunk');
-//import JointMod = AsyncAwait.JointMod;
+﻿import references = require('references');
+import _ = require('../util');
+export = mods;
 
 
 ///** TODO */
-////TODO: how to indicate that this must mod async.cps??
-//export var mod: JointMod = {
+var mods = [
+    {
+        name: 'async.thunk',
+        base: 'async.cps',
+        override: overrideAsync
+    },
+    {
+        name: 'await.thunk',
+        base: 'await.cps',
+        override: overrideAwait
+    }
+];
 
-//    name: 'thunks',
 
-//    //TODO: add checking in extensibility.ts or somehow for this:
-//    requires: ['cps'],
+function overrideAsync(cps, options) {
+    return {
+        begin: (fi) => {
+            return (callback: AsyncAwait.Callback<any>) => cps.begin(fi, callback || _.empty);
+        }
+    };
+}
 
-//    override: (base, options) => ({
-    
-//        startup: () => {
-//            base.startup();
-//            async.use(asyncMod);//TODO: temp testing...
-//            //async.thunk = async.cps.mod(asyncMod);
-//            await.thunk = await.mod(awaitMod);
-//        },
 
-//        shutdown: () => {
-//            delete async.mods['thunk']; //TODO: temp testing...
-//            async.thunk = null;
-//            await.thunk = null;
-//            base.shutdown();
-//        }
-//    }),
+function overrideAwait(base, options) {
+    return {
+        singular: (fi, arg) => {
+            if (!_.isFunction(arg)) return _.notHandled;
+            arg(fi.resume);
+        },
+        variadic: (fi, args) => {
+            if (!_.isFunction(args[0])) return _.notHandled;
+            args[0](fi.resume);
+        },
 
-//    defaults: { }
-//};
+        elements: (values: any[], result: (err: Error, value: any, index: number) => void) => {
+
+            // TODO: temp testing...
+            var k = 0;
+            values.forEach((value, i) => {
+                if (_.isFunction(value)) {
+                    var callback = (err, res) => result(err, res, i);
+                    value(callback);
+                    ++k;
+                }
+            });
+            return k;
+        }
+    };
+}

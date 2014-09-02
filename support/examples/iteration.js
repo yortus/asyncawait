@@ -7,26 +7,31 @@ var yield_ = require('../..').yield;
 
 var someNums = async.iterable (function () {
 
-    await (Promise.delay(500));
+    var p = Promise.delay(500);
+    await (p);
     yield_(111);
-    await (Promise.delay(500));
+    p = Promise.delay(500);
+    await (p);
     yield_(222);
     await (Promise.delay(500));
     yield_(333);
     await (Promise.delay(500));
+    return 'hi';
 });
 
 
 var program = async (function() {
     var iterator = someNums();
 
-    await (iterator.forEach(console.log));
+    //await (iterator.forEach(console.log));
     // or the long (but equivalent) way...
-    //while (true) {
-    //    var item = await (iterator.next());
-    //    if (item.done) break;
-    //    console.log(item.value);
-    //}
+    while (true) {
+        var next = iterator.next;
+        var p = next();
+        var item = await (p);
+        if (item.done) break;
+        console.log(item.value);
+    }
 
     return 'Finished!';
 });

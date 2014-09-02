@@ -2,7 +2,7 @@
 var Fiber = require('fibers');
 
 /** Specify whether to execute in DEBUG mode. */
-exports.DEBUG = false;
+exports.DEBUG = true;
 
 /** Determines whether the given object is a string. */
 function isString(obj) {

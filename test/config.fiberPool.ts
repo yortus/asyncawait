@@ -8,7 +8,7 @@ import _ = require('asyncawait/src/util');
 var expect = chai.expect;
 
 
-beforeEach(() => { config.useDefaults(); });
+//beforeEach(() => { config.useDefaults(); });
 
 
 describe('The fiberPool mod', () => {

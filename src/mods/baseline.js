@@ -1,10 +1,11 @@
 ﻿var Fiber = require('fibers');
 var fiberProtocol = require('../fiberProtocol');
 
+
 /** Provides the baseline method implementations for the joint protocol. */
-exports.mod = {
-    name: 'baseline',
-    base: '???',
+var mod = {
+    name: 'fiber.base',
+    base: '',
     override: function (base, options) {
         return ({
             /** Create and return a new Fiber instance. */
@@ -104,4 +105,5 @@ function createFiber(asyncProtocol) {
     // Return the newly created fiber.
     return fi;
 }
+module.exports = mod;
 //# sourceMappingURL=baseline.js.map

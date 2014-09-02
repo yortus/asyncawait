@@ -4,7 +4,11 @@ export = options;
 
 
 // TODO:...
-function options(value?: any): any {
+var options: {
+    (value?: any): any;
+    defaults: any;
+    clear(): void;
+} = <any> function(value) {
 
     //TODO: as getter...
     if (arguments.length === 0) return _options;
@@ -19,13 +23,13 @@ function options(value?: any): any {
 
 
 //TODO: expose this as non-enum 'private' property on _options...
-function clear() {
+options.clear = () => {
     _options = {};
 }
 
 
 // TODO: side-effect
-clear();
+options.clear();
 
 
 // TODO: private impl

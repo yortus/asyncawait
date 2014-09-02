@@ -1,30 +1,19 @@
-﻿//import references = require('references');
-//import async = require('../async');
-//import asyncMod = require('./async.express');
-//import JointMod = AsyncAwait.JointMod;
+﻿import references = require('references');
+export = mod;
 
 
-///** TODO */
-////TODO: how to indicate that this must mod async.cps??
-//export var mod: JointMod = {
+var mod = {
 
-//    name: 'express',
+    name: 'async.express',
 
-//    //TODO: add checking in extensibility.ts or somehow for this:
-//    requires: ['cps'],
+    base: 'async.cps',
 
-//    override: (base, options) => ({
-    
-//        startup: () => {
-//            base.startup();
-//            async.express = async.cps.mod(asyncMod);
-//        },
-
-//        shutdown: () => {
-//            async.express = null;
-//            base.shutdown();
-//        }
-//    }),
-
-//    defaults: { }
-//};
+    override: (cps, options) => ({
+        end: (fi, error?, value?) => {
+            if (error) return cps.end(fi, error);
+            if (value === 'next') return cps.end(fi);
+            if (value === 'route') return cps.end(fi, <any> 'route');
+            if (!!value) return cps.end(fi, new Error('unexpected return value: ' + value));
+        }
+    })
+};

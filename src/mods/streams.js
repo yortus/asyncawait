@@ -7,6 +7,7 @@
 var stream = require('stream');
 var _ = require('../util');
 
+//TODO: add await stream support
 var mod = {
     name: 'async.stream',
     base: '',
@@ -52,4 +53,4 @@ var Stream = (function (_super) {
     return Stream;
 })(stream.Readable);
 module.exports = mod;
-//# sourceMappingURL=async.stream.js.map
+//# sourceMappingURL=streams.js.map

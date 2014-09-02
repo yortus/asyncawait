@@ -21,7 +21,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{330c5f49-70cc-42b2-b036-7e7c0c4e604d}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>support\examples\profiler.js</StartupFile>
+    <StartupFile>support\examples\iteration.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -53,6 +53,7 @@
     <TypeScriptCompile Include="src\mods\async.iterable.ts" />
     <TypeScriptCompile Include="src\mods\await.value.ts" />
     <TypeScriptCompile Include="src\mods\await.compound.ts" />
+    <TypeScriptCompile Include="src\mods\express.ts" />
     <TypeScriptCompile Include="src\options.ts" />
     <TypeScriptCompile Include="src\use.ts" />
     <TypeScriptCompile Include="src\yield.ts" />
@@ -61,19 +62,10 @@
     <TypeScriptCompile Include="src\mods\async.iterable.thunk.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.cps.ts" />
     <TypeScriptCompile Include="src\mods\async.iterable.promise.ts" />
-    <TypeScriptCompile Include="src\mods\async.stream.ts" />
-    <TypeScriptCompile Include="src\mods\async.cps.ts" />
-    <TypeScriptCompile Include="src\mods\async.express.ts" />
-    <TypeScriptCompile Include="src\mods\async.promise.ts" />
-    <TypeScriptCompile Include="src\mods\async.thunk.ts" />
-    <TypeScriptCompile Include="src\mods\await.cps.ts" />
-    <TypeScriptCompile Include="src\mods\await.promise.ts" />
-    <TypeScriptCompile Include="src\mods\await.thunk.ts" />
+    <TypeScriptCompile Include="src\mods\streams.ts" />
     <TypeScriptCompile Include="src\mods\baseline.ts" />
     <TypeScriptCompile Include="src\mods\callbacks.ts" />
-    <TypeScriptCompile Include="src\mods\express.ts" />
     <TypeScriptCompile Include="src\mods\iterables.ts" />
-    <TypeScriptCompile Include="src\mods\streams.ts" />
     <TypeScriptCompile Include="src\mods\thunks.ts" />
     <TypeScriptCompile Include="src\mods\promises.ts" />
     <TypeScriptCompile Include="src\protocol.ts" />

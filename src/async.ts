@@ -109,3 +109,9 @@ function registerVariant(variant: Variant, expose = true) {
         }
     }
 }
+
+
+//TODO: temp testing...
+export function getVariant(name: string): any {
+    return _variants[name];
+}

@@ -4,14 +4,15 @@ import fiberProtocol = require('../fiberProtocol');
 import FiberProtocol = AsyncAwait.FiberProtocol;
 import AsyncProtocol = AsyncAwait.AsyncProtocol;
 import Mod = AsyncAwait.Mod;
+export = mod;
 
 
 /** Provides the baseline method implementations for the joint protocol. */
-export var mod: Mod<FiberProtocol> = {
+var mod: Mod<FiberProtocol> = {
 
-    name: 'baseline',
+    name: 'fiber.base',
 
-    base: '???',
+    base: '',
 
     override: (base, options) => ({
 

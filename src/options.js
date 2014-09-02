@@ -1,7 +1,7 @@
 ﻿var _ = require('./util');
 
 // TODO:...
-function options(value) {
+var options = function (value) {
     //TODO: as getter...
     if (arguments.length === 0)
         return _options;
@@ -10,15 +10,15 @@ function options(value) {
     _.mergeProps(_options, value);
     // 1. merge
     // 2. reload all joint/async/await mods
-}
+};
 
 //TODO: expose this as non-enum 'private' property on _options...
-function clear() {
+options.clear = function () {
     _options = {};
-}
+};
 
 // TODO: side-effect
-clear();
+options.clear();
 
 // TODO: private impl
 var _options;
