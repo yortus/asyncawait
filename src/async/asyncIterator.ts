@@ -1,10 +1,10 @@
-﻿import _refs = require('_refs');
-import Promise = require('bluebird');
+﻿import Promise = require('bluebird');
 import _ = require('lodash');
 import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
 import Config = require('./config');
+import defer = require('./defer');
 import await = require('../await/index');
 export = AsyncIterator;
 
@@ -33,7 +33,7 @@ class AsyncIterator {
             this._runContext.callback = callback; // May be null, in which case it won't be used.
         }
         if (this._returnValue !== Config.NONE) {
-            var resolver = Promise.defer<any>();
+            var resolver = defer();
             this._runContext.resolver = resolver;
         }
 
@@ -73,7 +73,7 @@ class AsyncIterator {
 
         // Configure the resolver and callback to be invoked at the end of the iteration.
         if (this._returnValue === Config.PROMISE || this._returnValue === Config.THUNK) {
-            var doneResolver = Promise.defer<any>();
+            var doneResolver = defer();
         }
         if (!this._acceptsCallback) doneCallback = null;
 

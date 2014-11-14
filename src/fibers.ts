@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-import Fiber = require('fibers');
+﻿import Fiber = require('fibers');
 export = result;
 
 

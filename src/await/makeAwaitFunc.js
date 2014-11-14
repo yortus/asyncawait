@@ -1,23 +1,16 @@
-﻿var Fiber = require('../fibers');
+var Fiber = require('../fibers');
 var Promise = require('bluebird');
 var _ = require('lodash');
-
 /** Function for creating a specific variant of the await() function.
-*  @param {string} variant - Recognised values: undefined, 'in', 'top'.
-*/
+ *  @param {string} variant - Recognised values: undefined, 'in', 'top'.
+ */
 function makeAwaitFunc(variant) {
     switch (variant) {
-        case 'in':
-            return getExtraInfo(traverseInPlace);
-        case 'top':
-            return function (n) {
-                return getExtraInfo(traverseInPlace, n);
-            };
-        default:
-            return getExtraInfo(traverseClone);
+        case 'in': return getExtraInfo(traverseInPlace);
+        case 'top': return function (n) { return getExtraInfo(traverseInPlace, n); };
+        default: return getExtraInfo(traverseClone);
     }
 }
-
 /** Helper function for makeAwaitFunc(). */
 function getExtraInfo(traverse, topN) {
     return function await() {
@@ -25,17 +18,16 @@ function getExtraInfo(traverse, topN) {
         if (!Fiber.current) {
             throw new Error('await functions, yield functions, and value-returning suspendable ' + 'functions may only be called from inside a suspendable function. ');
         }
-
         // Parse argument(s). If not a single argument, treat it like an array was passed in.
         if (arguments.length === 1) {
             var expr = arguments[0];
-        } else {
+        }
+        else {
             expr = new Array(arguments.length);
             for (var i = 0; i < arguments.length; ++i)
                 expr[i] = arguments[i];
             traverse = traverseInPlace;
         }
-
         // Handle each supported 'awaitable' appropriately...
         var fiber = Fiber.current;
         if (expr && _.isFunction(expr.then)) {
@@ -47,7 +39,8 @@ function getExtraInfo(traverse, topN) {
                 fiber.throwInto(err);
                 fiber = null;
             });
-        } else if (_.isFunction(expr)) {
+        }
+        else if (_.isFunction(expr)) {
             // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
             expr(function (err, val) {
                 if (err)
@@ -56,7 +49,8 @@ function getExtraInfo(traverse, topN) {
                     fiber.run(val);
                 fiber = null;
             });
-        } else if (_.isArray(expr) || _.isPlainObject(expr)) {
+        }
+        else if (_.isArray(expr) || _.isPlainObject(expr)) {
             // An array or plain object: resume the coroutine with a deep clone of the array/object,
             // where all contained promises and thunks have been replaced by their resolved values.
             var trackedPromises = [];
@@ -69,7 +63,8 @@ function getExtraInfo(traverse, topN) {
                     fiber.throwInto(err);
                     fiber = null;
                 });
-            } else {
+            }
+            else {
                 Promise.some(trackedPromises, topN).then(function (val) {
                     fiber.run(val);
                     fiber = null;
@@ -78,19 +73,18 @@ function getExtraInfo(traverse, topN) {
                     fiber = null;
                 });
             }
-        } else {
+        }
+        else {
             // Anything else: resume the coroutine immediately with the value.
             setImmediate(function () {
                 fiber.run(expr);
                 fiber = null;
             });
         }
-
         // Suspend the current fiber until the one of the above handlers resumes it again.
         return Fiber.yield();
     };
 }
-
 /** In-place (ie non-cloning) object traversal. */
 function traverseInPlace(o, visitor) {
     if (_.isArray(o)) {
@@ -99,7 +93,8 @@ function traverseInPlace(o, visitor) {
             traverseInPlace(o[i], visitor);
             visitor(o, i);
         }
-    } else if (_.isPlainObject(o)) {
+    }
+    else if (_.isPlainObject(o)) {
         for (var key in o) {
             if (!o.hasOwnProperty(key))
                 continue;
@@ -109,7 +104,6 @@ function traverseInPlace(o, visitor) {
     }
     return o;
 }
-
 /** Object traversal with cloning. */
 function traverseClone(o, visitor) {
     var result;
@@ -120,7 +114,8 @@ function traverseClone(o, visitor) {
             result[i] = traverseClone(o[i], visitor);
             visitor(result, i);
         }
-    } else if (_.isPlainObject(o)) {
+    }
+    else if (_.isPlainObject(o)) {
         result = {};
         for (var key in o) {
             if (o.hasOwnProperty(key)) {
@@ -128,12 +123,12 @@ function traverseClone(o, visitor) {
                 visitor(result, key);
             }
         }
-    } else {
+    }
+    else {
         result = o;
     }
     return result;
 }
-
 /** Visitor function factory for handling thunks and promises in awaited object graphs. */
 function trackAndReplaceWithResolvedValue(tracking) {
     // Return a visitor function closed over the specified tracking array.
@@ -142,11 +137,9 @@ function trackAndReplaceWithResolvedValue(tracking) {
         var val = obj[key];
         if (!val)
             return;
-
         // If the value is a thunk, convert it to an equivalent promise.
         if (_.isFunction(val))
             val = thunkToPromise(val);
-
         // If the value is a promise, add it to the tracking array, and replace it with its value when resolved.
         if (_.isFunction(val.then)) {
             tracking.push(val);
@@ -156,15 +149,11 @@ function trackAndReplaceWithResolvedValue(tracking) {
         }
     };
 }
-
 /** Convert a thunk to a promise. */
 function thunkToPromise(thunk) {
     return new Promise(function (resolve, reject) {
-        var callback = function (err, val) {
-            return (err ? reject(err) : resolve(val));
-        };
+        var callback = function (err, val) { return (err ? reject(err) : resolve(val)); };
         thunk(callback);
     });
 }
 module.exports = makeAwaitFunc;
-//# sourceMappingURL=makeAwaitFunc.js.map

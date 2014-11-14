@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-import Fiber = require('../fibers');
+﻿import Fiber = require('../fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
 import Config = require('./config');
@@ -7,6 +6,7 @@ import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
 import AsyncIterator = require('./asyncIterator');
+import defer = require('./defer');
 import await = require('../await/index');
 export = makeAsyncFunc;
 
@@ -105,7 +105,7 @@ function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Sem
         // Configure the run context.
         var runContext = new RunContext(bodyFunc, this, argsAsArray, () => semaphore.leave());
         if (config.returnValue !== Config.NONE) {
-            var resolver = Promise.defer<any>();
+            var resolver = defer();
             runContext.resolver = resolver;
         }
         if (config.acceptsCallback && argsAsArray.length && _.isFunction(argsAsArray[argsAsArray.length - 1])) {

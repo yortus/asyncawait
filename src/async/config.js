@@ -1,5 +1,4 @@
-﻿var assert = require('assert');
-
+var assert = require('assert');
 /** A config object holds the configuration options for a variant of the async function. */
 var Config = (function () {
     /** Construct a new Config instance. */
@@ -23,10 +22,10 @@ var Config = (function () {
     Config.prototype.validate = function () {
         var knownRetVal = [Config.PROMISE, Config.THUNK, Config.RESULT, Config.NONE].indexOf(this.returnValue) !== -1;
         assert(knownRetVal, 'Unrecognised return value: ' + this.returnValue);
-
         var hasNotifier = this.returnValue !== Config.NONE || this.acceptsCallback;
         assert(hasNotifier, 'At least one notification method must be enabled.');
     };
+    // Constants for use with returnValue and callbackArg
     Config.PROMISE = 'promise';
     Config.THUNK = 'thunk';
     Config.RESULT = 'result';
@@ -34,4 +33,3 @@ var Config = (function () {
     return Config;
 })();
 module.exports = Config;
-//# sourceMappingURL=config.js.map

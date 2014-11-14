@@ -1,3 +1,12 @@
+# 0.7.3 (2014-11-14)
+
+#### Improvements
+
+- Added build script (gulp)
+- Added unit tests (mocha)
+- Upgraded bluebird dependency from 1.x to to 2.x
+- asyncawait.d.ts directly references bluebird.d.ts for promise types
+
 # 0.7.2 (2014-06-17)
 
 #### Bug Fixes

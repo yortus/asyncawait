@@ -1,9 +1,8 @@
-﻿
 /**
-* This class is used to pass all required contextual information to the runInFiber()
-* function as a single argument. runInFiber() can only accept a single argument because
-* it is invoked via Fiber#run(), which can only pass through a single argument.
-*/
+ * This class is used to pass all required contextual information to the runInFiber()
+ * function as a single argument. runInFiber() can only accept a single argument because
+ * it is invoked via Fiber#run(), which can only pass through a single argument.
+ */
 var RunContext = (function () {
     /** Construct a new RunContext instance. */
     function RunContext(wrapped, thisArg, argsAsArray, done) {
@@ -19,4 +18,3 @@ var RunContext = (function () {
     return RunContext;
 })();
 module.exports = RunContext;
-//# sourceMappingURL=runContext.js.map

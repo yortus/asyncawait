@@ -1,5 +1,4 @@
-﻿var Fiber = require('fibers');
-
+var Fiber = require('fibers');
 // HOTFIX for node-fibers problem.
 // I have not prepared a repro unit test yet. In the meanwhile,
 // here is the gist of the problem:
@@ -25,4 +24,3 @@ if (!global.asyncawait.Fiber)
     global.asyncawait.Fiber = Fiber;
 var result = global.asyncawait.Fiber;
 module.exports = result;
-//# sourceMappingURL=fibers.js.map

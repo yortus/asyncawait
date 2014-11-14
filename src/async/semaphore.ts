@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-export = Semaphore;
+﻿export = Semaphore;
 
 
 /** A simple abstraction for limiting concurrent function calls to a specific upper bound. */

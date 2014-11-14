@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-import Promise = require('bluebird');
+﻿import Promise = require('bluebird');
 export = RunContext;
 
 

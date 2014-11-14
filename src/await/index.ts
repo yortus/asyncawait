@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-import makeAwaitFunc = require('./makeAwaitFunc');
+﻿import makeAwaitFunc = require('./makeAwaitFunc');
 export = await;
 
 

@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-import Config = require('./config');
+﻿import Config = require('./config');
 import makeAsyncFunc = require('./makeAsyncFunc');
 export = async;
 

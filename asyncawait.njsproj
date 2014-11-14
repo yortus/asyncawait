@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>asyncawait</Name>
+    <RootNamespace>asyncawait</RootNamespace>
+    <NodeExePath>
+    </NodeExePath>
+    <NodeExeArguments />
+    <ScriptArguments />
+    <NodejsPort />
+    <LaunchUrl />
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7aaad222-a873-4b62-a811-ff00ca3cc854}</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <StartWebBrowser>False</StartWebBrowser>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <ProjectView>ShowAllFiles</ProjectView>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <EnableTypeScript>true</EnableTypeScript>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="async.js" />
+    <Compile Include="await.js" />
+    <Compile Include="comparison\benchmark.js" />
+    <Compile Include="comparison\countFiles\countFiles-async.js" />
+    <Compile Include="comparison\countFiles\countFiles-asyncawait.js" />
+    <Compile Include="comparison\countFiles\countFiles-bluebird.js" />
+    <Compile Include="comparison\countFiles\countFiles-callbacks.js" />
+    <Compile Include="comparison\countFiles\countFiles-co.js" />
+    <Compile Include="comparison\countFiles\countFiles-synchronous.js" />
+    <Compile Include="comparison\fibonacci\fibonacci-async.js" />
+    <Compile Include="comparison\fibonacci\fibonacci-asyncawait.js" />
+    <Compile Include="comparison\fibonacci\fibonacci-bluebird.js" />
+    <Compile Include="comparison\fibonacci\fibonacci-callbacks.js" />
+    <Compile Include="comparison\fibonacci\fibonacci-co.js" />
+    <Compile Include="comparison\fibonacci\fibonacci-synchronous.js" />
+    <Compile Include="comparison\largest\largest-async.js" />
+    <Compile Include="comparison\largest\largest-asyncawait-iterators.js" />
+    <Compile Include="comparison\largest\largest-asyncawait.js" />
+    <Compile Include="comparison\largest\largest-bluebird.js" />
+    <Compile Include="comparison\largest\largest-callbacks.js" />
+    <Compile Include="comparison\largest\largest-co.js" />
+    <Compile Include="comparison\largest\largest-synchronous.js" />
+    <Compile Include="comparison\mockfs.js" />
+    <Compile Include="examples\asyncMod.js" />
+    <Compile Include="examples\awaitTop.js" />
+    <Compile Include="examples\basic.js" />
+    <Compile Include="examples\countFiles.js" />
+    <Compile Include="examples\descendentFilePaths.js" />
+    <Compile Include="examples\interleaved.js" />
+    <Compile Include="examples\iteration.js" />
+    <Compile Include="examples\parallel.js" />
+    <Compile Include="gulpfile.js" />
+    <Compile Include="index.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="comparison\" />
+    <Folder Include="comparison\countFiles\" />
+    <Folder Include="comparison\fibonacci\" />
+    <Folder Include="comparison\largest\" />
+    <Folder Include="examples\" />
+    <Folder Include="src\typings\" />
+    <Folder Include="src\async\" />
+    <Folder Include="src\await\" />
+    <Folder Include="src\typings\asyncawait\" />
+    <Folder Include="src\typings\bluebird\" />
+    <Folder Include="src\typings\lodash\" />
+    <Folder Include="src\typings\mocha\" />
+    <Folder Include="src\typings\chai\" />
+    <Folder Include="src\typings\node-fibers\" />
+    <Folder Include="src\typings\node\" />
+    <Folder Include="test\" />
+    <Folder Include="src\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include=".npmignore" />
+    <Content Include="changelog.md" />
+    <Content Include="comparison\README.md" />
+    <Content Include="examples\examples.njsproj" />
+    <Content Include="examples\package.json" />
+    <Content Include="LICENSE" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\async\asyncIterator.ts" />
+    <TypeScriptCompile Include="src\async\config.ts" />
+    <TypeScriptCompile Include="src\async\defer.ts" />
+    <TypeScriptCompile Include="src\async\fiberManager.ts" />
+    <TypeScriptCompile Include="src\async\index.ts" />
+    <TypeScriptCompile Include="src\async\makeAsyncFunc.ts" />
+    <TypeScriptCompile Include="src\async\runContext.ts" />
+    <TypeScriptCompile Include="src\async\semaphore.ts" />
+    <TypeScriptCompile Include="src\await\index.ts" />
+    <TypeScriptCompile Include="src\await\makeAwaitFunc.ts" />
+    <TypeScriptCompile Include="src\fibers.ts" />
+    <TypeScriptCompile Include="src\references.d.ts" />
+    <TypeScriptCompile Include="src\typings\asyncawait\asyncawait.d.ts" />
+    <TypeScriptCompile Include="src\typings\bluebird\bluebird.d.ts" />
+    <TypeScriptCompile Include="src\typings\chai\chai.d.ts" />
+    <TypeScriptCompile Include="src\typings\lodash\lodash.d.ts" />
+    <TypeScriptCompile Include="src\typings\mocha\mocha.d.ts" />
+    <TypeScriptCompile Include="src\typings\node-fibers\node-fibers.d.ts" />
+    <TypeScriptCompile Include="src\typings\node\node.d.ts" />
+    <TypeScriptCompile Include="test\async.cps.ts" />
+    <TypeScriptCompile Include="test\async.iterable.ts" />
+    <TypeScriptCompile Include="test\async.thunk.ts" />
+    <TypeScriptCompile Include="test\async.ts" />
+    <TypeScriptCompile Include="test\await.ts" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="PrepareForBuild" />
+  <Target Name="Build">
+    <Message Text="Building with gulp..." Importance="high" />
+    <Exec Command="gulp build" />
+  </Target>
+  <Target Name="AfterBuild" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+  </PropertyGroup>
+</Project>

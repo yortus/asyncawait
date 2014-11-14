@@ -1,4 +1,3 @@
-﻿
 /** A simple abstraction for limiting concurrent function calls to a specific upper bound. */
 var Semaphore = (function () {
     function Semaphore(n) {
@@ -10,16 +9,17 @@ var Semaphore = (function () {
         if (this._avail > 0) {
             --this._avail;
             fn();
-        } else {
+        }
+        else {
             this._queued.push(fn);
         }
     };
-
     Semaphore.prototype.leave = function () {
         if (this._queued.length > 0) {
             var fn = this._queued.pop();
             fn();
-        } else {
+        }
+        else {
             ++this._avail;
         }
     };
@@ -27,4 +27,3 @@ var Semaphore = (function () {
     return Semaphore;
 })();
 module.exports = Semaphore;
-//# sourceMappingURL=semaphore.js.map

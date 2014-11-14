@@ -1,5 +1,4 @@
-﻿import _refs = require('_refs');
-import assert = require('assert');
+﻿import assert = require('assert');
 export = Config;
 
 
