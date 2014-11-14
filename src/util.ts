@@ -27,7 +27,7 @@ export function isArray(obj) {
 
 /** Determines whether the given object is an object (i.e., anything other than a primitive). */
 export function isObject(obj) {
-    return typeof obj === 'object';
+    return obj !== null && typeof obj === 'object';
 }
 
 
@@ -55,28 +55,66 @@ export function empty(): any { }
 
 //TODO: recursively merge own props that are plain objects? Would be nice for config.
 /** Equivalent to lodash's _.assign() function. */
-export var mergeProps: (...args) => any = () => {
+//export var mergeProps: (...args) => any = () => {
+//    var len = arguments.length, target = arguments[0];
+//    assert(len > 0, 'mergeProps: expected at least one argument');
+//    assert(target, 'mergeProps: first argument must be an object');
+//    for (var i = 1; i < len; ++i) {
+//        var source = arguments[i];
+//        if (!source) continue;
+//        for (var prop in source) {
+//            if (!source.hasOwnProperty(prop)) break;
+//            target[prop] = source[prop];
+//        }
+//    }
+//    return target;
+//};
+
+
+//TODO:...
+export var mergePropsDeep: (...args) => any = () => {
     var len = arguments.length, target = arguments[0];
-    assert(len > 0, 'mergeProps: expected at least one argument');
-    assert(target, 'mergeProps: first argument must be an object');
+    assert(len > 0, 'mergePropsDeep: expected at least one argument');
+    assert(isObject(target), 'mergePropsDeep: first argument must be an object');
     for (var i = 1; i < len; ++i) {
         var source = arguments[i];
         if (!source) continue;
         for (var prop in source) {
             if (!source.hasOwnProperty(prop)) break;
-            target[prop] = source[prop];
+            var tgt = target[prop], src = source[prop];
+            var recurse = isPlainObject(tgt) && isPlainObject(src);
+            if (recurse) mergePropsDeep(tgt, src); else target[prop] = clone(src);
         }
     }
     return target;
+};
+
+
+//TODO:...
+function clone(obj) {
+    if (isPlainObject(obj)) {
+        var co = {};
+        for (var k in obj) co[k] = clone(obj[k]);
+        return co;
+    }
+    else if (isArray(obj)) {
+        var len = obj.length, ca = new Array(len);
+        for (var i = 0; i < len; ++i) ca[i] = clone(obj[i]);
+        return ca;
+    }
+    else {
+        return obj;
+    }
 }
 
 
+//TODO: ever used?
 /** Creates a new object that has the given object as its prototype */
-export function branch(proto) {
-    function O() { }
-    O.prototype = proto;
-    return new O();
-}
+//export function branch(proto) {
+//    function O() { }
+//    O.prototype = proto;
+//    return new O();
+//}
 
 
 /** Returns the currently executing fiber, if any. */
@@ -104,4 +142,16 @@ export function createContinuation() {
         fi.awaiting[i](err, result);
         fi = null;
     };
+}
+
+
+
+
+//TODO:...
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+var ARGUMENT_NAMES = /([^\s,]+)/g;
+export function getParamNames(fn): string[] {
+    var fnSource = fn.toString().replace(STRIP_COMMENTS, '');
+    var result = fnSource.slice(fnSource.indexOf('(') + 1, fnSource.indexOf(')')).match(ARGUMENT_NAMES);
+    return result || [];
 }

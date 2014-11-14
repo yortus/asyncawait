@@ -24,7 +24,7 @@ exports.isArray = isArray;
 
 /** Determines whether the given object is an object (i.e., anything other than a primitive). */
 function isObject(obj) {
-    return typeof obj === 'object';
+    return obj !== null && typeof obj === 'object';
 }
 exports.isObject = isObject;
 
@@ -53,10 +53,25 @@ exports.empty = empty;
 
 //TODO: recursively merge own props that are plain objects? Would be nice for config.
 /** Equivalent to lodash's _.assign() function. */
-exports.mergeProps = function () {
+//export var mergeProps: (...args) => any = () => {
+//    var len = arguments.length, target = arguments[0];
+//    assert(len > 0, 'mergeProps: expected at least one argument');
+//    assert(target, 'mergeProps: first argument must be an object');
+//    for (var i = 1; i < len; ++i) {
+//        var source = arguments[i];
+//        if (!source) continue;
+//        for (var prop in source) {
+//            if (!source.hasOwnProperty(prop)) break;
+//            target[prop] = source[prop];
+//        }
+//    }
+//    return target;
+//};
+//TODO:...
+exports.mergePropsDeep = function () {
     var len = arguments.length, target = arguments[0];
-    assert(len > 0, 'mergeProps: expected at least one argument');
-    assert(target, 'mergeProps: first argument must be an object');
+    assert(len > 0, 'mergePropsDeep: expected at least one argument');
+    assert(exports.isObject(target), 'mergePropsDeep: first argument must be an object');
     for (var i = 1; i < len; ++i) {
         var source = arguments[i];
         if (!source)
@@ -64,21 +79,41 @@ exports.mergeProps = function () {
         for (var prop in source) {
             if (!source.hasOwnProperty(prop))
                 break;
-            target[prop] = source[prop];
+            var tgt = target[prop], src = source[prop];
+            var recurse = exports.isPlainObject(tgt) && exports.isPlainObject(src);
+            if (recurse)
+                exports.mergePropsDeep(tgt, src);
+            else
+                target[prop] = clone(src);
         }
     }
     return target;
 };
 
-/** Creates a new object that has the given object as its prototype */
-function branch(proto) {
-    function O() {
+//TODO:...
+function clone(obj) {
+    if (exports.isPlainObject(obj)) {
+        var co = {};
+        for (var k in obj)
+            co[k] = clone(obj[k]);
+        return co;
+    } else if (exports.isArray(obj)) {
+        var len = obj.length, ca = new Array(len);
+        for (var i = 0; i < len; ++i)
+            ca[i] = clone(obj[i]);
+        return ca;
+    } else {
+        return obj;
     }
-    O.prototype = proto;
-    return new O();
 }
-exports.branch = branch;
 
+//TODO: ever used?
+/** Creates a new object that has the given object as its prototype */
+//export function branch(proto) {
+//    function O() { }
+//    O.prototype = proto;
+//    return new O();
+//}
 /** Returns the currently executing fiber, if any. */
 function currentFiber() {
     return Fiber.current;
@@ -105,4 +140,14 @@ function createContinuation() {
     };
 }
 exports.createContinuation = createContinuation;
+
+//TODO:...
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+var ARGUMENT_NAMES = /([^\s,]+)/g;
+function getParamNames(fn) {
+    var fnSource = fn.toString().replace(STRIP_COMMENTS, '');
+    var result = fnSource.slice(fnSource.indexOf('(') + 1, fnSource.indexOf(')')).match(ARGUMENT_NAMES);
+    return result || [];
+}
+exports.getParamNames = getParamNames;
 //# sourceMappingURL=util.js.map

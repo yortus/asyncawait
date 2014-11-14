@@ -1,2 +1,1 @@
-﻿require('./src/main');
-module.exports = require('./src/yield');
+﻿module.exports = require('./src').yield;

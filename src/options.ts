@@ -1,36 +1,27 @@
 ﻿import references = require('references');
 import _ = require('./util');
-export = options;
 
 
-// TODO:...
-var options: {
-    (value?: any): any;
-    defaults: any;
-    clear(): void;
-} = <any> function(value) {
-
-    //TODO: as getter...
-    if (arguments.length === 0) return _options;
-
-    //TODO: as setter...
-    _.mergeProps(_options, value);
-    // 1. merge
-    // 2. reload all joint/async/await mods
+//TODO: doc all...
+export function get() {
+    return _options;
 }
 
 
-
-
-//TODO: expose this as non-enum 'private' property on _options...
-options.clear = () => {
-    _options = {};
+export function set(value: any, preserveExisting?: boolean) {
+    var under = preserveExisting ? value : _options;
+    var over = preserveExisting ? _options : value;
+    _options = _.mergePropsDeep({}, under, over);
+    _listeners.forEach(cb => cb(_options));
 }
 
 
-// TODO: side-effect
-options.clear();
+export function onChange(callback) {
+    _listeners.push(callback);
+}
 
 
-// TODO: private impl
-var _options;
+var _options: any = {};
+
+
+var _listeners: Function[];

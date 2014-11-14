@@ -19,7 +19,7 @@
     "asynchronous",
     "synchronous"
   ],
-  "main": "index.js",
+  "main": "src/index.js",
   "homepage": "https://github.com/yortus/asyncawait",
   "repository": {
     "type": "git",

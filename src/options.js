@@ -1,26 +1,27 @@
 ﻿var _ = require('./util');
 
-// TODO:...
-var options = function (value) {
-    //TODO: as getter...
-    if (arguments.length === 0)
-        return _options;
+//TODO: doc all...
+function get() {
+    return _options;
+}
+exports.get = get;
 
-    //TODO: as setter...
-    _.mergeProps(_options, value);
-    // 1. merge
-    // 2. reload all joint/async/await mods
-};
+function set(value, preserveExisting) {
+    var under = preserveExisting ? value : _options;
+    var over = preserveExisting ? _options : value;
+    _options = _.mergePropsDeep({}, under, over);
+    _listeners.forEach(function (cb) {
+        return cb(_options);
+    });
+}
+exports.set = set;
 
-//TODO: expose this as non-enum 'private' property on _options...
-options.clear = function () {
-    _options = {};
-};
+function onChange(callback) {
+    _listeners.push(callback);
+}
+exports.onChange = onChange;
 
-// TODO: side-effect
-options.clear();
+var _options = {};
 
-// TODO: private impl
-var _options;
-module.exports = options;
+var _listeners;
 //# sourceMappingURL=options.js.map

@@ -17,9 +17,15 @@ declare module AsyncAwait {
     export function AwaitAPI(...args: any[]): any;
     export module AwaitAPI { }
 
+    export interface OptionsAPI extends NodeJS.EventEmitter {
+        get(): any;
+        set(value: any, overwrite?: boolean): void;
+    }
+
     export interface ConfigAPI {
         options(): any;
         options(value: any): ConfigAPI;             // Will trigger reload of all async/await/fiber mods
+
         use(mods: Mod<any>[]): ConfigAPI;           // Will trigger reload of all async/await/fiber mods
         use(mod: Mod<AsyncProtocol>): ConfigAPI;    // Will trigger reload of all async/await/fiber mods
         use(mod: Mod<AwaitProtocol>): ConfigAPI;    // Will trigger reload of all async/await/fiber mods
@@ -32,34 +38,34 @@ declare module AsyncAwait {
     }
 
     export interface Mod<TProtocol> {
-        name: string; // 'async.aaa'
-        base: string; // 'async[.IDENT]*', 'await[.IDENT]*', 'fiber', 'setup'
-        override(baseProtocol: TProtocol, options: any): TProtocol;
+        name: string; // 'async[.IDENT]*' | 'await[.IDENT]*' | 'fiber' | 'setup'
+        requires: string[];
+        override(options: any, ...protocols: any[]): TProtocol;
         defaults?: any;
     }
 
     export interface AsyncProtocol {
-        begin?(fi: Fiber, ...protocolArgs: any[]): any;
-        suspend?(fi: Fiber, error?: Error, value?: any): any;
-        resume?(fi: Fiber, error?: Error, value?: any): any;
-        end?(fi: Fiber, error?: Error, value?: any): any;
+        begin(fi: Fiber, ...protocolArgs: any[]): any;
+        suspend(fi: Fiber, error?: Error, value?: any): any;
+        resume(fi: Fiber, error?: Error, value?: any): any;
+        end(fi: Fiber, error?: Error, value?: any): any;
     }
 
     export interface AwaitProtocol {
-        singular?(fi: Fiber, arg: any): any;
-        variadic?(fi: Fiber, args: any[]): any;
-        elements?(values: any[], result: (err: Error, value: any, index: number) => void): number;
+        singular(fi: Fiber, arg: any): any;
+        variadic(fi: Fiber, args: any[]): any;
+        elements(values: any[], result: (err: Error, value: any, index: number) => void): number;
     }
 
     export interface FiberProtocol {
-        acquire?(asyncProtocol: AsyncProtocol): Fiber;
-        release?(asyncProtocol: AsyncProtocol, fi: Fiber): void;
-        retarget?(fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]): void
+        acquire(asyncProtocol: AsyncProtocol): Fiber;
+        release(asyncProtocol: AsyncProtocol, fi: Fiber): void;
+        retarget(fi: Fiber, bodyFunc: Function, bodyThis?: any, bodyArgs?: any[]): void
     }
 
     export interface SetupProtocol {
-        startup?(): void;
-        shutdown?(): void;
+        startup(): void;
+        shutdown(): void;
     }
 
     //----------

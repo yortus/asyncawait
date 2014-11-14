@@ -1,6 +1,6 @@
 ﻿import references = require('references');
 import options = require('./options');
-import use = require('./use');
+//import use = require('./use');
 
 
 //TODO: ...
@@ -11,11 +11,10 @@ export function restoreDefaults() {
     //options.clear();
     
 
-    options({
+    options.set({
         defaults: {
             async: 'async.promise',
-            await: 'await.compound',
-            awaitVariants: [
+            await: [
                 'await.promise',
                 'await.cps',
                 'await.thunk',
@@ -25,20 +24,20 @@ export function restoreDefaults() {
     });
 
 
-    use(require('./mods/fiberPool'));
+    //use(require('./mods/fiberPool'));
 
-    use(require('./mods/callbacks'));
-    use(require('./mods/express'));
-    use(require('./mods/promises'));
-    use(require('./mods/streams'));
-    use(require('./mods/thunks'));
+    //use(require('./mods/callbacks'));
+    //use(require('./mods/express'));
+    //use(require('./mods/promises'));
+    //use(require('./mods/streams'));
+    //use(require('./mods/thunks'));
 
-    use(require('./mods/async.iterable'));
-    use(require('./mods/async.iterable.cps'));
-    use(require('./mods/async.iterable.promise'));
-    use(require('./mods/async.iterable.thunk'));
-    use(require('./mods/await.value'));
-    use(require('./mods/await.compound'));
+    //use(require('./mods/async.iterable'));
+    //use(require('./mods/async.iterable.cps'));
+    //use(require('./mods/async.iterable.promise'));
+    //use(require('./mods/async.iterable.thunk'));
+    //use(require('./mods/await.value'));
+    //use(require('./mods/await.compound'));
 
 
     

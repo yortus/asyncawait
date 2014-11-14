@@ -44,37 +44,3 @@ var jointProtocol = new Protocol<TMembers, TOptions>()
 jointProtocol.members => TMembers
 jointProtocol.options => TOptions
 jointProtocol.mod(mod) => Protocol
-
-
-
-Format
-------
-more 'guided discussion' than presentation
-
-
-Objs
-----
-demonstrate conc issues and tradeoffs
-demonstrate 'good' conc coding practises
-learn at least one new thing
-aside: OSS stories and tips
-
-
-Good Things TM
---------------
-- Readable (eg maximal dynamic/static correspondence)
-- Separation of concerns / separability
-- DRY return
-- DRY error handling
-- orthogonality with other language features/patterns
-  - sequence, selection, iteration, recursion, abstraction
-  - generators and iterators
-- incrementally modifiable (related to previous)
-- <<< LOCs
-- <<< indents
-- <<< closures
-
-
-Unusual uses
-------------
-await human interaction eg modal close or tutorial steps
