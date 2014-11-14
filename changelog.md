@@ -1,3 +1,8 @@
+# 0.7.4 (2014-11-14)
+
+#### Bug Fixes
+- Removed `memwatch` from `optionalDependencies`. It should be an `optionalDevDependency`, but npm doesn't support that.
+
 # 0.7.3 (2014-11-14)
 
 #### Improvements

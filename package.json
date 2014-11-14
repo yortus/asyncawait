@@ -1,7 +1,7 @@
 {
   "name": "asyncawait",
   "description": "async/await for node.js",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "keywords": [
     "async/await",
     "async",
@@ -54,8 +54,5 @@
     "rewire": "*",
     "mock-fs": "*",
     "gulp-mocha": "~1.1.1"
-  },
-  "optionalDependencies": {
-    "memwatch": "*"
   }
 }
