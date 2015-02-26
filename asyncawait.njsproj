@@ -47,6 +47,14 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="NEW\api.ts" />
+    <TypeScriptCompile Include="NEW\async.emitter.ts" />
+    <TypeScriptCompile Include="NEW\await.array.ts" />
+    <TypeScriptCompile Include="NEW\await.promise.ts" />
+    <TypeScriptCompile Include="NEW\async.thunk.ts" />
+    <TypeScriptCompile Include="NEW\async.promise.ts" />
+    <TypeScriptCompile Include="NEW\async.cps.ts" />
+    <TypeScriptCompile Include="NEW\coroutine.ts" />
     <TypeScriptCompile Include="src\async\index.ts" />
     <TypeScriptCompile Include="src\async\use.ts" />
     <TypeScriptCompile Include="src\await\index.ts" />
@@ -119,6 +127,7 @@
     <Compile Include="Gruntfile.js" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NEW\" />
     <Folder Include="src\" />
     <Folder Include="src\middleware\" />
     <Folder Include="src\async\" />
