@@ -3,8 +3,10 @@ var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
 var Buffer = require('buffer').Buffer;
 var _ = require('lodash');
-var async = require('../..').async;
-var await = require('../..').await;
+var asyncx = require('asyncx');
+var async = asyncx.async;
+var await = asyncx.await;
+asyncx.config('Fiber', require('fibers'));
 
 
 /**
@@ -25,7 +27,7 @@ var largest = async.cps (function self(dir, options, internal) {
     var stats = await (_.map(paths, function (path) { return fs.statAsync(path); }));
 
     // Build up a list of possible candidates, recursing into subfolders if requested.
-    var candidates = await (_.map(stats, function (stat, i) {
+    var candidates = /*await*/ (_.map(stats, function (stat, i) {
         if (stat.isFile()) return { path: paths[i], size: stat.size, searched: 1 };
         return options.recurse ? self(paths[i], options, true) : null;
     }));
@@ -43,8 +45,8 @@ var largest = async.cps (function self(dir, options, internal) {
     if (result && options.preview && !internal) {
         var fd = await (fs.openAsync(result.path, 'r'));
         var buffer = new Buffer(40);
-        var bytesRead = await (fs.readAsync(fd, buffer, 0, 40, 0));
-        result.preview = buffer.toString('utf8');
+        var bytesReadAndBuffer = await (fs.readAsync(fd, buffer, 0, 40, 0));
+        result.preview = bytesReadAndBuffer[1].toString('utf8');
         await (fs.closeAsync(fd));
     }
     return result;

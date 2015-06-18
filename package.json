@@ -45,14 +45,15 @@
     "lodash": "v2.4.1"
   },
   "devDependencies": {
+    "async": "*",
+    "asyncx": "^0.4.5",
     "chai": "^1.9",
+    "co": "*",
     "gulp": "^3.8.9",
+    "gulp-mocha": "~1.1.1",
     "gulp-tsc": "^0.9.2",
     "mocha": "^1.18",
-    "async": "*",
-    "co": "*",
-    "rewire": "*",
     "mock-fs": "*",
-    "gulp-mocha": "~1.1.1"
+    "rewire": "*"
   }
 }

@@ -44,6 +44,7 @@ var AsyncIterator = (function () {
             this._semaphore.enter(function () { return _this._fiber.run(_this._runContext); });
             this._runContext.done = function () { return _this._semaphore.leave(); };
         }
+        // Return the appropriate value.
         switch (this._returnValue) {
             case Config.PROMISE: return resolver.promise;
             case Config.THUNK: return thunk;
@@ -81,6 +82,7 @@ var AsyncIterator = (function () {
         else {
             run();
         }
+        // Return the appropriate value.
         switch (this._returnValue) {
             case Config.PROMISE: return doneResolver.promise;
             case Config.THUNK: return thunk;

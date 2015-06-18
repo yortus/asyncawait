@@ -18,6 +18,7 @@ var functions = {
 var variants = {
     async: 'async',
     asyncawait: 'asyncawait',
+    asyncx: 'asyncx',
     bluebird: 'bluebird',
     callbacks: 'callbacks',
     co: 'co',

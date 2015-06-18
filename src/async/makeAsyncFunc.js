@@ -33,7 +33,6 @@ function makeAsyncFunc(config) {
 function makeAsyncIterator(bodyFunc, config, semaphore) {
     // Return a function that returns an iterator.
     return function iterable() {
-        var _this = this;
         // Capture the initial arguments used to start the iterator, as an array.
         var startupArgs = new Array(arguments.length + 1); // Reserve 0th arg for the yield function. 
         for (var i = 0, len = arguments.length; i < len; ++i)
@@ -42,7 +41,8 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
         var yield_ = function (expr) {
             // Ensure this function is executing inside a fiber.
             if (!Fiber.current) {
-                throw new Error('await functions, yield functions, and value-returning suspendable ' + 'functions may only be called from inside a suspendable function. ');
+                throw new Error('await functions, yield functions, and value-returning suspendable ' +
+                    'functions may only be called from inside a suspendable function. ');
             }
             // Notify waiters of the next result, then suspend the iterator.
             if (runContext.callback)
@@ -61,7 +61,7 @@ function makeAsyncIterator(bodyFunc, config, semaphore) {
             var len = arguments.length, args = new Array(len);
             for (var i = 0; i < len; ++i)
                 args[i] = arguments[i];
-            bodyFunc.apply(_this, args);
+            bodyFunc.apply(this, args);
             iterator.destroy();
             return { done: true };
         };
@@ -101,6 +101,7 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
         else {
             semaphore.enter(function () { return FiberMgr.create().run(runContext); });
         }
+        // Return the appropriate value.
         switch (config.returnValue) {
             case Config.PROMISE: return resolver.promise;
             case Config.THUNK: return thunk;
@@ -111,68 +112,29 @@ function makeAsyncNonIterator(bodyFunc, config, semaphore) {
 }
 /** Returns a function that directly proxies the given function, whilst reporting the given arity. */
 function makeFuncWithArity(fn, arity) {
+    // Need to handle each arity individually, but the body never changes.
     switch (arity) {
-        case 0: return function f0() {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 1: return function f1(a) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 2: return function f2(a, b) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 3: return function f3(a, b, c) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 4: return function f4(a, b, c, d) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 5: return function f5(a, b, c, d, e) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 6: return function f6(a, b, c, d, e, f) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 7: return function f7(a, b, c, d, e, f, g) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 8: return function f8(a, b, c, d, e, f, g, h) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        case 9: return function f9(a, b, c, d, e, f, g, h, i) {
-            var i, l = arguments.length, r = new Array(l);
-            for (i = 0; i < l; ++i)
-                r[i] = arguments[i];
-            return fn.apply(this, r);
-        };
-        default: return fn;
+        case 0: return function f0() { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 1: return function f1(a) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 2: return function f2(a, b) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 3: return function f3(a, b, c) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 4: return function f4(a, b, c, d) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 5: return function f5(a, b, c, d, e) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 6: return function f6(a, b, c, d, e, f) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 7: return function f7(a, b, c, d, e, f, g) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 8: return function f8(a, b, c, d, e, f, g, h) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        case 9: return function f9(a, b, c, d, e, f, g, h, i) { var i, l = arguments.length, r = new Array(l); for (i = 0; i < l; ++i)
+            r[i] = arguments[i]; return fn.apply(this, r); };
+        default: return fn; // Bail out if arity is crazy high.
     }
 }
 function makeModFunc(config) {

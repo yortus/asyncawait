@@ -5,6 +5,7 @@ var _ = require('lodash');
  *  @param {string} variant - Recognised values: undefined, 'in', 'top'.
  */
 function makeAwaitFunc(variant) {
+    // Return an await function tailored to the given options.
     switch (variant) {
         case 'in': return getExtraInfo(traverseInPlace);
         case 'top': return function (n) { return getExtraInfo(traverseInPlace, n); };
@@ -16,7 +17,8 @@ function getExtraInfo(traverse, topN) {
     return function await() {
         // Ensure this function is executing inside a fiber.
         if (!Fiber.current) {
-            throw new Error('await functions, yield functions, and value-returning suspendable ' + 'functions may only be called from inside a suspendable function. ');
+            throw new Error('await functions, yield functions, and value-returning suspendable ' +
+                'functions may only be called from inside a suspendable function. ');
         }
         // Parse argument(s). If not a single argument, treat it like an array was passed in.
         if (arguments.length === 1) {
@@ -32,23 +34,14 @@ function getExtraInfo(traverse, topN) {
         var fiber = Fiber.current;
         if (expr && _.isFunction(expr.then)) {
             // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-            expr.then(function (val) {
-                fiber.run(val);
-                fiber = null;
-            }, function (err) {
-                fiber.throwInto(err);
-                fiber = null;
-            });
+            expr.then(function (val) { fiber.run(val); fiber = null; }, function (err) { fiber.throwInto(err); fiber = null; });
         }
         else if (_.isFunction(expr)) {
             // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
-            expr(function (err, val) {
-                if (err)
-                    fiber.throwInto(err);
-                else
-                    fiber.run(val);
-                fiber = null;
-            });
+            expr(function (err, val) { if (err)
+                fiber.throwInto(err);
+            else
+                fiber.run(val); fiber = null; });
         }
         else if (_.isArray(expr) || _.isPlainObject(expr)) {
             // An array or plain object: resume the coroutine with a deep clone of the array/object,
@@ -56,30 +49,15 @@ function getExtraInfo(traverse, topN) {
             var trackedPromises = [];
             expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
             if (!topN) {
-                Promise.all(trackedPromises).then(function (val) {
-                    fiber.run(expr);
-                    fiber = null;
-                }, function (err) {
-                    fiber.throwInto(err);
-                    fiber = null;
-                });
+                Promise.all(trackedPromises).then(function (val) { fiber.run(expr); fiber = null; }, function (err) { fiber.throwInto(err); fiber = null; });
             }
             else {
-                Promise.some(trackedPromises, topN).then(function (val) {
-                    fiber.run(val);
-                    fiber = null;
-                }, function (err) {
-                    fiber.throwInto(err);
-                    fiber = null;
-                });
+                Promise.some(trackedPromises, topN).then(function (val) { fiber.run(val); fiber = null; }, function (err) { fiber.throwInto(err); fiber = null; });
             }
         }
         else {
             // Anything else: resume the coroutine immediately with the value.
-            setImmediate(function () {
-                fiber.run(expr);
-                fiber = null;
-            });
+            setImmediate(function () { fiber.run(expr); fiber = null; });
         }
         // Suspend the current fiber until the one of the above handlers resumes it again.
         return Fiber.yield();
@@ -143,9 +121,7 @@ function trackAndReplaceWithResolvedValue(tracking) {
         // If the value is a promise, add it to the tracking array, and replace it with its value when resolved.
         if (_.isFunction(val.then)) {
             tracking.push(val);
-            val.then(function (result) {
-                obj[key] = result;
-            });
+            val.then(function (result) { obj[key] = result; });
         }
     };
 }

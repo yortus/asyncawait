@@ -1,3 +1,4 @@
+*.sln
 *.suo
 *.user
 obj/
