@@ -2,7 +2,7 @@ var path = require('path');
 var async = require('async'); // NB: async is used here in the benchmarking code, in case co or
                               // asyncawait won't run on the version of node being benchmarked.
 var _ = require('lodash');
-var memwatch = require('memwatch');
+try { var memwatch = require('memwatch'); } catch (ex) { }
 var rewire = require('rewire');
 
 
@@ -53,7 +53,7 @@ var OUTPUT_SAMPLES_PER_SEC_SUMMARY = false;     // If true, print all samples/se
 var fullGCs = 0;
 var incrGCs = 0;
 var leaked = 0;
-if (OUTPUT_GC_STATS) {
+if (OUTPUT_GC_STATS && memwatch) {
     memwatch.on('leak', function(info) {
         leaked += info.growth;
         process.stdout.write(' [LEAK+' + info.growth +'] ');
