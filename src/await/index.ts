@@ -1,4 +1,5 @@
-﻿import makeAwaitFunc = require('./makeAwaitFunc');
+﻿import types = require('asyncawait');
+import makeAwaitFunc = require('./makeAwaitFunc');
 export = await;
 
 
@@ -10,6 +11,6 @@ export = await;
   * @param {any} expr - The awaitable expression whose results are to be awaited.
   * @returns {any} The final result of the given awaitable expression.
   */
-var await: AsyncAwait.Await = <any> makeAwaitFunc();
+var await: types.Await = <any> makeAwaitFunc();
 await.in = makeAwaitFunc('in');
 await.top = <any> makeAwaitFunc('top');
