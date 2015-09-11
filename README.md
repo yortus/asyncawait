@@ -1,4 +1,4 @@
-# Guide to `asyncawait` v0.7
+# Guide to `asyncawait` v1.0
 1. [Introduction](#1-introduction)
 2. [Feature/Gotcha Summary](#2-featuregotcha-summary)
 3. [How Does it Work?](#3-how-does-it-work)
@@ -189,7 +189,7 @@ Suspendable functions may accept arguments. Calling `suspendable(1, 2)` will in 
 A suspendable function's definition may return with or without a value, or it may throw. Returning without a value is equivalent to returning `undefined`. The return value of the definition function becomes the result of the suspendable function (see [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)). 
 
 ### Handling Errors and Exceptions
-A suspendable function's definition may throw exceptions directly or indirectly. If any of the `await` calls in `defn` asynchronously produces an error result, that error will be raised as an exception inside `defn`, and will include a useable stack trace.
+A suspendable function's definition may throw exceptions directly or indirectly. If any of the `await` calls in `defn` asynchronously produces an error result, that error will be raised as an exception inside `defn`.
 
 Within the definition of a suspendable function, exceptions may be handled using ordinary `try/catch` blocks. Any unhandled exception thrown from within `defn` will become the error result of `suspendable`.
 
