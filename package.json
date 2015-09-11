@@ -20,6 +20,7 @@
     "synchronous"
   ],
   "main": "index.js",
+  "typings": "src/typings/asyncawait/asyncawait.d.ts",
   "homepage": "https://github.com/yortus/asyncawait",
   "repository": {
     "type": "git",
