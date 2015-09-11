@@ -222,3 +222,4 @@ function makeModFunc(config) {
     };
 }
 module.exports = makeAsyncFunc;
+//# sourceMappingURL=makeAsyncFunc.js.map

@@ -77,3 +77,4 @@ describe('A suspendable function returned by async.cps(...)', function () {
     //        });
     //});
 });
+//# sourceMappingURL=async.cps.js.map

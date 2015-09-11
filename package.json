@@ -37,8 +37,9 @@
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "test": "gulp test",
-    "prepublish": "gulp build"
+    "build": "tsc",
+    "prepublish": "npm run build",
+    "test": "mocha"
   },
   "dependencies": {
     "bluebird": "~2.3.11",
@@ -48,13 +49,11 @@
   "devDependencies": {
     "async": "*",
     "asyncx": "^0.4.5",
-    "chai": "^1.9",
+    "chai": "^3.2.0",
     "co": "*",
-    "gulp": "^3.8.9",
-    "gulp-mocha": "~1.1.1",
-    "gulp-tsc": "^0.9.2",
-    "mocha": "^1.18",
+    "mocha": "^2.3.2",
     "mock-fs": "*",
-    "rewire": "*"
+    "rewire": "*",
+    "typescript": "^1.6.0-beta"
   }
 }

@@ -74,7 +74,6 @@
     <Compile Include="examples\interleaved.js" />
     <Compile Include="examples\iteration.js" />
     <Compile Include="examples\parallel.js" />
-    <Compile Include="gulpfile.js" />
     <Compile Include="index.js" />
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +105,7 @@
     <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\async\asyncIterator.ts" />

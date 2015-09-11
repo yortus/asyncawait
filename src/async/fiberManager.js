@@ -71,3 +71,4 @@ function adjustFiberCount(delta) {
 var fiberPoolSize = Fiber.poolSize;
 var activeFiberCount = 0;
 module.exports = FiberManager;
+//# sourceMappingURL=fiberManager.js.map

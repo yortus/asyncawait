@@ -37,3 +37,4 @@ describe('The await(...) function', function () {
     });
 });
 //TODO: test with: promise, thunk, array, graph, value
+//# sourceMappingURL=await.js.map

@@ -133,3 +133,4 @@ function thunkToPromise(thunk) {
     });
 }
 module.exports = makeAwaitFunc;
+//# sourceMappingURL=makeAwaitFunc.js.map
