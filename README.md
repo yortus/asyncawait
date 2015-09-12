@@ -330,7 +330,7 @@ Variant of `await` that returns the original array/object, rather than a cloned 
 
 
 # 12. License
-Copyright (c) 2014 Troy Gerwien
+Copyright (c) 2014-2015 Troy Gerwien
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
