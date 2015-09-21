@@ -1,5 +1,5 @@
 ﻿import assert = require('assert');
-import types = require('asyncawait');
+import types = require('../types');
 export = Config;
 
 

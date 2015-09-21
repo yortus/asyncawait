@@ -1,6 +1,6 @@
 ﻿import Promise = require('bluebird');
 import _ = require('lodash');
-import types = require('asyncawait');
+import types = require('../types');
 import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');

@@ -1,4 +1,4 @@
-﻿import types = require('asyncawait');
+﻿import types = require('../types');
 import Config = require('./config');
 import makeAsyncFunc = require('./makeAsyncFunc');
 export = async;

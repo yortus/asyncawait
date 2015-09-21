@@ -74,6 +74,7 @@
     <Compile Include="examples\interleaved.js" />
     <Compile Include="examples\iteration.js" />
     <Compile Include="examples\parallel.js" />
+    <Compile Include="index.d.ts" />
     <Compile Include="index.js" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +123,7 @@
     <TypeScriptCompile Include="src\await\makeAwaitFunc.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
     <TypeScriptCompile Include="src\references.d.ts" />
+    <TypeScriptCompile Include="src\types.d.ts" />
     <TypeScriptCompile Include="src\typings\asyncawait\asyncawait.d.ts" />
     <TypeScriptCompile Include="src\typings\bluebird\bluebird.d.ts" />
     <TypeScriptCompile Include="src\typings\chai\chai.d.ts" />

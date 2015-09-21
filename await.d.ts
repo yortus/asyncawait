@@ -1,2 +1,2 @@
-﻿import asyncawait = require('asyncawait');
-export = asyncawait.await;
+﻿import types = require('./src/types');
+export = types.await;
