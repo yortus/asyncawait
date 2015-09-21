@@ -86,7 +86,6 @@
     <Folder Include="src\typings\" />
     <Folder Include="src\async\" />
     <Folder Include="src\await\" />
-    <Folder Include="src\typings\asyncawait\" />
     <Folder Include="src\typings\bluebird\" />
     <Folder Include="src\typings\lodash\" />
     <Folder Include="src\typings\mocha\" />
@@ -122,9 +121,7 @@
     <TypeScriptCompile Include="src\await\index.ts" />
     <TypeScriptCompile Include="src\await\makeAwaitFunc.ts" />
     <TypeScriptCompile Include="src\fibers.ts" />
-    <TypeScriptCompile Include="src\references.d.ts" />
     <TypeScriptCompile Include="src\types.d.ts" />
-    <TypeScriptCompile Include="src\typings\asyncawait\asyncawait.d.ts" />
     <TypeScriptCompile Include="src\typings\bluebird\bluebird.d.ts" />
     <TypeScriptCompile Include="src\typings\chai\chai.d.ts" />
     <TypeScriptCompile Include="src\typings\lodash\lodash.d.ts" />
