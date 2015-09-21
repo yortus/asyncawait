@@ -1,7 +1,7 @@
 {
   "name": "asyncawait",
   "description": "async/await for node.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "async/await",
     "async",
