@@ -19,7 +19,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{330c5f49-70cc-42b2-b036-7e7c0c4e604d}</ProjectGuid>
+    <ProjectGuid>{7aaad222-a873-4b62-a811-ff00ca3cc854}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>
     </StartupFile>
@@ -108,6 +108,8 @@
     <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="await.d.ts" />
+    <TypeScriptCompile Include="async.d.ts" />
     <TypeScriptCompile Include="src\async\asyncIterator.ts" />
     <TypeScriptCompile Include="src\async\config.ts" />
     <TypeScriptCompile Include="src\async\defer.ts" />
