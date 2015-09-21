@@ -1,12 +1,13 @@
 ﻿import assert = require('assert');
+import types = require('asyncawait');
 export = Config;
 
 
 /** A config object holds the configuration options for a variant of the async function. */
-class Config implements AsyncAwait.AsyncOptions {
+class Config implements types.AsyncOptions {
 
     /** Construct a new Config instance. */
-    constructor(options?: AsyncAwait.AsyncOptions) {
+    constructor(options?: types.AsyncOptions) {
         if (options) {
             this.returnValue = options.returnValue;
             this.acceptsCallback = options.acceptsCallback;

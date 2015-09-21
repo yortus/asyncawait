@@ -27,3 +27,4 @@ var Semaphore = (function () {
     return Semaphore;
 })();
 module.exports = Semaphore;
+//# sourceMappingURL=semaphore.js.map

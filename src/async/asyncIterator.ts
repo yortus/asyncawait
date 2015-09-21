@@ -1,5 +1,6 @@
 ﻿import Promise = require('bluebird');
 import _ = require('lodash');
+import types = require('asyncawait');
 import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
 import Semaphore = require('./semaphore');
@@ -42,7 +43,7 @@ class AsyncIterator {
 
         // Run the fiber until it either yields a value or completes. For thunks, this is a lazy operation.
         if (this._returnValue === Config.THUNK) {
-            var thunk: AsyncAwait.Thunk<any> = (done?) => {
+            var thunk: types.Thunk<any> = (done?) => {
                 if (done) resolver.promise.then(val => done(null, val), err => done(err));
                 this._semaphore.enter(() => this._fiber.run(this._runContext));
                 this._runContext.done = () => this._semaphore.leave();
@@ -79,7 +80,7 @@ class AsyncIterator {
 
         // Execute the entire iteration. For thunks, this is a lazy operation.
         if (this._returnValue === Config.THUNK) {
-            var thunk: AsyncAwait.Thunk<any> = (done?) => {
+            var thunk: types.Thunk<any> = (done?) => {
                 if (done) doneResolver.promise.then(val => done(null, val), err => done(err));
                 run();
             }

@@ -18,3 +18,4 @@ var RunContext = (function () {
     return RunContext;
 })();
 module.exports = RunContext;
+//# sourceMappingURL=runContext.js.map

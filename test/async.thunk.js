@@ -88,3 +88,4 @@ describe('A suspendable function returned by async.thunk(...)', function () {
     //    });
     //});
 });
+//# sourceMappingURL=async.thunk.js.map

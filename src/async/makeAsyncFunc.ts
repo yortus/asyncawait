@@ -1,6 +1,7 @@
 ﻿import Fiber = require('../fibers');
 import Promise = require('bluebird');
 import _ = require('lodash');
+import types = require('asyncawait');
 import Config = require('./config');
 import FiberMgr = require('./fiberManager');
 import RunContext = require('./runContext');
@@ -12,13 +13,13 @@ export = makeAsyncFunc;
 
 
 /** Function for creating a specific variant of the async function. */
-function makeAsyncFunc(config: Config): AsyncAwait.AsyncFunction {
+function makeAsyncFunc(config: Config): types.AsyncFunction {
 
     // Validate the specified configuration
     config.validate();
     
     // Create an async function tailored to the given options.
-    var result: AsyncAwait.AsyncFunction = <any> function async(bodyFunc: Function) {
+    var result: types.AsyncFunction = <any> function async(bodyFunc: Function) {
 
         // Create a semaphore for limiting top-level concurrency, if specified in options.
         var semaphore = config.maxConcurrency ? new Semaphore(config.maxConcurrency) : Semaphore.unlimited;
@@ -115,7 +116,7 @@ function makeAsyncNonIterator(bodyFunc: Function, config: Config, semaphore: Sem
 
         // Execute bodyFunc to completion in a coroutine. For thunks, this is a lazy operation.
         if (config.returnValue === Config.THUNK) {
-            var thunk: AsyncAwait.Thunk<any> = (done?) => {
+            var thunk: types.Thunk<any> = (done?) => {
                 if (done) resolver.promise.then(val => done(null, val), err => done(err));
                 semaphore.enter(() => FiberMgr.create().run(runContext));
             };
