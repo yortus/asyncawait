@@ -82,7 +82,7 @@ In short, `asyncawait` marries the high concurrency of asynchronous code with th
 * No code preprocessing or special build steps, simply write and execute your code normally.
 * Built with [node-fibers](https://github.com/laverdet/node-fibers).
 * [TypeScript](http://www.typescriptlang.org/) and X-to-JavaScript friendly (since ES6 generators are not required).
-* [asyncawait.d.ts](./src/typings/asyncawait/asyncawait.d.ts) included.
+* TypeScript typings are embedded.
 * Works only in Node.js, not in browsers (since it uses node-fibers).
 
 
