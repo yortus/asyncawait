@@ -41,9 +41,9 @@
     "test": "mocha"
   },
   "dependencies": {
-    "bluebird": "^2.10.0",
-    "fibers": "^1.0.6",
-    "lodash": "v2.4.1"
+    "bluebird": "^3.1.1",
+    "fibers": "^1.0.8",
+    "lodash": "v3.10.1"
   },
   "devDependencies": {
     "async": "^1.4.2",
@@ -53,6 +53,6 @@
     "mocha": "^2.3.2",
     "mock-fs": "^3.1.0",
     "rewire": "^2.3.4",
-    "typescript": "^1.6.0-beta"
+    "typescript": "^1.7.5"
   }
 }
