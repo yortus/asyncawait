@@ -1,3 +1,24 @@
+# 1.0.2 (2016-01-05)
+
+#### Bug Fixes
+- Fix #29
+
+#### Improvements
+- update deps
+
+
+# 1.0.0 (2015-09-12)
+
+#### Bug Fixes
+- benchmark: work without memwatch
+
+#### Improvements
+- Bump version to stable release
+- add asyncx to comparisons
+- update build/test system (remove gulp)
+- use pure external typescript typings
+- update deps
+
 # 0.7.4 (2014-11-14)
 
 #### Bug Fixes
