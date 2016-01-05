@@ -34,7 +34,10 @@ function getExtraInfo(traverse, topN) {
         var fiber = Fiber.current;
         if (expr && _.isFunction(expr.then)) {
             // A promise: resume the coroutine with the resolved value, or throw the rejection value into it.
-            expr.then(function (val) { fiber.run(val); fiber = null; }, function (err) { fiber.throwInto(err); fiber = null; });
+            // NB: ensure the handlers return null to avoid bluebird 3.x warning 'a promise was created in a
+            //     handler but none were returned from it'. This occurs if the next resumption of the suspendable
+            //     function (i.e. in the client's code) creates a bluebird 3.x promise and then awaits it.
+            expr.then(function (val) { return (fiber.run(val), fiber = null); }, function (err) { return (fiber.throwInto(err), fiber = null); });
         }
         else if (_.isFunction(expr)) {
             // A thunk: resume the coroutine with the callback value, or throw the errback value into it.
