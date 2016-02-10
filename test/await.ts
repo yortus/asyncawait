@@ -41,6 +41,32 @@ describe('The await(...) function', () => {
         .then(() => done())
         .catch(done);
     });
+
+    it('throws into the suspendable function the error produced by the awaited expression', done => {
+        var foo = async (() => await (Promise.delay(20).then(() => { throw new Error('blah'); })));
+        foo()
+        .then(() => done(new Error('foo() should have rejected')))
+        .catch(err => { expect(err.message).to.equal('blah'); done(); });
+    });
+
+    it('resumes the suspendable function with all the results of a concurrent expression', done => {
+        var foo = async (() => await (Promise.delay(40).then(() => 'foo')));
+        var bar = async (() => await (Promise.delay(20).then(() => 'bar')));
+        var all = async (() => await([foo(), bar()]));
+        all()
+        .then(result => expect(result).to.deep.equal(['foo', 'bar']))
+        .then(() => done())
+        .catch(done);
+    });
+
+    it('throws into the suspendable function the first error in a concurrent expression', done => {
+        var foo = async (() => await (Promise.delay(40).then(() => { throw new Error('foo'); })));
+        var bar = async (() => await (Promise.delay(20).then(() => { throw new Error('bar'); })));
+        var all = async (() => await([foo(), bar()]));
+        all()
+        .then(() => done(new Error('all() should have rejected')))
+        .catch(err => { expect(err.message).to.equal('bar'); done(); });
+    });
 });
 
 //TODO: test with: promise, thunk, array, graph, value

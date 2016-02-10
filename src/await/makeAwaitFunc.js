@@ -49,13 +49,14 @@ function getExtraInfo(traverse, topN) {
         else if (_.isArray(expr) || _.isPlainObject(expr)) {
             // An array or plain object: resume the coroutine with a deep clone of the array/object,
             // where all contained promises and thunks have been replaced by their resolved values.
+            // NB: ensure handlers return null (see similar comment above).
             var trackedPromises = [];
             expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
             if (!topN) {
-                Promise.all(trackedPromises).then(function (val) { fiber.run(expr); fiber = null; }, function (err) { fiber.throwInto(err); fiber = null; });
+                Promise.all(trackedPromises).then(function (val) { return (fiber.run(expr), fiber = null); }, function (err) { return (fiber.throwInto(err), fiber = null); });
             }
             else {
-                Promise.some(trackedPromises, topN).then(function (val) { fiber.run(val); fiber = null; }, function (err) { fiber.throwInto(err); fiber = null; });
+                Promise.some(trackedPromises, topN).then(function (val) { return (fiber.run(val), fiber = null); }, function (err) { return (fiber.throwInto(err), fiber = null); });
             }
         }
         else {

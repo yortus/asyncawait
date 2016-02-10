@@ -35,6 +35,29 @@ describe('The await(...) function', function () {
             .then(function () { return done(); })
             .catch(done);
     });
+    it('throws into the suspendable function the error produced by the awaited expression', function (done) {
+        var foo = async(function () { return await(Promise.delay(20).then(function () { throw new Error('blah'); })); });
+        foo()
+            .then(function () { return done(new Error('foo() should have rejected')); })
+            .catch(function (err) { expect(err.message).to.equal('blah'); done(); });
+    });
+    it('resumes the suspendable function with all the results of a concurrent expression', function (done) {
+        var foo = async(function () { return await(Promise.delay(40).then(function () { return 'foo'; })); });
+        var bar = async(function () { return await(Promise.delay(20).then(function () { return 'bar'; })); });
+        var all = async(function () { return await([foo(), bar()]); });
+        all()
+            .then(function (result) { return expect(result).to.deep.equal(['foo', 'bar']); })
+            .then(function () { return done(); })
+            .catch(done);
+    });
+    it('throws into the suspendable function the first error in a concurrent expression', function (done) {
+        var foo = async(function () { return await(Promise.delay(40).then(function () { throw new Error('foo'); })); });
+        var bar = async(function () { return await(Promise.delay(20).then(function () { throw new Error('bar'); })); });
+        var all = async(function () { return await([foo(), bar()]); });
+        all()
+            .then(function () { return done(new Error('all() should have rejected')); })
+            .catch(function (err) { expect(err.message).to.equal('bar'); done(); });
+    });
 });
 //TODO: test with: promise, thunk, array, graph, value
 //# sourceMappingURL=await.js.map
