@@ -59,12 +59,13 @@ function getExtraInfo(traverse: (o, visitor: Function) => void, topN?: number) {
 
             // An array or plain object: resume the coroutine with a deep clone of the array/object,
             // where all contained promises and thunks have been replaced by their resolved values.
+            // NB: ensure handlers return null (see similar comment above).
             var trackedPromises = [];
             expr = traverse(expr, trackAndReplaceWithResolvedValue(trackedPromises));
             if (!topN) {
-                Promise.all(trackedPromises).then(val => { fiber.run(expr); fiber = null; }, err => { fiber.throwInto(err); fiber = null; });
+                Promise.all(trackedPromises).then(val => (fiber.run(expr), fiber = null), err => (fiber.throwInto(err), fiber = null));
             } else {
-                Promise.some(trackedPromises, topN).then(val => { fiber.run(val); fiber = null; }, err => { fiber.throwInto(err); fiber = null; });
+                Promise.some(trackedPromises, topN).then(val => (fiber.run(val), fiber = null), err => (fiber.throwInto(err), fiber = null));
             }
 
         } else {
