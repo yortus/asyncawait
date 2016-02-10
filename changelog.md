@@ -1,3 +1,13 @@
+# 1.0.3 (2016-02-10)
+
+#### Bug Fixes
+- Fix #32
+
+#### Improvements
+- additional tests for await(...) scenarios
+- switch to vscode for authoring
+
+
 # 1.0.2 (2016-01-05)
 
 #### Bug Fixes
