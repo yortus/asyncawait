@@ -125,7 +125,7 @@ function trackAndReplaceWithResolvedValue(tracking) {
         // If the value is a promise, add it to the tracking array, and replace it with its value when resolved.
         if (_.isFunction(val.then)) {
             tracking.push(val);
-            val.then(function (result) { obj[key] = result; });
+            val.then(function (result) { obj[key] = result; }, function (err) { });
         }
     };
 }

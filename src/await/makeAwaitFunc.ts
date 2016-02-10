@@ -140,7 +140,7 @@ function trackAndReplaceWithResolvedValue(tracking: Promise<any>[]) {
         // If the value is a promise, add it to the tracking array, and replace it with its value when resolved.
         if (_.isFunction(val.then)) {
             tracking.push(val);
-            val.then(result => { obj[key] = result });
+            val.then(result => { obj[key] = result }, err => {});
         }
     }
 }
