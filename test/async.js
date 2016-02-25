@@ -93,6 +93,19 @@ describe('A suspendable function returned by async(...)', function () {
             .then(function () { return done(); })
             .catch(done);
     });
+    it('triggers the global unhandledException event if a rejection goes unhandled', function (done) {
+        var foo = async(function () { throw new Error('nobody handled me'); });
+        foo(); // NB: no .catch()
+        var didTrigger = false;
+        process.on('unhandledRejection', function (err) {
+            didTrigger = true;
+            done();
+        });
+        setTimeout(function () {
+            if (!didTrigger)
+                done(new Error('unhandledRejection event not triggered'));
+        }, 20);
+    });
     //it('emits progress with each yielded value', done => {
     //    var foo = async(() => { yield_(111); yield_(222); yield_(333); return 444; });
     //    var yields = [];
