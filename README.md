@@ -88,7 +88,7 @@ In short, `asyncawait` marries the high concurrency of asynchronous code with th
 
 
 # 3. How does it work?
-Like [`co`](https://github.com/visionmedia/co), `asyncawait` can suspend a running function without blocking Node's event loop. Both libraries are built on [coroutines](http://en.wikipedia.org/wiki/Coroutine), but use different technologies. `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)([segmentfault](https://segmentfault.com/q/1010000000367154)), which work in Node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and toolchains.
+Like [`co`](https://github.com/visionmedia/co), `asyncawait` can suspend a running function without blocking Node's event loop. Both libraries are built on [coroutines](http://en.wikipedia.org/wiki/Coroutine), but use different technologies. `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*), which work in Node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and toolchains.
 
 `asyncawait` uses [`node-fibers`](https://github.com/laverdet/node-fibers). It works with plain ES3/ES5 JavaScript, which is great if your tools do not yet support ES6 generators. This may be an important consideration when using [compile-to-JavaScript languages](https://github.com/jashkenas/coffee-script/wiki/List-of-languages-that-compile-to-JS), such as [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/).
 
@@ -166,7 +166,7 @@ countFiles(__dirname)
 The function `countFiles` returns the number of files in a given directory. To find this number, it must perform multiple asynchronous operations (using `fs.readdir` and `fs.stat`). `countFiles` is declared as a suspendable function by wrapping its definition inside `async(...)`. When `countFiles` is called with a `dir` string, it begins executing asynchronously and immediately returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) of a result. Internally, `countFiles` appears to have synchronous control flow. Each `await` call suspends execution until its argument produces a result, which then becomes the return value of the `await` call.
 
 ### More Examples
-The [examples](./examples) folder contains more examples. The [comparison](./comparison) folder also contains several examples, each coded in six different styles (using plain callbacks, using synchronous-only code, using the `async` library, using the `bluebird` library, using the `co` library, and using this `asyncawait` library). 
+The [examples](./examples) folder contains more examples. The [comparison](./comparison) folder also contains several examples, each coded in six different styles (using plain callbacks, using synchronous-only code, using the `async` library, using the `bluebird` library, using the `co` library, and using this `asyncawait` library).
 
 
 
@@ -186,7 +186,7 @@ var suspendable4 = async.result (function defn(a, b) {...});
 ### Accepting Arguments and Returning Values
 Suspendable functions may accept arguments. Calling `suspendable(1, 2)` will in turn call `defn(1, 2)`. Suspendable functions may be variadic. They report the same arity as their definition (i.e. `suspendable.length` and `defn.length` both return `2`).
 
-A suspendable function's definition may return with or without a value, or it may throw. Returning without a value is equivalent to returning `undefined`. The return value of the definition function becomes the result of the suspendable function (see [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)). 
+A suspendable function's definition may return with or without a value, or it may throw. Returning without a value is equivalent to returning `undefined`. The return value of the definition function becomes the result of the suspendable function (see [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)).
 
 ### Handling Errors and Exceptions
 A suspendable function's definition may throw exceptions directly or indirectly. If any of the `await` calls in `defn` asynchronously produces an error result, that error will be raised as an exception inside `defn`.
@@ -266,7 +266,7 @@ In conventional Node.js code, asynchronous functions take a callback as their la
 ### Maximising Concurrency
 A series of `await` calls are executed serially. For example, execution of `var r1 = await (promise1)` is completed before execution of `var r2 = await (thunk1)` begins.
 
-In contrast, a single `await` call on an array or plain object processes all of the contained awaitables concurrently. For example, when the statement `var r5 = await ({ t3: thunk3, t4: thunk4 })` both `thunk3` and `thunk4` are called immediately, and their asynchronous tasks are executed concurrently. 
+In contrast, a single `await` call on an array or plain object processes all of the contained awaitables concurrently. For example, when the statement `var r5 = await ({ t3: thunk3, t4: thunk4 })` both `thunk3` and `thunk4` are called immediately, and their asynchronous tasks are executed concurrently.
 
 Libraries such as [lodash](http://lodash.com) and [underscore](http://underscorejs.org/) interoperate smoothly with `asyncawait`, for both producing arrays of concurrently executing tasks, and for consuming arrays of results.
 
