@@ -88,7 +88,7 @@ In short, `asyncawait` marries the high concurrency of asynchronous code with th
 
 
 # 3. How does it work?
-Like [`co`](https://github.com/visionmedia/co), `asyncawait` can suspend a running function without blocking Node's event loop. Both libraries are built on [coroutines](http://en.wikipedia.org/wiki/Coroutine), but use different technologies. `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*), which work in Node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and toolchains.
+Like [`co`](https://github.com/visionmedia/co), `asyncawait` can suspend a running function without blocking Node's event loop. Both libraries are built on [coroutines](http://en.wikipedia.org/wiki/Coroutine), but use different technologies. `co` uses [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)([segmentfault](https://segmentfault.com/q/1010000000367154)), which work in Node >= v0.11.2 (with the `--harmony` flag), and will hopefully be supported someday by all popular JavaScript environments and toolchains.
 
 `asyncawait` uses [`node-fibers`](https://github.com/laverdet/node-fibers). It works with plain ES3/ES5 JavaScript, which is great if your tools do not yet support ES6 generators. This may be an important consideration when using [compile-to-JavaScript languages](https://github.com/jashkenas/coffee-script/wiki/List-of-languages-that-compile-to-JS), such as [TypeScript](http://www.typescriptlang.org/) or [CoffeeScript](http://coffeescript.org/).
 
