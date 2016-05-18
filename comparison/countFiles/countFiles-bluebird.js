@@ -1,25 +1,19 @@
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
-var _ = require('lodash');
 
 
 /** Returns the number of files in the given directory. */
-var countFiles = function (dir) {
-    return fs.readdirAsync(dir)
-
-    // Get all file stats in parallel.
-    .then(function (files) {
-        var paths = _.map(files, function (file) { return path.join(dir, file); });
-        return Promise.all(_.map(paths, function (path) { return fs.statAsync(path); }));
-    })
-
-    // Count the files.
-    .then(function (stats) {
-        return _.filter(stats, function (stat) { return stat.isFile(); }).length;
-    });
+module.exports = function countFiles(dir, cb) {
+    return Promise.try(() => {
+        return fs.readdirAsync(dir);
+    }).map((file) => {
+        return path.join(dir, file);
+    }).map((file) => {
+        return fs.statAsync(file);
+    }).filter((stat) => {
+        return stat.isFile();
+    }).then((stats) => {
+        return stats.length;
+    }).nodeify(cb);
 }
-
-
-function nodeified(dir, callback) { countFiles(dir).nodeify(callback); }
-module.exports = nodeified;
