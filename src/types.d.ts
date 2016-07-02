@@ -93,49 +93,49 @@ interface AsyncAcceptsCallbackReturnsNothing extends AsyncFunction {
 interface AsyncIterableReturnsPromise extends AsyncFunction {
     (fn: Function): (...args) => {
         next(): Promise<{ done: boolean; value?: any; }>;
-        forEach(callback: (value) => void): Promise<void>;
+        forEach(callback: (value: any) => void): Promise<void>;
     };
 }
 
 interface AsyncIterableReturnsThunk extends AsyncFunction {
     (fn: Function): () => {
         next(): Thunk<{ done: boolean; value?: any; }>;
-        forEach(callback: (value) => void): Thunk<void>;
+        forEach(callback: (value: any) => void): Thunk<void>;
     };
 }
 
 interface AsyncIterableReturnsResult extends AsyncFunction {
     (fn: Function): () => {
         next(): { done: boolean; value?: any; };
-        forEach(callback: (value) => void): void;
+        forEach(callback: (value: any) => void): void;
     };
 }
 
 interface AsyncIterableAcceptsCallbackReturnsPromise extends AsyncFunction {
     (fn: Function): () => {
         next(callback?: Callback<any>): Promise<{ done: boolean; value?: any; }>;
-        forEach(callback: (value) => void, doneCallback?: Callback<void>): Promise<void>;
+        forEach(callback: (value: any) => void, doneCallback?: Callback<void>): Promise<void>;
     };
 }
 
 interface AsyncIterableAcceptsCallbackReturnsThunk extends AsyncFunction {
     (fn: Function): () => {
         next(callback?: Callback<any>): Thunk<{ done: boolean; value?: any; }>;
-        forEach(callback: (value) => void, doneCallback?: Callback<void>): Thunk<void>;
+        forEach(callback: (value: any) => void, doneCallback?: Callback<void>): Thunk<void>;
     };
 }
 
 interface AsyncIterableAcceptsCallbackReturnsResult extends AsyncFunction {
     (fn: Function): () => {
         next(callback?: Callback<any>): { done: boolean; value?: any; };
-        forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
+        forEach(callback: (value: any) => void, doneCallback?: Callback<void>): void;
     };
 }
 
 interface AsyncIterableAcceptsCallbackReturnsNothing extends AsyncFunction {
     (fn: Function): () => {
         next(callback?: Callback<any>): void;
-        forEach(callback: (value) => void, doneCallback?: Callback<void>): void;
+        forEach(callback: (value: any) => void, doneCallback?: Callback<void>): void;
     };
 }
 
@@ -170,7 +170,7 @@ interface Callback<TResult> {
 }
 
 export interface Thunk<TResult> {
-    (callback?: (err, result?) => void): void;
+    (callback?: (err: any, result?: TResult) => void): void;
 }
 
 interface Thenable<R> {
