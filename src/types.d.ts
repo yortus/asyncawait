@@ -91,7 +91,7 @@ interface AsyncAcceptsCallbackReturnsNothing extends AsyncFunction {
 }
 
 interface AsyncIterableReturnsPromise extends AsyncFunction {
-    (fn: Function): (...args) => {
+    (fn: Function): (...args: any[]) => {
         next(): Promise<{ done: boolean; value?: any; }>;
         forEach(callback: (value: any) => void): Promise<void>;
     };
