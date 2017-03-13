@@ -75,7 +75,7 @@ In short, `asyncawait` marries the high concurrency of asynchronous code with th
 * Eliminates callback spaghetti code.
 * Enables the use of ordinary JavaScript control flow constructs for asynchronous operations.
 * Syntax is plain JavaScript, and behaves much like C#'s async/await.
-* Seamless interoperation with most other libraries, including [Express](expressjs.com), [Mocha](http://visionmedia.github.io/mocha/), [Underscore](http://documentcloud.github.io/underscore/), [Bluebird](https://github.com/petkaantonov/bluebird), etc.
+* Seamless interoperation with most other libraries, including [Express](expressjs.com), [Mocha](http://mochajs.org/), [Underscore](http://documentcloud.github.io/underscore/), [Bluebird](https://github.com/petkaantonov/bluebird), etc.
 * [Fast](./comparison) and lightweight.
 * Completely [non-blocking](http://stackoverflow.com/a/14797359).
 * Does not require [ES6 generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
