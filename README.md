@@ -1,4 +1,5 @@
 # Guide to `asyncawait` v1.0
+[![Package Control](https://img.shields.io/packagecontrol/dw/GitGutter.svg?style=flat-square)](https://www.npmjs.com/package/asyncawait)
 1. [Introduction](#1-introduction)
 2. [Feature/Gotcha Summary](#2-featuregotcha-summary)
 3. [How Does it Work?](#3-how-does-it-work)
