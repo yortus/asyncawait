@@ -42,15 +42,15 @@
   },
   "dependencies": {
     "bluebird": "^3.1.1",
-    "fibers": "^1.0.8",
-    "lodash": "v3.10.1"
+    "fibers": "^2.0.2",
+    "lodash": "^4.17.10"
   },
   "devDependencies": {
     "async": "^1.4.2",
     "asyncx": "^0.4.5",
     "chai": "^3.2.0",
     "co": "^4.6.0",
-    "mocha": "^2.3.2",
+    "mocha": "^5.2.0",
     "mock-fs": "^3.1.0",
     "rewire": "^2.3.4",
     "typescript": "1.7.5"
