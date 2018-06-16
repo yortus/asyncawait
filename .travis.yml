@@ -1,0 +1,33 @@
+language: node_js
+os:
+- linux
+- osx
+node_js:
+- node
+- lts/*
+before_script:
+- npm global add typescript
+cache:
+  directories:
+    - "node_modules"
+before_deploy:
+- npm pack
+deploy:
+- provider: releases
+  api_key: "$GITHUB_TOKEN"
+  file_glob: true
+  file: asyncawait-*.tgz
+  skip_cleanup: true
+  on:
+    branch: master
+    node: node
+    tags: true
+    condition: "$TRAVIS_OS_NAME = linux"
+- provider: npm
+  api_key: "$NPM_TOKEN"
+  skip_cleanup: true
+  email: youremail@yourmail.com
+  on:
+    tags: true
+    node: node
+    condition: "$TRAVIS_OS_NAME = linux"
