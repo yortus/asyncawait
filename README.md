@@ -1,3 +1,16 @@
+# UPDATE June 2018
+
+Do you need this library?
+
+This library has enabled async/await coding style in Node.js since 2014. But JavaScript now has native async/await.
+JS async/await was standardized as part of ES2017, and has been enabled by default in Node.js since v7.6.
+
+So, do you still need this library? If you are just starting to use async/await, the answer is probably no. Use native
+async/await. If you're maintaining a codebase that uses this library, or that needs to run on a old version of Node.js,
+then you may want to keep using it, but consider migrating to native async/await eventually. If you need deep coroutines
+for an advanced scenario, there may still be a case for using this library, since native async/await only supports
+shallow coroutine semantics.
+
 # Guide to `asyncawait` v1.0
 1. [Introduction](#1-introduction)
 2. [Feature/Gotcha Summary](#2-featuregotcha-summary)
@@ -5,27 +18,27 @@
 4. [Compared to...](#4-compared-to)
 5. [Performance](#5-performance)
 6. [Quick Start](#6-quick-start)
-  * [Installation](#installation)
-  * [Async/Await 101](#asyncawait-101)
-  * [Basic Example](#basic-example)
-  * [More Examples](#more-examples)
+    - [Installation](#installation)
+    - [Async/Await 101](#asyncawait-101)
+    - [Basic Example](#basic-example)
+    - [More Examples](#more-examples)
 7. [`async` in Depth: Suspendable Functions](#7-async-in-depth-suspendable-functions)
-  * [Accepting Arguments and Returning Values](#accepting-arguments-and-returning-values)
-  * [Handling Errors and Exceptions](#handling-errors-and-exceptions)
-  * [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)
-  * [Preservation of `this` Context](#preservation-of-this-context)
-  * [Creating and Using Asynchronous Iterators](#creating-and-using-asynchronous-iterators)
-  * [Eager versus Lazy Execution](#eager-versus-lazy-execution)
-  * [Nesting, Composition and Recursion](#nesting-composition-and-recursion)
-  * [The `async.mod` Function](#the-asyncmod-function)
+    - [Accepting Arguments and Returning Values](#accepting-arguments-and-returning-values)
+    - [Handling Errors and Exceptions](#handling-errors-and-exceptions)
+    - [Obtaining Results from Suspendable Functions](#obtaining-results-from-suspendable-functions)
+    - [Preservation of `this` Context](#preservation-of-this-context)
+    - [Creating and Using Asynchronous Iterators](#creating-and-using-asynchronous-iterators)
+    - [Eager versus Lazy Execution](#eager-versus-lazy-execution)
+    - [Nesting, Composition and Recursion](#nesting-composition-and-recursion)
+    - [The `async.mod` Function](#the-asyncmod-function)
 8. [`await` in Depth: Awaitable Expressions](#8-await-in-depth-awaitable-expressions)
-  * [What Works with `await`?](#what-works-with-await)
-  * [Obtaining Awaitable Versions of Node-Style APIs](#obtaining-awaitable-versions-of-node-style-apis)
-  * [Maximising Concurrency](#maximising-concurrency)
-  * [Variations of `await`](#variations-of-await)
+    - [What Works with `await`?](#what-works-with-await)
+    - [Obtaining Awaitable Versions of Node-Style APIs](#obtaining-awaitable-versions-of-node-style-apis)
+    - [Maximising Concurrency](#maximising-concurrency)
+    - [Variations of `await`](#variations-of-await)
 9. [Recipes](#9-recipes)
-  * [Handling HTTP Routes with Express](#handling-http-routes-with-express)
-  * [Asynchronous Testing with Mocha](#asynchronous-testing-with-mocha)
+    - [Handling HTTP Routes with Express](#handling-http-routes-with-express)
+    - [Asynchronous Testing with Mocha](#asynchronous-testing-with-mocha)
 10. [API Reference](#10-api-reference)
 11. [Acknowledgements](#11-acknowledgements)
 12. [License](#12-license)
