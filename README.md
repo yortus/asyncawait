@@ -1,4 +1,4 @@
-![](https://github.com/yortus/asyncawait/workflows/.github/workflows/nodejs.yml/badge.svg)
+![](https://github.com/yortus/asyncawait/workflows/Node%20CI/badge.svg)
 
 # UPDATE June 2018
 
