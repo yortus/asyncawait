@@ -46,7 +46,7 @@
     "lodash": "^4.17.12"
   },
   "devDependencies": {
-    "async": "^1.4.2",
+    "async": "^2.6.4",
     "asyncx": "^0.4.5",
     "chai": "^3.2.0",
     "co": "^4.6.0",
